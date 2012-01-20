@@ -42,7 +42,7 @@ public class Tag extends HorizontalPanel {
     public Tag(String text, String styleName) {
         this.text = text;
         setStyleName(styleName);
-        init("<img src='images/x.png'/>"); //$NON-NLS-1$
+        init("<span class='tag-remove'>&nbsp;</span>"); //$NON-NLS-1$
     }
 
     /**
