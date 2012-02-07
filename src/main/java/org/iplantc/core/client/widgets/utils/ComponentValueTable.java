@@ -30,6 +30,9 @@ public class ComponentValueTable {
     private String templateId;
     private boolean isDebugEnabled;
     private boolean isNotifyEnabled;
+    private String outputFolderId;
+    private boolean createSubFolder;
+
 
     private ComponentTable tblComponents;
 
@@ -98,6 +101,34 @@ public class ComponentValueTable {
      */
     public String getTemplateId() {
         return templateId;
+    }
+
+    /**
+     * @return the outputFolderId
+     */
+    public String getOutputFolderId() {
+        return outputFolderId;
+    }
+
+    /**
+     * @param outputFolderId the outputFolderId to set
+     */
+    public void setOutputFolderId(String outputFolderId) {
+        this.outputFolderId = outputFolderId;
+    }
+
+    /**
+     * @return the createSubFolder
+     */
+    public boolean isCreateSubFolder() {
+        return createSubFolder;
+    }
+
+    /**
+     * @param createSubFolder the createSubFolder to set
+     */
+    public void setCreateSubFolder(boolean createSubFolder) {
+        this.createSubFolder = createSubFolder;
     }
 
     private void registerNotifcations(final List<WizardNotification> notifications) {
