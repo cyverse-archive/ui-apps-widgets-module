@@ -251,9 +251,7 @@ public interface IPlantValidationMessages extends Messages {
 
     /**
      * Message provided when a user enters an invalid email address.
-     *
-     * @param name the name of the field or parameter that the value is associated with.
      * @return a parameterized string representing the message shown when the field is not valid
      */
-    public String invalidEmail(String name);
+    public String invalidEmail();
 }

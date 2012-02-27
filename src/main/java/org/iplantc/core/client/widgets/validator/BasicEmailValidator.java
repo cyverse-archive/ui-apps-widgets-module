@@ -18,7 +18,7 @@ public class BasicEmailValidator implements Validator {
         String emailPattern = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"; //$NON-NLS-1$
 
         if (value == null || !value.matches(emailPattern)) {
-            return I18N.RULES.invalidEmail(field.getFieldLabel());
+            return I18N.RULES.invalidEmail();
         }
 
         return null;
