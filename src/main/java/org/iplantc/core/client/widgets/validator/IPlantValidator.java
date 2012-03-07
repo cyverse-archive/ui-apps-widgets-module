@@ -23,7 +23,7 @@ import com.extjs.gxt.ui.client.widget.form.Validator;
  */
 public class IPlantValidator implements Validator {
     public static final String RESTRICTED_CHARS_CMDLINE_ARG_VALUE = "&;<>`~\n";
-    public static final String RESTRICTED_CHARS_CMDLINE = "!\"#$'%()*+,/\\:?@[]^{}|\t"
+    public static final String RESTRICTED_CHARS_CMDLINE = "!\"#$'%()*+,/\\\\:?@[]^{}|\t"
             + RESTRICTED_CHARS_CMDLINE_ARG_VALUE;
 
     private String name;
