@@ -63,7 +63,12 @@ public class WizardListBoxPanel extends WizardWidgetPanel {
     private void initListBox(final Property property) {
         selection = new ComboBox<ListItem>();
         selection.setWidth(350);   // this is the same width DiskResourceSelector uses
-        selection.setEditable(false);
+
+        // enable auto-complete
+        selection.setEditable(true);
+        selection.setTypeAhead(true);
+        selection.setTypeAheadDelay(0);
+        selection.setQueryDelay(0);
 
         selection.setFireChangeEventOnSetValue(true);
         selection.setForceSelection(true);
