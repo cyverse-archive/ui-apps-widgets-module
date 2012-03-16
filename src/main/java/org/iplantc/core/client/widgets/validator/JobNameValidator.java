@@ -17,7 +17,7 @@ public class JobNameValidator implements Validator {
      */
     @Override
     public String validate(Field<?> field, String value) {
-        char[] punct = (IPlantValidator.RESTRICTED_CHARS_CMDLINE + "=").toCharArray();
+        char[] punct = (IPlantValidator.RESTRICTED_CHARS_CMDLINE + "=").toCharArray(); //$NON-NLS-1$
         char[] arr = value.toCharArray();
 
         // check for spaces at the beginning and at the end of job name
