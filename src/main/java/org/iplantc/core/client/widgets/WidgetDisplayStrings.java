@@ -330,62 +330,6 @@ public interface WidgetDisplayStrings extends Messages {
     String fileContains();
 
     /**
-     * Caption above the combo box in the TNRS wizard.
-     * 
-     * @return a string representing the item.
-     */
-    String tnrsFamilyNamesNote();
-
-    /**
-     * Wizard combo box item.
-     * 
-     * @return a string representing the item.
-     */
-    String tnrsSelectFile();
-
-    /**
-     * Wizard combo box item.
-     * 
-     * @return a string representing the item.
-     */
-    String tnrsCreateFile();
-
-    /**
-     * Wizard edit box default text.
-     * 
-     * @return default string for TNRS file.
-     */
-    String tnrsFileName();
-
-    /**
-     * Wizard label.
-     * 
-     * @return a string representing the label text.
-     */
-    String tnrsFileCreate();
-
-    /**
-     * Wizard label.
-     * 
-     * @return a string representing the label text.
-     */
-    String tnrsCreateFilename();
-
-    /**
-     * Wizard label.
-     * 
-     * @return a string representing the label text.
-     */
-    String tnrsCreateFileData();
-
-    /**
-     * Wizard label.
-     * 
-     * @return a string representing the label text.
-     */
-    String tnrsBrowseFiles();
-
-    /**
      * Localized text for display as text in the browse button for a file selector.
      * 
      * @return a string representing the localized text.
