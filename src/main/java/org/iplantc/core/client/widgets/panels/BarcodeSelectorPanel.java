@@ -143,4 +143,10 @@ public class BarcodeSelectorPanel extends DynamicFileFieldPanel {
     protected void setTextFieldFilenameId() {
         textFieldFilename.setId(BARCODE_FILENAME_ID);
     }
+
+    @Override
+    protected void setValue(String value) {
+        // TODO Auto-generated method stub
+
+    }
 }

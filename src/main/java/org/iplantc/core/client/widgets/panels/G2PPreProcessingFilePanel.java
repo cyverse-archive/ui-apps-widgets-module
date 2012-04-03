@@ -448,4 +448,10 @@ public class G2PPreProcessingFilePanel extends WizardWidgetPanel {
         add(pnlRadioGroup);
         add(pnlDetails);
     }
+
+    @Override
+    protected void setValue(String value) {
+        // TODO Auto-generated method stub
+
+    }
 }

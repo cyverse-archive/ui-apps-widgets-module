@@ -153,4 +153,10 @@ public class WizardTextArea extends WizardWidgetPanel {
         entry.validate();
     }
 
+    @Override
+    protected void setValue(String value) {
+        entry.setValue(value);
+
+    }
+
 }

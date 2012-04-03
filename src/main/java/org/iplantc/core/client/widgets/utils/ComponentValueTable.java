@@ -14,6 +14,7 @@ import org.iplantc.core.client.widgets.validator.IPlantValidator;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.metadata.client.property.groups.PropertyGroup;
 
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
 
 /**
@@ -33,6 +34,7 @@ public class ComponentValueTable {
     private String outputFolderId;
     private boolean createSubFolder;
 
+    private WizardPropertyGroupContainer container;
 
     private ComponentTable tblComponents;
 
@@ -66,6 +68,7 @@ public class ComponentValueTable {
      */
     public void seed(final WizardPropertyGroupContainer container) {
         tblValue.clear();
+        this.container = container;
 
         if (container != null) {
             String id;
@@ -96,6 +99,31 @@ public class ComponentValueTable {
         }
     }
 
+    public JSONObject getWizardPorpertyGroupContainerAsJson() {
+        if (container != null) {
+            String id;
+            // loop through our groups to get at our properties
+            List<PropertyGroup> groups = container.getGroups();
+
+            for (PropertyGroup group : groups) {
+                // loop through our properties to seed our table
+                List<Property> properties = group.getProperties();
+
+                for (Property property : properties) {
+                    id = property.getId();
+
+                    // does this property have an id?
+                    if (!id.equals("")) {
+                        property.setValue(getValue(id));
+                    }
+                }
+            }
+        }
+
+        return container.toJson();
+
+    }
+
     /**
      * @return the templateId
      */
@@ -107,7 +135,7 @@ public class ComponentValueTable {
      * @return the outputFolderId
      */
     public String getOutputFolderId() {
-        return outputFolderId;
+        return (outputFolderId != null) ? outputFolderId : "";
     }
 
     /**
@@ -129,6 +157,7 @@ public class ComponentValueTable {
      */
     public void setCreateSubFolder(boolean createSubFolder) {
         this.createSubFolder = createSubFolder;
+        
     }
 
     private void registerNotifcations(final List<WizardNotification> notifications) {

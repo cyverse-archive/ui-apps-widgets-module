@@ -289,4 +289,10 @@ public class MultiFileSelector extends WizardWidgetPanel {
         add(caption);
         add(buildGridPanel());
     }
+
+    @Override
+    protected void setValue(String value) {
+        // TODO Auto-generated method stub
+
+    }
 }

@@ -16,7 +16,6 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Label;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.google.gwt.user.client.Command;
@@ -179,5 +178,11 @@ public class SimpleMatePanel extends WizardWidgetPanel {
         add(cbMateSelection);
         composeMatePanel();
         add(pnlMate);
+    }
+
+    @Override
+    protected void setValue(String value) {
+        // TODO Auto-generated method stub
+
     }
 }
