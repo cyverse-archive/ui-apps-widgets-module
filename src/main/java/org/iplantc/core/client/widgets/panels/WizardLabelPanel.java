@@ -64,6 +64,6 @@ public class WizardLabelPanel extends WizardWidgetPanel {
 
     @Override
     protected void setValue(String value) {
-        caption.setText(value);
+        // do nothing intentional
     }
 }

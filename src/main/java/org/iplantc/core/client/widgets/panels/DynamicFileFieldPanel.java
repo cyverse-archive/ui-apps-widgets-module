@@ -11,6 +11,8 @@ import org.iplantc.core.client.widgets.validator.JobNameValidator;
 import org.iplantc.core.client.widgets.views.IFileSelector;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -287,17 +289,11 @@ public abstract class DynamicFileFieldPanel extends WizardWidgetPanel {
      */
     @Override
     protected void updateComponentValueTable() {
-        // update for our selection
-        int index = listboxType.getSelectedIndex();
-        tblComponentVals.setValue(listboxType.getElement().getId(), Integer.toString(index));
 
-        // update for our selected file
-        File file = fileSelector.getSelectedFile();
-
-        String idFile = (file == null) ? "" : file.getId();
-        tblComponentVals.setValue(fileSelector.getId(), idFile);
-
-        if (idFile != null && !idFile.equals("")) {
+        if (listboxType.getSelectedIndex() == 1) {
+            // update for our selected file
+            File file = fileSelector.getSelectedFile();
+            String idFile = (file == null) ? "" : file.getId();
             tblComponentVals.setValue(listboxType.getElement().getId(), idFile);
         } else {
             tblComponentVals.setValue(listboxType.getElement().getId(), textFieldFilename.getValue()
@@ -359,7 +355,9 @@ public abstract class DynamicFileFieldPanel extends WizardWidgetPanel {
     @Override
     protected void afterRender() {
         super.afterRender();
-        areaData.el().setElementAttribute("spellcheck", "false");
+        if (areaData.isRendered()) {
+            areaData.el().setElementAttribute("spellcheck", "false");
+        }
     }
 
     class WizardTextArea extends TextArea {
@@ -368,6 +366,43 @@ public abstract class DynamicFileFieldPanel extends WizardWidgetPanel {
             super.afterRender();
             setAllowBlank(false);
         }
+    }
+
+    @Override
+    protected void setValue(String value) {
+        // formats
+        // "value": "filename,<filecontents>" or
+        // "value": "/irods/filename"
+        if (value != null && !value.isEmpty()) {
+            String[] vals = split(value);
+            if (vals == null || vals.length == 0 || vals.length == 1) {
+                listboxType.setSelectedIndex(1);
+                updateSelection();
+                setSelectedFile(value);
+                updateComponentValueTable();
+            } else {
+                textFieldFilename.setValue(vals[0]);
+                if (vals.length > 1 && !vals[1].equals("null") && vals[1] != null && !vals[1].isEmpty()) {
+                    listboxType.setSelectedIndex(0);
+                    updateSelection();
+                    areaData.setValue(vals[1]);
+                    updateComponentValueTable();
+                }
+            }
+        }
+
+    }
+
+    private void setSelectedFile(String value) {
+        String name = DiskResourceUtil.parseNameFromPath(value);
+        File f = new File(value, name, new Permissions(true, true, true));
+        fileSelector.setCurrentFolderId(DiskResourceUtil.parseParent(value));
+        fileSelector.displayFilename(name);
+        fileSelector.setSelectedFile(f);
+    }
+
+    private String[] split(String val) {
+        return val.split(",");
     }
 
 }

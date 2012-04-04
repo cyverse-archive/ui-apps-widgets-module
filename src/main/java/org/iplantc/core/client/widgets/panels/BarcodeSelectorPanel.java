@@ -116,12 +116,6 @@ public class BarcodeSelectorPanel extends DynamicFileFieldPanel {
     }
 
     @Override
-    protected void afterRender() {
-        super.afterRender();
-        areaData.el().setElementAttribute("spellcheck", "false");
-    }
-
-    @Override
     protected void initSelectedFileValidator() {
         String json = "{\"name\" : \"Barcode file field\", \"required\" : true}";
 
@@ -142,11 +136,5 @@ public class BarcodeSelectorPanel extends DynamicFileFieldPanel {
     @Override
     protected void setTextFieldFilenameId() {
         textFieldFilename.setId(BARCODE_FILENAME_ID);
-    }
-
-    @Override
-    protected void setValue(String value) {
-        // TODO Auto-generated method stub
-
     }
 }

@@ -137,10 +137,4 @@ public class ClipperSelectorPanel extends DynamicFileFieldPanel {
         textFieldFilename.setId(CLIPPER_FILENAME_ID);
     }
 
-    @Override
-    protected void setValue(String value) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
