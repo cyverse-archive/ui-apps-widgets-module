@@ -62,6 +62,8 @@ public abstract class WizardWidgetPanel extends VerticalPanel {
         updateComponentValueTable();
 
         compose();
+
+        setValue(property.getValue());
     }
 
     /**
@@ -247,4 +249,6 @@ public abstract class WizardWidgetPanel extends VerticalPanel {
             comp.setToolTip(toolTip);
         }
     }
+
+    protected abstract void setValue(String value);
 }

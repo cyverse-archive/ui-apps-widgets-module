@@ -8,9 +8,12 @@ import org.iplantc.core.client.widgets.dialogs.IFileSelectDialog;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.utils.IDiskResourceSelectorBuilder;
 import org.iplantc.core.client.widgets.validator.IPlantValidator;
+import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.metadata.client.validation.MetaDataValidator;
 import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -27,6 +30,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 
 /**
@@ -288,5 +292,22 @@ public class MultiFileSelector extends WizardWidgetPanel {
     protected void compose() {
         add(caption);
         add(buildGridPanel());
+    }
+
+    @Override
+    protected void setValue(String value) {
+        // value is array of file ids
+        if (value != null && !value.isEmpty()) {
+            JSONArray arr = JSONParser.parseStrict(value).isArray();
+            if (arr != null && arr.size() > 0) {
+                ListStore<File> files = grid.getStore();
+                for (int i = 0; i < arr.size(); i++) {
+                    String name = DiskResourceUtil.parseNameFromPath(JsonUtil
+                            .trim(arr.get(i).toString()));
+                    File f = new File(value, name, new Permissions(true, true, true));
+                    files.add(f);
+                }
+            }
+        }
     }
 }

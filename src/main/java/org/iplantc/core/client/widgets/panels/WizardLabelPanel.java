@@ -61,4 +61,9 @@ public class WizardLabelPanel extends WizardWidgetPanel {
     protected void compose() {
         add(caption);
     }
+
+    @Override
+    protected void setValue(String value) {
+        // do nothing intentional
+    }
 }

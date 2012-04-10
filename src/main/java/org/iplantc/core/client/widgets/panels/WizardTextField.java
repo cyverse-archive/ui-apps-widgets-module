@@ -185,4 +185,9 @@ public class WizardTextField extends WizardWidgetPanel {
     public void validate() {
         entry.validate();
     }
+
+    @Override
+    protected void setValue(String value) {
+        entry.setValue(value);
+    }
 }

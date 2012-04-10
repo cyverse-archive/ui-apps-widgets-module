@@ -118,4 +118,12 @@ public class WizardCheckboxPanel extends WizardWidgetPanel {
     protected void compose() {
         add(checkbox);
     }
+
+    @Override
+    protected void setValue(String value) {
+        if (value != null && !value.isEmpty()) {
+            checkbox.setValue(Boolean.parseBoolean(value));
+        }
+
+    }
 }

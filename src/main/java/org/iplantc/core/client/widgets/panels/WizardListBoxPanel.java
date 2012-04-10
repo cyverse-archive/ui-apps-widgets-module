@@ -254,4 +254,20 @@ public class WizardListBoxPanel extends WizardWidgetPanel {
             return get("value");
         }
     }
+
+    @Override
+    protected void setValue(String value) {
+        if (value != null && !value.isEmpty()) {
+            JSONObject obj = JsonUtil.getObject(value);
+            if (obj != null && obj.get("display") != null) {
+                String display = JsonUtil.getRawValueAsString(obj.get("display"));
+                for (ListItem item : selection.getStore().getModels()) {
+                    if (item.getDisplay().equals(display)) {
+                        selection.setSelection(Arrays.asList(item));
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }

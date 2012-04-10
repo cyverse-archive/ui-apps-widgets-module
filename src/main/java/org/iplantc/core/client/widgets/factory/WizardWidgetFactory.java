@@ -6,11 +6,8 @@ import java.util.List;
 import org.iplantc.core.client.widgets.I18N;
 import org.iplantc.core.client.widgets.panels.BarcodeSelectorPanel;
 import org.iplantc.core.client.widgets.panels.ClipperSelectorPanel;
-import org.iplantc.core.client.widgets.panels.ComplexMatePanel;
-import org.iplantc.core.client.widgets.panels.G2PPreProcessingFilePanel;
 import org.iplantc.core.client.widgets.panels.MultiFileSelector;
 import org.iplantc.core.client.widgets.panels.PercentEntryPanel;
-import org.iplantc.core.client.widgets.panels.SimpleMatePanel;
 import org.iplantc.core.client.widgets.panels.WizardBoldCheckboxPanel;
 import org.iplantc.core.client.widgets.panels.WizardCheckboxPanel;
 import org.iplantc.core.client.widgets.panels.WizardFileSelectorPanel;
@@ -90,25 +87,10 @@ public class WizardWidgetFactory {
                     } else if (type.equals("XBasePairs") || type.equals("XBasePairsText")) {
                         ret = new XBasePairsTextField(property, tblComponentVals,
                                 intAsStringList(I18N.CONSTANTS.editBoxWidthNumber()));
-                    } else if (type.equals("PreProcessingFiles")) {
-                        ret = new G2PPreProcessingFilePanel(property, tblComponentVals, null,
-                                diskResourceSelectorBuilder);
                     } else if (type.equals("MultiFileSelector")) {
                         ret = new MultiFileSelector(property, tblComponentVals, null,
                                 diskResourceSelectorBuilder);
-                    } else if (type.equals("TophatMateFile")) {
-                        ret = new SimpleMatePanel(property, tblComponentVals, null,
-                                diskResourceSelectorBuilder);
-                    } else if (type.equals("MateFile")) {
-                        ret = new ComplexMatePanel(property, tblComponentVals, null,
-                                diskResourceSelectorBuilder);
-                    }
-                    /*
-                     * else if(type.equals("ContrastField")) { ret = new ContrastFieldPanel(property,
-                     * tblComponentVals, null); } else if(type.equals("ReconcileTaxa")) { ret = new
-                     * ReconcileTaxaPanel(property, tblComponentVals, null); }
-                     */
-                    else if (type.equals("BarcodeSelector")) {
+                    } else if (type.equals("BarcodeSelector")) {
                         ret = new BarcodeSelectorPanel(property, tblComponentVals, null,
                                 diskResourceSelectorBuilder);
                     } else if (type.equals("ClipperSelector")) {
@@ -123,12 +105,6 @@ public class WizardWidgetFactory {
                     } else if (type.equals("Descriptive Text")) {
                         ret = new WizardLabelPanel(property, tblComponentVals, null);
                     }
-                    /*
-                     * else if(type.equals("SiteAnalysisColumnSelector")) { ret = new
-                     * SiteAnalysisColumnSelector(property, tblComponentVals); } else if
-                     * (type.equals("ACEField")) { ret = new ACEFieldPanel(property, tblComponentVals,
-                     * null); }
-                     */
                 }
             }
         }

@@ -6,6 +6,9 @@ import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.utils.IDiskResourceSelectorBuilder;
 import org.iplantc.core.client.widgets.views.IFileSelector;
 import org.iplantc.core.metadata.client.property.Property;
+import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.extjs.gxt.ui.client.widget.Label;
 
@@ -73,5 +76,18 @@ public class WizardFileSelectorPanel extends WizardWidgetPanel {
     protected void compose() {
         add(caption);
         add(fileSelector.getWidget());
+    }
+
+    @Override
+    protected void setValue(String value) {
+        if (value != null && !value.isEmpty()) {
+            String name = DiskResourceUtil.parseNameFromPath(value);
+            File f = new File(value, name, new Permissions(true, true, true));
+            fileSelector.setCurrentFolderId(DiskResourceUtil.parseParent(value));
+            fileSelector.displayFilename(name);
+            fileSelector.setSelectedFile(f);
+
+        }
+
     }
 }

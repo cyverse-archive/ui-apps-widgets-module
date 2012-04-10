@@ -6,6 +6,9 @@ import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.utils.IDiskResourceSelectorBuilder;
 import org.iplantc.core.client.widgets.views.IFolderSelector;
 import org.iplantc.core.metadata.client.property.Property;
+import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.extjs.gxt.ui.client.widget.Label;
 
@@ -49,6 +52,18 @@ public class WizardFolderSelectorPanel extends WizardWidgetPanel {
     @Override
     protected void updateComponentValueTable() {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void setValue(String value) {
+        if (value != null && !value.isEmpty()) {
+            String name = DiskResourceUtil.parseNameFromPath(value);
+            folderSelector.setCurrentFolderId(DiskResourceUtil.parseParent(value));
+            folderSelector.displayFolderName(name);
+            folderSelector.setSelectedFolder(new Folder(value, name, false, new Permissions(true, true,
+                    true)));
+        }
 
     }
 

@@ -138,20 +138,25 @@ public class WizardNumberField extends WizardWidgetPanel {
         if (validator == null || entry == null) {
             return;
         }
+        boolean allowDec = allowDecimals();
+        entry.setAllowDecimals(allowDec);
+        if (!allowDec) {
+            entry.setPropertyEditorType(Integer.class);
+        }
+    }
 
-        boolean allowDecimals = true;
+    private boolean allowDecimals() {
+        boolean ret = true;
+        if (validator == null) {
+            return ret;
+        }
         for (IPlantRule rule : validator.getRules()) {
             if (rule instanceof IntegerRule || rule instanceof IntCompareRule) {
-                allowDecimals = false;
+                ret = false;
                 break;
             }
         }
-
-        entry.setAllowDecimals(allowDecimals);
-
-        if (!allowDecimals) {
-            entry.setPropertyEditorType(Integer.class);
-        }
+        return ret;
     }
 
     /**
@@ -216,5 +221,17 @@ public class WizardNumberField extends WizardWidgetPanel {
     @Override
     public void validate() {
         entry.validate();
+    }
+
+    @Override
+    protected void setValue(String value) {
+        if (value != null && !value.isEmpty()) {
+            if (allowDecimals()) {
+                entry.setValue(Double.parseDouble(value));
+            } else {
+                entry.setValue(Integer.parseInt(value));
+            }
+        }
+
     }
 }
