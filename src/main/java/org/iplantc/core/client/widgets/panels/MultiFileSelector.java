@@ -16,8 +16,11 @@ import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.dnd.GridDropTarget;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -68,9 +71,29 @@ public class MultiFileSelector extends WizardWidgetPanel {
     protected void initInstanceVariables(final Property property, final List<String> params) {
         caption = buildAsteriskLabel(property.getLabel());
         grid = buildGrid(property);
+        addDragDop();
 
         setToolTip(caption, property);
         setToolTip(grid, property);
+    }
+
+    private void addDragDop() {
+        new GridDropTarget(grid) {
+            @Override
+            protected void onDragDrop(DNDEvent event) {
+                List<ModelData> files = event.getData();
+                if (files != null) {
+                    for (ModelData f : files) {
+                        if (f instanceof File) {
+                            File file = (File)f;
+                            doSelection(file);
+                        }
+                    }
+                }
+
+            }
+
+        };
     }
 
     private ContentPanel buildGridPanel() {
@@ -262,7 +285,9 @@ public class MultiFileSelector extends WizardWidgetPanel {
         ListStore<File> store = new ListStore<File>();
 
         Grid<File> ret = new Grid<File>(store, columnModel);
-        ret.getView().setEmptyText(I18N.DISPLAY.noFiles());
+        ret.getView().setEmptyText(
+                I18N.DISPLAY.noFiles() + "<br/>"
+                        + org.iplantc.core.uicommons.client.I18N.DISPLAY.dragAndDropPrompt());
 
         ret.getSelectionModel().addListener(Events.SelectionChange, new Listener<BaseEvent>() {
             @Override
@@ -308,6 +333,13 @@ public class MultiFileSelector extends WizardWidgetPanel {
                     files.add(f);
                 }
             }
+            updateComponentValueTable();
         }
+    }
+
+    private void doSelection(File f) {
+        ListStore<File> files = grid.getStore();
+        files.add(f);
+        updateComponentValueTable();
     }
 }
