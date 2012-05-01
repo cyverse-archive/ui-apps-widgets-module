@@ -67,7 +67,7 @@ public class WizardListBoxPanel extends WizardWidgetPanel {
         // enable auto-complete
         selection.setEditable(true);
         selection.setTypeAhead(true);
-        selection.setQueryDelay(0);
+        selection.setQueryDelay(1000);
 
         selection.setFireChangeEventOnSetValue(true);
         selection.setForceSelection(true);
