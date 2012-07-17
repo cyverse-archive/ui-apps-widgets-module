@@ -9,6 +9,7 @@ import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.validator.rules.IPlantRule;
 import org.iplantc.core.metadata.client.validation.MetaDataRule;
 import org.iplantc.core.metadata.client.validation.MetaDataValidator;
+import org.iplantc.core.uicommons.client.util.RegExp;
 
 import com.extjs.gxt.ui.client.util.Format;
 import com.extjs.gxt.ui.client.widget.form.Field;
@@ -22,14 +23,14 @@ import com.extjs.gxt.ui.client.widget.form.Validator;
  * 
  */
 public class IPlantValidator implements Validator {
-    public static final String RESTRICTED_CHARS_CMDLINE_ARG_VALUE = "&;<>`~\n";
-    public static final String RESTRICTED_CHARS_CMDLINE = "!\"#$'%()*+,/\\\\:?@[]^{}|\t"
+    public static final String RESTRICTED_CHARS_CMDLINE_ARG_VALUE = "&;<>`~\n"; //$NON-NLS-1$
+    public static final String RESTRICTED_CHARS_CMDLINE = "!\"#$'%()*+,/\\:?@[]^{}|\t" //$NON-NLS-1$
             + RESTRICTED_CHARS_CMDLINE_ARG_VALUE;
 
-    private String name;
-    private boolean isRequired;
-    private List<IPlantRule> rules;
-    private ComponentValueTable tblComponentVals;
+    private final String name;
+    private final boolean isRequired;
+    private final List<IPlantRule> rules;
+    private final ComponentValueTable tblComponentVals;
 
     /**
      * Instantiate from a component value table and meta data template.
@@ -67,7 +68,7 @@ public class IPlantValidator implements Validator {
             if (firstPass) {
                 firstPass = false;
             } else {
-                ret += "\n";
+                ret += "\n"; //$NON-NLS-1$
             }
 
             ret += error;
@@ -170,12 +171,12 @@ public class IPlantValidator implements Validator {
         }
 
         if (fieldDisplayName == null) {
-            fieldDisplayName = "";
+            fieldDisplayName = ""; //$NON-NLS-1$
         }
 
         String invalidCharSetRegex = buildRestrictedCharSetRegex(invalidCharSet);
         String invalidCharSetDisplay = I18N.RULES.invalidCharacterMsg(fieldDisplayName, invalidCharSet
-                .replaceAll("\t", "(tab)").replaceAll("\n", "(newline)"));
+                .replaceAll("\t", "(tab)").replaceAll("\n", "(newline)")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         field.setRegex(invalidCharSetRegex);
         field.getMessages().setRegexText(invalidCharSetDisplay);
@@ -190,8 +191,6 @@ public class IPlantValidator implements Validator {
     }
 
     private static String buildRestrictedCharSetRegex(String invalidCharSet) {
-        String invalidCharSetRegex = Format.substitute("[^{0}]*",
-                invalidCharSet.replaceAll("\\[", "\\\\[").replaceAll("\\]", "\\\\]"));
-        return invalidCharSetRegex;
+        return Format.substitute("[^{0}]*", RegExp.escapeCharacterClassSet(invalidCharSet)); //$NON-NLS-1$
     }
 }
