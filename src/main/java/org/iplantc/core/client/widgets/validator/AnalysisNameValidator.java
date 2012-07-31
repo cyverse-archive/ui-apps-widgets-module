@@ -6,12 +6,12 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.Validator;
 
 /**
- * Verifies the validity of a job name.
+ * Verifies the validity of an analysis name.
  * 
  * @author sriram
  * 
  */
-public class JobNameValidator implements Validator {
+public class AnalysisNameValidator implements Validator {
     /**
      * {@inheritDoc}
      */
@@ -20,7 +20,7 @@ public class JobNameValidator implements Validator {
         char[] punct = (IPlantValidator.RESTRICTED_CHARS_CMDLINE + "=").toCharArray(); //$NON-NLS-1$
         char[] arr = value.toCharArray();
 
-        // check for spaces at the beginning and at the end of job name
+        // check for spaces at the beginning and at the end of analysis name
         if (arr[0] == ' ' || arr[arr.length - 1] == ' ') {
             return I18N.RULES.analysisNameValidationMsg();
         }

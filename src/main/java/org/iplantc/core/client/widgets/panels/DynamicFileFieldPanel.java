@@ -7,7 +7,7 @@ import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.utils.GeneralTextFormatter;
 import org.iplantc.core.client.widgets.utils.IDiskResourceSelectorBuilder;
 import org.iplantc.core.client.widgets.validator.IPlantValidator;
-import org.iplantc.core.client.widgets.validator.JobNameValidator;
+import org.iplantc.core.client.widgets.validator.AnalysisNameValidator;
 import org.iplantc.core.client.widgets.views.IFileSelector;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.uidiskresource.client.models.File;
@@ -159,7 +159,7 @@ public abstract class DynamicFileFieldPanel extends WizardWidgetPanel {
         textFieldFilename.setWidth(254);
         textFieldFilename.setValue(I18N.DISPLAY.clipperFileName());
         textFieldFilename.setSelectOnFocus(true);
-        textFieldFilename.setValidator(new JobNameValidator());
+        textFieldFilename.setValidator(new AnalysisNameValidator());
         // textFieldFilename.setId(CLIPPER_FILENAME_ID);
         textFieldFilename.setAutoValidate(true);
         textFieldFilename.setAllowBlank(false);

@@ -213,7 +213,7 @@ public class ComponentValueTable {
      * 
      * @param id id of value to set.
      * @param value new value to set.
-     * @param exportable boolean to set if the value should be exported as json sent to job services
+     * @param exportable boolean to set if the value should be exported as json sent to analysis services
      */
     public void setValue(String id, String value, boolean exportable) {
         setValue(id, value);
