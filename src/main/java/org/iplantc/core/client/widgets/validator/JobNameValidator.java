@@ -22,13 +22,13 @@ public class JobNameValidator implements Validator {
 
         // check for spaces at the beginning and at the end of job name
         if (arr[0] == ' ' || arr[arr.length - 1] == ' ') {
-            return I18N.RULES.jobNameValidationMsg();
+            return I18N.RULES.analysisNameValidationMsg();
         }
 
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < punct.length; j++) {
                 if (arr[i] == punct[j]) {
-                    return I18N.RULES.jobNameValidationMsg();
+                    return I18N.RULES.analysisNameValidationMsg();
                 }
             }
         }

@@ -187,11 +187,11 @@ public interface IPlantValidationMessages extends Messages {
     /**
      * Localized text for display as validation message.
      * 
-     * This message is displayed with a Job Name is not valid.
+     * This message is displayed with an analysis Name is not valid.
      * 
      * @return a string representing the localized text.
      */
-    String jobNameValidationMsg();
+    String analysisNameValidationMsg();
 
     /**
      * Validation message for numeric field
