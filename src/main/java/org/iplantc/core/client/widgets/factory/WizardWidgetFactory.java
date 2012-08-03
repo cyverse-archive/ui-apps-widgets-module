@@ -52,6 +52,7 @@ public class WizardWidgetFactory {
      * @param tblComponentVals component value table for storing user input.
      * @return new widget panel for the wizard. null on failure.
      */
+    @SuppressWarnings("nls")
     public WizardWidgetPanel build(final Property property, final ComponentValueTable tblComponentVals)
 
     {
@@ -72,7 +73,7 @@ public class WizardWidgetFactory {
                                 diskResourceSelectorBuilder);
                     } else if (type.equals("Info")) {
                         ret = new WizardLabelPanel(property, tblComponentVals, null);
-                    } else if (type.equals("Text") || type.equals("QuotedText")) {
+                    } else if (type.equals("Text") || type.equals("QuotedText") || type.equals("Output")) {
                         ret = new WizardTextField(property, tblComponentVals,
                                 intAsStringList(I18N.CONSTANTS.editBoxWidthString()));
                     } else if (type.equals("MultiLineText")) {
