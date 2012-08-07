@@ -73,7 +73,8 @@ public class WizardWidgetFactory {
                                 diskResourceSelectorBuilder);
                     } else if (type.equals("Info")) {
                         ret = new WizardLabelPanel(property, tblComponentVals, null);
-                    } else if (type.equals("Text") || type.equals("QuotedText") || type.equals("Output")) {
+                    } else if (type.equals("Text") || type.equals("QuotedText") || type.equals("Output")
+                            || type.equals("EnvironmentVariable")) {
                         ret = new WizardTextField(property, tblComponentVals,
                                 intAsStringList(I18N.CONSTANTS.editBoxWidthString()));
                     } else if (type.equals("MultiLineText")) {
