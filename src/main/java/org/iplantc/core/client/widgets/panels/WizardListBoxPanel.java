@@ -3,17 +3,12 @@ package org.iplantc.core.client.widgets.panels;
 import java.util.Arrays;
 import java.util.List;
 
-import org.iplantc.core.client.widgets.factory.IPlantRuleFactory;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.utils.GeneralTextFormatter;
 import org.iplantc.core.client.widgets.utils.ValidatorHelper;
 import org.iplantc.core.client.widgets.validator.IPlantValidator;
-import org.iplantc.core.client.widgets.validator.rules.IPlantRule;
-import org.iplantc.core.client.widgets.validator.rules.MustContainRule;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.metadata.client.property.Property;
-import org.iplantc.core.metadata.client.validation.MetaDataRule;
-import org.iplantc.core.metadata.client.validation.MetaDataValidator;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
@@ -24,40 +19,24 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.google.gwt.json.client.JSONObject;
 
-public class WizardListBoxPanel extends WizardWidgetPanel {
+/**
+ * A WizardSelectorPanel for displaying a list box selector widget in a wizard.
+ * 
+ * @author psarando
+ * 
+ */
+public class WizardListBoxPanel extends WizardSelectorPanel {
     private Label caption;
     private ComboBox<ListItem> selection;
 
     /**
-     * Instantiate from a property, component value table and list of params.
+     * Instantiate from a property, component value table.
      * 
      * @param property template for instantiation.
      * @param tblComponentVals table to register with.
      */
     public WizardListBoxPanel(Property property, ComponentValueTable tblComponentVals) {
-        super(property, tblComponentVals, null);
-    }
-
-    private List<String> getListBoxItems(final MetaDataValidator validator) {
-        List<String> ret = null; // assume failure
-
-        // do we have a validator?
-        if (validator != null) {
-            List<MetaDataRule> rules = validator.getRules();
-
-            for (MetaDataRule mdr : rules) {
-                IPlantRule first = IPlantRuleFactory.build(mdr);
-
-                // is the first rule the type we are looking for?
-                if (first != null && first instanceof MustContainRule) {
-                    MustContainRule source = (MustContainRule)first;
-                    ret = source.getItems();
-                    break;
-                }
-            }
-        }
-
-        return ret;
+        super(property, tblComponentVals);
     }
 
     private void initListBox(final Property property) {
@@ -87,9 +66,7 @@ public class WizardListBoxPanel extends WizardWidgetPanel {
         ListItem selectedItem = null;
 
         // do we have any items to add
-        MetaDataValidator validator = property.getValidator();
-
-        List<String> items = getListBoxItems(validator);
+        List<String> items = getMustContainRuleItems(property);
         if (items != null) {
             for (String item : items) {
                 JSONObject jsonItem = JsonUtil.getObject(item);
@@ -170,17 +147,6 @@ public class WizardListBoxPanel extends WizardWidgetPanel {
 
             tblComponentVals.setValidator(property.getId(), validator);
         }
-    }
-
-    private IPlantValidator buildValidator(final Property property) {
-        IPlantValidator ret = null; // assume failure
-        MetaDataValidator mdv = property.getValidator();
-
-        if (mdv != null) {
-            ret = new IPlantValidator(tblComponentVals, mdv);
-        }
-
-        return ret;
     }
 
     /**
