@@ -14,6 +14,8 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
@@ -25,6 +27,7 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  */
 public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     private final ListRuleArgumentFactory factory = GWT.create(ListRuleArgumentFactory.class);
+    private boolean forceSingleSelection = false;
 
     public ListRuleArgumentTree() {
         this(new TreeStore<ListRuleArgument>(new ModelKeyProvider<ListRuleArgument>() {
@@ -60,6 +63,28 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
 
         setCheckable(true);
         setCheckStyle(CheckCascade.TRI);
+
+        addBeforeCheckChangeHandler(new BeforeCheckChangeHandler<ListRuleArgument>() {
+            @Override
+            public void onBeforeCheckChange(BeforeCheckChangeEvent<ListRuleArgument> event) {
+                if (forceSingleSelection) {
+                    if (event.getChecked() == CheckState.UNCHECKED) {
+                        if (event.getItem() instanceof ListRuleArgumentGroup) {
+                            // Do not allow groups to be checked if SingleSelection is enabled.
+                            event.setCancelled(true);
+                            return;
+                        }
+
+                        List<ListRuleArgument> checked = getCheckedSelection();
+
+                        if (checked != null && !checked.isEmpty()) {
+                            // uncheck all other selections first.
+                            setCheckedSelection(null);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -82,6 +107,17 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         return builder.toSafeHtml();
     }
 
+    @Override
+    protected void onCheckCascade(ListRuleArgument model, CheckState checked) {
+        // temporarily enable group selections during cascade events, if SingleSelection is enabled.
+        boolean restoreForceSingleSelection = forceSingleSelection;
+        forceSingleSelection = false;
+
+        super.onCheckCascade(model, checked);
+
+        forceSingleSelection = restoreForceSingleSelection;
+    }
+
     /**
      * Resets the tree's contents with the ListRuleArguments in the given root JSON string.
      * 
@@ -102,6 +138,8 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         if (root == null) {
             return;
         }
+
+        forceSingleSelection = root.isSingleSelect();
 
         List<ListRuleArgument> defaultSelection = new ArrayList<ListRuleArgument>();
 
