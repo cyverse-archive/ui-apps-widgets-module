@@ -17,6 +17,7 @@ import org.iplantc.core.client.widgets.panels.WizardListBoxPanel;
 import org.iplantc.core.client.widgets.panels.WizardNumberField;
 import org.iplantc.core.client.widgets.panels.WizardTextArea;
 import org.iplantc.core.client.widgets.panels.WizardTextField;
+import org.iplantc.core.client.widgets.panels.WizardTreeSelectorPanel;
 import org.iplantc.core.client.widgets.panels.WizardWidgetPanel;
 import org.iplantc.core.client.widgets.panels.XBasePairsTextField;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
@@ -102,6 +103,8 @@ public class WizardWidgetFactory {
                         ret = new WizardListBoxPanel(property, tblComponentVals);
                     } else if (type.equals("ValueSelection")) {
                         ret = new WizardListBoxPanel(property, tblComponentVals);
+                    } else if (type.equals("TreeSelection")) {
+                        ret = new WizardTreeSelectorPanel(property, tblComponentVals);
                     } else if (type.equals("Percentage")) {
                         ret = new PercentEntryPanel(property, tblComponentVals);
                     } else if (type.equals("Descriptive Text")) {

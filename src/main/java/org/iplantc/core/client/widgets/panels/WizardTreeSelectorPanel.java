@@ -1,0 +1,111 @@
+package org.iplantc.core.client.widgets.panels;
+
+import java.util.List;
+
+import org.iplantc.core.client.widgets.ListRuleArgumentTree;
+import org.iplantc.core.client.widgets.utils.ComponentValueTable;
+import org.iplantc.core.metadata.client.property.Property;
+import org.iplantc.core.metadata.client.validation.ListRuleArgument;
+import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
+
+import com.extjs.gxt.ui.client.widget.Label;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONParser;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
+
+/**
+ * A WizardSelectorPanel for displaying a hierarchical list selector widget in a wizard.
+ * 
+ * @author psarando
+ * 
+ */
+public class WizardTreeSelectorPanel extends WizardSelectorPanel {
+
+    private ListRuleArgumentTree tree;
+    private Label caption;
+
+    /**
+     * Instantiate from a property, component value table.
+     * 
+     * @param property template for instantiation.
+     * @param tblComponentVals table to register with.
+     */
+    public WizardTreeSelectorPanel(Property property, ComponentValueTable tblComponentVals) {
+        super(property, tblComponentVals);
+    }
+
+    @Override
+    protected void initInstanceVariables(Property property, List<String> params) {
+        tree = new ListRuleArgumentTree();
+
+        tree.addCheckChangedHandler(new CheckChangedHandler<ListRuleArgument>() {
+            @Override
+            public void onCheckChanged(CheckChangedEvent<ListRuleArgument> event) {
+                updateComponentValueTable();
+            }
+        });
+    }
+
+    @Override
+    protected void setWidgetId(String id) {
+        tree.setId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initValidators(final Property property) {
+        tblComponentVals.setValidator(property.getId(), buildValidator(property));
+    }
+
+    @Override
+    protected void setInitialState(final Property property) {
+        caption = buildAsteriskLabel(property.getLabel());
+        setToolTip(caption, property);
+
+        List<String> items = getMustContainRuleItems(property);
+
+        if (items != null && !items.isEmpty()) {
+            tree.setItems(items.get(0));
+        }
+    }
+
+    @Override
+    protected void updateComponentValueTable() {
+        List<ListRuleArgument> selected = tree.getCheckedSelection();
+        JSONArray selectedValues = null;
+
+        if (selected != null && !selected.isEmpty()) {
+            selectedValues = new JSONArray();
+            int jsonArrayIndex = 0;
+
+            for (ListRuleArgument ruleArg : selected) {
+                if (!(ruleArg instanceof ListRuleArgumentGroup)) {
+                    AutoBean<ListRuleArgument> bean = AutoBeanUtils.getAutoBean(ruleArg);
+                    selectedValues.set(jsonArrayIndex++,
+                            JSONParser.parseStrict(AutoBeanCodex.encode(bean).getPayload()));
+                }
+            }
+        }
+
+        tblComponentVals.setValue(tree.getId(), selectedValues);
+        tblComponentVals.validate();
+    }
+
+    @Override
+    protected void compose() {
+        add(caption);
+        add(tree);
+    }
+
+    @Override
+    protected void setValue(String value) {
+        // not supported at this time
+        // default values are set in setInitialState
+    }
+}

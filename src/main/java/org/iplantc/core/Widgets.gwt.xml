@@ -23,6 +23,7 @@
    	       <!-- Other module inherits                                      -->
 
    			<inherits name='com.extjs.gxt.ui.GXT'/>
+            <inherits name='com.sencha.gxt.ui.GXT' />
    			<inherits name="com.google.gwt.i18n.I18N"/>
 			<inherits name="com.google.gwt.resources.Resources" />
         <!-- Common Service Interfaces -->
