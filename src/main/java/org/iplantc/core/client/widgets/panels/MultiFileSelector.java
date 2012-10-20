@@ -320,6 +320,14 @@ public class MultiFileSelector extends WizardWidgetPanel {
     }
 
     @Override
+    protected void notifyShow() {
+        super.notifyShow();
+
+        // Workaround to set the grid's view to the correct size when expanded inside an accordion panel.
+        grid.getView().layout();
+    }
+
+    @Override
     protected void setValue(String value) {
         // value is array of file ids
         if (value != null && !value.isEmpty()) {
