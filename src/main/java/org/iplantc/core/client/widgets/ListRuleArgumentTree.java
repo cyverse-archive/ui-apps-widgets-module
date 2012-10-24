@@ -69,8 +69,13 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
             public void onBeforeCheckChange(BeforeCheckChangeEvent<ListRuleArgument> event) {
                 if (forceSingleSelection) {
                     if (event.getChecked() == CheckState.UNCHECKED) {
-                        if (event.getItem() instanceof ListRuleArgumentGroup) {
-                            // Do not allow groups to be checked if SingleSelection is enabled.
+                        boolean isGroup = event.getItem() instanceof ListRuleArgumentGroup;
+                        boolean cascadeToChildren = getCheckStyle() == CheckCascade.TRI
+                                || getCheckStyle() == CheckCascade.CHILDREN;
+
+                        if (isGroup && cascadeToChildren) {
+                            // Do not allow groups to be checked if SingleSelection is enabled and
+                            // selections cascade to children.
                             event.setCancelled(true);
                             return;
                         }
@@ -140,6 +145,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         }
 
         forceSingleSelection = root.isSingleSelect();
+        setCheckCascade(root);
 
         List<ListRuleArgument> defaultSelection = new ArrayList<ListRuleArgument>();
 
@@ -162,6 +168,34 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         if (!defaultSelection.isEmpty()) {
             setCheckedSelection(defaultSelection);
         }
+    }
+
+    private void setCheckCascade(ListRuleArgumentGroup root) {
+        CheckCascade cascade;
+
+        if (root == null || root.getSelectionCascade() == null) {
+            cascade = CheckCascade.TRI;
+        } else {
+            switch (root.getSelectionCascade()) {
+                case TRI:
+                    cascade = CheckCascade.TRI;
+                    break;
+                case PARENTS:
+                    cascade = CheckCascade.PARENTS;
+                    break;
+                case CHILDREN:
+                    cascade = CheckCascade.CHILDREN;
+                    break;
+                case NONE:
+                    cascade = CheckCascade.NONE;
+                    break;
+                default:
+                    cascade = CheckCascade.TRI;
+                    break;
+            }
+        }
+
+        setCheckStyle(cascade);
     }
 
     /**

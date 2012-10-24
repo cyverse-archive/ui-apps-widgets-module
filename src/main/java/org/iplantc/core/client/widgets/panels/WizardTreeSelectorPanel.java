@@ -6,7 +6,6 @@ import org.iplantc.core.client.widgets.ListRuleArgumentTree;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
-import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
 import com.extjs.gxt.ui.client.widget.Label;
 import com.google.gwt.json.client.JSONArray;
@@ -85,10 +84,10 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
             int jsonArrayIndex = 0;
 
             for (ListRuleArgument ruleArg : selected) {
-                if (!(ruleArg instanceof ListRuleArgumentGroup)) {
+                if (ruleArg.getName() != null && !ruleArg.getName().isEmpty()) {
                     AutoBean<ListRuleArgument> bean = AutoBeanUtils.getAutoBean(ruleArg);
-                    selectedValues.set(jsonArrayIndex++,
-                            JSONParser.parseStrict(AutoBeanCodex.encode(bean).getPayload()));
+                    String argJson = AutoBeanCodex.encode(bean).getPayload();
+                    selectedValues.set(jsonArrayIndex++, JSONParser.parseStrict(argJson));
                 }
             }
         }
