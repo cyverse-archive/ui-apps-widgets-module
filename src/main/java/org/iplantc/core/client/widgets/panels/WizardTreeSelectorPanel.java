@@ -2,7 +2,6 @@ package org.iplantc.core.client.widgets.panels;
 
 import java.util.List;
 
-import org.iplantc.core.client.widgets.ListRuleArgumentTree;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
@@ -24,7 +23,7 @@ import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHan
  */
 public class WizardTreeSelectorPanel extends WizardSelectorPanel {
 
-    private ListRuleArgumentTree tree;
+    private ListRuleArgumentTreePanel treePanel;
     private Label caption;
 
     /**
@@ -39,9 +38,9 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
 
     @Override
     protected void initInstanceVariables(Property property, List<String> params) {
-        tree = new ListRuleArgumentTree();
+        treePanel = new ListRuleArgumentTreePanel();
 
-        tree.addCheckChangedHandler(new CheckChangedHandler<ListRuleArgument>() {
+        treePanel.addCheckChangedHandler(new CheckChangedHandler<ListRuleArgument>() {
             @Override
             public void onCheckChanged(CheckChangedEvent<ListRuleArgument> event) {
                 updateComponentValueTable();
@@ -51,7 +50,7 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
 
     @Override
     protected void setWidgetId(String id) {
-        tree.setId(id);
+        treePanel.setId(id);
     }
 
     /**
@@ -70,13 +69,13 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
         List<String> items = getMustContainRuleItems(property);
 
         if (items != null && !items.isEmpty()) {
-            tree.setItems(items.get(0));
+            treePanel.setItems(items.get(0));
         }
     }
 
     @Override
     protected void updateComponentValueTable() {
-        List<ListRuleArgument> selected = tree.getCheckedSelection();
+        List<ListRuleArgument> selected = treePanel.getSelection();
         JSONArray selectedValues = null;
 
         if (selected != null && !selected.isEmpty()) {
@@ -92,14 +91,14 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
             }
         }
 
-        tblComponentVals.setValue(tree.getId(), selectedValues);
+        tblComponentVals.setValue(treePanel.getId(), selectedValues);
         tblComponentVals.validate();
     }
 
     @Override
     protected void compose() {
         add(caption);
-        add(tree);
+        add(treePanel);
     }
 
     @Override
