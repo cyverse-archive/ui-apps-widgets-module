@@ -12,7 +12,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
@@ -28,31 +27,6 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
 public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     private final ListRuleArgumentFactory factory = GWT.create(ListRuleArgumentFactory.class);
     private boolean forceSingleSelection = false;
-
-    public ListRuleArgumentTree() {
-        this(new TreeStore<ListRuleArgument>(new ModelKeyProvider<ListRuleArgument>() {
-            @Override
-            public String getKey(ListRuleArgument item) {
-                return item.getId();
-            }
-        }), new ValueProvider<ListRuleArgument, String>() {
-
-            @Override
-            public String getValue(ListRuleArgument object) {
-                return object.getDisplay();
-            }
-
-            @Override
-            public void setValue(ListRuleArgument object, String value) {
-                // intentionally do nothing; this is not an editor
-            }
-
-            @Override
-            public String getPath() {
-                return "display"; //$NON-NLS-1$
-            }
-        });
-    }
 
     public ListRuleArgumentTree(TreeStore<ListRuleArgument> store,
             ValueProvider<ListRuleArgument, String> valueProvider) {
