@@ -171,31 +171,15 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     }
 
     private void setCheckCascade(ListRuleArgumentGroup root) {
-        CheckCascade cascade;
+        CheckCascade cascade = null;
 
-        if (root == null || root.getSelectionCascade() == null) {
-            cascade = CheckCascade.TRI;
-        } else {
-            switch (root.getSelectionCascade()) {
-                case TRI:
-                    cascade = CheckCascade.TRI;
-                    break;
-                case PARENTS:
-                    cascade = CheckCascade.PARENTS;
-                    break;
-                case CHILDREN:
-                    cascade = CheckCascade.CHILDREN;
-                    break;
-                case NONE:
-                    cascade = CheckCascade.NONE;
-                    break;
-                default:
-                    cascade = CheckCascade.TRI;
-                    break;
-            }
+        if (root != null && root.getSelectionCascade() != null) {
+            cascade = root.getSelectionCascade().getTreeCheckCascade();
         }
 
-        setCheckStyle(cascade);
+        if (cascade != null) {
+            setCheckStyle(cascade);
+        }
     }
 
     /**
