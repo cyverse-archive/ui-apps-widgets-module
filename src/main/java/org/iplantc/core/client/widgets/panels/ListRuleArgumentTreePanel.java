@@ -158,6 +158,6 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
     }
 
     public List<ListRuleArgument> getSelection() {
-        return tree.getCheckedSelection();
+        return tree.getSelection();
     }
 }

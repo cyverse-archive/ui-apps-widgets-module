@@ -27,6 +27,7 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  */
 public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     private final ListRuleArgumentFactory factory = GWT.create(ListRuleArgumentFactory.class);
+    private ListRuleArgumentGroup root;
     private boolean forceSingleSelection = false;
 
     public ListRuleArgumentTree(TreeStore<ListRuleArgument> store,
@@ -125,6 +126,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
      */
     public void setItems(ListRuleArgumentGroup root) {
         store.clear();
+        this.root = root;
 
         if (root == null) {
             return;
@@ -212,5 +214,42 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         }
 
         return defaultSelection;
+    }
+
+    /**
+     * Returns items selected in the tree, even if they are currently filtered out by the view.
+     * 
+     * @return List of selected ListRuleArguments and groups.
+     */
+    public List<ListRuleArgument> getSelection() {
+        List<ListRuleArgument> selected = new ArrayList<ListRuleArgument>();
+
+        addSelectedFromGroup(selected, root);
+
+        return selected;
+    }
+
+    private void addSelectedFromGroup(List<ListRuleArgument> selected, ListRuleArgumentGroup group) {
+        if (group == null) {
+            return;
+        }
+
+        if (group.getArguments() != null) {
+            for (ListRuleArgument ruleArg : group.getArguments()) {
+                if (ruleArg.isDefault()) {
+                    selected.add(ruleArg);
+                }
+            }
+        }
+
+        if (group.getGroups() != null) {
+            for (ListRuleArgumentGroup subgroup : group.getGroups()) {
+                if (subgroup.isDefault()) {
+                    selected.add(subgroup);
+                }
+
+                addSelectedFromGroup(selected, subgroup);
+            }
+        }
     }
 }
