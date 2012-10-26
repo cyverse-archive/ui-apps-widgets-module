@@ -14,9 +14,9 @@
 		<!-- Target Java Version -->
 		<jdk.version>1.6</jdk.version>
 		<!-- Current GXT Version -->
+        <gxt.version>3.0.1</gxt.version>
 		<!-- Current GWT Version -->
 		<gwt.version>2.5.0-rc1</gwt.version>
-		 <gxt.version>3.0.1</gxt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -33,6 +33,11 @@
 			<artifactId>gwt-user</artifactId>
 			<version>${gwt.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.sencha.gxt</groupId>
+            <artifactId>gxt</artifactId>
+            <version>${gxt.version}</version>
+        </dependency>
 		<dependency>
             <groupId>com.extjs</groupId>
             <artifactId>gxt</artifactId>
