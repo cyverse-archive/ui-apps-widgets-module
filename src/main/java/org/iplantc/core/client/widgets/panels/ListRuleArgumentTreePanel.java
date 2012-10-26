@@ -80,7 +80,15 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
             @Override
             public void onCheckChange(CheckChangeEvent<ListRuleArgument> event) {
-                event.getItem().setDefault(event.getChecked() == CheckState.CHECKED);
+                ListRuleArgument ruleArg = event.getItem();
+                boolean checked = event.getChecked() == CheckState.CHECKED;
+                boolean isGroup = ruleArg instanceof ListRuleArgumentGroup;
+
+                // Don't set the checked value for Groups if the store is filtered, since a check cascade
+                // can check a group when its filtered-out children are not checked.
+                if (!(checked && isGroup && tree.getStore().isFiltered())) {
+                    ruleArg.setDefault(checked);
+                }
             }
         });
     }
@@ -108,9 +116,7 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
                 // Check groups' CheckState after all items' CheckState have been restored.
                 for (ListRuleArgument ruleArg : treeStore.getAll()) {
-                    boolean isGroup = ruleArg instanceof ListRuleArgumentGroup;
-
-                    if (isGroup) {
+                    if (ruleArg instanceof ListRuleArgumentGroup) {
                         // Ensure any groups with filtered-out children still display the group icon.
                         tree.setLeaf(ruleArg, false);
                         treeStore.update(ruleArg);

@@ -10,6 +10,7 @@ import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -95,6 +96,17 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         super.onCheckCascade(model, checked);
 
         forceSingleSelection = restoreForceSingleSelection;
+    }
+
+    @Override
+    protected void onCheckClick(Event event, TreeNode<ListRuleArgument> node) {
+        super.onCheckClick(event, node);
+
+        // Keep track of which node the user clicked on in the isDefault field.
+        // This helps with restoring checked state if the tree gets filtered, and will allow any checked
+        // args to be submitted to the job, even when filtered out.
+        ListRuleArgument ruleArg = node.getModel();
+        ruleArg.setDefault(getChecked(ruleArg) != CheckState.UNCHECKED);
     }
 
     /**
