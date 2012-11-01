@@ -6,12 +6,16 @@ import org.iplantc.core.client.widgets.ListRuleArgumentTree;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
+import com.google.gwt.storage.client.Storage;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
+import com.sencha.gxt.state.client.HtmlStorageProvider;
+import com.sencha.gxt.state.client.StateManager;
+import com.sencha.gxt.state.client.TreeStateHandler;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
@@ -28,6 +32,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
     private ListRuleArgumentTree tree;
+    private TreeStateHandler<ListRuleArgument> stateHandler;
 
     public ListRuleArgumentTreePanel() {
         TreeStore<ListRuleArgument> store = buildStore();
@@ -40,6 +45,9 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
         add(buildFilter(store));
         add(tree);
+
+        // Must be called after the tree is added to the panel.
+        initTreeStateHandler();
     }
 
     private TreeStore<ListRuleArgument> buildStore() {
@@ -114,18 +122,17 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
                     }
                 }
 
-                // Check groups' CheckState after all items' CheckState have been restored.
-                for (ListRuleArgument ruleArg : treeStore.getAll()) {
-                    if (ruleArg instanceof ListRuleArgumentGroup) {
-                        // Ensure any groups with filtered-out children still display the group icon.
-                        tree.setLeaf(ruleArg, false);
-                        treeStore.update(ruleArg);
-
-                        // Expand Groups that are checked or have checked children.
-                        if (tree.getChecked(ruleArg) != CheckState.UNCHECKED) {
-                            tree.setExpanded(ruleArg, true);
+                if (treeStore.isFiltered()) {
+                    // Ensure any groups with filtered-out children still display the group icon.
+                    for (ListRuleArgument ruleArg : treeStore.getAll()) {
+                        if (ruleArg instanceof ListRuleArgumentGroup) {
+                            tree.setLeaf(ruleArg, false);
+                            treeStore.update(ruleArg);
                         }
                     }
+                } else {
+                    // Restore the tree's expanded state when the filter is cleared.
+                    stateHandler.loadState();
                 }
             }
         });
@@ -147,6 +154,24 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         treeFilter.bind(store);
 
         return treeFilter;
+    }
+
+    /**
+     * Must be called after the tree is added to the panel.
+     */
+    private void initTreeStateHandler() {
+        // TODO Setting GXT 3 StateManager Provider to HTML5 Session Storage here for now.
+        Storage sessionStorage = Storage.getSessionStorageIfSupported();
+        if (sessionStorage != null) {
+            StateManager.get().setProvider(new HtmlStorageProvider(sessionStorage));
+        }
+
+        tree.setStateId("State" + ListRuleArgumentTree.class); //$NON-NLS-1$
+
+        stateHandler = new TreeStateHandler<ListRuleArgument>(tree);
+
+        // Reset the state with an initial save of the new tree.
+        stateHandler.saveState();
     }
 
     public void addCheckChangedHandler(CheckChangedHandler<ListRuleArgument> handler) {
