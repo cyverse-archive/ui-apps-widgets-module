@@ -2,6 +2,7 @@ package org.iplantc.core.client.widgets.panels;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.I18N;
 import org.iplantc.core.client.widgets.ListRuleArgumentTree;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
@@ -152,6 +153,8 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         };
 
         treeFilter.bind(store);
+        treeFilter.setEmptyText(I18N.DISPLAY.treeSelectorFilterEmptyText());
+        treeFilter.setWidth(250);
 
         return treeFilter;
     }
