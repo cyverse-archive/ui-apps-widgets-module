@@ -143,4 +143,10 @@ public interface WidgetDisplayStrings extends Messages {
 
     String selectFolder();
 
+    /**
+     * Localized text for display as the empty text in the tree selector filter field.
+     * 
+     * @return a string representing the localized text.
+     */
+    String treeSelectorFilterEmptyText();
 }
