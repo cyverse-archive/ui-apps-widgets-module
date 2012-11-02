@@ -188,4 +188,13 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
     public List<ListRuleArgument> getSelection() {
         return tree.getSelection();
     }
+
+    /**
+     * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
+     * 
+     * @param value A string representation of a JSON Array of the values to select.
+     */
+    public void setSelection(String value) {
+        tree.setSelection(value);
+    }
 }

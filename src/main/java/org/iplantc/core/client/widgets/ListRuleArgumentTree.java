@@ -3,11 +3,15 @@ package org.iplantc.core.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentFactory;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
@@ -250,6 +254,40 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
 
                 addSelectedFromGroup(selected, subgroup);
             }
+        }
+    }
+
+    /**
+     * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
+     * 
+     * @param value A string representation of a JSON Array of the values to select.
+     */
+    public void setSelection(String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+
+        try {
+            JSONArray selectedValues = JSONParser.parseStrict(value).isArray();
+
+            if (selectedValues != null && selectedValues.size() > 0) {
+                TreeStore<ListRuleArgument> treeStore = getStore();
+
+                for (int i = 0; i < selectedValues.size(); i++) {
+                    JSONObject jsonRule = JsonUtil.getObjectAt(selectedValues, i);
+
+                    if (jsonRule != null) {
+                        ListRuleArgument ruleArg = AutoBeanCodex.decode(factory, ListRuleArgument.class,
+                                jsonRule.toString()).as();
+
+                        // Ensure the actual model used in the store is the one sent in checked events.
+                        setChecked(treeStore.findModelWithKey(ruleArg.getId()), CheckState.CHECKED);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // ignore JSON parse errors
+            GWT.log(e.getMessage());
         }
     }
 }
