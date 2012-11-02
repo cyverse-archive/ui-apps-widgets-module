@@ -103,7 +103,6 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
 
     @Override
     protected void setValue(String value) {
-        // not supported at this time
-        // default values are set in setInitialState
+        treePanel.setSelection(value);
     }
 }
