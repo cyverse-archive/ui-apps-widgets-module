@@ -8,6 +8,7 @@ import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
 import com.google.gwt.storage.client.Storage;
+import com.google.gwt.user.client.Command;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
@@ -20,7 +21,6 @@ import com.sencha.gxt.state.client.TreeStateHandler;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
@@ -177,8 +177,13 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         stateHandler.saveState();
     }
 
-    public void addCheckChangedHandler(CheckChangedHandler<ListRuleArgument> handler) {
-        tree.addCheckChangedHandler(handler);
+    /**
+     * Sets the Command to execute after the tree's checked selection changes.
+     * 
+     * @param updateCmd The component value table update Command to execute after selection changes.
+     */
+    public void addCheckChangedUpdateCommand(Command updateCmd) {
+        tree.setCheckChangedUpdateCommand(updateCmd);
     }
 
     public void setItems(String json) {
