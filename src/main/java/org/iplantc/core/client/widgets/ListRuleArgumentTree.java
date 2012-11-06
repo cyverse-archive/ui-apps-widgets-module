@@ -14,6 +14,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -32,6 +33,7 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
 public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     private final ListRuleArgumentFactory factory = GWT.create(ListRuleArgumentFactory.class);
     private ListRuleArgumentGroup root;
+    private Command updateCmd;
     private boolean forceSingleSelection = false;
 
     public ListRuleArgumentTree(TreeStore<ListRuleArgument> store,
@@ -112,6 +114,8 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         // args to be submitted to the job, even when filtered out.
         ListRuleArgument ruleArg = node.getModel();
         ruleArg.setDefault(getChecked(ruleArg) != CheckState.UNCHECKED);
+
+        callCheckChangedUpdateCommand();
     }
 
     /**
@@ -284,10 +288,27 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
                         setChecked(treeStore.findModelWithKey(ruleArg.getId()), CheckState.CHECKED);
                     }
                 }
+
+                callCheckChangedUpdateCommand();
             }
         } catch (Exception e) {
             // ignore JSON parse errors
             GWT.log(e.getMessage());
+        }
+    }
+
+    /**
+     * Sets the Command to execute after the tree's checked selection changes.
+     * 
+     * @param updateCmd The component value table update Command to execute after selection changes.
+     */
+    public void setCheckChangedUpdateCommand(Command updateCmd) {
+        this.updateCmd = updateCmd;
+    }
+
+    private void callCheckChangedUpdateCommand() {
+        if (updateCmd != null) {
+            updateCmd.execute();
         }
     }
 }
