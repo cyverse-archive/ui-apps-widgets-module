@@ -177,5 +177,11 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
      */
     public void setSelection(String value) {
         tree.setSelection(value);
+
+        for (ListRuleArgument ruleArg : tree.getStore().getAll()) {
+            if (ruleArg.isDefault()) {
+                tree.setExpanded(ruleArg, true);
+            }
+        }
     }
 }
