@@ -8,6 +8,7 @@ import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
@@ -135,6 +136,19 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
     private StoreFilterField<ListRuleArgument> buildFilter(TreeStore<ListRuleArgument> store) {
         StoreFilterField<ListRuleArgument> treeFilter = new StoreFilterField<ListRuleArgument>() {
+            @Override
+            protected void onKeyUp(Event event) {
+                tree.mask();
+
+                super.onKeyUp(event);
+            }
+
+            @Override
+            protected void onFilter() {
+                super.onFilter();
+
+                tree.unmask();
+            }
 
             @Override
             protected boolean doSelect(Store<ListRuleArgument> store, ListRuleArgument parent,
@@ -149,6 +163,7 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         treeFilter.bind(store);
         treeFilter.setEmptyText(I18N.DISPLAY.treeSelectorFilterEmptyText());
         treeFilter.setWidth(250);
+        treeFilter.setValidationDelay(750);
 
         return treeFilter;
     }
