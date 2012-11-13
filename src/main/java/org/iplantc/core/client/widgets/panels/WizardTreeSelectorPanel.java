@@ -9,11 +9,10 @@ import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import com.extjs.gxt.ui.client.widget.Label;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.client.Command;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 
 /**
  * A WizardSelectorPanel for displaying a hierarchical list selector widget in a wizard.
@@ -40,9 +39,10 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
     protected void initInstanceVariables(Property property, List<String> params) {
         treePanel = new ListRuleArgumentTreePanel();
 
-        treePanel.addCheckChangedHandler(new CheckChangedHandler<ListRuleArgument>() {
+        treePanel.addCheckChangedUpdateCommand(new Command() {
+
             @Override
-            public void onCheckChanged(CheckChangedEvent<ListRuleArgument> event) {
+            public void execute() {
                 updateComponentValueTable();
             }
         });
@@ -103,7 +103,6 @@ public class WizardTreeSelectorPanel extends WizardSelectorPanel {
 
     @Override
     protected void setValue(String value) {
-        // not supported at this time
-        // default values are set in setInitialState
+        treePanel.setSelection(value);
     }
 }

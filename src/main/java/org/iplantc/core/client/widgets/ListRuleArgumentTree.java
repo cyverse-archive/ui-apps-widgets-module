@@ -3,13 +3,19 @@ package org.iplantc.core.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentFactory;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -26,6 +32,8 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  */
 public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     private final ListRuleArgumentFactory factory = GWT.create(ListRuleArgumentFactory.class);
+    private ListRuleArgumentGroup root;
+    private Command updateCmd;
     private boolean forceSingleSelection = false;
 
     public ListRuleArgumentTree(TreeStore<ListRuleArgument> store,
@@ -97,6 +105,19 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         forceSingleSelection = restoreForceSingleSelection;
     }
 
+    @Override
+    protected void onCheckClick(Event event, TreeNode<ListRuleArgument> node) {
+        super.onCheckClick(event, node);
+
+        // Keep track of which node the user clicked on in the isDefault field.
+        // This helps with restoring checked state if the tree gets filtered, and will allow any checked
+        // args to be submitted to the job, even when filtered out.
+        ListRuleArgument ruleArg = node.getModel();
+        ruleArg.setDefault(getChecked(ruleArg) != CheckState.UNCHECKED);
+
+        callCheckChangedUpdateCommand();
+    }
+
     /**
      * Resets the tree's contents with the ListRuleArguments in the given root JSON string.
      * 
@@ -113,6 +134,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
      */
     public void setItems(ListRuleArgumentGroup root) {
         store.clear();
+        this.root = root;
 
         if (root == null) {
             return;
@@ -200,5 +222,93 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         }
 
         return defaultSelection;
+    }
+
+    /**
+     * Returns items selected in the tree, even if they are currently filtered out by the view.
+     * 
+     * @return List of selected ListRuleArguments and groups.
+     */
+    public List<ListRuleArgument> getSelection() {
+        List<ListRuleArgument> selected = new ArrayList<ListRuleArgument>();
+
+        addSelectedFromGroup(selected, root);
+
+        return selected;
+    }
+
+    private void addSelectedFromGroup(List<ListRuleArgument> selected, ListRuleArgumentGroup group) {
+        if (group == null) {
+            return;
+        }
+
+        if (group.getArguments() != null) {
+            for (ListRuleArgument ruleArg : group.getArguments()) {
+                if (ruleArg.isDefault()) {
+                    selected.add(ruleArg);
+                }
+            }
+        }
+
+        if (group.getGroups() != null) {
+            for (ListRuleArgumentGroup subgroup : group.getGroups()) {
+                if (subgroup.isDefault()) {
+                    selected.add(subgroup);
+                }
+
+                addSelectedFromGroup(selected, subgroup);
+            }
+        }
+    }
+
+    /**
+     * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
+     * 
+     * @param value A string representation of a JSON Array of the values to select.
+     */
+    public void setSelection(String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+
+        try {
+            JSONArray selectedValues = JSONParser.parseStrict(value).isArray();
+
+            if (selectedValues != null && selectedValues.size() > 0) {
+                TreeStore<ListRuleArgument> treeStore = getStore();
+
+                for (int i = 0; i < selectedValues.size(); i++) {
+                    JSONObject jsonRule = JsonUtil.getObjectAt(selectedValues, i);
+
+                    if (jsonRule != null) {
+                        ListRuleArgument ruleArg = AutoBeanCodex.decode(factory, ListRuleArgument.class,
+                                jsonRule.toString()).as();
+
+                        // Ensure the actual model used in the store is the one sent in checked events.
+                        setChecked(treeStore.findModelWithKey(ruleArg.getId()), CheckState.CHECKED);
+                    }
+                }
+
+                callCheckChangedUpdateCommand();
+            }
+        } catch (Exception e) {
+            // ignore JSON parse errors
+            GWT.log(e.getMessage());
+        }
+    }
+
+    /**
+     * Sets the Command to execute after the tree's checked selection changes.
+     * 
+     * @param updateCmd The component value table update Command to execute after selection changes.
+     */
+    public void setCheckChangedUpdateCommand(Command updateCmd) {
+        this.updateCmd = updateCmd;
+    }
+
+    private void callCheckChangedUpdateCommand() {
+        if (updateCmd != null) {
+            updateCmd.execute();
+        }
     }
 }

@@ -2,10 +2,13 @@ package org.iplantc.core.client.widgets.panels;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.I18N;
 import org.iplantc.core.client.widgets.ListRuleArgumentTree;
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
@@ -15,7 +18,6 @@ import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
@@ -80,7 +82,15 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
             @Override
             public void onCheckChange(CheckChangeEvent<ListRuleArgument> event) {
-                event.getItem().setDefault(event.getChecked() == CheckState.CHECKED);
+                ListRuleArgument ruleArg = event.getItem();
+                boolean checked = event.getChecked() == CheckState.CHECKED;
+                boolean isGroup = ruleArg instanceof ListRuleArgumentGroup;
+
+                // Don't set the checked value for Groups if the store is filtered, since a check cascade
+                // can check a group when its filtered-out children are not checked.
+                if (!(checked && isGroup && tree.getStore().isFiltered())) {
+                    ruleArg.setDefault(checked);
+                }
             }
         });
     }
@@ -106,19 +116,18 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
                     }
                 }
 
-                // Check groups' CheckState after all items' CheckState have been restored.
+                boolean filtered = treeStore.isFiltered();
+
                 for (ListRuleArgument ruleArg : treeStore.getAll()) {
-                    boolean isGroup = ruleArg instanceof ListRuleArgumentGroup;
-
-                    if (isGroup) {
-                        // Ensure any groups with filtered-out children still display the group icon.
+                    // Ensure any groups with filtered-out children still display the group icon.
+                    if (ruleArg instanceof ListRuleArgumentGroup) {
                         tree.setLeaf(ruleArg, false);
-                        treeStore.update(ruleArg);
+                        tree.refresh(ruleArg);
+                    }
 
-                        // Expand Groups that are checked or have checked children.
-                        if (tree.getChecked(ruleArg) != CheckState.UNCHECKED) {
-                            tree.setExpanded(ruleArg, true);
-                        }
+                    if (!filtered && ruleArg.isDefault()) {
+                        // Restore the tree's expanded state when the filter is cleared.
+                        tree.setExpanded(ruleArg, true);
                     }
                 }
             }
@@ -127,6 +136,19 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
     private StoreFilterField<ListRuleArgument> buildFilter(TreeStore<ListRuleArgument> store) {
         StoreFilterField<ListRuleArgument> treeFilter = new StoreFilterField<ListRuleArgument>() {
+            @Override
+            protected void onKeyUp(Event event) {
+                tree.mask();
+
+                super.onKeyUp(event);
+            }
+
+            @Override
+            protected void onFilter() {
+                super.onFilter();
+
+                tree.unmask();
+            }
 
             @Override
             protected boolean doSelect(Store<ListRuleArgument> store, ListRuleArgument parent,
@@ -139,12 +161,20 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         };
 
         treeFilter.bind(store);
+        treeFilter.setEmptyText(I18N.DISPLAY.treeSelectorFilterEmptyText());
+        treeFilter.setWidth(250);
+        treeFilter.setValidationDelay(750);
 
         return treeFilter;
     }
 
-    public void addCheckChangedHandler(CheckChangedHandler<ListRuleArgument> handler) {
-        tree.addCheckChangedHandler(handler);
+    /**
+     * Sets the Command to execute after the tree's checked selection changes.
+     * 
+     * @param updateCmd The component value table update Command to execute after selection changes.
+     */
+    public void addCheckChangedUpdateCommand(Command updateCmd) {
+        tree.setCheckChangedUpdateCommand(updateCmd);
     }
 
     public void setItems(String json) {
@@ -152,6 +182,21 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
     }
 
     public List<ListRuleArgument> getSelection() {
-        return tree.getCheckedSelection();
+        return tree.getSelection();
+    }
+
+    /**
+     * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
+     * 
+     * @param value A string representation of a JSON Array of the values to select.
+     */
+    public void setSelection(String value) {
+        tree.setSelection(value);
+
+        for (ListRuleArgument ruleArg : tree.getStore().getAll()) {
+            if (ruleArg.isDefault()) {
+                tree.setExpanded(ruleArg, true);
+            }
+        }
     }
 }
