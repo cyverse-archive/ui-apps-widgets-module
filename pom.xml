@@ -5,7 +5,7 @@
 	<groupId>org.iplantc.core</groupId>
 	<artifactId>widgets</artifactId>
 	<packaging>jar</packaging>
-	<version>dev-SNAPSHOT</version>
+	<version>1.6</version>
 	<name>The iPlant Collaborative widgets for Tools integration</name>
 	<url>http://project.iplantcollaborative.org</url>
 	<!-- convenience to define GWT version in one place -->
@@ -46,22 +46,22 @@
 		<dependency>
 			<groupId>org.iplantc.core</groupId>
 			<artifactId>diskresource</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<version>1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.iplantc.core</groupId>
 			<artifactId>metadata</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<version>1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.iplantc.core</groupId>
 			<artifactId>jsonutil</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<version>1.6</version>
 		</dependency>
 		<dependency>
                 <groupId>org.iplantc.core</groupId>
                 <artifactId>ui-commons</artifactId>
-                <version>dev-SNAPSHOT</version>
+                <version>1.6</version>
         </dependency>
 	</dependencies>
 	<build>
