@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.iplantc.core.client.widgets.I18N;
 import org.iplantc.core.client.widgets.dialogs.IFileSelectDialog;
+import org.iplantc.core.client.widgets.images.Resources;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
 import org.iplantc.core.client.widgets.utils.IDiskResourceSelectorBuilder;
 import org.iplantc.core.client.widgets.validator.IPlantValidator;
@@ -31,10 +32,12 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 /**
  * Custom widget for allowing the user to select single end reads.
@@ -100,7 +103,8 @@ public class MultiFileSelector extends WizardWidgetPanel {
         ContentPanel ret = new ContentPanel();
 
         ret.setHeaderVisible(false);
-        ret.setWidth(340);
+        ret.setSize(340, 250);
+        ret.setLayout(new FitLayout());
         ret.add(grid);
         ret.setTopComponent(buildToolbar());
         return ret;
@@ -166,6 +170,7 @@ public class MultiFileSelector extends WizardWidgetPanel {
         Button ret = new Button(I18N.DISPLAY.add());
 
         ret.setId("idFileAddBtn");
+        ret.setIcon(AbstractImagePrototype.create(Resources.ICONS.add()));
 
         ret.addSelectionListener(new SelectionListener<ButtonEvent>() {
             @Override
@@ -188,6 +193,7 @@ public class MultiFileSelector extends WizardWidgetPanel {
         Button ret = new Button(I18N.DISPLAY.delete());
 
         ret.setId("idFileDeleteBtn");
+        ret.setIcon(AbstractImagePrototype.create(Resources.ICONS.delete()));
         ret.setEnabled(false);
 
         ret.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -317,14 +323,6 @@ public class MultiFileSelector extends WizardWidgetPanel {
     protected void compose() {
         add(caption);
         add(buildGridPanel());
-    }
-
-    @Override
-    protected void notifyShow() {
-        super.notifyShow();
-
-        // Workaround to set the grid's view to the correct size when expanded inside an accordion panel.
-        grid.getView().layout();
     }
 
     @Override
