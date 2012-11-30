@@ -7,6 +7,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -29,7 +30,7 @@ public class AppWizardFieldFactory {
     public static FieldLabel createPropertyField(TemplateProperty property) {
         FieldLabel ret = new FieldLabel();
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        Field<String> field;
+        Field<?> field;
         switch (property.getType()) {
             case FILE_INPUT:
                 labelText.append(templates.fieldLabel("", null, "", ""));
@@ -78,7 +79,7 @@ public class AppWizardFieldFactory {
                 break;
             case FLAG:
                 labelText.append(templates.fieldLabel("", null, "", ""));
-                field = null;
+                field = new CheckBox();
                 
                 break;
             case SKIP_FLAG:
@@ -157,7 +158,7 @@ public class AppWizardFieldFactory {
          */
         for(TemplateValidator v : property.getValidators()){
             Validator<String> validator = createValidator(v);
-            field.addValidator(validator);
+//            field.addValidator(validator);
             
         }
         return ret;
