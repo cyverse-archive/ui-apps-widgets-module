@@ -17,8 +17,8 @@ public enum TemplatePropertyType {
     MULTI_FILE_SELECTOR("MultiFileSelector"),
     BARCODE_SELECTOR("BarcodeSelector"),
     CLIPPER_SELECTOR("ClipperSelector"),
-    SELECTION("Selection"),
-    VALUE_SELECTION("ValueSelection"),
+    SELECTION("Selection"), // For selecting from a list of string values.
+    VALUE_SELECTION("ValueSelection"), // For selecting from a list of numbers
     TREE_SELECTION("TreeSelection"),
     PERCENTAGE("Percentage"),
     DESCRIPTIVE_TEXT("Descriptive Text");

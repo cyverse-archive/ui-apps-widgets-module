@@ -9,6 +9,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.TextArea;
+import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
 public class AppWizardFieldFactory {
@@ -50,27 +52,28 @@ public class AppWizardFieldFactory {
                 break;
             case TEXT:
                 labelText.append(templates.fieldLabel("", null, "", ""));
-                field = null;
+                field = new TextField();
                 
                 break;
             case QUOTED_TEXT:
                 labelText.append(templates.fieldLabel("", null, "", ""));
-                field = null;
+                field = new TextField();
                 
                 break;
             case ENV_VARIABLE:
                 labelText.append(templates.fieldLabel("", null, "", ""));
-                field = null;
+                field = new TextField();
                 
                 break;
             case MULTI_LINE_TEXT:
                 labelText.append(templates.fieldLabel("", null, "", ""));
-                field = null;
+                field = new TextArea();
                 
                 break;
             case NUMBER:
                 labelText.append(templates.fieldLabel("", null, "", ""));
-                field = null;
+                field = new TextField();
+                // Must ensure user can only enter number
                 
                 break;
             case FLAG:
