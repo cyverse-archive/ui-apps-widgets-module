@@ -16,7 +16,7 @@
 		<!-- Current GXT Version -->
         <gxt.version>3.0.1</gxt.version>
 		<!-- Current GWT Version -->
-		<gwt.version>2.5.0-rc1</gwt.version>
+		<gwt.version>2.5.0</gwt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.5.0-rc1</version>
+				<version>${gwt.version}</version>
 				<executions>
 					<execution>
 						<goals>
