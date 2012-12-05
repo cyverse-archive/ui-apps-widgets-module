@@ -2,13 +2,13 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.editors.TemplatePropertyEditorAdapter;
+import org.iplantc.core.uicommons.client.validators.HasValidators;
 
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.HasInvalidHandlers;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.HasValidHandlers;
 import com.sencha.gxt.widget.core.client.form.IsField;
-import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * Interface definition for all TemplateProperty Editors.
@@ -20,10 +20,8 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  *
  */
-public interface TemplatePropertyEditorBase extends Editor<TemplateProperty>, IsWidget, HasInvalidHandlers, HasValidHandlers{
+public interface TemplatePropertyEditorBase extends Editor<TemplateProperty>, IsWidget, HasValidators<String>, HasInvalidHandlers, HasValidHandlers{
     
     IsField<?> getField();
     
-    void addValidator(Validator<String> validator);
-
 }

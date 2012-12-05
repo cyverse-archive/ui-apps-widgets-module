@@ -1,0 +1,14 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+             xmlns:wizardEditors="urn:import:org.iplantc.core.client.widgets.appWizard.view.editors"
+             xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
+             
+   <form:FieldSet ui:field="groupField">
+      <container:VerticalLayoutContainer>
+         <!-- <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor"/> -->
+         <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+      </container:VerticalLayoutContainer>
+   </form:FieldSet>             
+</ui:UiBinder> 

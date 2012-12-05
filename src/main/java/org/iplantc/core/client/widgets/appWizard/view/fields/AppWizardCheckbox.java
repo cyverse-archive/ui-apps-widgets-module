@@ -1,5 +1,7 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
+import java.util.List;
+
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 
 import com.google.gwt.editor.client.LeafValueEditor;
@@ -24,12 +26,12 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  */
 public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueEditor<TemplateProperty>{
     
-    private final CheckBox checkBox = new CheckBox();
+    private final CheckBox field = new CheckBox();
     
     TemplateProperty currentValue;
     
     public AppWizardCheckbox(){
-        checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        field.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             
             /**
              * Wire the checkbox selections to this editor's TemplateProperty.setValue().
@@ -45,7 +47,7 @@ public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueE
     @Override
     public void setValue(TemplateProperty value) {
         currentValue = value;
-        checkBox.setValue(Boolean.parseBoolean(value.getFormValue()));
+        field.setValue(Boolean.parseBoolean(value.getFormValue()));
     }
 
     @Override
@@ -55,27 +57,35 @@ public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueE
 
     @Override
     public Widget asWidget() {
-        return checkBox;
+        return field;
     }
 
     @Override
     public IsField<?> getField() {
-        return checkBox;
+        return field;
     }
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
-        return checkBox.addInvalidHandler(handler);
+        return field.addInvalidHandler(handler);
     }
 
     @Override
     public HandlerRegistration addValidHandler(ValidHandler handler) {
-        return checkBox.addValidHandler(handler);
+        return field.addValidHandler(handler);
     }
 
     @Override
     public void addValidator(Validator<String> validator) {
-        // We won't validate on a checkbox.
+    }
+
+    @Override
+    public void removeValidator(Validator<String> validator) {
+    }
+
+    @Override
+    public List<Validator<String>> getValidators() {
+        return null;
     }
 
 }

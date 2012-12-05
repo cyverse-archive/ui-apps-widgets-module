@@ -2,52 +2,57 @@ package org.iplantc.core.client.widgets.appWizard.view.editors;
 
 import org.iplantc.core.client.widgets.appWizard.models.TemplateGroup;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.form.FieldSet;
 
-/**
- * TODO JDS Create a UiBinder template for this class which contains the 
- * @author jstroot
- *
- */
-public class TemplateGroupEditor extends Composite implements ValueAwareEditor<TemplateGroup>{
-    
-    FieldSet groupField = new FieldSet();
-    
-    @Path("properties")
-    TemplatePropertyListEditor propertyList = new TemplatePropertyListEditor();
+public class TemplateGroupEditor extends Composite implements ValueAwareEditor<TemplateGroup> {
 
-    @Path("groups")
-    TemplateGroupListEditor groupList = new TemplateGroupListEditor();
+    @UiTemplate("TemplateGroupEditor.ui.xml")
+    interface TemplateGroupEditorUiBinder extends UiBinder<Widget, TemplateGroupEditor> {}
     
+    private static TemplateGroupEditorUiBinder BINDER = GWT.create(TemplateGroupEditorUiBinder.class);
+
+    @Ignore
+    @UiField
+    FieldSet groupField;
+    
+//    @UiField
+//    @Path("properties")
+//    TemplatePropertyListEditor propertiesEditor;
+
+    @UiField
+    @Path("groups")
+    TemplateGroupListEditor groupsEditor;
+    
+    public TemplateGroupEditor() {
+        initWidget(BINDER.createAndBindUi(this));
+    }
 
     @Override
     public void setDelegate(EditorDelegate<TemplateGroup> delegate) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void onPropertyChange(String... paths) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void setValue(TemplateGroup value) {
         // When the value is set, update the FieldSet header text
         groupField.setHeadingText(value.getLabel());
-        
-        
-        
+        groupsEditor.asEditor().setValue(value.getGroups());
+//        propertiesEditor.asEditor().setValue(value.getProperties());
     }
 
 }

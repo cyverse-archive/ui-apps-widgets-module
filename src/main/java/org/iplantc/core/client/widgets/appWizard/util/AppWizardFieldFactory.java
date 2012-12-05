@@ -1,8 +1,13 @@
 package org.iplantc.core.client.widgets.appWizard.util;
 
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
+import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardFileSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
 import com.google.gwt.core.client.GWT;
@@ -28,15 +33,15 @@ public class AppWizardFieldFactory {
         TemplatePropertyEditorBase field;
         switch (property.getType()) {
             case FILE_INPUT:
-                field = null;
+                field = new AppWizardFileSelector();
                 break;
 
             case FOLDER_INPUT:
-                field = null;
+                field = new AppWizardFileSelector();
                 break;
             
             case MULTI_FILE_SELECTOR:
-                field = null;
+                field = new AppWizardFileSelector();
                 break;
             
             case INFO:
@@ -44,33 +49,23 @@ public class AppWizardFieldFactory {
                 break;
 
             case TEXT:
-//                field = new TextField();
-                field = null;
-
+                field = new AppWizardTextField();
                 break;
 
             case QUOTED_TEXT:
-//                field = new TextField();
-                field = null;
-
+                field = new AppWizardTextField();
                 break;
 
             case ENV_VARIABLE:
-//                field = new TextField();
-                field = null;
-
+                field = new AppWizardTextField();
                 break;
 
             case MULTI_LINE_TEXT:
-//                field = new TextArea();
-                field = null;
-
+                field = new AppWizardTextArea();
                 break;
 
             case NUMBER:
-//                field = new TextField();
-                field = null;
-
+                field = new AppWizardTextField();
                 // Must ensure user can only enter number
                 break;
 
@@ -79,31 +74,31 @@ public class AppWizardFieldFactory {
                 break;
 
             case SKIP_FLAG:
-                field = null;
+                field = new AppWizardCheckbox();
                 break;
           
             case X_BASE_PAIRS:
-                field = null;
+                field = new AppWizardTextField("Some prepending label text");
                 break;
           
             case X_BASE_PAIRS_TEXT:
-                field = null;
+                field = new AppWizardTextField("Some prepending label text");
                 break;
            
             case BARCODE_SELECTOR:
-                field = null;
+                field = new AppWizardFileSelector();
                 break;
             
             case CLIPPER_SELECTOR:
-                field = null;
+                field = new AppWizardFileSelector();
                 break;
            
             case SELECTION:
-                field = null;
+                field = new AppWizardComboBox();
                 break;
            
             case VALUE_SELECTION:
-                field = null;
+                field = new AppWizardComboBox();
                 break;
            
             case TREE_SELECTION:
@@ -111,14 +106,15 @@ public class AppWizardFieldFactory {
                 break;
            
             case PERCENTAGE:
-                field = null;
+                field = new AppWizardTextField("Some prepending label text");
                 break;
            
-            case DESCRIPTIVE_TEXT:
-                field = null;
-                break;
+            // case DESCRIPTIVE_TEXT:
+            // field = null;
+            // break;
             
             default:
+                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + TemplatePropertyType.class.getName() + " type.");
                 field = null;
                 break;
         }

@@ -7,6 +7,7 @@ import org.iplantc.core.client.widgets.appWizard.view.AppWizardViewImpl;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -19,6 +20,8 @@ import com.google.web.bindery.autobean.shared.Splittable;
  *
  */
 public class AppWizardPresenterImpl implements AppWizardView.Presenter {
+
+    interface Driver extends SimpleBeanEditorDriver<AppTemplate, Editor<AppTemplate>> {}
 
     private AppTemplate appTemplate;
     private AppWizardView view;
@@ -35,21 +38,17 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     public AppWizardPresenterImpl(){
     }
     
-    interface Driver extends SimpleBeanEditorDriver<AppTemplate, AppWizardView> {}
+    Driver driver = GWT.create(Driver.class);
     @Override
     public void go(HasOneWidget container) {
         // Create the Driver
-        Driver driver = GWT.create(Driver.class);
 
         view = new AppWizardViewImpl();
-        
+
         driver.initialize(view);
-        
         driver.edit(appTemplate);
-        
 
         container.setWidget(view);
-
     }
 
     @Override

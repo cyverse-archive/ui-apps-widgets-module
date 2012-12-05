@@ -6,11 +6,14 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.gwt.user.client.ui.HasName;
+import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
 public interface AppTemplate extends HasId, HasLabel, HasName {
     
+    @PropertyName("groups")
     List<TemplateGroup> getGroups();
     
+    @PropertyName("groups")
     void setGroups(List<TemplateGroup> groups);
     
     

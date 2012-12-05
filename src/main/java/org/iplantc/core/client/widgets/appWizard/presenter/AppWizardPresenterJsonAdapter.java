@@ -26,19 +26,21 @@ public class AppWizardPresenterJsonAdapter {
         
         // Create AppTemplateSplittable and assign top level values.
         Splittable appTemplateSplit = StringQuoter.createSplittable();
-        appTemplateSplit.assign(input.get("id"), "id");
-        appTemplateSplit.assign(input.get("name"), "name");
-        appTemplateSplit.assign(input.get("label"), "label");
-        appTemplateSplit.assign(input.get("type"), "type");
+        input.get("id").assign(appTemplateSplit, "id");
+        input.get("name").assign(appTemplateSplit, "name");
+        input.get("label").assign(appTemplateSplit, "label");
+        input.get("type").assign(appTemplateSplit, "type");
         
-        Splittable groups = StringQuoter.createSplittable();
+        Splittable groups = StringQuoter.createIndexed();
         // Loop over the json list of "Template Groups"
         Splittable inputGroups = input.get("groups");
         for(int i = 0; i < inputGroups.size(); i++){
-            groups.assign(getAppTemplateGroup(inputGroups.get(i)), i);
+//            groups.assign(getAppTemplateGroup(inputGroups.get(i)), i);
+            getAppTemplateGroup(inputGroups.get(i)).assign(groups, i);
         }
         
-        appTemplateSplit.assign(groups, "groups");
+//        appTemplateSplit.assign(groups, "groups");
+        groups.assign(appTemplateSplit, "groups");
         
         return appTemplateSplit;
     }
@@ -50,29 +52,33 @@ public class AppWizardPresenterJsonAdapter {
     private static Splittable getAppTemplateGroup(Splittable unFormattedTemplateGroup) {
 
         Splittable subGroup = StringQuoter.createSplittable();
-        subGroup.assign(unFormattedTemplateGroup.get("id"), "id");
-        subGroup.assign(unFormattedTemplateGroup.get("label"), "label");
-        subGroup.assign(unFormattedTemplateGroup.get("name"), "name");
-        subGroup.assign(unFormattedTemplateGroup.get("type"), "type");
+        unFormattedTemplateGroup.get("id").assign(subGroup, "id");
+        unFormattedTemplateGroup.get("label").assign(subGroup, "label");
+        unFormattedTemplateGroup.get("name").assign(subGroup, "name");
+        unFormattedTemplateGroup.get("type").assign(subGroup, "type");
         
-        Splittable properties = StringQuoter.createSplittable();
+        Splittable properties = StringQuoter.createIndexed();
         
         Splittable inputPropertyList = unFormattedTemplateGroup.get("properties");
         for(int i = 0; i < inputPropertyList.size(); i++){
             Splittable subProp = getAppTemplateProperty(inputPropertyList.get(i));
-            properties.assign(subProp, i);
+//            properties.assign(subProp, i);
+            subProp.assign(properties, i);
         }
         
-        subGroup.assign(properties, "properties");
+//        subGroup.assign(properties, "properties");
+        properties.assign(subGroup, "properties");
         
         if(!unFormattedTemplateGroup.isUndefined("groups")){
-            Splittable groups = StringQuoter.createSplittable();
+            Splittable groups = StringQuoter.createIndexed();
 
             Splittable inputGroups = unFormattedTemplateGroup.get("groups");
             for(int i = 0; i < inputGroups.size(); i++){
-                groups.assign(getAppTemplateGroup(inputGroups.get(i)), i);
+//                groups.assign(getAppTemplateGroup(inputGroups.get(i)), i);
+                getAppTemplateGroup(inputGroups.get(i)).assign(groups, i);
             }
-            subGroup.assign(groups, "groups");
+//            subGroup.assign(groups, "groups");
+            groups.assign(subGroup, "groups");
         }
         return subGroup;
     }
@@ -86,31 +92,32 @@ public class AppWizardPresenterJsonAdapter {
         
         Splittable tpValidator = splittable.get("validator");
         
-        subTemplateProperty.assign(splittable.get("id"), "id");
-        subTemplateProperty.assign(splittable.get("isVisible"), "isVisible");
-        subTemplateProperty.assign(null, "description");
-        subTemplateProperty.assign(splittable.get("name"), "name");
-        subTemplateProperty.assign(splittable.get("label"), "label");
-        subTemplateProperty.assign(splittable.get("type"), "type");
-        subTemplateProperty.assign(tpValidator.get("required"), "isRequired");
+        splittable.get("id").assign(subTemplateProperty, "id");
+        splittable.get("isVisible").assign(subTemplateProperty, "isVisible");
+        splittable.get("description").assign(subTemplateProperty, "description");
+        splittable.get("name").assign(subTemplateProperty, "name");
+        splittable.get("label").assign(subTemplateProperty, "label");
+        splittable.get("type").assign(subTemplateProperty, "type");
+        tpValidator.get("required").assign(subTemplateProperty, "required");
         
         // If the following are defined (not not defined), then assign them
         if(!splittable.isUndefined("value")){
-            subTemplateProperty.assign(splittable.get("value"), "value");
+            splittable.get("value").assign(subTemplateProperty, "value");
         }
         if(!splittable.isUndefined("omit_if_blank")){
-            subTemplateProperty.assign(splittable.get("omit_if_blank"), "omit_if_blank");
+            splittable.get("omit_if_blank").assign(subTemplateProperty, "omit_if_blank");
         }
         if(!splittable.isUndefined("value")){
-            subTemplateProperty.assign(splittable.get("value"), "defaultValue");
+            splittable.get("value").assign(subTemplateProperty, "value");
         }
         if(!splittable.isUndefined("order")){
-            subTemplateProperty.assign(splittable.get("order"), "order");
+            splittable.get("order").assign(subTemplateProperty, "order");
         }
         
         if(!tpValidator.isUndefined("rules")){
             Splittable inputRules = splittable.get("rules");
-            subTemplateProperty.assign(getAppTemplateValidator(inputRules), "validators");
+//            subTemplateProperty.assign(getAppTemplateValidator(inputRules), "validators");
+            getAppTemplateValidator(inputRules).assign(subTemplateProperty, "validators");
         }
         return subTemplateProperty;
     }
@@ -133,7 +140,8 @@ public class AppWizardPresenterJsonAdapter {
             
             validatorBean.as().setType(type);
             validatorBean.as().setParams(params);
-            subTemplateValidator.assign(AutoBeanCodex.encode(validatorBean), ruleKeys.indexOf(key));
+//            subTemplateValidator.assign(AutoBeanCodex.encode(validatorBean), ruleKeys.indexOf(key));
+            AutoBeanCodex.encode(validatorBean).assign(subTemplateValidator, ruleKeys.indexOf(key));
         }
         
         return subTemplateValidator;
