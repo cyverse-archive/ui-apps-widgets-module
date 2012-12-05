@@ -37,7 +37,7 @@ public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueE
              */
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
-                currentValue.setValue(event.getValue().toString());
+                currentValue.setFormValue(event.getValue().toString());
             }
         });
     }
@@ -45,7 +45,7 @@ public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueE
     @Override
     public void setValue(TemplateProperty value) {
         currentValue = value;
-        checkBox.setValue(Boolean.parseBoolean(value.getValue()));
+        checkBox.setValue(Boolean.parseBoolean(value.getFormValue()));
     }
 
     @Override

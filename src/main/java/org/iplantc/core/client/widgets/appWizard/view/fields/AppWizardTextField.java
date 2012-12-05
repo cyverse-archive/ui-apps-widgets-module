@@ -9,6 +9,12 @@ import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
+/**
+ * 
+ * XXX JDS This class will have to support an optional field which preceeds the box (for "x = " labels).
+ * @author jstroot
+ *
+ */
 public class AppWizardTextField implements TemplatePropertyEditorBase {
     
     @Path("value")

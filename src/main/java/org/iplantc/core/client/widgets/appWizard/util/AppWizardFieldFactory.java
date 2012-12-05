@@ -2,16 +2,13 @@ package org.iplantc.core.client.widgets.appWizard.util;
 
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
-import com.sencha.gxt.widget.core.client.form.Field;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.form.TextArea;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
 public class AppWizardFieldFactory {
@@ -27,124 +24,104 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static FieldLabel createPropertyField(TemplateProperty property) {
-        FieldLabel ret = new FieldLabel();
-        SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        Field<?> field;
+    public static TemplatePropertyEditorBase createPropertyField(TemplateProperty property) {
+        TemplatePropertyEditorBase field;
         switch (property.getType()) {
             case FILE_INPUT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
                 break;
+
             case FOLDER_INPUT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+            
             case MULTI_FILE_SELECTOR:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+            
             case INFO:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+
             case TEXT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
-                field = new TextField();
-                
+//                field = new TextField();
+                field = null;
+
                 break;
+
             case QUOTED_TEXT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
-                field = new TextField();
-                
+//                field = new TextField();
+                field = null;
+
                 break;
+
             case ENV_VARIABLE:
-                labelText.append(templates.fieldLabel("", null, "", ""));
-                field = new TextField();
-                
+//                field = new TextField();
+                field = null;
+
                 break;
+
             case MULTI_LINE_TEXT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
-                field = new TextArea();
-                
+//                field = new TextArea();
+                field = null;
+
                 break;
+
             case NUMBER:
-                labelText.append(templates.fieldLabel("", null, "", ""));
-                field = new TextField();
+//                field = new TextField();
+                field = null;
+
                 // Must ensure user can only enter number
-                
                 break;
+
             case FLAG:
-                labelText.append(templates.fieldLabel("", null, "", ""));
-                field = new CheckBox();
-                
+                field = new AppWizardCheckbox();
                 break;
+
             case SKIP_FLAG:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+          
             case X_BASE_PAIRS:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+          
             case X_BASE_PAIRS_TEXT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+           
             case BARCODE_SELECTOR:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+            
             case CLIPPER_SELECTOR:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+           
             case SELECTION:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+           
             case VALUE_SELECTION:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+           
             case TREE_SELECTION:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+           
             case PERCENTAGE:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+           
             case DESCRIPTIVE_TEXT:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
-                
                 break;
+            
             default:
-                labelText.append(templates.fieldLabel("", null, "", ""));
                 field = null;
                 break;
         }
-        ret.setWidget(field);
-        if(property.isRequired()){
-            // If the field is required, it needs to be marked as such.
-            labelText.append(templates.fieldLabelRequired(""));
-        }
-        
-        // Set the FieldLabel text.
-        ret.setHTML(labelText.toSafeHtml());
 
         /* 
          * Once we've determined the correct field, we need to interrogate the
@@ -161,7 +138,7 @@ public class AppWizardFieldFactory {
 //            field.addValidator(validator);
             
         }
-        return ret;
+        return field;
     }
     
     /**
@@ -172,5 +149,99 @@ public class AppWizardFieldFactory {
     private static Validator<String> createValidator(TemplateValidator v) {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public static SafeHtml createFieldLabelText(TemplateProperty property){
+        SafeHtmlBuilder labelText = new SafeHtmlBuilder();
+        switch (property.getType()) {
+            case FILE_INPUT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case FOLDER_INPUT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case MULTI_FILE_SELECTOR:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case INFO:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case TEXT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case QUOTED_TEXT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case ENV_VARIABLE:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case MULTI_LINE_TEXT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+
+            case NUMBER:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case FLAG:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case SKIP_FLAG:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case X_BASE_PAIRS:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case X_BASE_PAIRS_TEXT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case BARCODE_SELECTOR:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case CLIPPER_SELECTOR:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case SELECTION:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case VALUE_SELECTION:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case TREE_SELECTION:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case PERCENTAGE:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            case DESCRIPTIVE_TEXT:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+                
+            default:
+                labelText.append(templates.fieldLabel("", null, "", ""));
+                break;
+        }
+        if (property.isRequired()) {
+            // If the field is required, it needs to be marked as such.
+            labelText.append(templates.fieldLabelRequired(""));
+        }
+        return labelText.toSafeHtml();
     }
 }

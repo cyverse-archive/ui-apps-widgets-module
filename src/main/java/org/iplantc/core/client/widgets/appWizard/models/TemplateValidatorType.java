@@ -1,5 +1,7 @@
 package org.iplantc.core.client.widgets.appWizard.models;
 
+import java.util.Arrays;
+
 public enum TemplateValidatorType {
     INT_RANGE("IntRange"),
     INT_ABOVE("IntAbove"),
@@ -30,5 +32,14 @@ public enum TemplateValidatorType {
     @Override
     public String toString() {
         return valueType;
+    }
+    
+    public static TemplateValidatorType getTypeByValue(String value){
+        for(TemplateValidatorType type : Arrays.asList(values())){
+            if(type.valueType.equals(value)){
+                return type;
+            }
+        }
+        return null;
     }
 }

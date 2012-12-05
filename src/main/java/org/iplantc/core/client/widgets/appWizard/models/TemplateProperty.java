@@ -2,6 +2,7 @@ package org.iplantc.core.client.widgets.appWizard.models;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.appWizard.presenter.AppWizardPresenterJsonAdapter;
 import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
@@ -9,6 +10,11 @@ import org.iplantc.core.uicommons.client.models.HasLabel;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
+/**
+ * 
+ * @author jstroot
+ * @see AppWizardPresenterJsonAdapter
+ */
 public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVisibility {
     
     @PropertyName("name")
@@ -31,14 +37,22 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     @PropertyName("omit_if_blank")
     void setOmitIfBlank(boolean omitIfBlank);
     
+    @PropertyName("value")
     String getDefaultValue();
     
+    @PropertyName("value")
     void setDefaultValue(String defaultValue);
     
     /**
-     * XXX JDS This will need to be filled from the "Validator" key JSON object.
+     * A property used for holding the values entered via the form fields. 
+     * This property is meant for use at runtime, and is not intended to 
+     * be serialized or deserialized.
      * @return
      */
+    String getFormValue();
+    
+    void setFormValue(String formValue);
+    
     boolean isRequired();
     
     void setRequired(boolean required);
@@ -46,5 +60,13 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     List<TemplateValidator> getValidators();
     
     void setValidators(List<TemplateValidator> validators);
+    
+    @Override
+    @PropertyName("isVisible")
+    boolean isVisible();
+    
+    @Override
+    @PropertyName("isVisible")
+    void setVisible(boolean visible);
     
 }
