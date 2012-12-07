@@ -90,7 +90,6 @@ public class AppWizardPresenterJsonAdapter {
     private static Splittable getAppTemplateProperty(Splittable splittable) {
         Splittable subTemplateProperty = StringQuoter.createSplittable();
         
-        Splittable tpValidator = splittable.get("validator");
         
         splittable.get("id").assign(subTemplateProperty, "id");
         splittable.get("isVisible").assign(subTemplateProperty, "isVisible");
@@ -98,9 +97,18 @@ public class AppWizardPresenterJsonAdapter {
         splittable.get("name").assign(subTemplateProperty, "name");
         splittable.get("label").assign(subTemplateProperty, "label");
         splittable.get("type").assign(subTemplateProperty, "type");
-        tpValidator.get("required").assign(subTemplateProperty, "required");
         
         // If the following are defined (not not defined), then assign them
+        if(!splittable.isUndefined("validator")){
+            Splittable tpValidator = splittable.get("validator");
+            tpValidator.get("required").assign(subTemplateProperty, "required");
+            
+            if(!tpValidator.isUndefined("rules")){
+                Splittable inputRules = splittable.get("rules");
+//            subTemplateProperty.assign(getAppTemplateValidator(inputRules), "validators");
+                getAppTemplateValidator(inputRules).assign(subTemplateProperty, "validators");
+            }
+        }
         if(!splittable.isUndefined("value")){
             splittable.get("value").assign(subTemplateProperty, "value");
         }
@@ -114,11 +122,6 @@ public class AppWizardPresenterJsonAdapter {
             splittable.get("order").assign(subTemplateProperty, "order");
         }
         
-        if(!tpValidator.isUndefined("rules")){
-            Splittable inputRules = splittable.get("rules");
-//            subTemplateProperty.assign(getAppTemplateValidator(inputRules), "validators");
-            getAppTemplateValidator(inputRules).assign(subTemplateProperty, "validators");
-        }
         return subTemplateProperty;
     }
 

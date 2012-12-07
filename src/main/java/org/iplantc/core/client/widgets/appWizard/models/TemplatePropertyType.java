@@ -2,7 +2,7 @@ package org.iplantc.core.client.widgets.appWizard.models;
 
 
 public enum TemplatePropertyType {
-    FILE_INPUT("FileInput"),
+    FILEINPUT("FileInput"),
     FOLDER_INPUT("FolderInput"),
     INFO("Info"),
     TEXT("Text"),

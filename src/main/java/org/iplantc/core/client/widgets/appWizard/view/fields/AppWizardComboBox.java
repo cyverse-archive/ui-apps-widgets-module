@@ -7,17 +7,11 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
 public class AppWizardComboBox implements TemplatePropertyEditorBase {
     
     ComboBox<String> field = new ComboBox<String>(null);
-
-    @Override
-    public Widget asWidget() {
-        return field;
-    }
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
@@ -29,10 +23,10 @@ public class AppWizardComboBox implements TemplatePropertyEditorBase {
         return field.addValidHandler(handler);
     }
 
-    @Override
-    public IsField<?> getField() {
-        return field;
-    }
+//    @Override
+//    public IsField<?> getField() {
+//        return field;
+//    }
 
     @Override
     public void addValidator(Validator<String> validator) {
@@ -47,6 +41,12 @@ public class AppWizardComboBox implements TemplatePropertyEditorBase {
     @Override
     public List<Validator<String>> getValidators() {
         return field.getValidators();
+    }
+
+    @Override
+    public Widget asWidget() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

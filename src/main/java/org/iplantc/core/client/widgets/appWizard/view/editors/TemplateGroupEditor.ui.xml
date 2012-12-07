@@ -5,10 +5,12 @@
              xmlns:wizardEditors="urn:import:org.iplantc.core.client.widgets.appWizard.view.editors"
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
              
-   <form:FieldSet ui:field="groupField">
+   <form:FieldSet ui:field="groupField"
+                  collapsible="true"
+                  >
       <container:VerticalLayoutContainer>
-         <!-- <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor"/> -->
-         <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+         <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor"/>
+         <!-- <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/> -->
       </container:VerticalLayoutContainer>
    </form:FieldSet>             
 </ui:UiBinder> 

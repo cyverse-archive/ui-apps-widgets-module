@@ -23,13 +23,12 @@ public class TemplateGroupEditor extends Composite implements ValueAwareEditor<T
     @UiField
     FieldSet groupField;
     
-//    @UiField
-//    @Path("properties")
-//    TemplatePropertyListEditor propertiesEditor;
-
     @UiField
-    @Path("groups")
-    TemplateGroupListEditor groupsEditor;
+    TemplatePropertyListEditor propertiesEditor;
+
+    // Have to remove the sublist of group editor for the time being until I figure out how to get past GWT complaining about cycles in the editor hierarchy.
+//    @UiField
+//    TemplateGroupListEditor groupsEditor;
     
     public TemplateGroupEditor() {
         initWidget(BINDER.createAndBindUi(this));
@@ -51,8 +50,6 @@ public class TemplateGroupEditor extends Composite implements ValueAwareEditor<T
     public void setValue(TemplateGroup value) {
         // When the value is set, update the FieldSet header text
         groupField.setHeadingText(value.getLabel());
-        groupsEditor.asEditor().setValue(value.getGroups());
-//        propertiesEditor.asEditor().setValue(value.getProperties());
     }
 
 }

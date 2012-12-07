@@ -5,84 +5,76 @@ import org.iplantc.core.client.widgets.appWizard.util.AppWizardFieldFactory;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.editor.client.ValueAwareEditor;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-/**
- * Interface definition for <code>TemplateProperty</code> editors. 
- * Implementing classes should contain at least one {@link LeafValueEditor}, most likely a {@link Field} derived class. 
- * 
- * TODO JDS Rename this class to TemplatePropertyEditorAdaptor?
- * @author jstroot
- *
- */
-public class TemplatePropertyEditorAdapter implements CompositeEditor<TemplateProperty, TemplateProperty, TemplatePropertyEditorBase>, ValueAwareEditor<TemplateProperty>, IsWidget {
-    
-    private final FieldLabel propertyLabel = new FieldLabel();
-    private TemplatePropertyEditorBase subEditor;
+public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, String, TemplatePropertyEditorBase>, ValueAwareEditor<TemplateProperty>{
 
-    private TemplateProperty currentValue;
+    interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<Widget, TemplatePropertyEditorAdapter> {}
+
+    private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
+    private CompositeEditor.EditorChain<String, TemplatePropertyEditorBase> chain;
+
+    @Ignore
+    @UiField
+    FieldLabel propertyLabel;
     
-    private CompositeEditor.EditorChain<TemplateProperty, TemplatePropertyEditorBase> chain;
+    private TemplatePropertyEditorBase subEditor = null;
     
+
+    public TemplatePropertyEditorAdapter() {
+        initWidget(BINDER.createAndBindUi(this));
+    }
     
+
     @Override
     public void setValue(TemplateProperty value) {
+        // Use value to get label and set widget on label.
         
-        currentValue = value;
-        
-        // Create the TemplateProperty.type specific sub editor
+        // attach it to the chain. Attach the formvalue  
+        String formValue = value.getFormValue();
         subEditor = AppWizardFieldFactory.createPropertyField(value);
-
+        
         propertyLabel.setHTML(AppWizardFieldFactory.createFieldLabelText(value));
-        propertyLabel.setWidget(subEditor.getField());
+        propertyLabel.setWidget(subEditor);
         
-        // Attach our subEditor to this editor chain.
-        if(value != null){
-            chain.attach(value, subEditor);
-        }
-        
-        
+        chain.attach(formValue, subEditor);
     }
+
+    @Override
+    public void setDelegate(EditorDelegate<TemplateProperty> delegate) {}
+
+
+    @Override
+    public void flush() {}
+
+
+    @Override
+    public void onPropertyChange(String... paths) {}
+
 
     @Override
     public TemplatePropertyEditorBase createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
+
     @Override
     public String getPathElement(TemplatePropertyEditorBase subEditor) {
         return "";
     }
 
+
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<TemplateProperty, TemplatePropertyEditorBase> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<String, TemplatePropertyEditorBase> chain) {
         this.chain = chain;
-    }
-
-    @Override
-    public void flush() {
-        currentValue = chain.getValue(subEditor);
-        
-    }
-
-    @Override
-    public Widget asWidget() {
-        return propertyLabel;
-    }
-
-    @Override
-    public void onPropertyChange(String... paths) {
-    }
-
-    @Override
-    public void setDelegate(EditorDelegate<TemplateProperty> delegate) {
     }
 
 }

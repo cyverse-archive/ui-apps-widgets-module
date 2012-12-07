@@ -3,22 +3,19 @@ package org.iplantc.core.client.widgets.appWizard.view.editors;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateGroup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor.Ignore;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Composite;
 import com.sencha.gxt.widget.core.client.container.InsertResizeContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 
-public class TemplateGroupListEditor implements IsWidget, IsEditor<ListEditor<TemplateGroup, TemplateGroupEditor>>{
+public class TemplateGroupListEditor extends Composite implements IsEditor<ListEditor<TemplateGroup, TemplateGroupEditor>>{
 
-    @UiTemplate("TemplateGroupListEditor.ui.xml")
-    interface GroupListEditorUiBinder extends UiBinder<VerticalLayoutContainer, TemplateGroupListEditor> {
-    }
+    interface GroupListEditorUiBinder extends UiBinder<VerticalLayoutContainer, TemplateGroupListEditor> {}
 
     private static GroupListEditorUiBinder BINDER = GWT.create(GroupListEditorUiBinder.class);
 
@@ -51,12 +48,13 @@ public class TemplateGroupListEditor implements IsWidget, IsEditor<ListEditor<Te
     
     private final ListEditor<TemplateGroup, TemplateGroupEditor> editor = ListEditor.of(new TemplateGroupEditorSource(this));
     
+    @Ignore
     @UiField
     VerticalLayoutContainer groupsContainer;
 
 
     public TemplateGroupListEditor() {
-        BINDER.createAndBindUi(this);
+        initWidget(BINDER.createAndBindUi(this));
     }
     
     
@@ -69,12 +67,4 @@ public class TemplateGroupListEditor implements IsWidget, IsEditor<ListEditor<Te
     public ListEditor<TemplateGroup, TemplateGroupEditor> asEditor() {
         return editor;
     }
-
-
-
-    @Override
-    public Widget asWidget() {
-        return groupsContainer;
-    }
-
 }

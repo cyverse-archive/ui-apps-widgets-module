@@ -2,17 +2,14 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 import java.util.List;
 
-import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
-
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Composite;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
-import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
@@ -24,46 +21,38 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  *
  */
-public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueEditor<TemplateProperty>{
+public class AppWizardCheckbox extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<String>{
     
     private final CheckBox field = new CheckBox();
     
-    TemplateProperty currentValue;
-    
     public AppWizardCheckbox(){
+        initWidget(field);
         field.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            
             /**
              * Wire the checkbox selections to this editor's TemplateProperty.setValue().
              * @param event
              */
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
-                currentValue.setFormValue(event.getValue().toString());
+                setValue(event.getValue().toString());
             }
         });
     }
 
     @Override
-    public void setValue(TemplateProperty value) {
-        currentValue = value;
-        field.setValue(Boolean.parseBoolean(value.getFormValue()));
+    public void setValue(String value) {
+        field.setValue(Boolean.parseBoolean(value));
     }
 
     @Override
-    public TemplateProperty getValue() {
-        return currentValue;
+    public String getValue() {
+        return field.getValue().toString();
     }
 
-    @Override
-    public Widget asWidget() {
-        return field;
-    }
-
-    @Override
-    public IsField<?> getField() {
-        return field;
-    }
+//    @Override
+//    public IsField<?> getField() {
+//        return field;
+//    }
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {

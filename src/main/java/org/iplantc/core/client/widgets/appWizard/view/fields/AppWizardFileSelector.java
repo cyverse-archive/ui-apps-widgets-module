@@ -6,7 +6,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
-import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
@@ -15,12 +14,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  *
  */
 public class AppWizardFileSelector implements TemplatePropertyEditorBase{
-
-    @Override
-    public Widget asWidget() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public void addValidator(Validator<String> validator) {
@@ -52,10 +45,17 @@ public class AppWizardFileSelector implements TemplatePropertyEditorBase{
         return null;
     }
 
+//    @Override
+//    public IsField<?> getField() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+
     @Override
-    public IsField<?> getField() {
+    public Widget asWidget() {
         // TODO Auto-generated method stub
         return null;
     }
+
 
 }

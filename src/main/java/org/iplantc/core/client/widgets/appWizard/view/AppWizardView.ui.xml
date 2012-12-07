@@ -6,14 +6,11 @@
              xmlns:c="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
              
-                
-   <container:VerticalLayoutContainer>
+              
+   <container:SimpleContainer>
       <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor">
       </wizardEditors:TemplateGroupListEditor>
-      <form:FieldLabel>
-         <form:widget>
-            <form:TextField ui:field="name" />
-         </form:widget>
-      </form:FieldLabel>      
-   </container:VerticalLayoutContainer>                  
+   </container:SimpleContainer>  
+   <!-- <container:VerticalLayoutContainer>
+   </container:VerticalLayoutContainer> -->                  
 </ui:UiBinder> 

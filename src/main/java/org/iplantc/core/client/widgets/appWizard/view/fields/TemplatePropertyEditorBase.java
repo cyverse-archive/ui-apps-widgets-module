@@ -8,7 +8,6 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.HasInvalidHandlers;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.HasValidHandlers;
-import com.sencha.gxt.widget.core.client.form.IsField;
 
 /**
  * Interface definition for all TemplateProperty Editors.
@@ -20,8 +19,8 @@ import com.sencha.gxt.widget.core.client.form.IsField;
  * @author jstroot
  *
  */
-public interface TemplatePropertyEditorBase extends Editor<TemplateProperty>, IsWidget, HasValidators<String>, HasInvalidHandlers, HasValidHandlers{
+public interface TemplatePropertyEditorBase extends Editor<String>, HasValidators<String>, HasInvalidHandlers, HasValidHandlers, IsWidget{
     
-    IsField<?> getField();
+//    IsField<?> getField();
     
 }
