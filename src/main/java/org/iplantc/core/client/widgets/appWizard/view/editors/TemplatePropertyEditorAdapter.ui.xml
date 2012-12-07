@@ -3,5 +3,6 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
              
-   <form:FieldLabel ui:field="propertyLabel"/>             
+   <form:FieldLabel ui:field="propertyLabel"
+                    labelAlign="TOP"/>             
 </ui:UiBinder> 

@@ -27,8 +27,8 @@ public class TemplateGroupEditor extends Composite implements ValueAwareEditor<T
     TemplatePropertyListEditor propertiesEditor;
 
     // Have to remove the sublist of group editor for the time being until I figure out how to get past GWT complaining about cycles in the editor hierarchy.
-//    @UiField
-//    TemplateGroupListEditor groupsEditor;
+    // @UiField
+    // TemplateGroupListEditor groupsEditor;
     
     public TemplateGroupEditor() {
         initWidget(BINDER.createAndBindUi(this));

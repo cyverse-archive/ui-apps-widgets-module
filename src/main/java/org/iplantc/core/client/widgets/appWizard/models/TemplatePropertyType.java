@@ -2,25 +2,25 @@ package org.iplantc.core.client.widgets.appWizard.models;
 
 
 public enum TemplatePropertyType {
-    FILEINPUT("FileInput"),
-    FOLDER_INPUT("FolderInput"),
-    INFO("Info"),
-    TEXT("Text"),
-    QUOTED_TEXT("QuotedText"),
-    ENV_VARIABLE("EnvironmentVariable"),
-    MULTI_LINE_TEXT("MultiLineText"),
-    NUMBER("Number"),
-    FLAG("Flag"),
-    SKIP_FLAG("SkipFlag"),
-    X_BASE_PAIRS("XBasePairs"),
-    X_BASE_PAIRS_TEXT("XBasePairsText"),
-    MULTI_FILE_SELECTOR("MultiFileSelector"),
-    BARCODE_SELECTOR("BarcodeSelector"),
-    CLIPPER_SELECTOR("ClipperSelector"),
-    SELECTION("Selection"), // For selecting from a list of string values.
-    VALUE_SELECTION("ValueSelection"), // For selecting from a list of numbers
-    TREE_SELECTION("TreeSelection"),
-    PERCENTAGE("Percentage"),
+    FileInput("FileInput"),
+    FolderInput("FolderInput"),
+    Info("Info"),
+    Text("Text"),
+    QuotedText("QuotedText"),
+    EnvironmentVariable("EnvironmentVariable"),
+    MultiLineText("MultiLineText"),
+    Number("Number"),
+    Flag("Flag"),
+    SkipFlag("SkipFlag"),
+    XBasePairs("XBasePairs"),
+    XBasePairsText("XBasePairsText"),
+    MultiFileSelector("MultiFileSelector"),
+    BarcodeSelector("BarcodeSelector"),
+    ClipperSelector("ClipperSelector"),
+    Selection("Selection"), // For selecting from a list of string values.
+    ValueSelection("ValueSelection"), // For selecting from a list of numbers
+    TreeSelection("TreeSelection"),
+    Percentage("Percentage"),
     DESCRIPTIVE_TEXT("Descriptive Text");
 
     /**
@@ -32,8 +32,12 @@ public enum TemplatePropertyType {
         this.valueType = valueType;
     }
 
-    @Override
-    public String toString() {
+    public String getValue() {
         return valueType;
     }
+
+    // @Override
+    // public String toString() {
+    // return this.getValue();
+    // }
 }

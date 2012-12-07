@@ -23,12 +23,13 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     @PropertyName("name")
     void setCmdLineOption(String cmdLineOption);
     
-//    TemplatePropertyType getType();
-//    
-//    void setType(TemplatePropertyType type);
-    String getType();
-    
-    void setType(String type);
+    TemplatePropertyType getType();
+
+    void setType(TemplatePropertyType type);
+
+    // String getType();
+    //
+    // void setType(String type);
     
     int getOrder();
     
