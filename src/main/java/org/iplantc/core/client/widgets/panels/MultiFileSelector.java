@@ -103,7 +103,7 @@ public class MultiFileSelector extends WizardWidgetPanel {
         ContentPanel ret = new ContentPanel();
 
         ret.setHeaderVisible(false);
-        ret.setSize(340, 250);
+        ret.setSize(340, 160);
         ret.setLayout(new FitLayout());
         ret.add(grid);
         ret.setTopComponent(buildToolbar());
@@ -303,7 +303,6 @@ public class MultiFileSelector extends WizardWidgetPanel {
         });
 
         ret.getView().setShowDirtyCells(false);
-        ret.setHeight(260);
 
         return ret;
     }
