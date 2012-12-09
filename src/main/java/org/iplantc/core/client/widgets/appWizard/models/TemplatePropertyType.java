@@ -4,24 +4,20 @@ package org.iplantc.core.client.widgets.appWizard.models;
 public enum TemplatePropertyType {
     FileInput("FileInput"),
     FolderInput("FolderInput"),
-    Info("Info"),
-    Text("Text"),
-    QuotedText("QuotedText"),
+    MultiFileSelector("MultiFileSelector"),
     EnvironmentVariable("EnvironmentVariable"),
+    Flag("Flag"),
+    Info("Info"),
     MultiLineText("MultiLineText"),
     Number("Number"),
-    Flag("Flag"),
-    SkipFlag("SkipFlag"),
-    XBasePairs("XBasePairs"),
-    XBasePairsText("XBasePairsText"),
-    MultiFileSelector("MultiFileSelector"),
+    QuotedText("QuotedText"),
+    Text("Text"),
     BarcodeSelector("BarcodeSelector"),
     ClipperSelector("ClipperSelector"),
     Selection("Selection"), // For selecting from a list of string values.
     ValueSelection("ValueSelection"), // For selecting from a list of numbers
     TreeSelection("TreeSelection"),
-    Percentage("Percentage"),
-    DESCRIPTIVE_TEXT("Descriptive Text");
+    Percentage("Percentage");
 
     /**
      * The value which is received in JSON.

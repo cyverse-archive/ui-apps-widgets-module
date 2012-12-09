@@ -3,6 +3,10 @@ package org.iplantc.core.client.widgets.appWizard.util;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardFileSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
@@ -32,94 +36,79 @@ public class AppWizardFieldFactory {
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
     public static TemplatePropertyEditorBase createPropertyField(TemplateProperty property) {
-//        TemplatePropertyEditorBase field;
-//        switch (property.getType()) {
-//            case FILE_INPUT:
-//                field = new AppWizardFileSelector();
-//                break;
-//
-//            case FOLDER_INPUT:
-//                field = new AppWizardFileSelector();
-//                break;
-//            
-//            case MULTI_FILE_SELECTOR:
-//                field = new AppWizardFileSelector();
-//                break;
-//            
-//            case INFO:
-//                field = null;
-//                break;
-//
-//            case TEXT:
-//                field = new AppWizardTextField();
-//                break;
-//
-//            case QUOTED_TEXT:
-//                field = new AppWizardTextField();
-//                break;
-//
-//            case ENV_VARIABLE:
-//                field = new AppWizardTextField();
-//                break;
-//
-//            case MULTI_LINE_TEXT:
-//                field = new AppWizardTextArea();
-//                break;
-//
-//            case NUMBER:
-//                field = new AppWizardTextField();
-//                // Must ensure user can only enter number
-//                break;
-//
-//            case FLAG:
-//                field = new AppWizardCheckbox();
-//                break;
-//
-//            case SKIP_FLAG:
-//                field = new AppWizardCheckbox();
-//                break;
-//          
-//            case X_BASE_PAIRS:
-//                field = new AppWizardTextField("Some prepending label text");
-//                break;
-//          
-//            case X_BASE_PAIRS_TEXT:
-//                field = new AppWizardTextField("Some prepending label text");
-//                break;
-//           
-//            case BARCODE_SELECTOR:
-//                field = new AppWizardFileSelector();
-//                break;
-//            
-//            case CLIPPER_SELECTOR:
-//                field = new AppWizardFileSelector();
-//                break;
-//           
-//            case SELECTION:
-//                field = new AppWizardComboBox();
-//                break;
-//           
-//            case VALUE_SELECTION:
-//                field = new AppWizardComboBox();
-//                break;
-//           
-//            case TREE_SELECTION:
-//                field = null;
-//                break;
-//           
-//            case PERCENTAGE:
-//                field = new AppWizardTextField("Some prepending label text");
-//                break;
-//           
-//            // case DESCRIPTIVE_TEXT:
-//            // field = null;
-//            // break;
-//            
-//            default:
-//                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + TemplatePropertyType.class.getName() + " type.");
-//                field = null;
-//                break;
-//        }
+        TemplatePropertyEditorBase field;
+        switch (property.getType()) {
+            case FileInput:
+                field = new AppWizardFileSelector();
+                break;
+
+            case FolderInput:
+                field = new AppWizardFileSelector();
+                break;
+
+            case MultiFileSelector:
+                field = new AppWizardFileSelector();
+                break;
+
+
+            case Text:
+                field = new AppWizardTextField();
+                break;
+
+            case QuotedText:
+                field = new AppWizardTextField();
+                break;
+
+            case EnvironmentVariable:
+                field = new AppWizardTextField();
+                break;
+
+            case MultiLineText:
+                field = new AppWizardTextArea();
+                break;
+
+            case Number:
+                field = new AppWizardTextField();
+                // Must ensure user can only enter number
+                break;
+
+            case Flag:
+                field = new AppWizardCheckbox();
+                break;
+
+            case BarcodeSelector:
+                field = new AppWizardFileSelector();
+                break;
+
+            case ClipperSelector:
+                field = new AppWizardFileSelector();
+                break;
+
+            case Selection:
+                field = new AppWizardComboBox();
+                break;
+
+            case ValueSelection:
+                field = new AppWizardComboBox();
+                break;
+
+            case TreeSelection:
+                field = null;
+                break;
+
+            case Percentage:
+                field = new AppWizardTextField("Some prepending label text");
+                break;
+
+            case Info:
+                field = null;
+                break;
+
+            default:
+                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + TemplatePropertyType.class.getName() + " type.");
+                field = null;
+                break;
+        }
 
         /* 
          * Once we've determined the correct field, we need to interrogate the
@@ -196,10 +185,6 @@ public class AppWizardFieldFactory {
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
-            case SkipFlag:
-                labelText.append(templates.fieldLabel("", label, "", ""));
-                break;
-
             case BarcodeSelector:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
@@ -221,10 +206,6 @@ public class AppWizardFieldFactory {
                 break;
 
             case Percentage:
-                labelText.append(templates.fieldLabel("", label, "", ""));
-                break;
-
-            case DESCRIPTIVE_TEXT:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
