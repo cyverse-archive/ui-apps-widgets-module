@@ -6,6 +6,7 @@ import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDiskResourceSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardMultiFileSelector;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardNumberField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
@@ -44,7 +45,7 @@ public class AppWizardFieldFactory {
                 break;
 
             case MultiFileSelector:
-                field = null;
+                field = new AppWizardMultiFileSelector();
                 break;
 
 
@@ -68,14 +69,6 @@ public class AppWizardFieldFactory {
 
             case Flag:
                 field = new AppWizardCheckbox();
-                break;
-
-            case BarcodeSelector:
-                field = null;
-                break;
-
-            case ClipperSelector:
-                field = null;
                 break;
 
             case Selection:
@@ -181,14 +174,6 @@ public class AppWizardFieldFactory {
                 break;
 
             case Flag:
-                labelText.append(templates.fieldLabel("", label, "", ""));
-                break;
-
-            case BarcodeSelector:
-                labelText.append(templates.fieldLabel("", label, "", ""));
-                break;
-
-            case ClipperSelector:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 

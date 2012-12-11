@@ -11,8 +11,6 @@ public enum TemplatePropertyType {
     MultiLineText("MultiLineText"),
     Number("Number"),
     Text("Text"),
-    BarcodeSelector("BarcodeSelector"),
-    ClipperSelector("ClipperSelector"),
     Selection("Selection"), // For selecting from a list of string values.
     ValueSelection("ValueSelection"), // For selecting from a list of numbers
     TreeSelection("TreeSelection"),

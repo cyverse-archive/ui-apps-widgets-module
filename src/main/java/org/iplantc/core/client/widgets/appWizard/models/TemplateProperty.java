@@ -3,6 +3,7 @@ package org.iplantc.core.client.widgets.appWizard.models;
 import java.util.List;
 
 import org.iplantc.core.client.widgets.appWizard.presenter.AppWizardPresenterJsonAdapter;
+import org.iplantc.core.client.widgets.appWizard.view.editors.TemplatePropertyEditorAdapter;
 import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
@@ -48,9 +49,15 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     void setDefaultValue(String defaultValue);
     
     /**
-     * A property used for holding the values entered via the form fields. 
-     * This property is meant for use at runtime, and is not intended to 
+     * A property used for holding the values entered via the form fields.
+     * This property is meant for use at runtime, and is not intended to
      * be serialized or deserialized.
+     * 
+     * XXX JDS We may be able to turn this into a splittable.
+     * Then, we could hold lists, booleans, etc. The values would be converted in
+     * {@link TemplatePropertyEditorAdapter#setValue(TemplateProperty)} before being bound to the
+     * appropriate editor.
+     * 
      * @return
      */
     String getFormValue();

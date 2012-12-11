@@ -100,7 +100,7 @@ public class AppWizardPresenterJsonAdapter {
             tpValidator.get("required").assign(subTemplateProperty, "required");
             
             if(!tpValidator.isUndefined("rules")){
-                Splittable inputRules = splittable.get("rules");
+                Splittable inputRules = tpValidator.get("rules");
                 getAppTemplateValidator(inputRules).assign(subTemplateProperty, "validators");
             }
         }
@@ -127,6 +127,12 @@ public class AppWizardPresenterJsonAdapter {
     private static Splittable getAppTemplateValidator(Splittable rulesSplittable) {
         Splittable subTemplateValidator = StringQuoter.createSplittable();
         
+        if (!rulesSplittable.isIndexed()) {
+            GWT.log("WRONG!!");
+        }
+        for (int i = 0; i < rulesSplittable.size(); i++) {
+            rulesSplittable.get(i).getPropertyKeys();
+        }
         // transforming "rules" key into a list of TemplateValidators
         List<String> ruleKeys = rulesSplittable.getPropertyKeys();
         for(String key : ruleKeys){

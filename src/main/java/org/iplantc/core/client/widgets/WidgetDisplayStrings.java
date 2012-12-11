@@ -1,8 +1,8 @@
 package org.iplantc.core.client.widgets;
 
-import com.google.gwt.i18n.client.Messages;
+import org.iplantc.core.uicommons.client.CommonUIDisplayStrings;
 
-public interface WidgetDisplayStrings extends Messages {
+public interface WidgetDisplayStrings extends CommonUIDisplayStrings {
 
     /**
      * Message shown when there are no files to display.
@@ -16,6 +16,7 @@ public interface WidgetDisplayStrings extends Messages {
      * 
      * @return a string representing the localized text.
      */
+    @Override
     String fileName();
 
     /**
@@ -23,6 +24,7 @@ public interface WidgetDisplayStrings extends Messages {
      * 
      * @return a string representing the localized text.
      */
+    @Override
     String delete();
 
     /**
@@ -30,6 +32,7 @@ public interface WidgetDisplayStrings extends Messages {
      * 
      * @return a string representing the localized text.
      */
+    @Override
     String add();
 
     /**
@@ -139,6 +142,7 @@ public interface WidgetDisplayStrings extends Messages {
      * 
      * @return a string representing the localized text.
      */
+    @Override
     String browse();
 
     String selectFolder();
