@@ -6,6 +6,17 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.user.client.ui.IsWidget;
 
+/**
+ * <h1>Requirements</h1>
+ * <ul>
+ * <li>Need to be able bring view up with designated values (e.g. values from a previous run)</li>
+ * <li></li>
+ * <li></li>
+ * </ul>
+ * 
+ * @author jstroot
+ * 
+ */
 public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter{

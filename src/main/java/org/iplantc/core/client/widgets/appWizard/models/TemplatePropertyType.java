@@ -10,7 +10,6 @@ public enum TemplatePropertyType {
     Info("Info"),
     MultiLineText("MultiLineText"),
     Number("Number"),
-    QuotedText("QuotedText"),
     Text("Text"),
     BarcodeSelector("BarcodeSelector"),
     ClipperSelector("ClipperSelector"),

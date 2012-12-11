@@ -5,10 +5,10 @@ import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardNumberField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
 import com.google.gwt.core.client.GWT;
@@ -49,10 +49,6 @@ public class AppWizardFieldFactory {
 
 
             case Text:
-                field = new AppWizardTextField();
-                break;
-
-            case QuotedText:
                 field = new AppWizardTextField();
                 break;
 

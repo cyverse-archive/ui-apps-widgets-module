@@ -95,7 +95,7 @@ public class AppWizardDiskResourceSelector extends Component implements Template
 
     private void onBrowseSelected() {
         if (fileSelector) {
-            FileSelectDialog fileSD = new FileSelectDialog();
+            FileSelectDialog fileSD = FileSelectDialog.singleSelect();
             fileSD.addHideHandler(new DialogHideHandler(fileSD, input));
             fileSD.show();
         } else {
