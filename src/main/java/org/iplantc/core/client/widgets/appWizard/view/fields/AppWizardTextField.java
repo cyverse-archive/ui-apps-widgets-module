@@ -9,19 +9,14 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  *
  */
-public class AppWizardTextField extends TextField implements TemplatePropertyEditorBase {
+public class AppWizardTextField extends TextField implements TemplatePropertyEditorBase<String> {
     
     public AppWizardTextField(){
         
     }
     
     public AppWizardTextField(String prependedLabelText) {
-        // TODO Auto-generated constructor stub
     }
 
-//    @Override
-//    public IsField<?> getField() {
-//        return this;
-//    }
 
 }

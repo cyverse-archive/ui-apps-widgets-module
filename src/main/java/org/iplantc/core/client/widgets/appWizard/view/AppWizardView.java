@@ -20,4 +20,6 @@ public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
      *         implementing classes will initialize this driver at construction time.
      */
     SimpleBeanEditorDriver<AppTemplate, ? extends AppWizardView> getEditorDriver();
+
+    void setPresenter(AppWizardView.Presenter presenter);
 }

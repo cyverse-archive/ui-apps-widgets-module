@@ -3,14 +3,22 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
              xmlns:wizardEditors="urn:import:org.iplantc.core.client.widgets.appWizard.view.editors"
-             xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
+             xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
+             xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client">
              
+   <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
+      <ui:attributes width="1" height="-1" />
+   </ui:with>       
+        
    <form:FieldSet ui:field="groupField"
-                  collapsible="true"
-                  >
-      <container:VerticalLayoutContainer>
-         <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor"/>
-         <!-- <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/> -->
+                  collapsible="true">
+       <container:VerticalLayoutContainer debugId="fieldSetChildPanel">
+            <container:child layoutData="{verticalLayoutData}">
+               <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor" debugId="propertyLIstPanel"/>
+            </container:child> 
+         <!-- <container:child layoutData="{verticalLayoutData}">
+            <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+         </container:child> -->
       </container:VerticalLayoutContainer>
-   </form:FieldSet>             
+   </form:FieldSet>           
 </ui:UiBinder> 

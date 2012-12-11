@@ -10,27 +10,25 @@ import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.container.InsertResizeContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
 public class TemplatePropertyListEditor extends Composite implements IsEditor<ListEditor<TemplateProperty, TemplatePropertyEditorAdapter>>{
 
-    interface TemplatePropertyListEditorUiBinder extends UiBinder<Widget, TemplatePropertyListEditor> {}
+    interface TemplatePropertyListEditorUiBinder extends UiBinder<VerticalLayoutContainer, TemplatePropertyListEditor> {}
     private static TemplatePropertyListEditorUiBinder BINDER = GWT.create(TemplatePropertyListEditorUiBinder.class);
-    private final ListEditor<TemplateProperty, TemplatePropertyEditorAdapter> editor = ListEditor.of(new PropertyListEditorSource(this));
     
     private class PropertyListEditorSource extends EditorSource<TemplatePropertyEditorAdapter>{
-        private final TemplatePropertyListEditor propertyListEditor;
+        private final VerticalLayoutContainer con;
 
-        public PropertyListEditorSource(TemplatePropertyListEditor propertyListEditor) {
-            this.propertyListEditor = propertyListEditor; 
+        public PropertyListEditorSource(VerticalLayoutContainer con) {
+            this.con = con;
         }
 
         @Override
         public TemplatePropertyEditorAdapter create(int index) {
             TemplatePropertyEditorAdapter subEditor = new TemplatePropertyEditorAdapter();
-            propertyListEditor.getPropertiesContainer().insert(subEditor, index);
+            con.add(subEditor, new VerticalLayoutData(1, -1));
             return subEditor;
         }
         
@@ -41,20 +39,19 @@ public class TemplatePropertyListEditor extends Composite implements IsEditor<Li
         
         @Override
         public void setIndex(TemplatePropertyEditorAdapter editor, int index){
-            propertyListEditor.getPropertiesContainer().insert(editor, index);
+            con.insert(editor, index, new VerticalLayoutData(1, -1));
         }
     }
-    
+
     @Ignore
     @UiField
     VerticalLayoutContainer propertiesContainer;
-    
+
+    private final ListEditor<TemplateProperty, TemplatePropertyEditorAdapter> editor;
+
     public TemplatePropertyListEditor() {
         initWidget(BINDER.createAndBindUi(this));
-    }
-
-    public InsertResizeContainer getPropertiesContainer() {
-        return propertiesContainer;
+        editor = ListEditor.of(new PropertyListEditorSource(propertiesContainer));
     }
 
     @Override

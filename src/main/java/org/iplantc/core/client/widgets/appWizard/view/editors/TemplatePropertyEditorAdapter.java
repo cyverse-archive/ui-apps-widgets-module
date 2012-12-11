@@ -12,21 +12,21 @@ import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, String, TemplatePropertyEditorBase>, ValueAwareEditor<TemplateProperty>{
+public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, String, TemplatePropertyEditorBase<String>>, ValueAwareEditor<TemplateProperty> {
 
-    interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<Widget, TemplatePropertyEditorAdapter> {}
+    interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {
+    }
 
     private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
-    private CompositeEditor.EditorChain<String, TemplatePropertyEditorBase> chain;
+    private CompositeEditor.EditorChain<String, TemplatePropertyEditorBase<String>> chain;
 
     @Ignore
     @UiField
     FieldLabel propertyLabel;
     
-    private TemplatePropertyEditorBase subEditor = null;
+    private TemplatePropertyEditorBase<String> subEditor = null;
     
 
     public TemplatePropertyEditorAdapter() {
@@ -39,12 +39,12 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
         // Use value to get label and set widget on label.
         
         // attach it to the chain. Attach the formvalue  
-        String formValue = value.getFormValue();
         subEditor = AppWizardFieldFactory.createPropertyField(value);
         
         propertyLabel.setHTML(AppWizardFieldFactory.createFieldLabelText(value));
         propertyLabel.setWidget(subEditor);
         
+        String formValue = value.getFormValue();
         chain.attach(formValue, subEditor);
     }
 
@@ -61,19 +61,19 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
 
     @Override
-    public TemplatePropertyEditorBase createEditorForTraversal() {
+    public TemplatePropertyEditorBase<String> createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
 
     @Override
-    public String getPathElement(TemplatePropertyEditorBase subEditor) {
+    public String getPathElement(TemplatePropertyEditorBase<String> subEditor) {
         return "";
     }
 
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<String, TemplatePropertyEditorBase> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<String, TemplatePropertyEditorBase<String>> chain) {
         this.chain = chain;
     }
 

@@ -5,24 +5,21 @@ import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardFileSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardNumberField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
+import org.iplantc.core.client.widgets.appWizard.view.fields.FileFolderSelector;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 public class AppWizardFieldFactory {
-
-    interface AppWizardFieldStyles extends CssResource {
-
-    }
 
     interface FieldLabelTextTemplates extends SafeHtmlTemplates {
 
@@ -35,19 +32,19 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static TemplatePropertyEditorBase createPropertyField(TemplateProperty property) {
-        TemplatePropertyEditorBase field;
+    public static TemplatePropertyEditorBase<String> createPropertyField(TemplateProperty property) {
+        TemplatePropertyEditorBase<String> field;
         switch (property.getType()) {
             case FileInput:
-                field = new AppWizardFileSelector();
+                field = FileFolderSelector.asFileSelector();
                 break;
 
             case FolderInput:
-                field = new AppWizardFileSelector();
+                field = FileFolderSelector.asFolderSelector();
                 break;
 
             case MultiFileSelector:
-                field = new AppWizardFileSelector();
+                field = null;
                 break;
 
 
@@ -68,8 +65,9 @@ public class AppWizardFieldFactory {
                 break;
 
             case Number:
-                field = new AppWizardTextField();
-                // Must ensure user can only enter number
+                field = new AppWizardNumberField();
+                property.setFormValue(property.getDefaultValue());
+
                 break;
 
             case Flag:
@@ -77,11 +75,11 @@ public class AppWizardFieldFactory {
                 break;
 
             case BarcodeSelector:
-                field = new AppWizardFileSelector();
+                field = null;
                 break;
 
             case ClipperSelector:
-                field = new AppWizardFileSelector();
+                field = null;
                 break;
 
             case Selection:
@@ -109,6 +107,13 @@ public class AppWizardFieldFactory {
                 field = null;
                 break;
         }
+        
+        if((field != null) 
+                && (property.getDescription() != null)
+                && !property.getDescription().isEmpty()){
+            QuickTip qt = new QuickTip(field.asWidget());
+            qt.setToolTip(property.getDescription());
+        }
 
         /* 
          * Once we've determined the correct field, we need to interrogate the
@@ -124,10 +129,8 @@ public class AppWizardFieldFactory {
 //            Validator<String> validator = createValidator(v);
 ////            field.addValidator(validator);
 //            
-//        }
-       // return field;
-        
-        return new AppWizardTextField();
+        // }
+        return field;
     }
     
     /**

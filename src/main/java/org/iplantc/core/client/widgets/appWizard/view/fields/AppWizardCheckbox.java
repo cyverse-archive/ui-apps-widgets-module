@@ -21,12 +21,13 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  *
  */
-public class AppWizardCheckbox extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<String>{
+public class AppWizardCheckbox extends Composite implements TemplatePropertyEditorBase<String>, LeafValueEditor<String> {
     
     private final CheckBox field = new CheckBox();
     
     public AppWizardCheckbox(){
         initWidget(field);
+        // JDS May not need this.
         field.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             /**
              * Wire the checkbox selections to this editor's TemplateProperty.setValue().
@@ -48,11 +49,6 @@ public class AppWizardCheckbox extends Composite implements TemplatePropertyEdit
     public String getValue() {
         return field.getValue().toString();
     }
-
-//    @Override
-//    public IsField<?> getField() {
-//        return field;
-//    }
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {

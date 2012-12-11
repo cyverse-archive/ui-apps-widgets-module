@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.form.FormPanel;
 
 /**
  * 
@@ -23,24 +24,36 @@ import com.google.gwt.user.client.ui.Widget;
 public class AppWizardViewImpl extends Composite implements AppWizardView {
 
     @UiTemplate("AppWizardView.ui.xml")
-    interface AppWizardViewUIUiBinder extends UiBinder<Widget, AppWizardViewImpl> {
-    }
+    interface AppWizardViewUIUiBinder extends UiBinder<Widget, AppWizardViewImpl> {}
     
     public interface Driver extends SimpleBeanEditorDriver<AppTemplate, AppWizardViewImpl> {}
 
     private static AppWizardViewUIUiBinder BINDER = GWT.create(AppWizardViewUIUiBinder.class);
     private final Driver driver = GWT.create(Driver.class);
 
+    @Ignore
+    @UiField
+    FormPanel formPanel;
+
     @UiField
     TemplateGroupListEditor groupsEditor;
+
+    private AppWizardView.Presenter presenter;
     
     public AppWizardViewImpl() {
         initWidget(BINDER.createAndBindUi(this));
-        driver.initialize(this);
     }
+
 
     @Override
     public SimpleBeanEditorDriver<AppTemplate, ? extends AppWizardView> getEditorDriver() {
+        driver.initialize(this);
         return driver;
     }
+
+    @Override
+    public void setPresenter(AppWizardView.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
 }

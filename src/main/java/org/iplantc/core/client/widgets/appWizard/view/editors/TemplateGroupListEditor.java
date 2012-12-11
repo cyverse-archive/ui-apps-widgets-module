@@ -10,9 +10,13 @@ import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.sencha.gxt.widget.core.client.container.InsertResizeContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
+/**
+ * @author jstroot
+ * 
+ */
 public class TemplateGroupListEditor extends Composite implements IsEditor<ListEditor<TemplateGroup, TemplateGroupEditor>>{
 
     interface GroupListEditorUiBinder extends UiBinder<VerticalLayoutContainer, TemplateGroupListEditor> {}
@@ -21,16 +25,16 @@ public class TemplateGroupListEditor extends Composite implements IsEditor<ListE
 
     private class TemplateGroupEditorSource extends EditorSource<TemplateGroupEditor> {
 
-        private final TemplateGroupListEditor templateGroupListEditor;
+        private final VerticalLayoutContainer con;
 
-        public TemplateGroupEditorSource(TemplateGroupListEditor templateGroupListEditor) {
-            this.templateGroupListEditor = templateGroupListEditor;
+        public TemplateGroupEditorSource(VerticalLayoutContainer con) {
+            this.con = con;
         }
 
         @Override
         public TemplateGroupEditor create(int index) {
             TemplateGroupEditor subEditor = new TemplateGroupEditor();
-            templateGroupListEditor.getGroupsContainer().insert(subEditor, index);
+            con.add(subEditor, new VerticalLayoutData(1, -1));
             return subEditor;
         }
         
@@ -41,26 +45,20 @@ public class TemplateGroupListEditor extends Composite implements IsEditor<ListE
         
         @Override
         public void setIndex(TemplateGroupEditor editor, int index){
-            templateGroupListEditor.getGroupsContainer().insert(editor, index);
+            con.insert(editor, index, new VerticalLayoutData(1, -1));
         }
 
     }
-    
-    private final ListEditor<TemplateGroup, TemplateGroupEditor> editor = ListEditor.of(new TemplateGroupEditorSource(this));
     
     @Ignore
     @UiField
     VerticalLayoutContainer groupsContainer;
 
+    private final ListEditor<TemplateGroup, TemplateGroupEditor> editor;
 
     public TemplateGroupListEditor() {
         initWidget(BINDER.createAndBindUi(this));
-    }
-    
-    
-
-    public InsertResizeContainer getGroupsContainer() {
-        return groupsContainer;
+        editor = ListEditor.of(new TemplateGroupEditorSource(groupsContainer));
     }
 
     @Override

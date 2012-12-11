@@ -3,14 +3,17 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
              xmlns:wizardEditors="urn:import:org.iplantc.core.client.widgets.appWizard.view.editors"
-             xmlns:c="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
              
-              
-   <container:SimpleContainer>
-      <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor">
-      </wizardEditors:TemplateGroupListEditor>
-   </container:SimpleContainer>  
-   <!-- <container:VerticalLayoutContainer>
-   </container:VerticalLayoutContainer> -->                  
+   <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
+      <ui:attributes width="1" height="1" />
+   </ui:with>
+                
+   <container:VerticalLayoutContainer>
+      <container:child layoutData="{verticalLayoutData}">
+         <form:FormPanel ui:field="formPanel">
+            <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+         </form:FormPanel>
+      </container:child>
+   </container:VerticalLayoutContainer>             
 </ui:UiBinder> 

@@ -1,7 +1,9 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
+             xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
              
-   <container:VerticalLayoutContainer ui:field="propertiesContainer"/>
+   <container:VerticalLayoutContainer ui:field="propertiesContainer">
+   </container:VerticalLayoutContainer>   
 </ui:UiBinder>

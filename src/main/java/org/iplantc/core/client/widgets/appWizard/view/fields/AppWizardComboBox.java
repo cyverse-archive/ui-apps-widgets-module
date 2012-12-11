@@ -9,7 +9,7 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
-public class AppWizardComboBox implements TemplatePropertyEditorBase {
+public class AppWizardComboBox implements TemplatePropertyEditorBase<String> {
     
     ComboBox<String> field = new ComboBox<String>(null);
 
@@ -22,11 +22,6 @@ public class AppWizardComboBox implements TemplatePropertyEditorBase {
     public HandlerRegistration addValidHandler(ValidHandler handler) {
         return field.addValidHandler(handler);
     }
-
-//    @Override
-//    public IsField<?> getField() {
-//        return field;
-//    }
 
     @Override
     public void addValidator(Validator<String> validator) {
@@ -45,6 +40,18 @@ public class AppWizardComboBox implements TemplatePropertyEditorBase {
 
     @Override
     public Widget asWidget() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setValue(String value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public String getValue() {
         // TODO Auto-generated method stub
         return null;
     }
