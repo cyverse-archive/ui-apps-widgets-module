@@ -8,7 +8,7 @@ import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardNumberField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
-import org.iplantc.core.client.widgets.appWizard.view.fields.FileFolderSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
 import com.google.gwt.core.client.GWT;
@@ -36,11 +36,11 @@ public class AppWizardFieldFactory {
         TemplatePropertyEditorBase<String> field;
         switch (property.getType()) {
             case FileInput:
-                field = FileFolderSelector.asFileSelector();
+                field = AppWizardDiskResourceSelector.asFileSelector();
                 break;
 
             case FolderInput:
-                field = FileFolderSelector.asFolderSelector();
+                field = AppWizardDiskResourceSelector.asFolderSelector();
                 break;
 
             case MultiFileSelector:

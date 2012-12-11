@@ -13,11 +13,13 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 /**
- * A helper class which adapts the App Template JSON string returned from the server into 
+ * A helper class which adapts the App Template JSON string returned from the server into
  * a <code>Splittable</code> which can be used to generate an <code>AutoBean&lt;AppTemplate&gt;</code>
- *  
+ * 
+ * KLUDGE JDS This class can go away if the server side JSON data model is cleaned up.
+ * 
  * @author jstroot
- *
+ * 
  */
 public class AppWizardPresenterJsonAdapter {
 
@@ -35,11 +37,9 @@ public class AppWizardPresenterJsonAdapter {
         // Loop over the json list of "Template Groups"
         Splittable inputGroups = input.get("groups");
         for(int i = 0; i < inputGroups.size(); i++){
-//            groups.assign(getAppTemplateGroup(inputGroups.get(i)), i);
             getAppTemplateGroup(inputGroups.get(i)).assign(groups, i);
         }
         
-//        appTemplateSplit.assign(groups, "groups");
         groups.assign(appTemplateSplit, "groups");
         
         return appTemplateSplit;
@@ -62,11 +62,9 @@ public class AppWizardPresenterJsonAdapter {
         Splittable inputPropertyList = unFormattedTemplateGroup.get("properties");
         for(int i = 0; i < inputPropertyList.size(); i++){
             Splittable subProp = getAppTemplateProperty(inputPropertyList.get(i));
-//            properties.assign(subProp, i);
             subProp.assign(properties, i);
         }
         
-//        subGroup.assign(properties, "properties");
         properties.assign(subGroup, "properties");
         
         if(!unFormattedTemplateGroup.isUndefined("groups")){
@@ -74,10 +72,8 @@ public class AppWizardPresenterJsonAdapter {
 
             Splittable inputGroups = unFormattedTemplateGroup.get("groups");
             for(int i = 0; i < inputGroups.size(); i++){
-//                groups.assign(getAppTemplateGroup(inputGroups.get(i)), i);
                 getAppTemplateGroup(inputGroups.get(i)).assign(groups, i);
             }
-//            subGroup.assign(groups, "groups");
             groups.assign(subGroup, "groups");
         }
         return subGroup;
@@ -105,7 +101,6 @@ public class AppWizardPresenterJsonAdapter {
             
             if(!tpValidator.isUndefined("rules")){
                 Splittable inputRules = splittable.get("rules");
-//            subTemplateProperty.assign(getAppTemplateValidator(inputRules), "validators");
                 getAppTemplateValidator(inputRules).assign(subTemplateProperty, "validators");
             }
         }
@@ -143,7 +138,6 @@ public class AppWizardPresenterJsonAdapter {
             
             validatorBean.as().setType(type);
             validatorBean.as().setParams(params);
-//            subTemplateValidator.assign(AutoBeanCodex.encode(validatorBean), ruleKeys.indexOf(key));
             AutoBeanCodex.encode(validatorBean).assign(subTemplateValidator, ruleKeys.indexOf(key));
         }
         

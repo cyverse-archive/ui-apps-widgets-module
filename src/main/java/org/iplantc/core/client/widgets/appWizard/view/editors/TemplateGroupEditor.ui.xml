@@ -16,6 +16,7 @@
             <container:child layoutData="{verticalLayoutData}">
                <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor" debugId="propertyLIstPanel"/>
             </container:child> 
+            <!-- This needs to remain commented out until we can figure out a way to get around GWT editor framework editor cycle detection  -->
          <!-- <container:child layoutData="{verticalLayoutData}">
             <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
          </container:child> -->

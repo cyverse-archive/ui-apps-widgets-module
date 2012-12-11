@@ -42,12 +42,12 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     
     public AppWizardViewImpl() {
         initWidget(BINDER.createAndBindUi(this));
+        driver.initialize(this);
     }
 
 
     @Override
     public SimpleBeanEditorDriver<AppTemplate, ? extends AppWizardView> getEditorDriver() {
-        driver.initialize(this);
         return driver;
     }
 

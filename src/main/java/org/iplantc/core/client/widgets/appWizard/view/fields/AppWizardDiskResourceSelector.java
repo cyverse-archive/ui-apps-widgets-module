@@ -34,7 +34,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class FileFolderSelector extends Component implements TemplatePropertyEditorBase<String> {
+public class AppWizardDiskResourceSelector extends Component implements TemplatePropertyEditorBase<String> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -59,7 +59,15 @@ public class FileFolderSelector extends Component implements TemplatePropertyEdi
     private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
     private final boolean fileSelector;
 
-    private FileFolderSelector(boolean fileSelector) {
+    public static AppWizardDiskResourceSelector asFileSelector() {
+        return new AppWizardDiskResourceSelector(true);
+    }
+
+    public static AppWizardDiskResourceSelector asFolderSelector() {
+        return new AppWizardDiskResourceSelector(false);
+    }
+
+    private AppWizardDiskResourceSelector(boolean fileSelector) {
         this.fileSelector = fileSelector;
         res.style().ensureInjected();
         SafeHtmlBuilder builder = new SafeHtmlBuilder();
@@ -84,7 +92,6 @@ public class FileFolderSelector extends Component implements TemplatePropertyEdi
         });
 
     }
-
 
     private void onBrowseSelected() {
         if (fileSelector) {
@@ -153,14 +160,6 @@ public class FileFolderSelector extends Component implements TemplatePropertyEdi
         public void onHide(HideEvent event) {
             tf.setText(takesValue.getValue());
         }
-    }
-
-    public static FileFolderSelector asFileSelector() {
-        return new FileFolderSelector(true);
-    }
-
-    public static FileFolderSelector asFolderSelector() {
-        return new FileFolderSelector(false);
     }
 
 }

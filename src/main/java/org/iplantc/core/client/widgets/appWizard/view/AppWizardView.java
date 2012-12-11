@@ -10,6 +10,11 @@ public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter{
     
+        /**
+         * KLUDGE JDS If the server JSON structure can be corrected, this can go away.
+         * 
+         * @param json
+         */
         void setAppTemplateFromJsonString(String json);
     
         AppTemplate getAppTemplate();

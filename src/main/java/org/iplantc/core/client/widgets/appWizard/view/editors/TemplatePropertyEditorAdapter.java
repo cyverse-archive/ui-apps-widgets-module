@@ -36,8 +36,6 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
     @Override
     public void setValue(TemplateProperty value) {
-        // Use value to get label and set widget on label.
-        
         // attach it to the chain. Attach the formvalue  
         subEditor = AppWizardFieldFactory.createPropertyField(value);
         
