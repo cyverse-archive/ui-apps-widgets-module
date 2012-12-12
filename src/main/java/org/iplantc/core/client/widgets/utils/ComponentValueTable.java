@@ -100,29 +100,28 @@ public class ComponentValueTable {
     }
 
     public JSONObject getWizardPorpertyGroupContainerAsJson() {
-        if (container != null) {
-            String id;
-            // loop through our groups to get at our properties
-            List<PropertyGroup> groups = container.getGroups();
+        if (container == null) {
+            return null;
+        }
 
-            for (PropertyGroup group : groups) {
-                // loop through our properties to seed our table
-                List<Property> properties = group.getProperties();
+        String id;
+        // loop through our groups to get at our properties
+        List<PropertyGroup> groups = container.getGroups();
+        for (PropertyGroup group : groups) {
+            // loop through our properties to seed our table
+            List<Property> properties = group.getProperties();
 
-                for (Property property : properties) {
-                    id = property.getId();
+            for (Property property : properties) {
+                id = property.getId();
 
-                    // does this property have an id?
-                    if (!id.equals("")) {
-                        property.setValue(getValue(id));
-                    }
+                // does this property have an id?
+                if (!id.equals("")) {
+                    property.setValue(getValue(id));
                 }
             }
         }
-
         return container.toJson();
-
-    }
+       }
 
     /**
      * @return the templateId
@@ -239,12 +238,8 @@ public class ComponentValueTable {
     }
 
     public void setValue(String id, JSONValue value) {
-        if (tblValue.containsKey(id)) {
-            tblValue.get(id).setValue(value);
-        } else {
-            addValue(id, value);
-        }
-
+        tblValue.remove(id);
+        addValue(id, value);
         // must notify only this widget ?
         observable.notifyObserver(id);
     }
