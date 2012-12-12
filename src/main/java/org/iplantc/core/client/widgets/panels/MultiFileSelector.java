@@ -117,7 +117,7 @@ public class MultiFileSelector extends WizardWidgetPanel {
         if (fileList.size() > 0) {
             ret = new JSONArray();
 
-            for (int i = 0,listSize = fileList.size(); i < listSize; i++) {
+            for (int i = 0; i < fileList.size(); i++) {
                 File file = fileList.get(i);
                 ret.set(i, new JSONString(file.getId()));
             }
@@ -332,10 +332,12 @@ public class MultiFileSelector extends WizardWidgetPanel {
             if (arr != null && arr.size() > 0) {
                 ListStore<File> files = grid.getStore();
                 for (int i = 0; i < arr.size(); i++) {
-                    String name = DiskResourceUtil.parseNameFromPath(JsonUtil
-                            .trim(arr.get(i).toString()));
-                    File f = new File(value, name, new Permissions(true, true, true));
-                    files.add(f);
+                    String path = JsonUtil.getRawValueAsString(arr.get(i));
+                    if (path != null) {
+                        String name = DiskResourceUtil.parseNameFromPath(path);
+                        File f = new File(path, name, new Permissions(true, true, true));
+                        files.add(f);
+                    }
                 }
             }
             updateComponentValueTable();
