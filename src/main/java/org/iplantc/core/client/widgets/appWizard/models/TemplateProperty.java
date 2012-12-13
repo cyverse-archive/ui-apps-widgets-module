@@ -77,7 +77,5 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     @PropertyName("isVisible")
     void setVisible(boolean visible);
     
-    Splittable dataObject();
-
 
 }

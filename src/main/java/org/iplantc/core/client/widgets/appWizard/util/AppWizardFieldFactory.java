@@ -6,8 +6,8 @@ import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDiskResourceSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDoubleNumberField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardMultiFileSelector;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardNumberField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
@@ -17,6 +17,7 @@ import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
@@ -62,8 +63,11 @@ public class AppWizardFieldFactory {
                 break;
 
             case Number:
-                field = new AppWizardNumberField();
-                property.setValue(StringQuoter.create(property.getDefaultValue()));
+                field = new AppWizardDoubleNumberField();
+                if ((property.getDefaultValue() != null) && !property.getDefaultValue().isEmpty()) {
+                    Splittable create = StringQuoter.create(property.getDefaultValue());
+                    property.setValue(create);
+                }
 
                 break;
 
@@ -72,11 +76,11 @@ public class AppWizardFieldFactory {
                 break;
 
             case Selection:
-                field = new AppWizardComboBox();
+                field = new AppWizardComboBox(null);
                 break;
 
             case ValueSelection:
-                field = new AppWizardComboBox();
+                field = new AppWizardComboBox(null);
                 break;
 
             case TreeSelection:

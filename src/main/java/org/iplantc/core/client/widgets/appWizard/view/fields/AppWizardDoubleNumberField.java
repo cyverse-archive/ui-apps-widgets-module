@@ -17,24 +17,29 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
  * @author jstroot
  * 
  */
-public class AppWizardNumberField extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
+public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
 
     private final NumberField<Double> field = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
     
-    Number n;
-
-    public AppWizardNumberField() {
+    public AppWizardDoubleNumberField() {
         initWidget(field);
     }
 
     @Override
     public void setValue(Splittable value) {
-        field.setValue(value.asNumber());
+        String string = value.asString();
+        if ((string != null) && !string.isEmpty()) {
+            field.setValue(value.asNumber());
+        }
     }
 
     @Override
     public Splittable getValue() {
-        return StringQuoter.create(field.getValue());
+        Splittable split = StringQuoter.createSplittable();
+        if (field.getValue() != null) {
+            split = StringQuoter.create(field.getValue());
+        }
+        return split;
     }
 
     @Override

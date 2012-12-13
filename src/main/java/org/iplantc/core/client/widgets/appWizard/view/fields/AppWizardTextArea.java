@@ -20,6 +20,10 @@ public class AppWizardTextArea extends Composite implements TemplatePropertyEdit
 
     private final TextArea field = new TextArea();
 
+    public AppWizardTextArea() {
+        initWidget(field);
+    }
+
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
         return field.addInvalidHandler(handler);

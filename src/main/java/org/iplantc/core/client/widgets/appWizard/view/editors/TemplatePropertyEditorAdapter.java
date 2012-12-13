@@ -2,6 +2,7 @@ package org.iplantc.core.client.widgets.appWizard.view.editors;
 
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.util.AppWizardFieldFactory;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
 
@@ -9,6 +10,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -39,8 +41,14 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
         // attach it to the chain. Attach the formvalue  
         subEditor = AppWizardFieldFactory.createPropertyField(value);
         
-        propertyLabel.setHTML(AppWizardFieldFactory.createFieldLabelText(value));
+        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
+        propertyLabel.setHTML(fieldLabelText);
         propertyLabel.setWidget(subEditor);
+        if (subEditor instanceof AppWizardCheckbox) {
+            propertyLabel.setHTML("");
+            propertyLabel.setLabelSeparator("");
+            ((AppWizardCheckbox)subEditor).setBoxLabel(fieldLabelText.asString());
+        }
         
         Splittable formValue = value.getValue();
         chain.attach(formValue, subEditor);
