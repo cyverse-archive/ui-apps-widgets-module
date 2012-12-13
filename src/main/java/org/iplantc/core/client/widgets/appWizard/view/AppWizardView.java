@@ -13,6 +13,15 @@ import com.google.gwt.user.client.ui.IsWidget;
  * <li></li>
  * <li></li>
  * </ul>
+ * <h2>Properties</h2>
+ * <ul>
+ * <li></li>
+ * <li></li>
+ * </ul>
+ * <h2>Data Model</h2>
+ * <ul>
+ * <li></li>
+ * </ul>
  * 
  * @author jstroot
  * 

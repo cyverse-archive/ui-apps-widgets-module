@@ -17,6 +17,7 @@ import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
@@ -33,8 +34,8 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static TemplatePropertyEditorBase<String> createPropertyField(TemplateProperty property) {
-        TemplatePropertyEditorBase<String> field;
+    public static TemplatePropertyEditorBase createPropertyField(TemplateProperty property) {
+        TemplatePropertyEditorBase field;
         switch (property.getType()) {
             case FileInput:
                 field = AppWizardDiskResourceSelector.asFileSelector();
@@ -47,7 +48,6 @@ public class AppWizardFieldFactory {
             case MultiFileSelector:
                 field = new AppWizardMultiFileSelector();
                 break;
-
 
             case Text:
                 field = new AppWizardTextField();
@@ -63,7 +63,7 @@ public class AppWizardFieldFactory {
 
             case Number:
                 field = new AppWizardNumberField();
-                property.setFormValue(property.getDefaultValue());
+                property.setValue(StringQuoter.create(property.getDefaultValue()));
 
                 break;
 
@@ -81,10 +81,6 @@ public class AppWizardFieldFactory {
 
             case TreeSelection:
                 field = null;
-                break;
-
-            case Percentage:
-                field = new AppWizardTextField("Some prepending label text");
                 break;
 
             case Info:
@@ -186,10 +182,6 @@ public class AppWizardFieldFactory {
                 break;
 
             case TreeSelection:
-                labelText.append(templates.fieldLabel("", label, "", ""));
-                break;
-
-            case Percentage:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 

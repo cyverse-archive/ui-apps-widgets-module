@@ -12,21 +12,21 @@ import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, String, TemplatePropertyEditorBase<String>>, ValueAwareEditor<TemplateProperty> {
+public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyEditorBase>, ValueAwareEditor<TemplateProperty> {
 
-    interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {
-    }
+    interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {}
 
     private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
-    private CompositeEditor.EditorChain<String, TemplatePropertyEditorBase<String>> chain;
+    private CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase> chain;
 
     @Ignore
     @UiField
     FieldLabel propertyLabel;
     
-    private TemplatePropertyEditorBase<String> subEditor = null;
+    private TemplatePropertyEditorBase subEditor = null;
     
 
     public TemplatePropertyEditorAdapter() {
@@ -42,7 +42,7 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
         propertyLabel.setHTML(AppWizardFieldFactory.createFieldLabelText(value));
         propertyLabel.setWidget(subEditor);
         
-        String formValue = value.getFormValue();
+        Splittable formValue = value.getValue();
         chain.attach(formValue, subEditor);
     }
 
@@ -59,19 +59,19 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
 
     @Override
-    public TemplatePropertyEditorBase<String> createEditorForTraversal() {
+    public TemplatePropertyEditorBase createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
 
     @Override
-    public String getPathElement(TemplatePropertyEditorBase<String> subEditor) {
+    public String getPathElement(TemplatePropertyEditorBase subEditor) {
         return "";
     }
 
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<String, TemplatePropertyEditorBase<String>> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase> chain) {
         this.chain = chain;
     }
 

@@ -125,26 +125,28 @@ public class AppWizardPresenterJsonAdapter {
      * @return a splittable representing an un-keyed list of <code>TemplateValidator</code> objects.
      */
     private static Splittable getAppTemplateValidator(Splittable rulesSplittable) {
-        Splittable subTemplateValidator = StringQuoter.createSplittable();
+        Splittable subTemplateValidator = StringQuoter.createIndexed();
         
         if (!rulesSplittable.isIndexed()) {
             GWT.log("WRONG!!");
         }
         for (int i = 0; i < rulesSplittable.size(); i++) {
-            rulesSplittable.get(i).getPropertyKeys();
-        }
-        // transforming "rules" key into a list of TemplateValidators
-        List<String> ruleKeys = rulesSplittable.getPropertyKeys();
-        for(String key : ruleKeys){
-            AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-            AutoBean<TemplateValidator> validatorBean = factory.teplateValidator();
-            
-            TemplateValidatorType type = TemplateValidatorType.getTypeByValue(key);
-            Splittable params = rulesSplittable.get(key);
-            
-            validatorBean.as().setType(type);
-            validatorBean.as().setParams(params);
-            AutoBeanCodex.encode(validatorBean).assign(subTemplateValidator, ruleKeys.indexOf(key));
+            Splittable rule = rulesSplittable.get(i);
+            List<String> ruleKeys = rule.getPropertyKeys();
+            // transforming "rules" key into a list of TemplateValidators
+            // List<String> ruleKeys = rulesSplittable.getPropertyKeys();
+            for (String key : ruleKeys) {
+                AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+                AutoBean<TemplateValidator> validatorBean = factory.teplateValidator();
+
+                TemplateValidatorType type = TemplateValidatorType.getTypeByValue(key);
+                Splittable params = rule.get(key);
+
+                validatorBean.as().setType(type);
+                validatorBean.as().setParams(params);
+                Splittable encode = AutoBeanCodex.encode(validatorBean);
+                encode.assign(subTemplateValidator, ruleKeys.indexOf(key));
+            }
         }
         
         return subTemplateValidator;

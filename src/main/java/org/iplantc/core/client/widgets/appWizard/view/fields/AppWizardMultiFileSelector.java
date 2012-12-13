@@ -16,12 +16,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
-import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -32,11 +32,12 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
  * TODO JDS Implement drag and drop
+ * XXX Must support multi select.
  * 
  * @author jstroot
  * 
  */
-public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyEditorBase<String> {
+public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyEditorBase {
 
     private static AppWizardMultiFileSelectorUiBinder BINDER = GWT.create(AppWizardMultiFileSelectorUiBinder.class);
 
@@ -103,26 +104,26 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
     }
 
     @Override
-    public void setValue(String value) {
+    public void setValue(Splittable value) {
         // Assume the incoming value is a JSON array
 
     }
 
     @Override
-    public String getValue() {
+    public Splittable getValue() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    // Validators are intentionally not implemented for this editor.
-    @Override
-    public void addValidator(Validator<String> validator) {}
-
-    @Override
-    public void removeValidator(Validator<String> validator) {}
-
-    @Override
-    public List<Validator<String>> getValidators() {return null;}
+    // // Validators are intentionally not implemented for this editor.
+    // @Override
+    // public void addValidator(Validator<String> validator) {}
+    //
+    // @Override
+    // public void removeValidator(Validator<String> validator) {}
+    //
+    // @Override
+    // public List<Validator<String>> getValidators() {return null;}
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {return null;}

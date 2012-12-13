@@ -3,15 +3,21 @@ package org.iplantc.core.client.widgets.appWizard.models;
 import java.util.List;
 
 import org.iplantc.core.client.widgets.appWizard.presenter.AppWizardPresenterJsonAdapter;
-import org.iplantc.core.client.widgets.appWizard.view.editors.TemplatePropertyEditorAdapter;
 import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
+import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
+ * This interface contains all the data required to assemble a single form field in an App Wizard UI.
+ * 
+ * Some fields require unique data which is not necessary to most of the other fields, and is held in
+ * the generic "dataObject" property. {@link #dataObject()} returns a {@code Splittable}, which is
+ * individually interpreted in the field corresponding to the value returned by {@link #getType()}.
+ * This allows unique data to be stored for each field.
  * 
  * @author jstroot
  * @see AppWizardPresenterJsonAdapter
@@ -28,10 +34,6 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
 
     void setType(TemplatePropertyType type);
 
-    // String getType();
-    //
-    // void setType(String type);
-    
     int getOrder();
     
     void setOrder(int order);
@@ -50,19 +52,14 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     
     /**
      * A property used for holding the values entered via the form fields.
-     * This property is meant for use at runtime, and is not intended to
-     * be serialized or deserialized.
-     * 
-     * XXX JDS We may be able to turn this into a splittable.
-     * Then, we could hold lists, booleans, etc. The values would be converted in
-     * {@link TemplatePropertyEditorAdapter#setValue(TemplateProperty)} before being bound to the
-     * appropriate editor.
+     * It is kept as a splittable in order to support multiple types, which
+     * map one-to-one with the {@code getType()}.
      * 
      * @return
      */
-    String getFormValue();
+    Splittable getValue();
     
-    void setFormValue(String formValue);
+    void setValue(Splittable formValue);
     
     boolean isRequired();
     
@@ -80,4 +77,7 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     @PropertyName("isVisible")
     void setVisible(boolean visible);
     
+    Splittable dataObject();
+
+
 }
