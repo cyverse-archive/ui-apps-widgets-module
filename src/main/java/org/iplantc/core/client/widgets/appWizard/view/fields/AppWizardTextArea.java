@@ -4,6 +4,7 @@ import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -21,25 +22,21 @@ public class AppWizardTextArea extends Composite implements TemplatePropertyEdit
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
-        // TODO Auto-generated method stub
-        return null;
+        return field.addInvalidHandler(handler);
     }
 
     @Override
     public HandlerRegistration addValidHandler(ValidHandler handler) {
-        // TODO Auto-generated method stub
-        return null;
+        return field.addValidHandler(handler);
     }
 
     @Override
     public void setValue(Splittable value) {
-        // TODO Auto-generated method stub
-
+        field.setValue(value.asString());
     }
 
     @Override
     public Splittable getValue() {
-        // TODO Auto-generated method stub
-        return null;
+        return StringQuoter.create(field.getValue());
     }
 }

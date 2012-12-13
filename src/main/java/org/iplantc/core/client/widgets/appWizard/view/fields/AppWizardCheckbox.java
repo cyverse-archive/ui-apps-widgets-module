@@ -59,17 +59,4 @@ public class AppWizardCheckbox extends Composite implements TemplatePropertyEdit
         return field.addValidHandler(handler);
     }
 
-    // @Override
-    // public void addValidator(Validator<> validator) {
-    // }
-    //
-    // @Override
-    // public void removeValidator(Validator<String> validator) {
-    // }
-    //
-    // @Override
-    // public List<Validator<String>> getValidators() {
-    // return null;
-    // }
-
 }

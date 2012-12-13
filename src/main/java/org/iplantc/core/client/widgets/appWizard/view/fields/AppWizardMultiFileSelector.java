@@ -32,7 +32,8 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
  * TODO JDS Implement drag and drop
- * XXX Must support multi select.
+ * XXX JDS Must support multi select.
+ * 
  * 
  * @author jstroot
  * 
@@ -93,7 +94,7 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
 
     @UiHandler("addButton")
     void onAddButtonSelected(SelectHandler handler) {
-
+        // XXX JDS TO be implemented.
     }
 
     @UiHandler("deleteButton")
@@ -114,16 +115,6 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
         // TODO Auto-generated method stub
         return null;
     }
-
-    // // Validators are intentionally not implemented for this editor.
-    // @Override
-    // public void addValidator(Validator<String> validator) {}
-    //
-    // @Override
-    // public void removeValidator(Validator<String> validator) {}
-    //
-    // @Override
-    // public List<Validator<String>> getValidators() {return null;}
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {return null;}

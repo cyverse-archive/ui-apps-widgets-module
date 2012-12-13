@@ -11,8 +11,8 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 
 /**
- * XXX Must be able to designate that field is INTEGER ONLY, DECIMAL ONLY, or BOTH
- * XXX Must be bouded, but this will be done with designated validators.
+ * XXX JDS Must be able to designate that field is INTEGER ONLY, DECIMAL ONLY, or BOTH
+ * XXX JDS Must be bounded, but this will be done with designated validators.
  * 
  * @author jstroot
  * 
@@ -20,6 +20,8 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 public class AppWizardNumberField extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
 
     private final NumberField<Double> field = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+    
+    Number n;
 
     public AppWizardNumberField() {
         initWidget(field);
@@ -34,18 +36,6 @@ public class AppWizardNumberField extends Composite implements TemplatePropertyE
     public Splittable getValue() {
         return StringQuoter.create(field.getValue());
     }
-
-    // @Override
-    // public void addValidator(Validator<String> validator) {}
-    //
-    // @Override
-    // public void removeValidator(Validator<String> validator) {}
-    //
-    // @Override
-    // public List<Validator<String>> getValidators() {
-    // // TODO Auto-generated method stub
-    // return null;
-    // }
 
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {

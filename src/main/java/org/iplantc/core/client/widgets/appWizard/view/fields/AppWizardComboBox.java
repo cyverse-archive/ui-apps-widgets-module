@@ -27,21 +27,6 @@ public class AppWizardComboBox implements TemplatePropertyEditorBase {
         return field.addValidHandler(handler);
     }
 
-    // @Override
-    // public void addValidator(Validator<String> validator) {
-    // field.addValidator(validator);
-    // }
-    //
-    // @Override
-    // public void removeValidator(Validator<String> validator) {
-    // field.removeValidator(validator);
-    // }
-    //
-    // @Override
-    // public List<Validator<String>> getValidators() {
-    // return field.getValidators();
-    // }
-
     @Override
     public Widget asWidget() {
         // TODO Auto-generated method stub

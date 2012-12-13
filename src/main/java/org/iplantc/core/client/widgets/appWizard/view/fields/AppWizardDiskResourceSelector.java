@@ -120,21 +120,6 @@ public class AppWizardDiskResourceSelector extends Component implements Template
         button.onBrowserEvent(event);
     }
 
-    // @Override
-    // public void addValidator(Validator<String> validator) {
-    // input.addValidator(validator);
-    // }
-    //
-    // @Override
-    // public void removeValidator(Validator<String> validator) {
-    // input.removeValidator(validator);
-    // }
-    //
-    // @Override
-    // public List<Validator<String>> getValidators() {
-    // return input.getValidators();
-    // }
-
     @Override
     public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
         return input.addInvalidHandler(handler);
