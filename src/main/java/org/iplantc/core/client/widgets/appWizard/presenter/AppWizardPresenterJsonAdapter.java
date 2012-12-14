@@ -3,6 +3,7 @@ package org.iplantc.core.client.widgets.appWizard.presenter;
 import java.util.List;
 
 import org.iplantc.core.client.widgets.appWizard.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidatorType;
 
@@ -93,6 +94,7 @@ public class AppWizardPresenterJsonAdapter {
         splittable.get("name").assign(subTemplateProperty, "name");
         splittable.get("label").assign(subTemplateProperty, "label");
         splittable.get("type").assign(subTemplateProperty, "type");
+        TemplatePropertyType type = TemplatePropertyType.valueOf(splittable.get("type").asString());
         
         // If the following are defined (not not defined), then assign them
         if(!splittable.isUndefined("validator")){
@@ -101,7 +103,8 @@ public class AppWizardPresenterJsonAdapter {
             
             if(!tpValidator.isUndefined("rules")){
                 Splittable inputRules = tpValidator.get("rules");
-                getAppTemplateValidator(inputRules).assign(subTemplateProperty, "validators");
+                getAppTemplateValidator(inputRules, type).assign(subTemplateProperty, "validators");
+                getSelectionArguments(inputRules, type).assign(subTemplateProperty, "arguments");
             }
         }
         if(!splittable.isUndefined("value")){
@@ -121,10 +124,13 @@ public class AppWizardPresenterJsonAdapter {
     }
 
     /**
+     * This method may return an empty list.
+     * 
      * @param rulesSplittable
+     * @param tpType
      * @return a splittable representing an un-keyed list of <code>TemplateValidator</code> objects.
      */
-    private static Splittable getAppTemplateValidator(Splittable rulesSplittable) {
+    private static Splittable getAppTemplateValidator(Splittable rulesSplittable, TemplatePropertyType tpType) {
         Splittable subTemplateValidator = StringQuoter.createIndexed();
         
         if (!rulesSplittable.isIndexed()) {
@@ -133,16 +139,16 @@ public class AppWizardPresenterJsonAdapter {
         for (int i = 0; i < rulesSplittable.size(); i++) {
             Splittable rule = rulesSplittable.get(i);
             List<String> ruleKeys = rule.getPropertyKeys();
-            // transforming "rules" key into a list of TemplateValidators
-            // List<String> ruleKeys = rulesSplittable.getPropertyKeys();
             for (String key : ruleKeys) {
+
+                // TODO JDS need to integrate the validators. This has not been tested.
                 AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
                 AutoBean<TemplateValidator> validatorBean = factory.teplateValidator();
 
-                TemplateValidatorType type = TemplateValidatorType.getTypeByValue(key);
+                TemplateValidatorType tvType = TemplateValidatorType.getTypeByValue(key);
                 Splittable params = rule.get(key);
 
-                validatorBean.as().setType(type);
+                validatorBean.as().setType(tvType);
                 validatorBean.as().setParams(params);
                 Splittable encode = AutoBeanCodex.encode(validatorBean);
                 encode.assign(subTemplateValidator, ruleKeys.indexOf(key));
@@ -150,5 +156,49 @@ public class AppWizardPresenterJsonAdapter {
         }
         
         return subTemplateValidator;
+    }
+
+    /**
+     * This method may return an empty list.
+     * 
+     * TODO JDS This is ugly. Clean it up.
+     * 
+     * @param splittable
+     * @return
+     */
+    private static Splittable getSelectionArguments(Splittable splittable, TemplatePropertyType type) {
+        Splittable arguments = StringQuoter.createIndexed();
+        if (!splittable.isIndexed()) {
+            GWT.log("Not indexed splittable!");
+        }
+
+        for(int i = 0; i < splittable.size(); i++){
+            Splittable rule = splittable.get(i);
+            List<String> ruleKeys = rule.getPropertyKeys();
+            
+            for(String key : ruleKeys){
+                if (key.equalsIgnoreCase("MustContain") && rule.get(key).isIndexed()) {
+                    if (type.equals(TemplatePropertyType.Selection) || type.equals(TemplatePropertyType.ValueSelection)) {
+                        Splittable mustContain = rule.get(key);
+                        for (int j = 0; j < mustContain.size(); j++) {
+                            Splittable arg = StringQuoter.createSplittable();
+
+                            mustContain.get(j).get("display").assign(arg, "display");
+                            mustContain.get(j).get("name").assign(arg, "name");
+                            mustContain.get(j).get("value").assign(arg, "value");
+                            mustContain.get(j).get("isDefault").assign(arg, "isDefault");
+
+                            arg.assign(arguments, j);
+                        }
+
+                    } else if (type.equals(TemplatePropertyType.TreeSelection)) {
+
+                    }
+
+                }
+            }
+        }
+        return arguments;
+
     }
 }

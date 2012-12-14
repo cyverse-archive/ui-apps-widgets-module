@@ -2,6 +2,7 @@ package org.iplantc.core.client.widgets.appWizard.models;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.appWizard.models.selection.SelectionArgument;
 import org.iplantc.core.client.widgets.appWizard.presenter.AppWizardPresenterJsonAdapter;
 import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -13,11 +14,6 @@ import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
  * This interface contains all the data required to assemble a single form field in an App Wizard UI.
- * 
- * Some fields require unique data which is not necessary to most of the other fields, and is held in
- * the generic "dataObject" property. {@link #dataObject()} returns a {@code Splittable}, which is
- * individually interpreted in the field corresponding to the value returned by {@link #getType()}.
- * This allows unique data to be stored for each field.
  * 
  * @author jstroot
  * @see AppWizardPresenterJsonAdapter
@@ -77,5 +73,13 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     @PropertyName("isVisible")
     void setVisible(boolean visible);
     
+    /*
+     * right now the only extra information we need is the combo list stuff.
+     * it's just a pain to parse since it is held in the same place as the validators
+     */
+
+    List<SelectionArgument> getArguments();
+
+    void setArguments(List<SelectionArgument> arguments);
 
 }

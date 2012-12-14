@@ -76,11 +76,11 @@ public class AppWizardFieldFactory {
                 break;
 
             case Selection:
-                field = new AppWizardComboBox(null);
+                field = new AppWizardComboBox(property.getArguments());
                 break;
 
             case ValueSelection:
-                field = new AppWizardComboBox(null);
+                field = new AppWizardComboBox(property.getArguments());
                 break;
 
             case TreeSelection:
