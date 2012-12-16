@@ -20,7 +20,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -40,9 +40,10 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  */
 public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyEditorBase {
 
-    private static AppWizardMultiFileSelectorUiBinder BINDER = GWT.create(AppWizardMultiFileSelectorUiBinder.class);
+    interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {
+    }
 
-    interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {}
+    private static AppWizardMultiFileSelectorUiBinder BINDER = GWT.create(AppWizardMultiFileSelectorUiBinder.class);
 
     @UiField
     ToolBar toolbar;
@@ -62,7 +63,7 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
     @UiField
     ListStore<DiskResource> listStore;
 
-    @UiField()
+    @UiField
     ColumnModel<DiskResource> cm;
 
     public AppWizardMultiFileSelector() {
@@ -93,12 +94,12 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
     }
 
     @UiHandler("addButton")
-    void onAddButtonSelected(SelectHandler handler) {
+    void onAddButtonSelected(SelectEvent event) {
         // XXX JDS TO be implemented.
     }
 
     @UiHandler("deleteButton")
-    void onDeleteButtonSelected(SelectHandler handler) {
+    void onDeleteButtonSelected(SelectEvent event) {
         for (DiskResource dr : grid.getSelectionModel().getSelectedItems()) {
             listStore.remove(dr);
         }
