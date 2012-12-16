@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+             xmlns:wizardEditors="urn:import:org.iplantc.core.client.widgets.appWizard.view.editors"
+             xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
+             
+   <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
+      <ui:attributes width="1" height="1" />
+   </ui:with>
+                
+   <container:VerticalLayoutContainer>
+      <container:child layoutData="{verticalLayoutData}">
+         <form:FormPanel ui:field="formPanel">
+            <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+         </form:FormPanel>
+      </container:child>
+   </container:VerticalLayoutContainer>             
+</ui:UiBinder> 
