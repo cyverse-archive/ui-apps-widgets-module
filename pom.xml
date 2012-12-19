@@ -38,6 +38,16 @@
             <artifactId>gxt</artifactId>
             <version>${gxt.version}</version>
         </dependency>
+        <dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-gwt</artifactId>
+			<version>13.0-final</version>
+		</dependency>
+	  <dependency>
+	    <groupId>com.google.guava</groupId>
+    	<artifactId>guava</artifactId>
+     	<version>13.0</version>
+       </dependency>
 		<dependency>
             <groupId>com.extjs</groupId>
             <artifactId>gxt</artifactId>
@@ -135,5 +145,9 @@
 			<name>The iPlant Collaborative local repository</name>
 			<url>http://projects.iplantcollaborative.org/archiva/repository/internal/</url>
 		</repository>
+			<repository>
+		<id>gwt-maven</id>
+		<url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
+	</repository>
 	</repositories>
 </project>
