@@ -19,6 +19,7 @@
 		<gwt.version>2.5.0</gwt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <googleGuava.version>13.0.1</googleGuava.version>
 	</properties>
 	<dependencies>
 		<!-- GWT deps (from central repo) -->
@@ -39,15 +40,10 @@
             <version>${gxt.version}</version>
         </dependency>
         <dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava-gwt</artifactId>
-			<version>13.0-final</version>
-		</dependency>
-	  <dependency>
-	    <groupId>com.google.guava</groupId>
-    	<artifactId>guava</artifactId>
-     	<version>13.0</version>
-       </dependency>
+           <groupId>com.google.guava</groupId>
+           <artifactId>guava-gwt</artifactId>
+           <version>${googleGuava.version}</version>
+        </dependency>
 		<dependency>
             <groupId>com.extjs</groupId>
             <artifactId>gxt</artifactId>
