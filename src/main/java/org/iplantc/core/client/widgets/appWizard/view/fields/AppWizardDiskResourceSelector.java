@@ -20,7 +20,9 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Component;
+import com.sencha.gxt.widget.core.client.ComponentHelper;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
@@ -57,13 +59,14 @@ public class AppWizardDiskResourceSelector extends Component implements Template
     }
 
     private final TextButton button;
-    private final TextField input;
+    private final TextField input = new TextField();
 
     private final SplittableStringListToStringConverter cnvt;
 
     private final Resources res = GWT.create(Resources.class);
     private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
     private final boolean fileSelector;
+    private final int buttonOffset = 3;
 
     public static AppWizardDiskResourceSelector asFileSelector() {
         return new AppWizardDiskResourceSelector(true);
@@ -83,7 +86,7 @@ public class AppWizardDiskResourceSelector extends Component implements Template
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
-        input = new TextField();
+        // input = new TextField();
         input.setReadOnly(true);
         getElement().appendChild(input.getElement());
 
@@ -133,21 +136,37 @@ public class AppWizardDiskResourceSelector extends Component implements Template
 
     @Override
     public void setValue(Splittable value) {
-        // String payload = value.getPayload();
-        // JSONArray jsonArray = JsonUtil.getObject(payload).isArray();
-        // List<String> list = JsonUtil.buildStringList(jsonArray);
-        // input.setValue(Joiner.on(",").join(list));
         input.setValue(cnvt.convertModelValue(value));
     }
 
     @Override
     public Splittable getValue() {
-        // Parse text field into a list
-        // Convert the list to a JSONArray
-        // Create Splittable from JSONArray payload.
-        // List<String> split = Lists.newArrayList(Splitter.on(",").split(input.getValue()));
-        // return StringQuoter.create(JsonUtil.buildArrayFromStrings(split).toString());
         return cnvt.convertFieldValue(input.getValue());
+    }
+
+    @Override
+    protected void doAttachChildren() {
+        super.doAttachChildren();
+        ComponentHelper.doAttach(input);
+        ComponentHelper.doAttach(button);
+    }
+
+    @Override
+    protected void doDetachChildren() {
+        super.doDetachChildren();
+        ComponentHelper.doDetach(input);
+        ComponentHelper.doDetach(button);
+    }
+
+    @Override
+    protected XElement getFocusEl() {
+        return input.getElement();
+    }
+
+    @Override
+    protected void onResize(int width, int height) {
+        super.onResize(width, height);
+        input.setWidth(width - button.getOffsetWidth() - buttonOffset);
     }
 
     private final class DialogHideHandler implements HideHandler {

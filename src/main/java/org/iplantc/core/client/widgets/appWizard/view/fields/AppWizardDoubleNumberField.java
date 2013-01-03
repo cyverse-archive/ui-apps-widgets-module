@@ -1,10 +1,9 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
-import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.NumberField;
@@ -17,7 +16,7 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
  * @author jstroot
  * 
  */
-public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
+public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase {
 
     private final NumberField<Double> field = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
     

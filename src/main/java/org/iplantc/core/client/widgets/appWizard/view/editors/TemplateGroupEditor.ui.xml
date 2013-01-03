@@ -10,16 +10,16 @@
       <ui:attributes width="1" height="-1" />
    </ui:with>       
         
-   <form:FieldSet ui:field="groupField"
-                  collapsible="true">
-       <container:VerticalLayoutContainer debugId="fieldSetChildPanel">
-            <container:child layoutData="{verticalLayoutData}">
+   <gxt:ContentPanel ui:field="groupField"
+                     collapsible="true">
                <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor" debugId="propertyLIstPanel"/>
-            </container:child> 
-            <!-- This needs to remain commented out until we can figure out a way to get around GWT editor framework editor cycle detection  -->
-         <!-- <container:child layoutData="{verticalLayoutData}">
+<!--        <container:VerticalLayoutContainer debugId="fieldSetChildPanel">
+            <container:child layoutData="{verticalLayoutData}">
+            </container:child> --> 
+           <!--  This needs to remain commented out until we can figure out a way to get around GWT editor framework editor cycle detection 
+         <container:child layoutData="{verticalLayoutData}">
             <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
          </container:child> -->
-      </container:VerticalLayoutContainer>
-   </form:FieldSet>           
+      <!-- </container:VerticalLayoutContainer> -->
+   </gxt:ContentPanel>        
 </ui:UiBinder> 

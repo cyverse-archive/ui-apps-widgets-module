@@ -9,13 +9,15 @@ import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
-public class TemplatePropertyListEditor extends Composite implements IsEditor<ListEditor<TemplateProperty, TemplatePropertyEditorAdapter>>{
+public class TemplatePropertyListEditor extends Composite implements IsEditor<ListEditor<TemplateProperty, TemplatePropertyEditorAdapter>> {
 
-    interface TemplatePropertyListEditorUiBinder extends UiBinder<VerticalLayoutContainer, TemplatePropertyListEditor> {}
+    interface TemplatePropertyListEditorUiBinder extends UiBinder<Widget, TemplatePropertyListEditor> {
+    }
     private static TemplatePropertyListEditorUiBinder BINDER = GWT.create(TemplatePropertyListEditorUiBinder.class);
     
     private class PropertyListEditorSource extends EditorSource<TemplatePropertyEditorAdapter>{
