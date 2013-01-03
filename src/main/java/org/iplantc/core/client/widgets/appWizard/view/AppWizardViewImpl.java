@@ -7,9 +7,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
 
 /**
@@ -18,8 +20,9 @@ import com.sencha.gxt.widget.core.client.form.FormPanel;
  * 
  * Drops on the form itself
  * Drops on "groups"
+ * 
  * @author jstroot
- *
+ * 
  */
 public class AppWizardViewImpl extends Composite implements AppWizardView {
 
@@ -54,6 +57,11 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     @Override
     public void setPresenter(AppWizardView.Presenter presenter) {
         this.presenter = presenter;
+    }
+
+    @UiHandler("launchButton")
+    void onLaunchAnalysisSelected(SelectEvent event) {
+
     }
 
 }
