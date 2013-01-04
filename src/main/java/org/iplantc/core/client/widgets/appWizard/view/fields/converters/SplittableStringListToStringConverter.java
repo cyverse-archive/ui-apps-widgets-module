@@ -19,12 +19,18 @@ public class SplittableStringListToStringConverter implements Converter<Splittab
         // Parse text field into a list
         // Convert the list to a JSONArray
         // Create Splittable from JSONArray payload.
+        if (object == null)
+            return StringQuoter.create("");
+
         List<String> split = Lists.newArrayList(Splitter.on(",").split(object));
         return StringQuoter.create(JsonUtil.buildArrayFromStrings(split).toString());
     }
 
     @Override
     public String convertModelValue(Splittable object) {
+        if (object == null)
+            return null;
+
         String payload = object.getPayload();
         JSONArray jsonArray = JsonUtil.getObject(payload).isArray();
         List<String> list = JsonUtil.buildStringList(jsonArray);

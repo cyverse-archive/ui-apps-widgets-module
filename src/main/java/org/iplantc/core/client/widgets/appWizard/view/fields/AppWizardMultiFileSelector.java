@@ -95,7 +95,7 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
 
     @UiHandler("addButton")
     void onAddButtonSelected(SelectEvent event) {
-        // XXX JDS TO be implemented.
+        // FIXME JDS TO be implemented.
     }
 
     @UiHandler("deleteButton")

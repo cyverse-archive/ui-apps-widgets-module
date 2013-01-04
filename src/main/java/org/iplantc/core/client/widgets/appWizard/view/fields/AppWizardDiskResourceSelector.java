@@ -9,6 +9,7 @@ import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 
 import com.google.common.base.Joiner;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -40,7 +41,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class AppWizardDiskResourceSelector extends Component implements TemplatePropertyEditorBase {
+public class AppWizardDiskResourceSelector extends Component implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -86,7 +87,6 @@ public class AppWizardDiskResourceSelector extends Component implements Template
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
-        // input = new TextField();
         input.setReadOnly(true);
         getElement().appendChild(input.getElement());
 
@@ -180,6 +180,8 @@ public class AppWizardDiskResourceSelector extends Component implements Template
     
         @Override
         public void onHide(HideEvent event) {
+            if(takesValue.getValue() == null)
+                return;
             tf.setText(Joiner.on(",").join(takesValue.getValue()));
         }
     }

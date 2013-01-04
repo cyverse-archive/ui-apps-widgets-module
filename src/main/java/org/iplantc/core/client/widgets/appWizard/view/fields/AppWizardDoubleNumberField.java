@@ -1,5 +1,6 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
+import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
@@ -16,7 +17,7 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
  * @author jstroot
  * 
  */
-public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase {
+public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
 
     private final NumberField<Double> field = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
     
@@ -26,10 +27,7 @@ public class AppWizardDoubleNumberField extends Composite implements TemplatePro
 
     @Override
     public void setValue(Splittable value) {
-        String string = value.asString();
-        if ((string != null) && !string.isEmpty()) {
-            field.setValue(value.asNumber());
-        }
+        field.setValue(value.asNumber());
     }
 
     @Override

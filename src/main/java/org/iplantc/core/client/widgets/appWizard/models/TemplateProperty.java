@@ -53,8 +53,10 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
      * 
      * @return
      */
+    @PropertyName("formValue")
     Splittable getValue();
     
+    @PropertyName("formValue")
     void setValue(Splittable formValue);
     
     boolean isRequired();

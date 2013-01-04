@@ -19,8 +19,6 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 /**
- * XXX Must
- * 
  * @author jstroot
  * 
  */

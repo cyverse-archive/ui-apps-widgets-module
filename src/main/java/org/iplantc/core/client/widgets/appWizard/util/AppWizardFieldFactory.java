@@ -65,7 +65,7 @@ public class AppWizardFieldFactory {
             case Number:
                 field = new AppWizardDoubleNumberField();
                 if ((property.getDefaultValue() != null) && !property.getDefaultValue().isEmpty()) {
-                    Splittable create = StringQuoter.create(property.getDefaultValue());
+                    Splittable create = StringQuoter.split(property.getDefaultValue());
                     property.setValue(create);
                 }
 
@@ -139,7 +139,9 @@ public class AppWizardFieldFactory {
             labelText.append(templates.fieldLabelRequired());
         }
         TemplatePropertyType type = property.getType();
-        SafeHtml label = SafeHtmlUtils.fromString(property.getLabel());
+        // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
+        SafeHtml label = SafeHtmlUtils.fromString(property.getLabel().replaceFirst(":$", ""));
+
         switch (type) {
             case FileInput:
                 labelText.append(templates.fieldLabel("", label, "", ""));
