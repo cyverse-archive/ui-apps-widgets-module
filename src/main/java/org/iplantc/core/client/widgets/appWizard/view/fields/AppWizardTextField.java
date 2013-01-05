@@ -1,6 +1,8 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 
+import java.util.List;
+
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableToStringConverter;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -12,6 +14,7 @@ import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * 
@@ -21,7 +24,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class AppWizardTextField implements TemplatePropertyEditorBase {
+public class AppWizardTextField implements TemplatePropertyEditorBase<String> {
     
     private final class PreventEntryAfterLimit implements KeyDownHandler {
         private final int limit = 20;
@@ -66,5 +69,29 @@ public class AppWizardTextField implements TemplatePropertyEditorBase {
     @Override
     public Splittable getValue() {
         return converter.convertFieldValue(field.getValue());
+    }
+
+    @Override
+    public void addValidator(Validator<String> validator) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
+    }
+
+    @Override
+    public void removeValidator(Validator<String> validator) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
+    }
+
+    @Override
+    public List<Validator<String>> getValidators() {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
+    }
+
+    @Override
+    public void addValidators(List<Validator<String>> validators) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 }

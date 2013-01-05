@@ -2,13 +2,16 @@ package org.iplantc.core.client.widgets.appWizard.models;
 
 import java.util.Arrays;
 
+import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+
 public enum TemplateValidatorType {
-    INT_RANGE("IntRange"),
-    INT_ABOVE("IntAbove"),
-    INT_BELOW("IntBelow"),
-    DOUBLE_RANGE("DoubleRange"),
-    DOUBLE_ABOVE("DoubleAbove"),
-    DOUBLE_BELOW("DoubleBelow"),
+    INT_RANGE("IntRange"), /** {@link MinNumberValidator} and {@link MaxNumberValidator} */
+    INT_ABOVE("IntAbove"), /** {@link MinNumberValidator} */
+    INT_BELOW("IntBelow"), /** {@link MaxNumberValidator} */
+    DOUBLE_RANGE("DoubleRange"), /** {@link MinNumberValidator} and {@link MaxNumberValidator} */
+    DOUBLE_ABOVE("DoubleAbove"), /** {@link MinNumberValidator} */
+    DOUBLE_BELOW("DoubleBelow"), /** {@link MaxNumberValidator} */
     NON_EMPTY_CLASS("NonEmptyClass"),
     GENOTYPE_NAME("GenotypeName"),
     FILE_NAME("FileName"),
@@ -17,8 +20,8 @@ public enum TemplateValidatorType {
     CLIPPER_DATA("ClipperData"),
     MUST_CONTAIN("MustContain"),
     SELECT_ONE_CHECKBOX("SelectOneCheckbox"),
-    REGEX("Regex"),
-    CHARACTER_LIMIT("CharacterLimit");
+    REGEX("Regex"), // TEXT
+    CHARACTER_LIMIT("CharacterLimit"); // TEXT
     
     /**
      * The value which is received in JSON.

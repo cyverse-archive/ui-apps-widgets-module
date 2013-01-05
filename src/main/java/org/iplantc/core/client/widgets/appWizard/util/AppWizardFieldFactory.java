@@ -1,5 +1,7 @@
 package org.iplantc.core.client.widgets.appWizard.util;
 
+import java.util.List;
+
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
@@ -11,7 +13,9 @@ import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardMultiFileS
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
+import org.iplantc.core.uicommons.client.validators.HasValidators;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -35,8 +39,8 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static TemplatePropertyEditorBase createPropertyField(TemplateProperty property) {
-        TemplatePropertyEditorBase field;
+    public static TemplatePropertyEditorBase<?> createPropertyField(TemplateProperty property) {
+        TemplatePropertyEditorBase<?> field;
         switch (property.getType()) {
             case FileInput:
                 field = AppWizardDiskResourceSelector.asFileSelector();
@@ -122,13 +126,77 @@ public class AppWizardFieldFactory {
         return field;
     }
     
+    private static <T> void applyValidators(final HasValidators<T> hasValidators, final List<Validator<T>> validators) {
+        hasValidators.addValidators(validators);
+    }
+
+    private static <T> List<Validator<T>> createValidators(TemplateProperty tp) {
+        List<Validator<T>> validators = Lists.newArrayList();
+        for (TemplateValidator tv : tp.getValidators()) {
+            validators.add(createValidator(tv));
+        }
+        return null;
+    }
+
     /**
-     * TODO JDS Determine if a String type will be sufficient
      * @param v
      * @return
      */
-    private static Validator<String> createValidator(TemplateValidator v) {
-        // TODO Auto-generated method stub
+    private static Validator<?> createValidator(TemplateValidator v) {
+
+        switch (v.getType()) {
+            case CHARACTER_LIMIT:
+
+                break;
+
+            case CLIPPER_DATA:
+                break;
+
+            case DOUBLE_ABOVE:
+                break;
+
+            case DOUBLE_BELOW:
+                break;
+
+            case DOUBLE_RANGE:
+                break;
+
+            case FILE_NAME:
+                break;
+
+            case GENOTYPE_NAME:
+                break;
+
+            case INT_ABOVE:
+                break;
+
+            case INT_ABOVE_FIELD:
+                break;
+
+            case INT_BELOW:
+                break;
+
+            case INT_BELOW_FIELD:
+                break;
+
+            case INT_RANGE:
+                break;
+
+            case MUST_CONTAIN:
+                break;
+
+            case NON_EMPTY_CLASS:
+                break;
+
+            case REGEX:
+                break;
+
+            case SELECT_ONE_CHECKBOX:
+                break;
+
+            default:
+                break;
+        }
         return null;
     }
     

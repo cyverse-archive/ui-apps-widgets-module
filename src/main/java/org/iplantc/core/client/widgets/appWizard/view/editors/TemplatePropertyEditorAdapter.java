@@ -17,18 +17,18 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyEditorBase>, ValueAwareEditor<TemplateProperty> {
+public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyEditorBase<?>>, ValueAwareEditor<TemplateProperty> {
 
     interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {}
 
     private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
-    private CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase> chain;
+    private CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase<?>> chain;
 
     @Ignore
     @UiField
     FieldLabel propertyLabel;
     
-    private TemplatePropertyEditorBase subEditor = null;
+    private TemplatePropertyEditorBase<?> subEditor = null;
     
 
     public TemplatePropertyEditorAdapter() {
@@ -67,19 +67,19 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
 
     @Override
-    public TemplatePropertyEditorBase createEditorForTraversal() {
+    public TemplatePropertyEditorBase<?> createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
 
     @Override
-    public String getPathElement(TemplatePropertyEditorBase subEditor) {
+    public String getPathElement(TemplatePropertyEditorBase<?> subEditor) {
         return "";
     }
 
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase<?>> chain) {
         this.chain = chain;
     }
 
