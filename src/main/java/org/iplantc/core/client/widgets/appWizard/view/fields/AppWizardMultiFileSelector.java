@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.client.widgets.I18N;
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceProperties;
@@ -44,7 +45,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  * @author jstroot
  * 
  */
-public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyEditorBase<String>, LeafValueEditor<Splittable> {
+public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyField<String>, LeafValueEditor<Splittable> {
 
     interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {}
 
@@ -81,6 +82,12 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
                 deleteButton.setEnabled((selection != null) && !selection.isEmpty());
             }
         });
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @UiFactory

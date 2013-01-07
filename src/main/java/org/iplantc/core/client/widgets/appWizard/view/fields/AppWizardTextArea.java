@@ -2,6 +2,8 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
+
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,12 +21,18 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class AppWizardTextArea extends Composite implements TemplatePropertyEditorBase<String>, LeafValueEditor<Splittable> {
+public class AppWizardTextArea extends Composite implements TemplatePropertyField<String>, LeafValueEditor<Splittable> {
 
     private final TextArea field = new TextArea();
 
     public AppWizardTextArea() {
         initWidget(field);
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override

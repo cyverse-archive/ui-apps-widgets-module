@@ -3,6 +3,7 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableToStringConverter;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -24,7 +25,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class AppWizardTextField implements TemplatePropertyEditorBase<String> {
+public class AppWizardTextField implements TemplatePropertyField<String> {
     
     private final class PreventEntryAfterLimit implements KeyDownHandler {
         private final int limit = 20;
@@ -37,6 +38,7 @@ public class AppWizardTextField implements TemplatePropertyEditorBase<String> {
         }
     }
 
+
     private final TextField field = new TextField();
     private final Converter<Splittable, String> converter;
     
@@ -44,6 +46,12 @@ public class AppWizardTextField implements TemplatePropertyEditorBase<String> {
         converter = new SplittableToStringConverter();
         // TODO JDS Figure out how to tie this in with adding a MaxLengthValidator.
         field.addKeyDownHandler(new PreventEntryAfterLimit());
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override

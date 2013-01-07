@@ -1,21 +1,10 @@
 package org.iplantc.core.client.widgets.appWizard.util;
 
-import java.util.List;
-
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDiskResourceSelector;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDoubleNumberField;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardMultiFileSelector;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
-import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
-import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
-import org.iplantc.core.uicommons.client.validators.HasValidators;
+import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyField;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -39,68 +28,20 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static TemplatePropertyEditorBase<?> createPropertyField(TemplateProperty property) {
-        TemplatePropertyEditorBase<?> field;
-        switch (property.getType()) {
-            case FileInput:
-                field = AppWizardDiskResourceSelector.asFileSelector();
-                break;
+    public static TemplatePropertyField<?> createPropertyField(TemplateProperty property) {
+        TemplatePropertyField<?> field = null;
+        if (property.getType().getEditorClass() != null) {
+            // FIXME JDS This next line needs to be tested.
+            field = GWT.create(property.getType().getEditorClass());
+            // Set default value
+            if ((property.getDefaultValue() != null) && !property.getDefaultValue().isEmpty()) {
+                Splittable create = StringQuoter.split(property.getDefaultValue());
+                property.setValue(create);
+            }
+            field.initialize(property);
 
-            case FolderInput:
-                field = AppWizardDiskResourceSelector.asFolderSelector();
-                break;
-
-            case MultiFileSelector:
-                field = new AppWizardMultiFileSelector();
-                break;
-
-            case Text:
-                field = new AppWizardTextField();
-                break;
-
-            case EnvironmentVariable:
-                field = new AppWizardTextField();
-                break;
-
-            case MultiLineText:
-                field = new AppWizardTextArea();
-                break;
-
-            case Number:
-                field = new AppWizardDoubleNumberField();
-                if ((property.getDefaultValue() != null) && !property.getDefaultValue().isEmpty()) {
-                    Splittable create = StringQuoter.split(property.getDefaultValue());
-                    property.setValue(create);
-                }
-
-                break;
-
-            case Flag:
-                field = new AppWizardCheckbox();
-                break;
-
-            case Selection:
-                field = new AppWizardComboBox(property.getArguments());
-                break;
-
-            case ValueSelection:
-                field = new AppWizardComboBox(property.getArguments());
-                break;
-
-            case TreeSelection:
-                field = null;
-                break;
-
-            case Info:
-                field = null;
-                break;
-
-            default:
-                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + TemplatePropertyType.class.getName() + " type.");
-                field = null;
-                break;
         }
-        
+
         if((field != null) 
                 && (property.getDescription() != null)
                 && !property.getDescription().isEmpty()){
@@ -108,36 +49,9 @@ public class AppWizardFieldFactory {
             qt.setToolTip(property.getDescription());
         }
 
-        /* 
-         * Once we've determined the correct field, we need to interrogate the
-         *  property's "validator" and its rules to determine which validators to 
-         *  add to the form field.
-         *  
-         *  Each field will need to be set to auto-validate.
-         *  
-         *  Each validator will need to have this class added as a valid/invalid 
-         *  handler.
-         */
-//        for(TemplateValidator v : property.getValidators()){
-//            Validator<String> validator = createValidator(v);
-////            field.addValidator(validator);
-//            
-        // }
         return field;
     }
     
-    private static <T> void applyValidators(final HasValidators<T> hasValidators, final List<Validator<T>> validators) {
-        hasValidators.addValidators(validators);
-    }
-
-    private static <T> List<Validator<T>> createValidators(TemplateProperty tp) {
-        List<Validator<T>> validators = Lists.newArrayList();
-        for (TemplateValidator tv : tp.getValidators()) {
-            validators.add(createValidator(tv));
-        }
-        return null;
-    }
-
     /**
      * @param v
      * @return
@@ -147,9 +61,6 @@ public class AppWizardFieldFactory {
         switch (v.getType()) {
             case CHARACTER_LIMIT:
 
-                break;
-
-            case CLIPPER_DATA:
                 break;
 
             case DOUBLE_ABOVE:
@@ -182,16 +93,7 @@ public class AppWizardFieldFactory {
             case INT_RANGE:
                 break;
 
-            case MUST_CONTAIN:
-                break;
-
-            case NON_EMPTY_CLASS:
-                break;
-
             case REGEX:
-                break;
-
-            case SELECT_ONE_CHECKBOX:
                 break;
 
             default:

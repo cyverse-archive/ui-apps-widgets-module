@@ -2,7 +2,8 @@ package org.iplantc.core.client.widgets.appWizard.view.fields.temp;
 
 import java.util.List;
 
-import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
+import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyField;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
@@ -14,7 +15,7 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.Validator;
 
-public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements TemplatePropertyEditorBase<Number> {
+public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements TemplatePropertyField<Number> {
 
     private static MySliderCell sliderCell = new MySliderCell();
     private final Slider slider;
@@ -23,6 +24,12 @@ public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integ
         super(new Slider(sliderCell), converter);
 
         this.slider = createEditorForTraversal();
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override

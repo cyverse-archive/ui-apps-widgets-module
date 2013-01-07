@@ -3,6 +3,7 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 import java.util.List;
 
 import org.iplantc.core.client.widgets.I18N;
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableStringListToStringConverter;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
@@ -42,7 +43,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class AppWizardDiskResourceSelector extends Component implements TemplatePropertyEditorBase<String>, LeafValueEditor<Splittable> {
+public abstract class AppWizardDiskResourceSelector extends Component implements TemplatePropertyField<String>, LeafValueEditor<Splittable> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -70,15 +71,7 @@ public class AppWizardDiskResourceSelector extends Component implements Template
     private final boolean fileSelector;
     private final int buttonOffset = 3;
 
-    public static AppWizardDiskResourceSelector asFileSelector() {
-        return new AppWizardDiskResourceSelector(true);
-    }
-
-    public static AppWizardDiskResourceSelector asFolderSelector() {
-        return new AppWizardDiskResourceSelector(false);
-    }
-
-    private AppWizardDiskResourceSelector(boolean fileSelector) {
+    protected AppWizardDiskResourceSelector(boolean fileSelector) {
         this.fileSelector = fileSelector;
         res.style().ensureInjected();
         
@@ -104,6 +97,12 @@ public class AppWizardDiskResourceSelector extends Component implements Template
             }
         });
 
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     private void onBrowseSelected() {

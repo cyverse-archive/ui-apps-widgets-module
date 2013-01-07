@@ -2,6 +2,8 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
+
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -20,12 +22,18 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase<Double>, LeafValueEditor<Splittable> {
+public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyField<Double>, LeafValueEditor<Splittable> {
 
     private final NumberField<Double> field = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
     
     public AppWizardDoubleNumberField() {
         initWidget(field);
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override
