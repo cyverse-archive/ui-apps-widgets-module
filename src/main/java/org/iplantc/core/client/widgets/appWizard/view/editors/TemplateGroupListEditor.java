@@ -9,9 +9,8 @@ import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 
 /**
  * @author jstroot
@@ -19,40 +18,41 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
  */
 public class TemplateGroupListEditor extends Composite implements IsEditor<ListEditor<TemplateGroup, TemplateGroupEditor>>{
 
-    interface GroupListEditorUiBinder extends UiBinder<VerticalLayoutContainer, TemplateGroupListEditor> {}
+    interface GroupListEditorUiBinder extends UiBinder<AccordionLayoutContainer, TemplateGroupListEditor> {
+    }
 
     private static GroupListEditorUiBinder BINDER = GWT.create(GroupListEditorUiBinder.class);
 
     private class TemplateGroupEditorSource extends EditorSource<TemplateGroupEditor> {
 
-        private final VerticalLayoutContainer con;
+        private final AccordionLayoutContainer con;
 
-        public TemplateGroupEditorSource(VerticalLayoutContainer con) {
+        public TemplateGroupEditorSource(AccordionLayoutContainer con) {
             this.con = con;
         }
 
         @Override
         public TemplateGroupEditor create(int index) {
             TemplateGroupEditor subEditor = new TemplateGroupEditor();
-            con.add(subEditor, new VerticalLayoutData(1, -1));
+            con.insert(subEditor, index);
             return subEditor;
         }
         
         @Override
         public void dispose(TemplateGroupEditor subEditor){
-            subEditor.removeFromParent();
+            subEditor.asWidget().removeFromParent();
         }
         
         @Override
         public void setIndex(TemplateGroupEditor editor, int index){
-            con.insert(editor, index, new VerticalLayoutData(1, -1));
+            con.insert(editor, index);
         }
 
     }
     
     @Ignore
     @UiField
-    VerticalLayoutContainer groupsContainer;
+    AccordionLayoutContainer groupsContainer;
 
     private final ListEditor<TemplateGroup, TemplateGroupEditor> editor;
 

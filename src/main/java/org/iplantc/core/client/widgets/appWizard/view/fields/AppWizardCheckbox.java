@@ -1,5 +1,6 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableToBooleanConverter;
 
 import com.google.gwt.editor.client.LeafValueEditor;
@@ -23,7 +24,7 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
  * @author jstroot
  * 
  */
-public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
+public class AppWizardCheckbox implements TemplatePropertyField, LeafValueEditor<Splittable> {
     
     private final CheckBox field;
     private final Converter<Splittable, Boolean> cvt;
@@ -31,6 +32,12 @@ public class AppWizardCheckbox implements TemplatePropertyEditorBase, LeafValueE
     public AppWizardCheckbox(){
         field = new CheckBox();
         cvt = new SplittableToBooleanConverter();
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override

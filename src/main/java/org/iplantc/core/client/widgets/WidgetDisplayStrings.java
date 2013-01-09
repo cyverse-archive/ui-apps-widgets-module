@@ -153,4 +153,11 @@ public interface WidgetDisplayStrings extends CommonUIDisplayStrings {
      * @return a string representing the localized text.
      */
     String treeSelectorFilterEmptyText();
+
+    /**
+     * Localized text for the launch analysis button.
+     * 
+     * @return a string representing the localized text.
+     */
+    String launchAnalysis();
 }

@@ -1,9 +1,9 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableToStringConverter;
 
-import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -22,7 +22,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class AppWizardTextField implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
+public class AppWizardTextField implements TemplatePropertyField {
     
     private final class PreventEntryAfterLimit implements KeyDownHandler {
         private final int limit = 20;
@@ -35,15 +35,20 @@ public class AppWizardTextField implements TemplatePropertyEditorBase, LeafValue
         }
     }
 
-    private final TextField field;
+
+    private final TextField field = new TextField();
     private final Converter<Splittable, String> converter;
     
     public AppWizardTextField(){
-        field = new TextField();
         converter = new SplittableToStringConverter();
         // TODO JDS Figure out how to tie this in with adding a MaxLengthValidator.
         field.addKeyDownHandler(new PreventEntryAfterLimit());
-            
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override
@@ -70,4 +75,5 @@ public class AppWizardTextField implements TemplatePropertyEditorBase, LeafValue
     public Splittable getValue() {
         return converter.convertFieldValue(field.getValue());
     }
+
 }

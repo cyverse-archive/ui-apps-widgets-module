@@ -1,6 +1,5 @@
 package org.iplantc.core.client.widgets.appWizard.models;
 
-
 public enum TemplatePropertyType {
     FileInput,
     FolderInput,
@@ -9,11 +8,17 @@ public enum TemplatePropertyType {
     Flag,
     Info,
     MultiLineText,
-    Number,
+    Integer,
+    Double,
     Text,
-    Selection, // For selecting from a list of string values.
-    ValueSelection, // For selecting from a list of numbers
-    TreeSelection;
+    TextSelection, // For selecting from a list of string values.
+    IntegerSelection, // For selecting from a list of integers
+    DoubleSelection, // For selecting from a list of doubles
+    TreeSelection,
+    // Legacy
+    Selection, 
+    ValueSelection,
+    Number;
     // Input
     // Output
 

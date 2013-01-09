@@ -4,7 +4,7 @@ import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.util.AppWizardFieldFactory;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
-import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyEditorBase;
+import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyField;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.CompositeEditor;
@@ -13,23 +13,22 @@ import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.web.bindery.autobean.shared.Splittable;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyEditorBase>, ValueAwareEditor<TemplateProperty> {
+public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyField>, ValueAwareEditor<TemplateProperty> {
 
     interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {}
 
     private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
-    private CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase> chain;
+    private CompositeEditor.EditorChain<Splittable, TemplatePropertyField> chain;
 
     @Ignore
     @UiField
     FieldLabel propertyLabel;
     
-    private TemplatePropertyEditorBase subEditor = null;
-    
+    private TemplatePropertyField subEditor = null;
 
     public TemplatePropertyEditorAdapter() {
         initWidget(BINDER.createAndBindUi(this));
@@ -40,6 +39,7 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
     public void setValue(TemplateProperty value) {
         // attach it to the chain. Attach the formvalue  
         subEditor = AppWizardFieldFactory.createPropertyField(value);
+        subEditor.initialize(value);
         
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
         propertyLabel.setHTML(fieldLabelText);
@@ -67,19 +67,19 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
 
     @Override
-    public TemplatePropertyEditorBase createEditorForTraversal() {
+    public TemplatePropertyField createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
 
     @Override
-    public String getPathElement(TemplatePropertyEditorBase subEditor) {
+    public String getPathElement(TemplatePropertyField subEditor) {
         return "";
     }
 
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyEditorBase> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyField> chain) {
         this.chain = chain;
     }
 

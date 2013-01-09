@@ -1,10 +1,12 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
+
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.NumberField;
@@ -17,7 +19,7 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
  * @author jstroot
  * 
  */
-public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyEditorBase, LeafValueEditor<Splittable> {
+public class AppWizardDoubleNumberField extends Composite implements TemplatePropertyField, LeafValueEditor<Splittable> {
 
     private final NumberField<Double> field = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
     
@@ -26,11 +28,17 @@ public class AppWizardDoubleNumberField extends Composite implements TemplatePro
     }
 
     @Override
+    public void initialize(TemplateProperty property) {
+        // Apply validators.
+        // What to do if I get an invalid validator?
+        //
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
+    }
+
+    @Override
     public void setValue(Splittable value) {
-        String string = value.asString();
-        if ((string != null) && !string.isEmpty()) {
-            field.setValue(value.asNumber());
-        }
+        field.setValue(value.asNumber());
     }
 
     @Override

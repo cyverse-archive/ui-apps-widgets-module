@@ -20,9 +20,18 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.HasValidHandlers;
  * @see TemplatePropertyEditorAdapter#setValue(TemplateProperty)
  * @author jstroot
  * 
- * @param <O> The object type which this editor is based on.
+ * @param <E> The type of validator which the property editor supports.
  */
-public interface TemplatePropertyEditorBase extends Editor<Splittable>, HasInvalidHandlers, HasValidHandlers, IsWidget, TakesValue<Splittable> {
+public interface TemplatePropertyField extends Editor<Splittable>, HasInvalidHandlers, HasValidHandlers, IsWidget, TakesValue<Splittable> {
     
-    
+    /**
+     * Initializes the property editor. This includes applying any validators specified by the input
+     * parameter.
+     * 
+     * @param property
+     */
+    void initialize(TemplateProperty property);
+
+    // JDS May need to return a list of available validators.
+
 }

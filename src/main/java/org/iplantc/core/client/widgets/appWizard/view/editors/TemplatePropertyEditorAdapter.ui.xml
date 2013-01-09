@@ -4,5 +4,6 @@
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
              
    <form:FieldLabel ui:field="propertyLabel"
-                    labelAlign="TOP"/>              
+                    labelAlign="TOP"
+                    width="-1"/>              
 </ui:UiBinder> 

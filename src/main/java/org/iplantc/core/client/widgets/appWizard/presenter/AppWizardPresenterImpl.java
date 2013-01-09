@@ -39,10 +39,10 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     public void go(HasOneWidget container) {
         view = new AppWizardViewImpl();
         view.setPresenter(this);
-        container.setWidget(view);
 
         view.getEditorDriver().edit(appTemplate);
 
+        container.setWidget(view);
     }
 
     @Override

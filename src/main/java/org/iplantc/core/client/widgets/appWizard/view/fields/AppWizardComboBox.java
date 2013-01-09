@@ -1,8 +1,7 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
-import java.util.List;
-
 import org.iplantc.core.client.widgets.appWizard.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.selection.SelectionArgument;
 import org.iplantc.core.client.widgets.appWizard.models.selection.SelectionProperties;
 
@@ -19,19 +18,24 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 /**
- * XXX Must
- * 
  * @author jstroot
  * 
  */
-public class AppWizardComboBox implements TemplatePropertyEditorBase {
+public class AppWizardComboBox implements TemplatePropertyField {
     private final SelectionProperties props = GWT.create(SelectionProperties.class);
     private final ListStore<SelectionArgument> store = new ListStore<SelectionArgument>(props.id());
 
     ComboBox<SelectionArgument> field = new ComboBox<SelectionArgument>(store, props.display());
 
-    public AppWizardComboBox(List<SelectionArgument> arguments) {
-        store.addAll(arguments);
+    public AppWizardComboBox() {
+
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        store.addAll(property.getArguments());
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override

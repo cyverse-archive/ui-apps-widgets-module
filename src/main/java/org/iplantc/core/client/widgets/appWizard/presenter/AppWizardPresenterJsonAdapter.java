@@ -145,7 +145,7 @@ public class AppWizardPresenterJsonAdapter {
                 AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
                 AutoBean<TemplateValidator> validatorBean = factory.teplateValidator();
 
-                TemplateValidatorType tvType = TemplateValidatorType.getTypeByValue(key);
+                TemplateValidatorType tvType = TemplateValidatorType.valueOf(key);
                 Splittable params = rule.get(key);
 
                 validatorBean.as().setType(tvType);
@@ -178,7 +178,9 @@ public class AppWizardPresenterJsonAdapter {
             
             for(String key : ruleKeys){
                 if (key.equalsIgnoreCase("MustContain") && rule.get(key).isIndexed()) {
-                    if (type.equals(TemplatePropertyType.Selection) || type.equals(TemplatePropertyType.ValueSelection)) {
+                    if (type.equals(TemplatePropertyType.TextSelection) 
+                            || type.equals(TemplatePropertyType.IntegerSelection)
+                            || type.equals(TemplatePropertyType.DoubleSelection)) {
                         Splittable mustContain = rule.get(key);
                         for (int j = 0; j < mustContain.size(); j++) {
                             Splittable arg = StringQuoter.createSplittable();

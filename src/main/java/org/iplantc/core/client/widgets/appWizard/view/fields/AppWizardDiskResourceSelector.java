@@ -3,12 +3,14 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 import java.util.List;
 
 import org.iplantc.core.client.widgets.I18N;
+import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableStringListToStringConverter;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 
 import com.google.common.base.Joiner;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -20,7 +22,9 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Component;
+import com.sencha.gxt.widget.core.client.ComponentHelper;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
@@ -38,7 +42,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class AppWizardDiskResourceSelector extends Component implements TemplatePropertyEditorBase {
+public abstract class AppWizardDiskResourceSelector extends Component implements TemplatePropertyField, LeafValueEditor<Splittable> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -57,23 +61,16 @@ public class AppWizardDiskResourceSelector extends Component implements Template
     }
 
     private final TextButton button;
-    private final TextField input;
+    private final TextField input = new TextField();
 
     private final SplittableStringListToStringConverter cnvt;
 
     private final Resources res = GWT.create(Resources.class);
     private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
     private final boolean fileSelector;
+    private final int buttonOffset = 3;
 
-    public static AppWizardDiskResourceSelector asFileSelector() {
-        return new AppWizardDiskResourceSelector(true);
-    }
-
-    public static AppWizardDiskResourceSelector asFolderSelector() {
-        return new AppWizardDiskResourceSelector(false);
-    }
-
-    private AppWizardDiskResourceSelector(boolean fileSelector) {
+    protected AppWizardDiskResourceSelector(boolean fileSelector) {
         this.fileSelector = fileSelector;
         res.style().ensureInjected();
         
@@ -83,7 +80,6 @@ public class AppWizardDiskResourceSelector extends Component implements Template
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
-        input = new TextField();
         input.setReadOnly(true);
         getElement().appendChild(input.getElement());
 
@@ -100,6 +96,12 @@ public class AppWizardDiskResourceSelector extends Component implements Template
             }
         });
 
+    }
+
+    @Override
+    public void initialize(TemplateProperty property) {
+        // TBI JDS
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     private void onBrowseSelected() {
@@ -133,21 +135,37 @@ public class AppWizardDiskResourceSelector extends Component implements Template
 
     @Override
     public void setValue(Splittable value) {
-        // String payload = value.getPayload();
-        // JSONArray jsonArray = JsonUtil.getObject(payload).isArray();
-        // List<String> list = JsonUtil.buildStringList(jsonArray);
-        // input.setValue(Joiner.on(",").join(list));
         input.setValue(cnvt.convertModelValue(value));
     }
 
     @Override
     public Splittable getValue() {
-        // Parse text field into a list
-        // Convert the list to a JSONArray
-        // Create Splittable from JSONArray payload.
-        // List<String> split = Lists.newArrayList(Splitter.on(",").split(input.getValue()));
-        // return StringQuoter.create(JsonUtil.buildArrayFromStrings(split).toString());
         return cnvt.convertFieldValue(input.getValue());
+    }
+
+    @Override
+    protected void doAttachChildren() {
+        super.doAttachChildren();
+        ComponentHelper.doAttach(input);
+        ComponentHelper.doAttach(button);
+    }
+
+    @Override
+    protected void doDetachChildren() {
+        super.doDetachChildren();
+        ComponentHelper.doDetach(input);
+        ComponentHelper.doDetach(button);
+    }
+
+    @Override
+    protected XElement getFocusEl() {
+        return input.getElement();
+    }
+
+    @Override
+    protected void onResize(int width, int height) {
+        super.onResize(width, height);
+        input.setWidth(width - button.getOffsetWidth() - buttonOffset);
     }
 
     private final class DialogHideHandler implements HideHandler {
@@ -161,6 +179,8 @@ public class AppWizardDiskResourceSelector extends Component implements Template
     
         @Override
         public void onHide(HideEvent event) {
+            if(takesValue.getValue() == null)
+                return;
             tf.setText(Joiner.on(",").join(takesValue.getValue()));
         }
     }
