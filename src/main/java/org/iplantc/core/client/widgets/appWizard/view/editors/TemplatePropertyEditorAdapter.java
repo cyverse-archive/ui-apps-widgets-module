@@ -17,19 +17,18 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyField<?>>, ValueAwareEditor<TemplateProperty> {
+public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyField>, ValueAwareEditor<TemplateProperty> {
 
     interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {}
 
     private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
-    private CompositeEditor.EditorChain<Splittable, TemplatePropertyField<?>> chain;
+    private CompositeEditor.EditorChain<Splittable, TemplatePropertyField> chain;
 
     @Ignore
     @UiField
     FieldLabel propertyLabel;
     
-    private TemplatePropertyField<?> subEditor = null;
-    
+    private TemplatePropertyField subEditor = null;
 
     public TemplatePropertyEditorAdapter() {
         initWidget(BINDER.createAndBindUi(this));
@@ -40,6 +39,7 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
     public void setValue(TemplateProperty value) {
         // attach it to the chain. Attach the formvalue  
         subEditor = AppWizardFieldFactory.createPropertyField(value);
+        subEditor.initialize(value);
         
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
         propertyLabel.setHTML(fieldLabelText);
@@ -67,19 +67,19 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
 
     @Override
-    public TemplatePropertyField<?> createEditorForTraversal() {
+    public TemplatePropertyField createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
 
     @Override
-    public String getPathElement(TemplatePropertyField<?> subEditor) {
+    public String getPathElement(TemplatePropertyField subEditor) {
         return "";
     }
 
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyField<?>> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyField> chain) {
         this.chain = chain;
     }
 

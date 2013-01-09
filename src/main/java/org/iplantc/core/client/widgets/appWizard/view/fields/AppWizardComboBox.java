@@ -1,7 +1,5 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
-import java.util.List;
-
 import org.iplantc.core.client.widgets.appWizard.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.selection.SelectionArgument;
@@ -18,13 +16,12 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * @author jstroot
  * 
  */
-public class AppWizardComboBox implements TemplatePropertyField<String> {
+public class AppWizardComboBox implements TemplatePropertyField {
     private final SelectionProperties props = GWT.create(SelectionProperties.class);
     private final ListStore<SelectionArgument> store = new ListStore<SelectionArgument>(props.id());
 
@@ -70,30 +67,6 @@ public class AppWizardComboBox implements TemplatePropertyField<String> {
     @Override
     public Splittable getValue() {
         return AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(field.getCurrentValue()));
-    }
-
-    @Override
-    public void addValidator(Validator<String> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void removeValidator(Validator<String> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public List<Validator<String>> getValidators() {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void addValidators(List<Validator<String>> validators) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
 }

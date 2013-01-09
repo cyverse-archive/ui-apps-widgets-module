@@ -1,7 +1,5 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields.temp;
 
-import java.util.List;
-
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyField;
 
@@ -13,9 +11,8 @@ import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
-import com.sencha.gxt.widget.core.client.form.Validator;
 
-public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements TemplatePropertyField<Number> {
+public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements TemplatePropertyField {
 
     private static MySliderCell sliderCell = new MySliderCell();
     private final Slider slider;
@@ -41,30 +38,6 @@ public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integ
     @Override
     public Widget asWidget() {
         return slider;
-    }
-
-    @Override
-    public void addValidator(Validator<Number> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void removeValidator(Validator<Number> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public List<Validator<Number>> getValidators() {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void addValidators(List<Validator<Number>> validators) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
 }

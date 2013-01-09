@@ -3,7 +3,17 @@ package org.iplantc.core.client.widgets.appWizard.util;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.models.TemplatePropertyType;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardComboBox;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardDoubleNumberField;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardFileSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardFolderSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardMultiFileSelector;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextArea;
+import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.client.widgets.appWizard.view.fields.TemplatePropertyField;
+import org.iplantc.core.uicommons.client.validators.NameValidator3;
+import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
@@ -13,6 +23,10 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 public class AppWizardFieldFactory {
@@ -28,80 +42,96 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static TemplatePropertyField<?> createPropertyField(TemplateProperty property) {
-        TemplatePropertyField<?> field = null;
-        if (property.getType().getEditorClass() != null) {
-            // FIXME JDS This next line needs to be tested.
-            field = GWT.create(property.getType().getEditorClass());
-            // Set default value
+    public static TemplatePropertyField createPropertyField(TemplateProperty property) {
+        TemplatePropertyField field;
+        switch (property.getType()) {
+            case FileInput:
+                field = new AppWizardFileSelector();
+                break;
+
+            case FolderInput:
+                field = new AppWizardFolderSelector();
+                break;
+
+            case MultiFileSelector:
+                field = new AppWizardMultiFileSelector();
+                break;
+
+            case Text:
+                field = new AppWizardTextField();
+                break;
+
+            case EnvironmentVariable:
+                field = new AppWizardTextField();
+                break;
+
+            case MultiLineText:
+                field = new AppWizardTextArea();
+                break;
+
+            case Double:
+                field = new AppWizardDoubleNumberField();
+                break;
+
+            case Integer:
+                field = null;
+                break;
+
+            case Flag:
+                field = new AppWizardCheckbox();
+                break;
+
+            case TextSelection:
+                field = new AppWizardComboBox();
+                break;
+
+            case IntegerSelection:
+                field = null;
+                break;
+
+            case DoubleSelection:
+                field = null;
+                break;
+
+            case TreeSelection:
+                field = null;
+                break;
+
+            case Info:
+                field = null;
+                break;
+
+            // Legacy Types
+            case Selection:
+                // Default to Text Selection
+                field = new AppWizardComboBox();
+                break;
+
+            case ValueSelection:
+                // TODO JDS Map this to either IntegerSelection or DoubleSelection
+                field = new AppWizardDoubleNumberField();
+                break;
+
+            default:
+                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + TemplatePropertyType.class.getName() + " type.");
+                field = null;
+                break;
+        }
+
+        if (field != null) {
             if ((property.getDefaultValue() != null) && !property.getDefaultValue().isEmpty()) {
                 Splittable create = StringQuoter.split(property.getDefaultValue());
                 property.setValue(create);
             }
-            field.initialize(property);
+            if ((property.getDescription() != null) && !property.getDescription().isEmpty()) {
+                QuickTip qt = new QuickTip(field.asWidget());
+                qt.setToolTip(property.getDescription());
+            }
 
         }
-
-        if((field != null) 
-                && (property.getDescription() != null)
-                && !property.getDescription().isEmpty()){
-            QuickTip qt = new QuickTip(field.asWidget());
-            qt.setToolTip(property.getDescription());
-        }
-
         return field;
     }
-    
-    /**
-     * @param v
-     * @return
-     */
-    private static Validator<?> createValidator(TemplateValidator v) {
 
-        switch (v.getType()) {
-            case CHARACTER_LIMIT:
-
-                break;
-
-            case DOUBLE_ABOVE:
-                break;
-
-            case DOUBLE_BELOW:
-                break;
-
-            case DOUBLE_RANGE:
-                break;
-
-            case FILE_NAME:
-                break;
-
-            case GENOTYPE_NAME:
-                break;
-
-            case INT_ABOVE:
-                break;
-
-            case INT_ABOVE_FIELD:
-                break;
-
-            case INT_BELOW:
-                break;
-
-            case INT_BELOW_FIELD:
-                break;
-
-            case INT_RANGE:
-                break;
-
-            case REGEX:
-                break;
-
-            default:
-                break;
-        }
-        return null;
-    }
-    
     public static SafeHtml createFieldLabelText(TemplateProperty property){
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         if (property.isRequired()) {
@@ -141,7 +171,8 @@ public class AppWizardFieldFactory {
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
-            case Number:
+            case Integer:
+            case Double:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
@@ -149,11 +180,12 @@ public class AppWizardFieldFactory {
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
-            case Selection:
+            case TextSelection:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
-            case ValueSelection:
+            case IntegerSelection:
+            case DoubleSelection:
                 labelText.append(templates.fieldLabel("", label, "", ""));
                 break;
 
@@ -167,5 +199,50 @@ public class AppWizardFieldFactory {
         }
 
         return labelText.toSafeHtml();
+    }
+
+    /**
+     * @param v
+     * @return
+     */
+    public static Validator<?> createValidator(TemplateValidator tv) {
+        Validator<?> validator;
+        switch (tv.getType()) {
+            case IntRange:
+                validator = new NumberRangeValidator<Integer>(0, 0);
+                break;
+            case IntAbove:
+                validator = new MinNumberValidator<Integer>(0);
+                break;
+            case IntBelow:
+                validator = new MaxNumberValidator<Integer>(0);
+                break;
+            case DoubleRange:
+                validator = new NumberRangeValidator<Double>(0d, 0d);
+                break;
+            case DoubleAbove:
+                validator = new MinNumberValidator<Double>(0d);
+                break;
+            case DoubleBelow:
+                validator = new MaxNumberValidator<Double>(0d);
+                break;
+            case FileName:
+                validator = new NameValidator3();
+                break;
+            case Regex:
+                validator = new RegExValidator("", "");
+                break;
+            case CharacterLimit:
+                validator = new MaxLengthValidator(200);
+                break;
+
+            default:
+                // FIXME JDS Throw exception to notify of bad condition.
+                validator = null;
+                break;
+
+        }
+
+        return validator;
     }
 }

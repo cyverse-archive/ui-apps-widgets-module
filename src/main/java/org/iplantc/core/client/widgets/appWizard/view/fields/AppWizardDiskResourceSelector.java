@@ -33,7 +33,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * XXX JDS May want to turn this into a selector of either files or folders
@@ -43,7 +42,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public abstract class AppWizardDiskResourceSelector extends Component implements TemplatePropertyField<String>, LeafValueEditor<Splittable> {
+public abstract class AppWizardDiskResourceSelector extends Component implements TemplatePropertyField, LeafValueEditor<Splittable> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -184,30 +183,6 @@ public abstract class AppWizardDiskResourceSelector extends Component implements
                 return;
             tf.setText(Joiner.on(",").join(takesValue.getValue()));
         }
-    }
-
-    @Override
-    public void addValidator(Validator<String> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void removeValidator(Validator<String> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public List<Validator<String>> getValidators() {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void addValidators(List<Validator<String>> validators) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
 }

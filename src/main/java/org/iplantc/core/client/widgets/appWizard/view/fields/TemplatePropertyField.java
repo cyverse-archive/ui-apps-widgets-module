@@ -2,7 +2,6 @@ package org.iplantc.core.client.widgets.appWizard.view.fields;
 
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.editors.TemplatePropertyEditorAdapter;
-import org.iplantc.core.uicommons.client.validators.HasValidators;
 
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.user.client.TakesValue;
@@ -23,7 +22,7 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.HasValidHandlers;
  * 
  * @param <E> The type of validator which the property editor supports.
  */
-public interface TemplatePropertyField<E> extends Editor<Splittable>, HasInvalidHandlers, HasValidHandlers, IsWidget, TakesValue<Splittable>, HasValidators<E> {
+public interface TemplatePropertyField extends Editor<Splittable>, HasInvalidHandlers, HasValidHandlers, IsWidget, TakesValue<Splittable> {
     
     /**
      * Initializes the property editor. This includes applying any validators specified by the input

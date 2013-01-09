@@ -1,7 +1,5 @@
 package org.iplantc.core.client.widgets.appWizard.view.fields;
 
-import java.util.List;
-
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
 import org.iplantc.core.client.widgets.appWizard.view.fields.converters.SplittableToBooleanConverter;
 
@@ -13,7 +11,6 @@ import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
-import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * A LeafValueEditor for TemplateProperties of type TemplatePropertyType.FLAG
@@ -27,7 +24,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class AppWizardCheckbox implements TemplatePropertyField<Boolean>, LeafValueEditor<Splittable> {
+public class AppWizardCheckbox implements TemplatePropertyField, LeafValueEditor<Splittable> {
     
     private final CheckBox field;
     private final Converter<Splittable, Boolean> cvt;
@@ -70,26 +67,6 @@ public class AppWizardCheckbox implements TemplatePropertyField<Boolean>, LeafVa
     @Override
     public Widget asWidget() {
         return field;
-    }
-
-    @Override
-    public void addValidator(Validator<Boolean> validator) {
-        throw new UnsupportedOperationException("Validators cannot be added to a checkbox");
-    }
-
-    @Override
-    public void removeValidator(Validator<Boolean> validator) {
-        throw new UnsupportedOperationException("Validators cannot be added to a checkbox");
-    }
-
-    @Override
-    public List<Validator<Boolean>> getValidators() {
-        throw new UnsupportedOperationException("Validators cannot be added to a checkbox");
-    }
-
-    @Override
-    public void addValidators(List<Validator<Boolean>> validators) {
-        throw new UnsupportedOperationException("Validators cannot be added to a checkbox");
     }
 
 }

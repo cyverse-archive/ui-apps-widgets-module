@@ -29,7 +29,6 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
-import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -45,7 +44,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  * @author jstroot
  * 
  */
-public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyField<String>, LeafValueEditor<Splittable> {
+public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyField, LeafValueEditor<Splittable> {
 
     interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {}
 
@@ -158,30 +157,6 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
                 return;
             store.addAll(diskResources);
         }
-    }
-
-    @Override
-    public void addValidator(Validator<String> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void removeValidator(Validator<String> validator) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public List<Validator<String>> getValidators() {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
-
-    @Override
-    public void addValidators(List<Validator<String>> validators) {
-        // / TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
 }
