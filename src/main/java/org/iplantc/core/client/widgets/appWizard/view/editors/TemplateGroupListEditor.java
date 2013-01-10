@@ -35,6 +35,10 @@ public class TemplateGroupListEditor extends Composite implements IsEditor<ListE
         public TemplateGroupEditor create(int index) {
             TemplateGroupEditor subEditor = new TemplateGroupEditor();
             con.insert(subEditor, index);
+            if (index == 0) {
+                // Ensure that the first container is expanded automatically
+                con.setActiveWidget(subEditor.asWidget());
+            }
             return subEditor;
         }
         

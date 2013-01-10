@@ -33,6 +33,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
  * XXX JDS May want to turn this into a selector of either files or folders
@@ -99,10 +100,7 @@ public abstract class AppWizardDiskResourceSelector extends Component implements
     }
 
     @Override
-    public void initialize(TemplateProperty property) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
+    public void initialize(TemplateProperty property) {/* Do Nothing */}
 
     private void onBrowseSelected() {
         if (fileSelector) {
@@ -183,6 +181,11 @@ public abstract class AppWizardDiskResourceSelector extends Component implements
                 return;
             tf.setText(Joiner.on(",").join(takesValue.getValue()));
         }
+    }
+
+    @Override
+    public void setToolTip(ToolTipConfig toolTip) {
+        input.setToolTipConfig(toolTip);
     }
 
 }

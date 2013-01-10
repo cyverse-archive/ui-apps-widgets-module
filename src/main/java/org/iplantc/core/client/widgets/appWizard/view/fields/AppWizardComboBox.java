@@ -16,6 +16,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
  * @author jstroot
@@ -34,8 +35,6 @@ public class AppWizardComboBox implements TemplatePropertyField {
     @Override
     public void initialize(TemplateProperty property) {
         store.addAll(property.getArguments());
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override
@@ -67,6 +66,11 @@ public class AppWizardComboBox implements TemplatePropertyField {
     @Override
     public Splittable getValue() {
         return AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(field.getCurrentValue()));
+    }
+
+    @Override
+    public void setToolTip(ToolTipConfig toolTip) {
+        field.setToolTipConfig(toolTip);
     }
 
 }

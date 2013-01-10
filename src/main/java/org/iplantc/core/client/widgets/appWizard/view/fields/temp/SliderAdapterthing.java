@@ -11,6 +11,7 @@ import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements TemplatePropertyField {
 
@@ -38,6 +39,11 @@ public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integ
     @Override
     public Widget asWidget() {
         return slider;
+    }
+
+    @Override
+    public void setToolTip(ToolTipConfig toolTip) {
+
     }
 
 }

@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.HasInvalidHandlers;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.HasValidHandlers;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
  * Interface definition for all TemplateProperty Editors.
@@ -31,6 +32,8 @@ public interface TemplatePropertyField extends Editor<Splittable>, HasInvalidHan
      * @param property
      */
     void initialize(TemplateProperty property);
+
+    void setToolTip(ToolTipConfig toolTip);
 
     // JDS May need to return a list of available validators.
 

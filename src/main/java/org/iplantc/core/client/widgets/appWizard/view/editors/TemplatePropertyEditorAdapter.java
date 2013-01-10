@@ -1,6 +1,9 @@
 package org.iplantc.core.client.widgets.appWizard.view.editors;
 
+import java.util.List;
+
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
+import org.iplantc.core.client.widgets.appWizard.models.TemplateValidator;
 import org.iplantc.core.client.widgets.appWizard.util.AppWizardFieldFactory;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.client.widgets.appWizard.view.fields.AppWizardTextField;
@@ -40,7 +43,13 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
         // attach it to the chain. Attach the formvalue  
         subEditor = AppWizardFieldFactory.createPropertyField(value);
         subEditor.initialize(value);
-        
+        List<TemplateValidator> validators = value.getValidators();
+        if (validators != null) {
+            GWT.log("Property: " + value.getLabel() + "; " + value.getType());
+            for (TemplateValidator v : validators) {
+                GWT.log("\tValidator: " + v.getType());
+            }
+        }
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
         propertyLabel.setHTML(fieldLabelText);
         propertyLabel.setWidget(subEditor);

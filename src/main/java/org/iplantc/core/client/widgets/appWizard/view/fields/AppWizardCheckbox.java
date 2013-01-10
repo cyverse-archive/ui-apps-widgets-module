@@ -11,6 +11,7 @@ import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
  * A LeafValueEditor for TemplateProperties of type TemplatePropertyType.FLAG
@@ -35,10 +36,7 @@ public class AppWizardCheckbox implements TemplatePropertyField, LeafValueEditor
     }
 
     @Override
-    public void initialize(TemplateProperty property) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
+    public void initialize(TemplateProperty property) {/* Do Nothing */}
 
     @Override
     public void setValue(Splittable value) {
@@ -67,6 +65,11 @@ public class AppWizardCheckbox implements TemplatePropertyField, LeafValueEditor
     @Override
     public Widget asWidget() {
         return field;
+    }
+
+    @Override
+    public void setToolTip(ToolTipConfig toolTip) {
+        field.setToolTipConfig(toolTip);
     }
 
 }

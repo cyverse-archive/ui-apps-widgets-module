@@ -21,6 +21,10 @@ import com.sencha.gxt.widget.core.client.form.FormPanel;
  * Drops on the form itself
  * Drops on "groups"
  * 
+ * 
+ * TODO JDS View needs to have a TextBox across the bottom which displays the resulting command line
+ * argument.
+ * 
  * @author jstroot
  * 
  */

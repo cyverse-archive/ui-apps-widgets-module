@@ -105,6 +105,8 @@ public class AppWizardPresenterJsonAdapter {
                 Splittable inputRules = tpValidator.get("rules");
                 getAppTemplateValidator(inputRules, type).assign(subTemplateProperty, "validators");
                 getSelectionArguments(inputRules, type).assign(subTemplateProperty, "arguments");
+            } else {
+
             }
         }
         if(!splittable.isUndefined("value")){
@@ -146,6 +148,9 @@ public class AppWizardPresenterJsonAdapter {
                 AutoBean<TemplateValidator> validatorBean = factory.teplateValidator();
 
                 TemplateValidatorType tvType = TemplateValidatorType.valueOf(key);
+                // We don't want to add "MustContain" as a validator
+                if (tvType.equals(TemplateValidatorType.MustContain))
+                    continue;
                 Splittable params = rule.get(key);
 
                 validatorBean.as().setType(tvType);
@@ -180,7 +185,8 @@ public class AppWizardPresenterJsonAdapter {
                 if (key.equalsIgnoreCase("MustContain") && rule.get(key).isIndexed()) {
                     if (type.equals(TemplatePropertyType.TextSelection) 
                             || type.equals(TemplatePropertyType.IntegerSelection)
-                            || type.equals(TemplatePropertyType.DoubleSelection)) {
+                            || type.equals(TemplatePropertyType.DoubleSelection)
+                            || type.equals(TemplatePropertyType.Selection)) {
                         Splittable mustContain = rule.get(key);
                         for (int j = 0; j < mustContain.size(); j++) {
                             Splittable arg = StringQuoter.createSplittable();

@@ -15,6 +15,7 @@ public enum TemplatePropertyType {
     IntegerSelection, // For selecting from a list of integers
     DoubleSelection, // For selecting from a list of doubles
     TreeSelection,
+    Output,
     // Legacy
     Selection, 
     ValueSelection,

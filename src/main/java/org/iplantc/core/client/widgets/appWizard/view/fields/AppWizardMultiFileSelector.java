@@ -19,10 +19,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
@@ -35,11 +35,11 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
  * TODO JDS Implement drag and drop
- * 
  * 
  * @author jstroot
  * 
@@ -81,13 +81,12 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
                 deleteButton.setEnabled((selection != null) && !selection.isEmpty());
             }
         });
+
+        grid.setBorders(true);
     }
 
     @Override
-    public void initialize(TemplateProperty property) {
-        // TBI JDS
-        throw new UnsupportedOperationException("Not Yet Implemented");
-    }
+    public void initialize(TemplateProperty property) {/* Do Nothing */}
 
     @UiFactory
     ColumnModel<DiskResource> createColumnModel() {
@@ -121,9 +120,10 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
 
     @Override
     public void setValue(Splittable value) {
-        if (!value.isIndexed())
+        if ((value == null) 
+                || ((value != null) && !value.isIndexed()))
             return;
-
+        
         // TBI JDS Assume the incoming value is a JSON array of ..... ?
 
     }
@@ -157,6 +157,11 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
                 return;
             store.addAll(diskResources);
         }
+    }
+
+    @Override
+    public void setToolTip(ToolTipConfig toolTip) {
+        this.setToolTipConfig(toolTip);
     }
 
 }
