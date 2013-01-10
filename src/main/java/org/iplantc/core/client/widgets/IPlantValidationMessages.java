@@ -194,6 +194,13 @@ public interface IPlantValidationMessages extends Messages {
     String analysisNameValidationMsg();
 
     /**
+     * Localized text for display as validation message when an analysis Name contains invalid chars.
+     * 
+     * @return a string representing the localized text.
+     */
+    String analysisNameInvalidChars(String invalidChars);
+
+    /**
      * Validation message for numeric field
      * 
      * @return a String representing the text.
