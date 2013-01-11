@@ -1,0 +1,145 @@
+{
+    "id": "8B2153C5-0A37-7201-5F29-5F0F3149F061",
+    "name": "NumericEvaluationofaDataColumn",
+    "label": "NumericEvaluationofaDataColumn",
+    "type": "",
+    "groups": [
+        {
+            "id": "29CE1E58BFED4379875C97CFE70424D6",
+            "name": "Selectdata: ",
+            "label": "Selectinputdata",
+            "properties": [
+                {
+                    "id": "NumericEvaluationofaDataColumn_CA57CEC4E2E74ED9882507AB2CE8A4CB",
+                    "isVisible": true,
+                    "description": "",
+                    "validator": {
+                        "name": "",
+                        "label": "",
+                        "required": true
+                    },
+                    "name": "--input",
+                    "label": "Selectaninputfile",
+                    "type": "FileInput"
+                }
+            ],
+            "type": "step"
+        },
+        {
+            "id": "6D53E4B81D504997AC630DC3696F86A1",
+            "name": "",
+            "label": "Options",
+            "properties": [
+                {
+                    "id": "NumericEvaluationofaDataColumn_72F6B247D3E245879ECDD30ADE8D0E94",
+                    "isVisible": true,
+                    "description": "",
+                    "validator": {
+                        "id": "8BD09F299339484DA09EC937D5071A14",
+                        "name": "",
+                        "label": "",
+                        "required": true
+                    },
+                    "name": "--test",
+                    "value": "c1",
+                    "label": "Indicatethetestcolumn(c1=column1)",
+                    "type": "Text"
+                },
+                {
+                    "id": "NumericEvaluationofaDataColumn_C081F15DEC4C4A90A2F4468EF314A9B9",
+                    "isVisible": true,
+                    "description": "",
+                    "validator": {
+                        "id": "4B33DBC6758046BFB4C5BDD5D0D9CF37",
+                        "name": "",
+                        "label": "",
+                        "required": true
+                    },
+                    "name": "--comparison",
+                    "label": "Entereitheranothercolumn(cN)oranumber",
+                    "type": "Text"
+                },
+                {
+                    "id": "NumericEvaluationofaDataColumn_0337F9BD4E3E492F98D2462544A7EFA4",
+                    "isVisible": true,
+                    "description": "Numericcomparisonoperators.Useonstringvalueswillresultinundefinedresults.",
+                    "validator": {
+                        "id": "D2EB2D96CE1B4BCAA6341462A2580735",
+                        "name": "",
+                        "label": "",
+                        "required": true,
+                        "rules": [
+                            {
+                                "MustContain": [
+                                    {
+                                        "isDefault": true,
+                                        "name": "--operator",
+                                        "value": "==",
+                                        "display": "Equalto"
+                                    },
+                                    {
+                                        "isDefault": false,
+                                        "name": "--operator",
+                                        "value": "!=",
+                                        "display": "Notequalto"
+                                    },
+                                    {
+                                        "isDefault": false,
+                                        "name": "--operator",
+                                        "value": ">",
+                                        "display": "Greaterthan"
+                                    },
+                                    {
+                                        "isDefault": false,
+                                        "name": "--operator",
+                                        "value": "<",
+                                        "display": "Lessthan"
+                                    },
+                                    {
+                                        "isDefault": false,
+                                        "name": "--operator",
+                                        "value": ">=",
+                                        "display": "Greaterthanorequalto"
+                                    },
+                                    {
+                                        "isDefault": false,
+                                        "name": "--operator",
+                                        "value": "<=",
+                                        "display": "Lessthanorequalto"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "name": "",
+                    "value": "0",
+                    "label": "Selectacomparisonoperator",
+                    "type": "Selection"
+                },
+                {
+                    "id": "NumericEvaluationofaDataColumn_C5C2BADBE1234E989084DA4935F8695F",
+                    "isVisible": true,
+                    "description": "Thisfielddefinesthenumberoflinesintheinputfilethatareheadertextwhichshouldnotbeevaluated",
+                    "validator": {
+                        "id": "A223AA7D0A8C48D6A5E4E6634C8FD8C0",
+                        "name": "",
+                        "label": "",
+                        "required": true,
+                        "rules": [
+                            {
+                                "IntAbove": [
+                                    -1
+                                ]
+                            }
+                        ]
+                    },
+                    "name": "--header",
+                    "value": "0",
+                    "label": "Linesofheadertext",
+                    "type": "Number"
+                }
+            ],
+            "type": ""
+        }
+    ]
+}

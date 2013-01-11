@@ -18,6 +18,7 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
  * a <code>Splittable</code> which can be used to generate an <code>AutoBean&lt;AppTemplate&gt;</code>
  * 
  * KLUDGE JDS This class can go away if the server side JSON data model is cleaned up.
+ * TODO JDS Should create "Legacy" autobeans for deserialization
  * 
  * @author jstroot
  * 
