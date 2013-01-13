@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.iplantc.core.client.widgets.I18N;
 import org.iplantc.core.client.widgets.utils.ComponentValueTable;
-import org.iplantc.core.client.widgets.utils.UsefulTextArea;
 import org.iplantc.core.client.widgets.utils.ValidatorHelper;
 import org.iplantc.core.client.widgets.validator.IPlantValidator;
 import org.iplantc.core.metadata.client.property.Property;
 import org.iplantc.core.metadata.client.validation.MetaDataValidator;
+import org.iplantc.core.uicommons.client.widgets.UsefulTextArea;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
