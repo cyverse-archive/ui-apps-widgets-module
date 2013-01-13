@@ -18,7 +18,7 @@ import com.extjs.gxt.ui.client.widget.form.Validator;
 
 /**
  * Class used for wizard field and form level validation.
- * 
+ * XXX JDS This validator will become unnecessary when the GXT 2.2.5 dependent classes are removed from de-widgets and de-webapp
  * @author amuir
  * 
  */
