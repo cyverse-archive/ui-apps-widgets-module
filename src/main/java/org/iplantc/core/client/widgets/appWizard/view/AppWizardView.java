@@ -4,6 +4,7 @@ import org.iplantc.core.client.widgets.appWizard.models.AppTemplate;
 
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
+import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -35,9 +36,11 @@ public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
          * 
          * @param json
          */
-        void setAppTemplateFromJsonString(String json);
+        void setAppTemplateFromJsonString(final String json);
     
         AppTemplate getAppTemplate();
+
+        void go(final HasOneWidget container, final String json);
     }
 
     /**
