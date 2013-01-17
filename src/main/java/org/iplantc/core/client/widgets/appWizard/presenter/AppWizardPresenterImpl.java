@@ -2,9 +2,6 @@ package org.iplantc.core.client.widgets.appWizard.presenter;
 
 import org.iplantc.core.client.widgets.appWizard.models.AppTemplate;
 import org.iplantc.core.client.widgets.appWizard.models.AppTemplateAutoBeanFactory;
-import org.iplantc.core.client.widgets.appWizard.models.legacy.LegacyAppTemplate;
-import org.iplantc.core.client.widgets.appWizard.models.legacy.LegacyAppTemplateAutoBeanFactory;
-import org.iplantc.core.client.widgets.appWizard.models.legacy.LegacyAppTemplateConverter;
 import org.iplantc.core.client.widgets.appWizard.view.AppWizardView;
 import org.iplantc.core.client.widgets.appWizard.view.AppWizardViewImpl;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
@@ -75,11 +72,14 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void setAppTemplateFromJsonString(String json) {
-        LegacyAppTemplateAutoBeanFactory legacyFactory = GWT.create(LegacyAppTemplateAutoBeanFactory.class);
+        // LegacyAppTemplateAutoBeanFactory legacyFactory =
+        // GWT.create(LegacyAppTemplateAutoBeanFactory.class);
         // Create Legacy App Template Autobean
-        AutoBean<LegacyAppTemplate> legacyAppTemplate = AutoBeanCodex.decode(legacyFactory, LegacyAppTemplate.class, json);
+        // AutoBean<LegacyAppTemplate> legacyAppTemplate = AutoBeanCodex.decode(legacyFactory,
+        // LegacyAppTemplate.class, json);
         // Convert Legacy into AppTemplate
-        AutoBean<AppTemplate> at = new LegacyAppTemplateConverter().convertModelValue(legacyAppTemplate);
+        // AutoBean<AppTemplate> at = new
+        // LegacyAppTemplateConverter().convertModelValue(legacyAppTemplate);
 
         // ==== CURRENT ====
         // Create AppTemplateSplittable and assign top level values.

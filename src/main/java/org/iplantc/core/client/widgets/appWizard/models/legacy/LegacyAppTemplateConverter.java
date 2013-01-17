@@ -1,7 +1,6 @@
 package org.iplantc.core.client.widgets.appWizard.models.legacy;
 
 import org.iplantc.core.client.widgets.appWizard.models.AppTemplate;
-import org.iplantc.core.client.widgets.appWizard.models.AppTemplateAutoBeanFactory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -45,9 +44,9 @@ public class LegacyAppTemplateConverter implements Converter<AutoBean<LegacyAppT
 
     @Override
     public AutoBean<AppTemplate> convertModelValue(AutoBean<LegacyAppTemplate> object) {
-        AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-        AppTemplate retVal = factory.appTemplate().as();
-        LegacyAppTemplate lat = object.as();
+        // AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+        // AppTemplate retVal = factory.appTemplate().as();
+        // LegacyAppTemplate lat = object.as();
 
         return null;
     }

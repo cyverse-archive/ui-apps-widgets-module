@@ -45,8 +45,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     @UiField
     TemplateGroupListEditor groupsEditor;
 
-    private AppWizardView.Presenter presenter;
-    
     public AppWizardViewImpl() {
         initWidget(BINDER.createAndBindUi(this));
         driver.initialize(this);
@@ -59,9 +57,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     }
 
     @Override
-    public void setPresenter(AppWizardView.Presenter presenter) {
-        this.presenter = presenter;
-    }
+    public void setPresenter(AppWizardView.Presenter presenter) {/* Not Used */}
 
     @UiHandler("launchButton")
     void onLaunchAnalysisSelected(SelectEvent event) {
