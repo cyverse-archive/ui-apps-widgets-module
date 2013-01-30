@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.iplantc.core.client.widgets.I18N;
 import org.iplantc.core.client.widgets.appWizard.models.TemplateProperty;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceProperties;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
