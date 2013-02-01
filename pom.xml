@@ -10,7 +10,7 @@
 	<url>http://project.iplantcollaborative.org</url>
 	<!-- convenience to define GWT version in one place -->
 	<properties>
-		<gwt.module>org.iplantc.core.Widgets</gwt.module>
+		<gwt.module>org.iplantc.core.widgets.Widgets</gwt.module>
 		<!-- Target Java Version -->
 		<jdk.version>1.6</jdk.version>
 		<!-- Current GXT Version -->
@@ -44,47 +44,60 @@
            <artifactId>guava-gwt</artifactId>
            <version>${googleGuava.version}</version>
         </dependency>
+        
+        <!-- iPlant Dependencies -->
 		<dependency>
-            <groupId>com.extjs</groupId>
-            <artifactId>gxt</artifactId>
-            <version>2.2.5</version>
-        </dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>diskresource</artifactId>
 			<version>gxt3Sandbox-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>metadata</artifactId>
-			<version>gxt3Sandbox-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>jsonutil</artifactId>
-			<version>gxt3Sandbox-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-                <groupId>org.iplantc.core</groupId>
-                <artifactId>ui-commons</artifactId>
-                <version>gxt3Sandbox-SNAPSHOT</version>
-        </dependency>
 	</dependencies>
 	<build>
 		<finalName>widgets</finalName>
-		<outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
+        <outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
+        <resources>
+		    <resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/client/**</include>
+				</includes>
+			</resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**</include>
+                    <include>**/*.gwt.xml</include>
+                </includes>
+            </resource>
+		</resources>
+		
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>${gwt.version}</version>
+				<version>2.5.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwt.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwt.version}</version>
+                    </dependency>
+                </dependencies>
 				<executions>
 					<execution>
 						<goals>
 							<goal>compile</goal>
+                            <!-- <goal>i18n</goal> -->
 						</goals>
 						<configuration>
 							<module>${gwt.module}</module>
+                            <!-- These config options are only relevant if the i18n goal is executed. -->
+                            <i18nMessagesBundle>org.iplantc.core.widgets.client.WidgetDisplayStrings</i18nMessagesBundle>
 						</configuration>
 					</execution>
 				</executions>
@@ -92,6 +105,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+                <version>2.4</version>
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
@@ -100,6 +114,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -111,29 +126,45 @@
 					</configuration>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${basedir}/bin</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                        <includeClassifiers>sources</includeClassifiers>
+                        <useRepositoryLayout>true</useRepositoryLayout>
+                </configuration>
+            </plugin>
 		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/client/**</include>
-					<include>**/shared/**</include>
-					<!-- only include the GWT Module definition -->
-					<include>**/*.gwt.xml</include>
-				</includes>
-			</resource>
-		</resources>
+
+		<pluginManagement>
+		    <plugins>
+		        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+		        <plugin>
+		            <groupId>org.eclipse.m2e</groupId>
+		            <artifactId>lifecycle-mapping</artifactId>
+		            <version>1.0.0</version>
+		            <configuration>
+		                <lifecycleMappingMetadata>
+		                    <pluginExecutions>
+		                        <pluginExecution>
+		                            <pluginExecutionFilter>
+		                                <groupId>org.codehaus.mojo</groupId>
+		                                <artifactId>gwt-maven-plugin</artifactId>
+		                                <versionRange>[2.5.0,)</versionRange>
+		                                <goals>
+		                                    <goal>i18n</goal>
+		                                </goals>
+		                            </pluginExecutionFilter>
+		                            <action>
+		                                <ignore></ignore>
+		                            </action>
+		                        </pluginExecution>
+		                    </pluginExecutions>
+		                </lifecycleMappingMetadata>
+		            </configuration>
+		        </plugin>
+		    </plugins>
+		</pluginManagement>
 	</build>
 	<repositories>
 		<repository>
@@ -141,9 +172,5 @@
 			<name>The iPlant Collaborative local repository</name>
 			<url>http://projects.iplantcollaborative.org/archiva/repository/internal/</url>
 		</repository>
-			<repository>
-		<id>gwt-maven</id>
-		<url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
-	</repository>
 	</repositories>
 </project>
