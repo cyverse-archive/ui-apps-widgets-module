@@ -9,7 +9,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 import org.iplantc.core.widgets.client.I18N;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -44,7 +44,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  * @author jstroot
  * 
  */
-public class AppWizardMultiFileSelector extends Composite implements TemplatePropertyField, LeafValueEditor<Splittable> {
+public class AppWizardMultiFileSelector extends Composite implements ArgumentField, LeafValueEditor<Splittable> {
 
     interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {}
 
@@ -86,7 +86,7 @@ public class AppWizardMultiFileSelector extends Composite implements TemplatePro
     }
 
     @Override
-    public void initialize(TemplateProperty property) {/* Do Nothing */}
+    public void initialize(Argument property) {/* Do Nothing */}
 
     @UiFactory
     ColumnModel<DiskResource> createColumnModel() {

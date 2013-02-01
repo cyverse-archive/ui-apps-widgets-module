@@ -1,6 +1,6 @@
 package org.iplantc.core.widgets.client.appWizard.view.fields;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
 import org.iplantc.core.widgets.client.appWizard.view.fields.converters.SplittableToBooleanConverter;
 
 import com.google.gwt.editor.client.LeafValueEditor;
@@ -14,18 +14,18 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
- * A LeafValueEditor for TemplateProperties of type TemplatePropertyType.FLAG
+ * A LeafValueEditor for Arguments of type ArgumentType.FLAG
  * 
  * This is the only one which will be a {@link LeafValueEditor} since we don't need the editor framework
  * to descend
- * any lower (because the TemplateProperty value is a string, and we have to manually convert the value
+ * any lower (because the Argument value is a string, and we have to manually convert the value
  * to/from
  * Boolean).
  * 
  * @author jstroot
  * 
  */
-public class AppWizardCheckbox implements TemplatePropertyField, LeafValueEditor<Splittable> {
+public class AppWizardCheckbox implements ArgumentField, LeafValueEditor<Splittable> {
     
     private final CheckBox field;
     private final Converter<Splittable, Boolean> cvt;
@@ -36,7 +36,7 @@ public class AppWizardCheckbox implements TemplatePropertyField, LeafValueEditor
     }
 
     @Override
-    public void initialize(TemplateProperty property) {/* Do Nothing */}
+    public void initialize(Argument property) {/* Do Nothing */}
 
     @Override
     public void setValue(Splittable value) {

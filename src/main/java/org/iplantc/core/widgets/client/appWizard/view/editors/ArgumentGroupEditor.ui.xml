@@ -12,13 +12,13 @@
         
    <gxt:ContentPanel ui:field="groupField"
                      collapsible="true">
-               <wizardEditors:TemplatePropertyListEditor ui:field="propertiesEditor" debugId="propertyLIstPanel"/>
+               <wizardEditors:ArgumentListEditor ui:field="argumentsEditor" debugId="propertyLIstPanel"/>
 <!--        <container:VerticalLayoutContainer debugId="fieldSetChildPanel">
             <container:child layoutData="{verticalLayoutData}">
             </container:child> --> 
            <!--  This needs to remain commented out until we can figure out a way to get around GWT editor framework editor cycle detection 
          <container:child layoutData="{verticalLayoutData}">
-            <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+            <wizardEditors:ArgumentGroupListEditor ui:field="groupsEditor"/>
          </container:child> -->
       <!-- </container:VerticalLayoutContainer> -->
    </gxt:ContentPanel>        

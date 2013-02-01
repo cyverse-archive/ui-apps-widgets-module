@@ -9,11 +9,11 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
     
     AutoBean<AppTemplate> appTemplate();
     
-    AutoBean<TemplateGroup> templateGroup();
+    AutoBean<ArgumentGroup> argumentGroup();
     
-    AutoBean<TemplateProperty> templateProperty();
+    AutoBean<Argument> argument();
 
-    AutoBean<TemplateValidator> teplateValidator();
+    AutoBean<ArgumentValidator> argumentValidator();
 
     AutoBean<SelectionArgument> selectionArgument();
 

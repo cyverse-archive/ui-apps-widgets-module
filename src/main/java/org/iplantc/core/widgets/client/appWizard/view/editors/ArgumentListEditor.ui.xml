@@ -3,5 +3,5 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
              
-   <container:VerticalLayoutContainer ui:field="propertiesContainer"/>   
+   <container:VerticalLayoutContainer ui:field="argumentsContainer"/>   
 </ui:UiBinder>

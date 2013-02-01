@@ -3,7 +3,7 @@ package org.iplantc.core.widgets.client.appWizard.models;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
-public enum TemplateValidatorType {
+public enum ArgumentValidatorType {
     IntRange, /** {@link MinNumberValidator} and {@link MaxNumberValidator} */
     IntAbove, /** {@link MinNumberValidator} */
     IntBelow, /** {@link MaxNumberValidator} */

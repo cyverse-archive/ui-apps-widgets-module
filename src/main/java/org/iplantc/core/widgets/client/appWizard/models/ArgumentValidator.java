@@ -2,11 +2,11 @@ package org.iplantc.core.widgets.client.appWizard.models;
 
 import com.google.web.bindery.autobean.shared.Splittable;
 
-public interface TemplateValidator {
+public interface ArgumentValidator {
 
-    TemplateValidatorType getType();
+    ArgumentValidatorType getType();
     
-    void setType(TemplateValidatorType type);
+    void setType(ArgumentValidatorType type);
     
     Splittable getParams();
     

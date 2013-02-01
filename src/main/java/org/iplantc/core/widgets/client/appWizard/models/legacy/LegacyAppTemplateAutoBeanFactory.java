@@ -7,9 +7,9 @@ public interface LegacyAppTemplateAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<LegacyAppTemplate> legacyAppTemplate();
 
-    AutoBean<LegacyTemplateGroup> legacyTemplateGroup();
+    AutoBean<LegacyArgumentGroup> legacyArgumentGroup();
 
-    AutoBean<LegacyTemplateProperty> legacyTemplateProperty();
+    AutoBean<LegacyArgument> legacyArgument();
 
     AutoBean<LegacyTemplateValidator> legacyTemplateValidator();
 

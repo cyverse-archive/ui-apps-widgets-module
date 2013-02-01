@@ -1,7 +1,7 @@
 package org.iplantc.core.widgets.client.appWizard.view.fields.temp;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
-import org.iplantc.core.widgets.client.appWizard.view.fields.TemplatePropertyField;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
+import org.iplantc.core.widgets.client.appWizard.view.fields.ArgumentField;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
@@ -13,7 +13,7 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
-public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements TemplatePropertyField {
+public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements ArgumentField {
 
     private static MySliderCell sliderCell = new MySliderCell();
     private final Slider slider;
@@ -25,7 +25,7 @@ public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integ
     }
 
     @Override
-    public void initialize(TemplateProperty property) {
+    public void initialize(Argument property) {
         // TBI JDS
         throw new UnsupportedOperationException("Not Yet Implemented");
     }

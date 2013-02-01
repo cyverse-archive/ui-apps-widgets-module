@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.HasName;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
-public interface LegacyTemplateProperty extends HasId, HasName, HasLabel, HasDescription, HasVisibility, TakesValue<String> {
+public interface LegacyArgument extends HasId, HasName, HasLabel, HasDescription, HasVisibility, TakesValue<String> {
 
     @PropertyName("isVisible")
     @Override

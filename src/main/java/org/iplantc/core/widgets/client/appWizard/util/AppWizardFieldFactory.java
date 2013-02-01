@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
-import org.iplantc.core.widgets.client.appWizard.models.TemplatePropertyType;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateValidator;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateValidatorType;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentType;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentValidator;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentValidatorType;
 import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardComboBox;
 import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardFileSelector;
@@ -17,7 +17,7 @@ import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardTextArea;
 import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardTextField;
 import org.iplantc.core.widgets.client.appWizard.view.fields.DoubleNumberField;
 import org.iplantc.core.widgets.client.appWizard.view.fields.IntegerNumberField;
-import org.iplantc.core.widgets.client.appWizard.view.fields.TemplatePropertyField;
+import org.iplantc.core.widgets.client.appWizard.view.fields.ArgumentField;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
@@ -46,8 +46,8 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static TemplatePropertyField createPropertyField(TemplateProperty property) {
-        TemplatePropertyField field;
+    public static ArgumentField createPropertyField(Argument property) {
+        ArgumentField field;
         switch (property.getType()) {
             case FileInput:
                 field = new AppWizardFileSelector();
@@ -125,7 +125,7 @@ public class AppWizardFieldFactory {
                 break;
 
             default:
-                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + TemplatePropertyType.class.getName() + " type.");
+                GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + ArgumentType.class.getName() + " type.");
                 field = null;
                 break;
         }
@@ -152,13 +152,13 @@ public class AppWizardFieldFactory {
      * @param property
      * @return
      */
-    private static TemplatePropertyField getNumberField(TemplateProperty property) {
+    private static ArgumentField getNumberField(Argument property) {
 
-        TemplatePropertyField field = null;
-        List<TemplateValidator> validators = property.getValidators();
+        ArgumentField field = null;
+        List<ArgumentValidator> validators = property.getValidators();
         if (validators != null) {
-            for (TemplateValidator tv : validators) {
-                if (tv.getType().equals(TemplateValidatorType.IntAbove) || tv.getType().equals(TemplateValidatorType.IntBelow) || tv.getType().equals(TemplateValidatorType.IntRange)) {
+            for (ArgumentValidator tv : validators) {
+                if (tv.getType().equals(ArgumentValidatorType.IntAbove) || tv.getType().equals(ArgumentValidatorType.IntBelow) || tv.getType().equals(ArgumentValidatorType.IntRange)) {
                     field = new IntegerNumberField();
                     break;
                 }
@@ -171,7 +171,7 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    private static void setDefaultValue(TemplateProperty property) {
+    private static void setDefaultValue(Argument property) {
         String defaultValue = property.getDefaultValue();
         if ((defaultValue != null) && !defaultValue.isEmpty()) {
             try {
@@ -185,13 +185,13 @@ public class AppWizardFieldFactory {
         }
     }
 
-    public static SafeHtml createFieldLabelText(TemplateProperty property){
+    public static SafeHtml createFieldLabelText(Argument property){
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         if (property.isRequired()) {
             // If the field is required, it needs to be marked as such.
             labelText.append(templates.fieldLabelRequired());
         }
-        TemplatePropertyType type = property.getType();
+        ArgumentType type = property.getType();
         // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
         SafeHtml label = SafeHtmlUtils.fromString(property.getLabel().replaceFirst(":$", ""));
 
@@ -254,7 +254,7 @@ public class AppWizardFieldFactory {
         return labelText.toSafeHtml();
     }
 
-    public static Validator<Integer> createIntegerValidator(TemplateValidator tv) {
+    public static Validator<Integer> createIntegerValidator(ArgumentValidator tv) {
         Validator<Integer> validator;
 
         switch (tv.getType()) {
@@ -280,7 +280,7 @@ public class AppWizardFieldFactory {
         return validator;
     }
 
-    public static Validator<Double> createDoubleValidator(TemplateValidator tv) {
+    public static Validator<Double> createDoubleValidator(ArgumentValidator tv) {
         Validator<Double> validator;
         switch (tv.getType()) {
             case DoubleRange:
@@ -307,7 +307,7 @@ public class AppWizardFieldFactory {
         return validator;
     }
 
-    public static Validator<String> createStringValidator(TemplateValidator tv) {
+    public static Validator<String> createStringValidator(ArgumentValidator tv) {
         Validator<String> validator;
         switch (tv.getType()) {
             case CharacterLimit:

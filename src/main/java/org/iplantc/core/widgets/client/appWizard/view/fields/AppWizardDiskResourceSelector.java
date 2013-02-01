@@ -5,7 +5,7 @@ import java.util.List;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.core.widgets.client.I18N;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
 import org.iplantc.core.widgets.client.appWizard.view.fields.converters.SplittableStringListToStringConverter;
 
 import com.google.common.base.Joiner;
@@ -43,7 +43,7 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
  * @author jstroot
  * 
  */
-public abstract class AppWizardDiskResourceSelector extends Component implements TemplatePropertyField, LeafValueEditor<Splittable> {
+public abstract class AppWizardDiskResourceSelector extends Component implements ArgumentField, LeafValueEditor<Splittable> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -100,7 +100,7 @@ public abstract class AppWizardDiskResourceSelector extends Component implements
     }
 
     @Override
-    public void initialize(TemplateProperty property) {/* Do Nothing */}
+    public void initialize(Argument property) {/* Do Nothing */}
 
     private void onBrowseSelected() {
         if (fileSelector) {

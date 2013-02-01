@@ -6,14 +6,17 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.gwt.user.client.ui.HasName;
+import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
-public interface LegacyTemplateGroup extends HasId, HasName, HasLabel {
+public interface LegacyArgumentGroup extends HasId, HasName, HasLabel {
 
     String getType();
 
     void setType(String type);
 
-    List<LegacyTemplateProperty> getProperties();
+    @PropertyName("properties")
+    List<LegacyArgument> getArguments();
 
-    void setProperties(List<LegacyTemplateProperty> properties);
+    @PropertyName("properties")
+    void setArguments(List<LegacyArgument> arguments);
 }

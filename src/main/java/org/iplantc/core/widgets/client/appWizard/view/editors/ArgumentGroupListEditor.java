@@ -1,6 +1,6 @@
 package org.iplantc.core.widgets.client.appWizard.view.editors;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateGroup;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentGroup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Ignore;
@@ -16,24 +16,24 @@ import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
  * @author jstroot
  * 
  */
-public class TemplateGroupListEditor extends Composite implements IsEditor<ListEditor<TemplateGroup, TemplateGroupEditor>>{
+public class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>>{
 
-    interface GroupListEditorUiBinder extends UiBinder<AccordionLayoutContainer, TemplateGroupListEditor> {
+    interface GroupListEditorUiBinder extends UiBinder<AccordionLayoutContainer, ArgumentGroupListEditor> {
     }
 
     private static GroupListEditorUiBinder BINDER = GWT.create(GroupListEditorUiBinder.class);
 
-    private class TemplateGroupEditorSource extends EditorSource<TemplateGroupEditor> {
+    private class ArgumentGroupEditorSource extends EditorSource<ArgumentGroupEditor> {
 
         private final AccordionLayoutContainer con;
 
-        public TemplateGroupEditorSource(AccordionLayoutContainer con) {
+        public ArgumentGroupEditorSource(AccordionLayoutContainer con) {
             this.con = con;
         }
 
         @Override
-        public TemplateGroupEditor create(int index) {
-            TemplateGroupEditor subEditor = new TemplateGroupEditor();
+        public ArgumentGroupEditor create(int index) {
+            ArgumentGroupEditor subEditor = new ArgumentGroupEditor();
             con.insert(subEditor, index);
             if (index == 0) {
                 // Ensure that the first container is expanded automatically
@@ -43,12 +43,12 @@ public class TemplateGroupListEditor extends Composite implements IsEditor<ListE
         }
         
         @Override
-        public void dispose(TemplateGroupEditor subEditor){
+        public void dispose(ArgumentGroupEditor subEditor){
             subEditor.asWidget().removeFromParent();
         }
         
         @Override
-        public void setIndex(TemplateGroupEditor editor, int index){
+        public void setIndex(ArgumentGroupEditor editor, int index){
             con.insert(editor, index);
         }
 
@@ -58,15 +58,15 @@ public class TemplateGroupListEditor extends Composite implements IsEditor<ListE
     @UiField
     AccordionLayoutContainer groupsContainer;
 
-    private final ListEditor<TemplateGroup, TemplateGroupEditor> editor;
+    private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
 
-    public TemplateGroupListEditor() {
+    public ArgumentGroupListEditor() {
         initWidget(BINDER.createAndBindUi(this));
-        editor = ListEditor.of(new TemplateGroupEditorSource(groupsContainer));
+        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer));
     }
 
     @Override
-    public ListEditor<TemplateGroup, TemplateGroupEditor> asEditor() {
+    public ListEditor<ArgumentGroup, ArgumentGroupEditor> asEditor() {
         return editor;
     }
 }

@@ -13,7 +13,7 @@ public interface LegacyAppTemplate extends HasId, HasName, HasLabel {
 
     void setType(String type);
 
-    List<LegacyTemplateGroup> getGroups();
+    List<LegacyArgumentGroup> getGroups();
 
-    void setGroups(List<LegacyTemplateGroup> groups);
+    void setGroups(List<LegacyArgumentGroup> groups);
 }

@@ -1,6 +1,6 @@
 package org.iplantc.core.widgets.client.appWizard.models;
 
-public enum TemplatePropertyType {
+public enum ArgumentType {
     FileInput,
     FolderInput,
     MultiFileSelector,

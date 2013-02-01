@@ -1,7 +1,7 @@
 package org.iplantc.core.widgets.client.appWizard.view.fields;
 
 import org.iplantc.core.widgets.client.appWizard.models.AppTemplateAutoBeanFactory;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
 import org.iplantc.core.widgets.client.appWizard.models.selection.SelectionArgument;
 import org.iplantc.core.widgets.client.appWizard.models.selection.SelectionProperties;
 
@@ -22,7 +22,7 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
  * @author jstroot
  * 
  */
-public class AppWizardComboBox implements TemplatePropertyField {
+public class AppWizardComboBox implements ArgumentField {
     private final SelectionProperties props = GWT.create(SelectionProperties.class);
     private final ListStore<SelectionArgument> store = new ListStore<SelectionArgument>(props.id());
 
@@ -33,7 +33,7 @@ public class AppWizardComboBox implements TemplatePropertyField {
     }
 
     @Override
-    public void initialize(TemplateProperty property) {
+    public void initialize(Argument property) {
         store.addAll(property.getArguments());
     }
 

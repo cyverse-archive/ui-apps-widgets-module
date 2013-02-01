@@ -1,6 +1,6 @@
 package org.iplantc.core.widgets.client.appWizard.view.editors;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Ignore;
@@ -14,13 +14,13 @@ import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
-public class TemplatePropertyListEditor extends Composite implements IsEditor<ListEditor<TemplateProperty, TemplatePropertyEditorAdapter>> {
+public class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argument, ArgumentEditorAdapter>> {
 
-    interface TemplatePropertyListEditorUiBinder extends UiBinder<Widget, TemplatePropertyListEditor> {
+    interface ArgumentListEditorUiBinder extends UiBinder<Widget, ArgumentListEditor> {
     }
-    private static TemplatePropertyListEditorUiBinder BINDER = GWT.create(TemplatePropertyListEditorUiBinder.class);
+    private static ArgumentListEditorUiBinder BINDER = GWT.create(ArgumentListEditorUiBinder.class);
     
-    private class PropertyListEditorSource extends EditorSource<TemplatePropertyEditorAdapter>{
+    private class PropertyListEditorSource extends EditorSource<ArgumentEditorAdapter>{
         private final VerticalLayoutContainer con;
 
         public PropertyListEditorSource(VerticalLayoutContainer con) {
@@ -28,36 +28,36 @@ public class TemplatePropertyListEditor extends Composite implements IsEditor<Li
         }
 
         @Override
-        public TemplatePropertyEditorAdapter create(int index) {
-            TemplatePropertyEditorAdapter subEditor = new TemplatePropertyEditorAdapter();
+        public ArgumentEditorAdapter create(int index) {
+            ArgumentEditorAdapter subEditor = new ArgumentEditorAdapter();
             con.add(subEditor, new VerticalLayoutData(1, -1));
             return subEditor;
         }
         
         @Override
-        public void dispose(TemplatePropertyEditorAdapter subEditor){
+        public void dispose(ArgumentEditorAdapter subEditor){
             subEditor.removeFromParent();
         }
         
         @Override
-        public void setIndex(TemplatePropertyEditorAdapter editor, int index){
+        public void setIndex(ArgumentEditorAdapter editor, int index){
             con.insert(editor, index, new VerticalLayoutData(1, -1));
         }
     }
 
     @Ignore
     @UiField
-    VerticalLayoutContainer propertiesContainer;
+    VerticalLayoutContainer argumentsContainer;
 
-    private final ListEditor<TemplateProperty, TemplatePropertyEditorAdapter> editor;
+    private final ListEditor<Argument, ArgumentEditorAdapter> editor;
 
-    public TemplatePropertyListEditor() {
+    public ArgumentListEditor() {
         initWidget(BINDER.createAndBindUi(this));
-        editor = ListEditor.of(new PropertyListEditorSource(propertiesContainer));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer));
     }
 
     @Override
-    public ListEditor<TemplateProperty, TemplatePropertyEditorAdapter> asEditor() {
+    public ListEditor<Argument, ArgumentEditorAdapter> asEditor() {
         return editor;
     }
 

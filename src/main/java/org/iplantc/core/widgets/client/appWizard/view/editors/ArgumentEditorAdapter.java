@@ -2,12 +2,12 @@ package org.iplantc.core.widgets.client.appWizard.view.editors;
 
 import java.util.List;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateValidator;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentValidator;
 import org.iplantc.core.widgets.client.appWizard.util.AppWizardFieldFactory;
 import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardCheckbox;
 import org.iplantc.core.widgets.client.appWizard.view.fields.AppWizardTextField;
-import org.iplantc.core.widgets.client.appWizard.view.fields.TemplatePropertyField;
+import org.iplantc.core.widgets.client.appWizard.view.fields.ArgumentField;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.CompositeEditor;
@@ -20,33 +20,33 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-public class TemplatePropertyEditorAdapter extends Composite implements CompositeEditor<TemplateProperty, Splittable, TemplatePropertyField>, ValueAwareEditor<TemplateProperty> {
+public class ArgumentEditorAdapter extends Composite implements CompositeEditor<Argument, Splittable, ArgumentField>, ValueAwareEditor<Argument> {
 
-    interface TemplatePropertyEditorAdapterUiBinder extends UiBinder<FieldLabel, TemplatePropertyEditorAdapter> {}
+    interface ArgumentEditorAdapterUiBinder extends UiBinder<FieldLabel, ArgumentEditorAdapter> {}
 
-    private static TemplatePropertyEditorAdapterUiBinder BINDER = GWT.create(TemplatePropertyEditorAdapterUiBinder.class);
-    private CompositeEditor.EditorChain<Splittable, TemplatePropertyField> chain;
+    private static ArgumentEditorAdapterUiBinder BINDER = GWT.create(ArgumentEditorAdapterUiBinder.class);
+    private CompositeEditor.EditorChain<Splittable, ArgumentField> chain;
 
     @Ignore
     @UiField
     FieldLabel propertyLabel;
     
-    private TemplatePropertyField subEditor = null;
+    private ArgumentField subEditor = null;
 
-    public TemplatePropertyEditorAdapter() {
+    public ArgumentEditorAdapter() {
         initWidget(BINDER.createAndBindUi(this));
     }
     
 
     @Override
-    public void setValue(TemplateProperty value) {
+    public void setValue(Argument value) {
         // attach it to the chain. Attach the formvalue  
         subEditor = AppWizardFieldFactory.createPropertyField(value);
         subEditor.initialize(value);
-        List<TemplateValidator> validators = value.getValidators();
+        List<ArgumentValidator> validators = value.getValidators();
         if (validators != null) {
             GWT.log("Property: " + value.getLabel() + "; " + value.getType());
-            for (TemplateValidator v : validators) {
+            for (ArgumentValidator v : validators) {
                 GWT.log("\tValidator: " + v.getType());
             }
         }
@@ -66,7 +66,7 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
     }
 
     @Override
-    public void setDelegate(EditorDelegate<TemplateProperty> delegate) {}
+    public void setDelegate(EditorDelegate<Argument> delegate) {}
 
 
     @Override
@@ -78,19 +78,19 @@ public class TemplatePropertyEditorAdapter extends Composite implements Composit
 
 
     @Override
-    public TemplatePropertyField createEditorForTraversal() {
+    public ArgumentField createEditorForTraversal() {
         return new AppWizardTextField();
     }
 
 
     @Override
-    public String getPathElement(TemplatePropertyField subEditor) {
+    public String getPathElement(ArgumentField subEditor) {
         return "";
     }
 
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, TemplatePropertyField> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, ArgumentField> chain) {
         this.chain = chain;
     }
 

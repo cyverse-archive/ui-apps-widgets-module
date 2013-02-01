@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.HasName;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.web.bindery.autobean.shared.Splittable;
 
-public interface TemplatePropertySelection {
+public interface ArgumentSelection {
 
     Splittable getArguments();
 

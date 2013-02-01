@@ -18,7 +18,7 @@
    <form:FormPanel ui:field="formPanel">
       <container:VerticalLayoutContainer >
          <container:child layoutData="{verticalLayoutData2}">
-            <wizardEditors:TemplateGroupListEditor ui:field="groupsEditor"/>
+            <wizardEditors:ArgumentGroupListEditor ui:field="groupsEditor"/>
          </container:child>
          <container:child layoutData="{verticalLayoutData}">
             <button:ButtonBar pack="END">

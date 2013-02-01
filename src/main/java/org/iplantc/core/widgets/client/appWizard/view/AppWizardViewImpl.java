@@ -1,7 +1,7 @@
 package org.iplantc.core.widgets.client.appWizard.view;
 
 import org.iplantc.core.widgets.client.appWizard.models.AppTemplate;
-import org.iplantc.core.widgets.client.appWizard.view.editors.TemplateGroupListEditor;
+import org.iplantc.core.widgets.client.appWizard.view.editors.ArgumentGroupListEditor;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -43,7 +43,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     FormPanel formPanel;
 
     @UiField
-    TemplateGroupListEditor groupsEditor;
+    ArgumentGroupListEditor groupsEditor;
 
     public AppWizardViewImpl() {
         initWidget(BINDER.createAndBindUi(this));

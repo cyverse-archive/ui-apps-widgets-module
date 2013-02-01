@@ -1,7 +1,7 @@
 package org.iplantc.core.widgets.client.appWizard.view.editors;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateGroup;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentGroup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Collapsible;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 
-public class TemplateGroupEditor implements IsWidget, ValueAwareEditor<TemplateGroup>, Collapsible {
+public class ArgumentGroupEditor implements IsWidget, ValueAwareEditor<ArgumentGroup>, Collapsible {
 
     interface HeaderTextTemplates extends SafeHtmlTemplates {
 
@@ -27,31 +27,31 @@ public class TemplateGroupEditor implements IsWidget, ValueAwareEditor<TemplateG
         SafeHtml fieldLabelRequired();
     }
     
-    interface TemplateGroupEditorUiBinder extends UiBinder<ContentPanel, TemplateGroupEditor> {
+    interface ArgumentGroupEditorUiBinder extends UiBinder<ContentPanel, ArgumentGroupEditor> {
     }
     
-    private static TemplateGroupEditorUiBinder BINDER = GWT.create(TemplateGroupEditorUiBinder.class);
+    private static ArgumentGroupEditorUiBinder BINDER = GWT.create(ArgumentGroupEditorUiBinder.class);
 
     @Ignore
     @UiField
     ContentPanel groupField;
 
     @UiField
-    TemplatePropertyListEditor propertiesEditor;
+    ArgumentListEditor argumentsEditor;
 
     private final ContentPanel conPanel;
     private static HeaderTextTemplates templates = GWT.create(HeaderTextTemplates.class);
 
     // Have to remove the sublist of group editor for the time being until I figure out how to get past GWT complaining about cycles in the editor hierarchy.
     // @UiField
-    // TemplateGroupListEditor groupsEditor;
+    // ArgumentGroupListEditor groupsEditor;
     
-    public TemplateGroupEditor() {
+    public ArgumentGroupEditor() {
         conPanel = BINDER.createAndBindUi(this);
     }
 
     @Override
-    public void setDelegate(EditorDelegate<TemplateGroup> delegate) {
+    public void setDelegate(EditorDelegate<ArgumentGroup> delegate) {
     }
 
     @Override
@@ -63,9 +63,9 @@ public class TemplateGroupEditor implements IsWidget, ValueAwareEditor<TemplateG
     }
 
     @Override
-    public void setValue(TemplateGroup value) {
+    public void setValue(ArgumentGroup value) {
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        for(TemplateProperty property : value.getProperties()){
+        for(Argument property : value.getArguments()){
             if (property.isRequired()) {
                 // If any field is required, it needs to be marked as such.
                 labelText.append(templates.fieldLabelRequired());

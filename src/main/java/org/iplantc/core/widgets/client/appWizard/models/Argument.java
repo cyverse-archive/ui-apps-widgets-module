@@ -18,7 +18,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
  * @author jstroot
  * @see AppWizardPresenterJsonAdapter
  */
-public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVisibility {
+public interface Argument extends HasId, HasLabel, HasDescription, HasVisibility {
     
     @PropertyName("name")
     String getCmdLineOption();
@@ -26,9 +26,9 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     @PropertyName("name")
     void setCmdLineOption(String cmdLineOption);
     
-    TemplatePropertyType getType();
+    ArgumentType getType();
 
-    void setType(TemplatePropertyType type);
+    void setType(ArgumentType type);
 
     int getOrder();
     
@@ -63,9 +63,9 @@ public interface TemplateProperty extends HasId, HasLabel, HasDescription, HasVi
     
     void setRequired(boolean required);
     
-    List<TemplateValidator> getValidators();
+    List<ArgumentValidator> getValidators();
     
-    void setValidators(List<TemplateValidator> validators);
+    void setValidators(List<ArgumentValidator> validators);
     
     @Override
     @PropertyName("isVisible")

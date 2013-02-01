@@ -2,9 +2,9 @@ package org.iplantc.core.widgets.client.appWizard.view.fields;
 
 import java.util.List;
 
-import org.iplantc.core.widgets.client.appWizard.models.TemplateProperty;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateValidator;
-import org.iplantc.core.widgets.client.appWizard.models.TemplateValidatorType;
+import org.iplantc.core.widgets.client.appWizard.models.Argument;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentValidator;
+import org.iplantc.core.widgets.client.appWizard.models.ArgumentValidatorType;
 import org.iplantc.core.widgets.client.appWizard.util.AppWizardFieldFactory;
 
 import com.google.gwt.editor.client.LeafValueEditor;
@@ -18,7 +18,7 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
-public class IntegerNumberField extends Composite implements TemplatePropertyField, LeafValueEditor<Splittable> {
+public class IntegerNumberField extends Composite implements ArgumentField, LeafValueEditor<Splittable> {
 
     private final NumberField<Integer> field = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 
@@ -27,14 +27,14 @@ public class IntegerNumberField extends Composite implements TemplatePropertyFie
     }
 
     @Override
-    public void initialize(TemplateProperty property) {
+    public void initialize(Argument property) {
         // Apply any validators
-        List<TemplateValidator> validators = property.getValidators();
+        List<ArgumentValidator> validators = property.getValidators();
         if (validators != null) {
-            for (TemplateValidator tv : validators) {
-                if (tv.getType().equals(TemplateValidatorType.IntAbove) 
-                        || tv.getType().equals(TemplateValidatorType.IntBelow) 
-                        || tv.getType().equals(TemplateValidatorType.IntRange)) {
+            for (ArgumentValidator tv : validators) {
+                if (tv.getType().equals(ArgumentValidatorType.IntAbove) 
+                        || tv.getType().equals(ArgumentValidatorType.IntBelow) 
+                        || tv.getType().equals(ArgumentValidatorType.IntRange)) {
                     field.addValidator(AppWizardFieldFactory.createIntegerValidator(tv));
                 }
             }
