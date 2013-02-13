@@ -25,19 +25,18 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
  */
 public class AppWizardPresenterJsonAdapter {
 
-    public static Splittable adaptAppTemplateJsonString(String unformattedAppTemplateJson){
-        Splittable input = StringQuoter.split(unformattedAppTemplateJson);
+    public static Splittable adaptAppTemplateJsonString(Splittable legacyAppTemplateJson) {
         
         // Create AppTemplateSplittable and assign top level values.
         Splittable appTemplateSplit = StringQuoter.createSplittable();
-        input.get("id").assign(appTemplateSplit, "id");
-        input.get("name").assign(appTemplateSplit, "name");
-        input.get("label").assign(appTemplateSplit, "label");
-        input.get("type").assign(appTemplateSplit, "type");
+        legacyAppTemplateJson.get("id").assign(appTemplateSplit, "id");
+        legacyAppTemplateJson.get("name").assign(appTemplateSplit, "name");
+        legacyAppTemplateJson.get("label").assign(appTemplateSplit, "label");
+        legacyAppTemplateJson.get("type").assign(appTemplateSplit, "type");
         
         Splittable groups = StringQuoter.createIndexed();
         // Loop over the json list of "Template Groups"
-        Splittable inputGroups = input.get("groups");
+        Splittable inputGroups = legacyAppTemplateJson.get("groups");
         for(int i = 0; i < inputGroups.size(); i++){
             getAppArgumentGroup(inputGroups.get(i)).assign(groups, i);
         }

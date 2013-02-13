@@ -6,6 +6,7 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
  * <h1>Requirements</h1>
@@ -36,11 +37,11 @@ public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
          * 
          * @param json
          */
-        void setAppTemplateFromJsonString(final String json);
+        void setAppTemplateFromLegacyJson(final Splittable legacyJson);
     
         AppTemplate getAppTemplate();
 
-        void go(final HasOneWidget container, final String json);
+        void goLegacy(final HasOneWidget container, final Splittable legacyJson);
 
         void go(final HasOneWidget container, final AppTemplate appTemplate);
     }

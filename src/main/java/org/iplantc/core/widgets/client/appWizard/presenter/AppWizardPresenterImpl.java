@@ -55,8 +55,8 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     }
     
     @Override
-    public void go(final HasOneWidget container, final String json) {
-        setAppTemplateFromJsonString(json);
+    public void goLegacy(final HasOneWidget container, final Splittable legacyJson) {
+        setAppTemplateFromLegacyJson(legacyJson);
         go(container);
     }
 
@@ -77,7 +77,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     }
 
     @Override
-    public void setAppTemplateFromJsonString(String json) {
+    public void setAppTemplateFromLegacyJson(Splittable legacyJson) {
         // LegacyAppTemplateAutoBeanFactory legacyFactory =
         // GWT.create(LegacyAppTemplateAutoBeanFactory.class);
         // Create Legacy App Template Autobean
@@ -89,7 +89,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
         // ==== CURRENT ====
         // Create AppTemplateSplittable and assign top level values.
-        Splittable appTemplateSplit = AppWizardPresenterJsonAdapter.adaptAppTemplateJsonString(json);
+        Splittable appTemplateSplit = AppWizardPresenterJsonAdapter.adaptAppTemplateJsonString(legacyJson);
         
         AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
         AutoBean<AppTemplate> appTemplateAb = AutoBeanCodex.decode(factory, AppTemplate.class, appTemplateSplit);
