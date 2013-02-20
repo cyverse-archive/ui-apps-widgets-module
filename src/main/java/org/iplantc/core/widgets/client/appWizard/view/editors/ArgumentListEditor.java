@@ -10,6 +10,7 @@ import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -21,6 +22,7 @@ public class ArgumentListEditor extends Composite implements IsEditor<ListEditor
     private static ArgumentListEditorUiBinder BINDER = GWT.create(ArgumentListEditorUiBinder.class);
     
     private class PropertyListEditorSource extends EditorSource<ArgumentEditorAdapter>{
+        private static final int DEF_ARGUMENT_MARGIN = 10;
         private final VerticalLayoutContainer con;
 
         public PropertyListEditorSource(VerticalLayoutContainer con) {
@@ -30,7 +32,7 @@ public class ArgumentListEditor extends Composite implements IsEditor<ListEditor
         @Override
         public ArgumentEditorAdapter create(int index) {
             ArgumentEditorAdapter subEditor = new ArgumentEditorAdapter();
-            con.add(subEditor, new VerticalLayoutData(1, -1));
+            con.add(subEditor, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             return subEditor;
         }
         
@@ -41,7 +43,7 @@ public class ArgumentListEditor extends Composite implements IsEditor<ListEditor
         
         @Override
         public void setIndex(ArgumentEditorAdapter editor, int index){
-            con.insert(editor, index, new VerticalLayoutData(1, -1));
+            con.insert(editor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
         }
     }
 
