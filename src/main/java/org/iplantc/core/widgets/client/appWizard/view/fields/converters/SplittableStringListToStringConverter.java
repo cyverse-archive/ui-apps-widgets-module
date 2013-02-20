@@ -32,9 +32,16 @@ public class SplittableStringListToStringConverter implements Converter<Splittab
             return null;
 
         String payload = object.getPayload();
-        JSONArray jsonArray = JsonUtil.getObject(payload).isArray();
-        List<String> list = JsonUtil.buildStringList(jsonArray);
-        return Joiner.on(",").join(list);
+        if (object.isIndexed()) {
+            JSONArray jsonArray = JsonUtil.getObject(payload).isArray();
+            List<String> list = JsonUtil.buildStringList(jsonArray);
+            return Joiner.on(",").join(list);
+
+        } else if (object.isString()) {
+            return object.asString();
+        }
+
+        return null;
     }
 
 }
