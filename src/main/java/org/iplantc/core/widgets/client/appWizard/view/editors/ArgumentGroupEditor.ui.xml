@@ -6,20 +6,8 @@
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client">
              
-   <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
-      <ui:attributes width="1" height="-1" />
-   </ui:with>       
-        
    <gxt:ContentPanel ui:field="groupField"
                      collapsible="true">
-               <wizardEditors:ArgumentListEditor ui:field="argumentsEditor" debugId="propertyLIstPanel"/>
-<!--        <container:VerticalLayoutContainer debugId="fieldSetChildPanel">
-            <container:child layoutData="{verticalLayoutData}">
-            </container:child> --> 
-           <!--  This needs to remain commented out until we can figure out a way to get around GWT editor framework editor cycle detection 
-         <container:child layoutData="{verticalLayoutData}">
-            <wizardEditors:ArgumentGroupListEditor ui:field="groupsEditor"/>
-         </container:child> -->
-      <!-- </container:VerticalLayoutContainer> -->
+       <wizardEditors:ArgumentListEditor ui:field="argumentsEditor" debugId="propertyListPanel"/>
    </gxt:ContentPanel>        
 </ui:UiBinder> 

@@ -9,7 +9,7 @@
              
    <ui:with type="org.iplantc.core.widgets.client.WidgetDisplayStrings" field="display" />          
    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
-      <ui:attributes width="1" height="-1" />
+      <ui:attributes width="1" height="30" />
    </ui:with>
    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData2">
       <ui:attributes width="1" height="1" />

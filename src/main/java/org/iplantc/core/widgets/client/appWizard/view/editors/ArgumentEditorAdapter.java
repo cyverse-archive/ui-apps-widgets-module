@@ -13,6 +13,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -35,6 +41,31 @@ public class ArgumentEditorAdapter extends Composite implements CompositeEditor<
 
     public ArgumentEditorAdapter() {
         initWidget(BINDER.createAndBindUi(this));
+        propertyLabel.addDomHandler(new MouseOverHandler() {
+
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                propertyLabel.setBorders(true);
+
+            }
+        }, MouseOverEvent.getType());
+
+        propertyLabel.addDomHandler(new MouseOutHandler() {
+
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                propertyLabel.setBorders(false);
+            }
+        }, MouseOutEvent.getType());
+
+        propertyLabel.addDomHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                GWT.log("Click on " + propertyLabel.getText());
+
+            }
+        }, ClickEvent.getType());
     }
     
 

@@ -3,5 +3,6 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container">
              
-   <container:VerticalLayoutContainer ui:field="argumentsContainer"/>   
+   <container:VerticalLayoutContainer ui:field="argumentsContainer"
+                                      scrollMode="AUTOY"/>   
 </ui:UiBinder>
