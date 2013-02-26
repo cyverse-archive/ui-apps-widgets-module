@@ -9,7 +9,7 @@
              
    <ui:with type="org.iplantc.core.widgets.client.WidgetDisplayStrings" field="display" />          
    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
-      <ui:attributes width="1" height="30" />
+      <ui:attributes width="1" height="-1" />
    </ui:with>
    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData2">
       <ui:attributes width="1" height="1" />
@@ -21,7 +21,8 @@
             <wizardEditors:ArgumentGroupListEditor ui:field="argumentGroupsEditor"/>
          </container:child>
          <container:child layoutData="{verticalLayoutData}">
-            <button:ButtonBar pack="END">
+            <button:ButtonBar ui:field="buttonBar" 
+                              pack="END">
                <button:child>
                   <button:TextButton ui:field="launchButton"
                                      text="{display.launchAnalysis}"/>

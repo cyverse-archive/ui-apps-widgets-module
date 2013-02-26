@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
 
 public class AppWizardPanel extends Composite implements Editor<AppTemplate> {
 
@@ -20,8 +21,16 @@ public class AppWizardPanel extends Composite implements Editor<AppTemplate> {
     @UiField
     ArgumentGroupListEditor argumentGroupsEditor;
 
+    @UiField
+    @Ignore
+    ButtonBar buttonBar;
+
     public AppWizardPanel() {
         initWidget(uiBinder.createAndBindUi(this));
+    }
+
+    public void setLaunchButtonEnabled(boolean launchButtonEnabled) {
+        buttonBar.setVisible(launchButtonEnabled);
     }
 
 }
