@@ -3,47 +3,22 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iplantc.core</groupId>
-	<artifactId>widgets</artifactId>
+	<artifactId>apps-widgets</artifactId>
 	<packaging>jar</packaging>
 	<version>gxt3Sandbox-SNAPSHOT</version>
 	<name>The iPlant Collaborative widgets for Tools integration</name>
 	<url>http://project.iplantcollaborative.org</url>
 	<!-- convenience to define GWT version in one place -->
 	<properties>
-		<gwt.module>org.iplantc.core.widgets.Widgets</gwt.module>
+		<gwt.module>org.iplantc.core.uiapps.widgets.Widgets</gwt.module>
 		<!-- Target Java Version -->
 		<jdk.version>1.6</jdk.version>
-		<!-- Current GXT Version -->
-        <gxt.version>3.0.1</gxt.version>
 		<!-- Current GWT Version -->
 		<gwt.version>2.5.0</gwt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <googleGuava.version>13.0.1</googleGuava.version>
 	</properties>
 	<dependencies>
-		<!-- GWT deps (from central repo) -->
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<version>${gwt.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
-		</dependency>
-        <dependency>
-            <groupId>com.sencha.gxt</groupId>
-            <artifactId>gxt</artifactId>
-            <version>${gxt.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>com.google.guava</groupId>
-           <artifactId>guava-gwt</artifactId>
-           <version>${googleGuava.version}</version>
-        </dependency>
         
         <!-- iPlant Dependencies -->
 		<dependency>
