@@ -15,8 +15,8 @@
    <inherits name="org.iplantc.core.Metadata" />
 		
    <!-- Deferred-Binding Rules -->
-   <replace-with class="org.iplantc.core.uiapps.widgets.client.appWizard.presenter.AppWizardPresenterImpl">
-      <when-type-is class="org.iplantc.core.uiapps.widgets.client.appWizard.view.AppWizardView.Presenter"/>
+   <replace-with class="org.iplantc.core.uiapps.widgets.client.presenter.AppWizardPresenterImpl">
+      <when-type-is class="org.iplantc.core.uiapps.widgets.client.view.AppWizardView.Presenter"/>
    </replace-with>
    <!-- Specify the paths for translatable code                    -->
    <source path='client' />
