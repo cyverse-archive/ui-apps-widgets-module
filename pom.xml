@@ -26,6 +26,11 @@
 			<artifactId>diskresource</artifactId>
 			<version>gxt3Sandbox-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.iplantc.core</groupId>
+			<artifactId>applications</artifactId>
+			<version>gxt3Sandbox-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>widgets</finalName>
