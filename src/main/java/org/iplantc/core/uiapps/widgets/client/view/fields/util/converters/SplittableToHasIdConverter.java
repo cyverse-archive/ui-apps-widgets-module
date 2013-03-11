@@ -13,6 +13,8 @@ public class SplittableToHasIdConverter implements Converter<Splittable, HasId> 
 
     @Override
     public Splittable convertFieldValue(HasId object) {
+        if (object == null)
+            return null;
         return AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(object));
     }
 

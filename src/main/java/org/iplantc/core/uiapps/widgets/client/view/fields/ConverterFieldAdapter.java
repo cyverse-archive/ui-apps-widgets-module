@@ -1,5 +1,11 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.HasKeyDownHandlers;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -23,10 +29,12 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
  * @param <U>
  * @param <F>
  */
-public class ConverterFieldAdapter<U, F extends Component & IsField<U>> extends ConverterEditorAdapter<Splittable, U, F> implements ArgumentField, HasKeyDownHandlers {
+public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U>> extends ConverterEditorAdapter<Splittable, U, F> implements ArgumentField, HasKeyDownHandlers {
 
     protected final F field;
     private Splittable value;
+    private List<EditorError> errors;
+    private EditorDelegate<Splittable> delegate;
 
     public ConverterFieldAdapter(F field, Converter<Splittable, U> converter) {
         super(field, converter);
@@ -35,7 +43,14 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U>> extends 
 
     @Override
     public void flush() {
+        field.flush();
         value = getConverter().convertFieldValue(field.getValue());
+        validate(false);
+        if (errors != null) {
+            for (EditorError e : errors) {
+                delegate.recordError(e.getMessage(), e.getValue(), this);
+            }
+        }
     }
 
     public F getField() {
@@ -74,12 +89,30 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U>> extends 
 
     @Override
     public boolean isValid(boolean preventMark) {
-        return field.isValid(preventMark);
+        boolean valid = field.isValid(preventMark);
+        transferErrorsToDelegate();
+        return valid;
     }
 
     @Override
     public boolean validate(boolean preventMark) {
-        return field.validate(preventMark);
+        boolean valid = field.validate(preventMark);
+        transferErrorsToDelegate();
+        return valid;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void transferErrorsToDelegate() {
+        errors = Lists.newArrayList();
+        if (!(field instanceof Field<?>)) {
+            return;
+        }
+        for (Validator<U> v : ((Field<U>)field).getValidators()) {
+            List<EditorError> errs = v.validate(field, field.getValue());
+            if (errs != null) {
+                errors.addAll(errs);
+            }
+        }
     }
 
     @Override
@@ -97,6 +130,11 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U>> extends 
     @Override
     public void fireEvent(GwtEvent<?> event) {
         field.fireEvent(event);
+    }
+
+    @Override
+    public void setDelegate(EditorDelegate<Splittable> delegate) {
+        this.delegate = delegate;
     }
 
     @Override

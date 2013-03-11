@@ -12,6 +12,8 @@ import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -38,7 +40,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  * @author jstroot
  * 
  */
-public class AppWizardMultiFileSelector extends Composite implements IsField<List<HasId>> {
+public class AppWizardMultiFileSelector extends Composite implements IsField<List<HasId>>, ValueAwareEditor<List<HasId>> {
 
     interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {}
 
@@ -111,7 +113,7 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @Override
     public void setValue(List<HasId> value) {
-        if ((value == null) && !value.isEmpty())
+        if ((value == null) || !value.isEmpty())
             return;
         
         // TBI JDS Assume the incoming value is a JSON array of ..... ?
@@ -178,6 +180,24 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
     public boolean validate(boolean preventMark) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public void setDelegate(EditorDelegate<List<HasId>> delegate) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void flush() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onPropertyChange(String... paths) {
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -88,7 +88,6 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
                 onBrowseSelected();
             }
         });
-
     }
 
     protected void setSelectedResource(R selectedResource) {

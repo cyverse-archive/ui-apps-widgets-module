@@ -6,6 +6,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFileSelector;
@@ -18,6 +19,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.Splitt
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdListConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToIntegerConverter;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToSelectionArgConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
@@ -35,11 +37,15 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.Field;
+import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.ValueBaseField;
+import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
@@ -120,17 +126,21 @@ public class AppWizardFieldFactory {
                 break;
 
             case TextSelection:
-                field = new AppWizardComboBox(argument);
-                break;
 
             case IntegerSelection:
                 // TBI JDS Currently returning the textual combobox until an appropriate one is developed
-                field = new AppWizardComboBox(argument);
-                break;
-
             case DoubleSelection:
                 // TBI JDS Currently returning the textual combobox until an appropriate one is developed
-                field = new AppWizardComboBox(argument);
+
+            // Legacy Types
+            case Selection:
+
+            case ValueSelection:
+                // TODO JDS Map this to either IntegerSelection or DoubleSelection
+                AppWizardComboBox qwCb = new AppWizardComboBox(argument);
+                ConverterFieldAdapter<SelectionArgument, AppWizardComboBox> cbCfa = new ConverterFieldAdapter<SelectionArgument, AppWizardComboBox>(qwCb,
+                        new SplittableToSelectionArgConverter());
+                field = cbCfa;
                 break;
 
             case TreeSelection:
@@ -139,18 +149,6 @@ public class AppWizardFieldFactory {
 
             case Info:
                 field = null;
-                break;
-
-            // Legacy Types
-            case Selection:
-                // Default to Text Selection
-                field = new AppWizardComboBox(argument);
-                break;
-
-            case ValueSelection:
-                // TODO JDS Map this to either IntegerSelection or DoubleSelection
-                // Currently returning the textual combobox until an appropriate one is developed
-                field = new AppWizardComboBox(argument);
                 break;
 
             case Output:
@@ -165,6 +163,7 @@ public class AppWizardFieldFactory {
         }
         
         setDefaultValue(argument);
+        setRequiredValidator(argument, field);
 
         if (field != null) {
 
@@ -175,6 +174,25 @@ public class AppWizardFieldFactory {
         }
 
         return field;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
+        // Exit if the argument is not required, or the field is not an instance of something with an
+        // "addValidator" method
+        if (!argument.isRequired() || !((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
+            return;
+        }
+
+        EmptyValidator<T> emptyValidator = new EmptyValidator<T>();
+        if (field instanceof ValueBaseField<?>) {
+            ((ValueBaseField<T>)field).setAllowBlank(false);
+        } else if (field instanceof Field<?>) {
+            ((Field<T>)field).addValidator(emptyValidator);
+        } else if (field instanceof ConverterFieldAdapter<?, ?>) {
+            ((ConverterFieldAdapter<T, ?>)field).addValidator(emptyValidator);
+        }
+
     }
 
     private static void printGwtLogInfo(Argument argument) {
@@ -330,7 +348,7 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    private static ArgumentField applyDiskResourceListValidators(Argument argument, ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> field) {
+    static ArgumentField applyDiskResourceListValidators(Argument argument, ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> field) {
         // TBI JDS Feature not yet supported
         return field;
     }
@@ -401,7 +419,7 @@ public class AppWizardFieldFactory {
             case Regex:
                 // Array containing one string
                 String regex = tv.getParams().get(0).asString();
-                validator = new RegExValidator(regex);
+                validator = new RegExValidator(regex, "Input must match the Regular Expression: " + regex);
                 break;
             case FileName:
                 validator = new NameValidator3();
