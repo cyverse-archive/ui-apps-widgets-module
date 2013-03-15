@@ -3,16 +3,14 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.Iterator;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uicommons.client.events.EventBus;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor.Ignore;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -26,50 +24,50 @@ import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
  * @author jstroot
  * 
  */
-public class ArgumentListEditor extends Composite implements HasWidgets, IsEditor<ListEditor<Argument, ArgumentEditorAdapter>> {
+class ArgumentListEditor extends Composite implements HasWidgets, IsEditor<ListEditor<Argument, ArgumentEditor>> {
 
-    interface ArgumentListEditorUiBinder extends UiBinder<Widget, ArgumentListEditor> {}
-    private static ArgumentListEditorUiBinder BINDER = GWT.create(ArgumentListEditorUiBinder.class);
-    
-    private class PropertyListEditorSource extends EditorSource<ArgumentEditorAdapter>{
+    private class PropertyListEditorSource extends EditorSource<ArgumentEditor> {
         private static final int DEF_ARGUMENT_MARGIN = 10;
         private final VerticalLayoutContainer con;
+        private final EventBus eventBus;
 
-        public PropertyListEditorSource(VerticalLayoutContainer con) {
+        public PropertyListEditorSource(VerticalLayoutContainer con, EventBus eventBus) {
             this.con = con;
+            this.eventBus = eventBus;
         }
 
         @Override
-        public ArgumentEditorAdapter create(int index) {
-            ArgumentEditorAdapter subEditor = new ArgumentEditorAdapter();
+        public ArgumentEditor create(int index) {
+            ArgumentEditor subEditor = new ArgumentEditor(eventBus);
             con.add(subEditor, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             return subEditor;
         }
         
         @Override
-        public void dispose(ArgumentEditorAdapter subEditor){
+        public void dispose(ArgumentEditor subEditor) {
             subEditor.removeFromParent();
         }
         
         @Override
-        public void setIndex(ArgumentEditorAdapter editor, int index){
+        public void setIndex(ArgumentEditor editor, int index) {
             con.insert(editor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
         }
     }
 
-    @Ignore
-    @UiField
-    VerticalLayoutContainer argumentsContainer;
+    private final VerticalLayoutContainer argumentsContainer;
 
-    private final ListEditor<Argument, ArgumentEditorAdapter> editor;
+    private final ListEditor<Argument, ArgumentEditor> editor;
 
-    public ArgumentListEditor() {
-        initWidget(BINDER.createAndBindUi(this));
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer));
+    public ArgumentListEditor(final EventBus eventBus) {
+        argumentsContainer = new VerticalLayoutContainer();
+        initWidget(argumentsContainer);
+        argumentsContainer.setAdjustForScroll(true);
+        argumentsContainer.setScrollMode(ScrollMode.AUTOY);
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus));
     }
 
     @Override
-    public ListEditor<Argument, ArgumentEditorAdapter> asEditor() {
+    public ListEditor<Argument, ArgumentEditor> asEditor() {
         return editor;
     }
 

@@ -65,7 +65,7 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static ArgumentField createPropertyField(Argument argument) {
+    public static ArgumentField createArgumentField(Argument argument) {
         printGwtLogInfo(argument);
         ArgumentField field = null;
         TextField tf = new TextField();
@@ -180,7 +180,7 @@ public class AppWizardFieldFactory {
     private static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
         // Exit if the argument is not required, or the field is not an instance of something with an
         // "addValidator" method
-        if (!argument.isRequired() || !((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
+        if (!argument.getRequired() || !((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
             return;
         }
 
@@ -253,7 +253,7 @@ public class AppWizardFieldFactory {
 
     public static SafeHtml createFieldLabelText(Argument argument){
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        if (argument.isRequired()) {
+        if (argument.getRequired()) {
             // If the field is required, it needs to be marked as such.
             labelText.append(templates.fieldLabelRequired());
         }

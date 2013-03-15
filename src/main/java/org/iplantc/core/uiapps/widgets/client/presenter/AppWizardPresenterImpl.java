@@ -4,9 +4,10 @@ import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardView;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardViewImpl;
+import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
 
-import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -41,6 +42,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     private AppTemplate appTemplate;
     private AppWizardView view;
+    private final EventBus eventBus;
     
     /**
      * Class constructor.
@@ -51,7 +53,8 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
      * <code>AppTemplate</code>. Therefore, this presenter is responsible for the instantiation of the
      * <code>AppWizardView</code>.
      */
-    public AppWizardPresenterImpl(){
+    public AppWizardPresenterImpl() {
+        this.eventBus = EventBus.getInstance();
     }
     
     @Override
@@ -68,7 +71,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void go(HasOneWidget container) {
-        view = new AppWizardViewImpl();
+        view = new AppWizardViewImpl(eventBus);
         view.setPresenter(this);
 
         view.getEditorDriver().edit(appTemplate);

@@ -59,8 +59,10 @@ public interface Argument extends HasId, HasLabel, HasDescription, HasVisibility
     @PropertyName("formValue")
     void setValue(Splittable formValue);
     
-    boolean isRequired();
+    @PropertyName("required")
+    boolean getRequired();
     
+    @PropertyName("required")
     void setRequired(boolean required);
     
     List<ArgumentValidator> getValidators();

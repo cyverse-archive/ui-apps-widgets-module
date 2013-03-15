@@ -9,27 +9,21 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
- * <h1>Requirements</h1>
- * <ul>
- * <li>Need to be able bring view up with designated values (e.g. values from a previous run)</li>
- * <li></li>
- * <li></li>
- * </ul>
- * <h2>Properties</h2>
- * <ul>
- * <li></li>
- * <li></li>
- * </ul>
- * <h2>Data Model</h2>
- * <ul>
- * <li></li>
- * </ul>
+ * The interface definition for the App Wizard view.
+ * 
+ * The App wizard is an editor which is data bound to a <code>AppTemplate</code>.
  * 
  * @author jstroot
  * 
  */
 public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
 
+    /**
+     * FIXME JDS Add explanation for why the presenter is broken into two interface definitions.
+     * 
+     * @author jstroot
+     * 
+     */
     public interface BasePresenter extends org.iplantc.core.uicommons.client.presenter.Presenter{
     
         /**
@@ -49,7 +43,6 @@ public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
 
     public interface Presenter extends BasePresenter {
         void doLaunchAnalysis(AppTemplate at);
-
     }
 
     /**
