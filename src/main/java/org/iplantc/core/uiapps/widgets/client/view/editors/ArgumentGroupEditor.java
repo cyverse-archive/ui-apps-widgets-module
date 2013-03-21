@@ -42,9 +42,9 @@ class ArgumentGroupEditor implements IsWidget, Collapsible, ValueAwareEditor<Arg
     private final HeaderTextTemplates templates = GWT.create(HeaderTextTemplates.class);
     ArgumentListEditor argumentsEditor;
 
-    public ArgumentGroupEditor(final EventBus eventBus) {
+    public ArgumentGroupEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
         groupField = new ContentPanel();
-        argumentsEditor = new ArgumentListEditor(eventBus);
+        argumentsEditor = new ArgumentListEditor(eventBus, presenter);
         groupField.add(argumentsEditor);
     }
     

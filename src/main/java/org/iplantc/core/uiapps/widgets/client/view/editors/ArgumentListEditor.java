@@ -30,15 +30,17 @@ class ArgumentListEditor extends Composite implements HasWidgets, IsEditor<ListE
         private static final int DEF_ARGUMENT_MARGIN = 10;
         private final VerticalLayoutContainer con;
         private final EventBus eventBus;
+        private AppTemplateWizardPresenter presenter;
 
-        public PropertyListEditorSource(VerticalLayoutContainer con, EventBus eventBus) {
+        public PropertyListEditorSource(final VerticalLayoutContainer con, final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
             this.con = con;
             this.eventBus = eventBus;
+            this.presenter = presenter;
         }
 
         @Override
         public ArgumentEditor create(int index) {
-            ArgumentEditor subEditor = new ArgumentEditor(eventBus);
+            ArgumentEditor subEditor = new ArgumentEditor(eventBus, presenter);
             con.add(subEditor, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             return subEditor;
         }
@@ -58,12 +60,12 @@ class ArgumentListEditor extends Composite implements HasWidgets, IsEditor<ListE
 
     private final ListEditor<Argument, ArgumentEditor> editor;
 
-    public ArgumentListEditor(final EventBus eventBus) {
+    public ArgumentListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
         argumentsContainer = new VerticalLayoutContainer();
         initWidget(argumentsContainer);
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus, presenter));
     }
 
     @Override

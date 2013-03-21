@@ -4,9 +4,7 @@
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
              xmlns:wizardEditors="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors"
-             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
-             xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
-             xmlns:view="urn:import:org.iplantc.core.uiapps.widgets.client.view">
+             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
              
     <ui:with type="org.iplantc.core.uiapps.widgets.client.WidgetDisplayStrings" field="display" />          
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
@@ -18,7 +16,7 @@
    <form:FormPanel ui:field="formPanel">
         <container:VerticalLayoutContainer >
             <container:child layoutData="{verticalLayoutData2}">
-                <wizardEditors:ArgumentGroupListEditor ui:field="argumentGroups"/>
+                <wizardEditors:AppTemplateWizard ui:field="wizard"/>
             </container:child>
             <container:child layoutData="{verticalLayoutData}">
                 <button:ButtonBar pack="END">

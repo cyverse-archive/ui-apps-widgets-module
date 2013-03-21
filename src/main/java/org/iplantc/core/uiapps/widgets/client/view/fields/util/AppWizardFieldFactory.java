@@ -65,9 +65,9 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static ArgumentField createArgumentField(Argument argument) {
+    public static ArgumentField createArgumentField(Argument argument, boolean editingMode) {
         printGwtLogInfo(argument);
-        ArgumentField field = null;
+        ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
         NumberField<Double> dblNumField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
         NumberField<Integer> intNumField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
@@ -165,6 +165,23 @@ public class AppWizardFieldFactory {
         setDefaultValue(argument);
         setRequiredValidator(argument, field);
 
+        if (editingMode) {
+            // Remove Field errorsupport
+            if (field.getField() instanceof Field<?>) {
+                Field<?> field2 = (Field<?>)field.getField();
+
+                field2.setValidateOnBlur(false);
+                field2.setAutoValidate(false);
+                field2.setErrorSupport(null);
+                field2.getValidators().clear();
+
+                if (field2 instanceof ValueBaseField<?>) {
+                    ((ValueBaseField<?>)field2).setAllowBlank(true);
+                }
+            }
+
+        }
+
         if (field != null) {
 
             if ((argument.getDescription() != null) && !argument.getDescription().isEmpty()) {
@@ -213,12 +230,12 @@ public class AppWizardFieldFactory {
      * @param argument
      * @return
      */
-    private static ArgumentField getNumberField(Argument argument) {
+    private static ConverterFieldAdapter<?, ?> getNumberField(Argument argument) {
 
         NumberField<Double> dblNumField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
         NumberField<Integer> intNumField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 
-        ArgumentField field = null;
+        ConverterFieldAdapter<?, ?> field = null;
         List<ArgumentValidator> validators = argument.getValidators();
         if (validators != null) {
             for (ArgumentValidator validator : validators) {
@@ -284,7 +301,7 @@ public class AppWizardFieldFactory {
         return labelText.toSafeHtml();
     }
 
-    static ArgumentField applyIntegerValidators(Argument argument, ConverterFieldAdapter<Integer, ?> field) {
+    static ConverterFieldAdapter<Integer, NumberField<Integer>> applyIntegerValidators(Argument argument, ConverterFieldAdapter<Integer, NumberField<Integer>> field) {
         List<ArgumentValidator> validators = argument.getValidators();
         if (validators != null) {
             for (ArgumentValidator argValidator : validators) {
@@ -304,7 +321,7 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    static ArgumentField applyDoubleValidators(Argument argument, ConverterFieldAdapter<Double, ?> field) {
+    static ConverterFieldAdapter<Double, ?> applyDoubleValidators(Argument argument, ConverterFieldAdapter<Double, ?> field) {
         List<ArgumentValidator> validators = argument.getValidators();
         if (validators != null) {
             for (ArgumentValidator argValidator : validators) {
@@ -324,7 +341,7 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    static ArgumentField applyStringValidators(Argument argument, ConverterFieldAdapter<String, ?> field) {
+    static ConverterFieldAdapter<String, ?> applyStringValidators(Argument argument, ConverterFieldAdapter<String, ?> field) {
         List<ArgumentValidator> validators = argument.getValidators();
         if (validators != null) {
             for (ArgumentValidator argValidator : validators) {
@@ -343,12 +360,13 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    static ArgumentField applyDiskResourceValidators(Argument argument, ConverterFieldAdapter<HasId, ? extends AppWizardDiskResourceSelector<?>> field) {
+    static ConverterFieldAdapter<HasId, ? extends AppWizardDiskResourceSelector<?>> applyDiskResourceValidators(Argument argument,
+            ConverterFieldAdapter<HasId, ? extends AppWizardDiskResourceSelector<?>> field) {
         // TBI JDS Feature not yet supported
         return field;
     }
 
-    static ArgumentField applyDiskResourceListValidators(Argument argument, ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> field) {
+    static ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> applyDiskResourceListValidators(Argument argument, ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> field) {
         // TBI JDS Feature not yet supported
         return field;
     }
