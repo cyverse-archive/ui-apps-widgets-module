@@ -7,7 +7,7 @@
              xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid">
 
    <ui:with type="org.iplantc.core.uiapps.widgets.client.WidgetDisplayStrings" field="display"/>
-   <ui:with type="org.iplantc.core.uicommons.client.images.Icons" field="icons"/>
+   <ui:with type="org.iplantc.core.resources.client.IplantResources" field="icons"/>
    
    <ui:with field="listStore"
             type="com.sencha.gxt.data.shared.ListStore" />
