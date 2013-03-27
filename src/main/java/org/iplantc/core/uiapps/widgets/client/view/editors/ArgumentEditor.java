@@ -4,8 +4,7 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
-import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.sencha.gxt.widget.core.client.Composite;
@@ -23,7 +22,7 @@ import com.sencha.gxt.widget.core.client.Composite;
  * @author jstroot
  * 
  */
-public class ArgumentEditor extends Composite implements ValueAwareEditor<Argument>{
+public class ArgumentEditor extends Composite implements Editor<Argument>{
 
     @Path("")
     ArgumentValueEditor argValueEditor;
@@ -31,40 +30,30 @@ public class ArgumentEditor extends Composite implements ValueAwareEditor<Argume
     @Path("")
     ArgumentPropertyEditor argPropBase;
 
-    private Argument argument;
-    
-    public ArgumentEditor(final EventBus eventBus){
-        argValueEditor = new ArgumentValueEditor(eventBus);
-        argPropBase = new ArgumentPropertyEditor();
-        argValueEditor.addArgumentClickHandler(new ClickHandler() {
-            
-            @Override
-            public void onClick(ClickEvent event) {
-                // FIXME JDS NEED to conceive of a way to prevent this from firing when it is used as an App Wizard
-                eventBus.fireEvent(new ArgumentSelectedEvent(ArgumentEditor.this, argument, argValueEditor.getArgumentField()));
-            }
-        });
+    public ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter){
+        argValueEditor = new ArgumentValueEditor(presenter.isEditingMode());
+        argPropBase = new ArgumentPropertyEditor(presenter);
+        if (presenter.isEditingMode()) {
+            argValueEditor.addArgumentClickHandler(new ClickHandler() {
+
+                @Override
+                public void onClick(ClickEvent event) {
+                    eventBus.fireEvent(new ArgumentSelectedEvent(ArgumentEditor.this));
+                }
+            });
+        }
         
         initWidget(argValueEditor);
     }
 
+    /**
+     * TODO JDS May want to make this available through the {@link AppTemplateWizard} instead.
+     * 
+     * @return
+     */
     @Ignore
     public ArgumentPropertyEditor getArgumentPropertyEditor() {
         return argPropBase;
     }
-
-    @Override
-    public void setValue(Argument value) {
-        this.argument = value;
-    }
-
-    @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
-
-    @Override
-    public void flush() {/* Do Nothing */}
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
 
 }

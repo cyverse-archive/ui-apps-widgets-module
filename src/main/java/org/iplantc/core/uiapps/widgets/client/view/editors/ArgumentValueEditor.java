@@ -7,11 +7,11 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
-import org.iplantc.core.uicommons.client.events.EventBus;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -38,7 +38,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-class ArgumentValueEditor extends Composite implements HasWidgets, CompositeEditor<Argument, Splittable, ArgumentField>, ValueAwareEditor<Argument> {
+class ArgumentValueEditor extends Composite implements HasWidgets, CompositeEditor<Argument, Splittable, ArgumentField> {
 
     private CompositeEditor.EditorChain<Splittable, ArgumentField> chain;
 
@@ -47,29 +47,36 @@ class ArgumentValueEditor extends Composite implements HasWidgets, CompositeEdit
     private ArgumentField subEditor = null;
     private Argument argument;
 
-    private ClickHandler clickHandler;
+    HasTextEditor label;
 
-    public ArgumentValueEditor(final EventBus eventBus) {
+    private ClickHandler clickHandler;
+    private final boolean editingMode;
+
+    public ArgumentValueEditor(boolean editingMode) {
+        this.editingMode = editingMode;
         propertyLabel = new FieldLabel();
+        label = HasTextEditor.of(propertyLabel);
         initWidget(propertyLabel);
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         
-        // Temporary handlers to visually show mouseovers
-        propertyLabel.addDomHandler(new MouseOverHandler() {
-            @Override
-            public void onMouseOver(MouseOverEvent event) {
-                 propertyLabel.setBorders(true);
+        if (editingMode) {
+            // Temporary handlers to visually show mouseovers
+            propertyLabel.addDomHandler(new MouseOverHandler() {
+                @Override
+                public void onMouseOver(MouseOverEvent event) {
+                    propertyLabel.setBorders(true);
 
-            }
-        }, MouseOverEvent.getType());
+                }
+            }, MouseOverEvent.getType());
 
-        propertyLabel.addDomHandler(new MouseOutHandler() {
+            propertyLabel.addDomHandler(new MouseOutHandler() {
 
-            @Override
-            public void onMouseOut(MouseOutEvent event) {
-                 propertyLabel.setBorders(false);
-            }
-        }, MouseOutEvent.getType());
+                @Override
+                public void onMouseOut(MouseOutEvent event) {
+                    propertyLabel.setBorders(false);
+                }
+            }, MouseOutEvent.getType());
+        }
     }
 
     /**
@@ -93,27 +100,41 @@ class ArgumentValueEditor extends Composite implements HasWidgets, CompositeEdit
 
     @Override
     public void setValue(Argument value) {
+        if (value == null) {
+            GWT.log("Passed Null value");
+            return;
+        }
+
         this.argument = value;
-        subEditor = AppWizardFieldFactory.createArgumentField(value);
+
+        if (subEditor == null) {
+            subEditor = AppWizardFieldFactory.createArgumentField(value, editingMode);
+            if (subEditor != null) {
+                propertyLabel.setWidget(subEditor);
+                Widget o = subEditor.asWidget();
+                if (o instanceof CheckBox) {
+                    if (clickHandler != null) {
+                        o.addDomHandler(clickHandler, ClickEvent.getType());
+                    }
+                }
+                // attach it to the chain. Attach the formvalue
+                Splittable formValue = value.getValue();
+                chain.attach(formValue, subEditor);
+            }
+
+        }
+
+        // Update label
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
         propertyLabel.setHTML(fieldLabelText);
-        
-        if (subEditor != null) {
-            propertyLabel.setWidget(subEditor);
-            Widget o = subEditor.asWidget();
-            if (o instanceof CheckBox) {
-                if(clickHandler != null){
-                    o.addDomHandler(clickHandler, ClickEvent.getType());
-                }
-                propertyLabel.setHTML("");
-                propertyLabel.setLabelSeparator("");
-                ((CheckBox)o).setBoxLabel(fieldLabelText.asString());
-           }
-            // attach it to the chain. Attach the formvalue
-            Splittable formValue = value.getValue();
-            chain.attach(formValue, subEditor);
-    
+
+        if ((subEditor != null) && (subEditor.asWidget() instanceof CheckBox)) {
+            propertyLabel.setHTML("");
+            propertyLabel.setLabelSeparator("");
+            ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
+
         }
+        
     }
 
     @Override
@@ -157,7 +178,7 @@ class ArgumentValueEditor extends Composite implements HasWidgets, CompositeEdit
 
     @Override
     public String getPathElement(ArgumentField subEditor) {
-        return "";
+        return ".value";
     }
 
     @Override

@@ -39,15 +39,17 @@ public class ArgumentGroupListEditor extends Composite implements IsEditor<ListE
 
         private final AccordionLayoutContainer con;
         private final EventBus eventBus;
+        private final AppTemplateWizardPresenter presenter;
 
-        public ArgumentGroupEditorSource(AccordionLayoutContainer con, EventBus eventBus) {
+        public ArgumentGroupEditorSource(AccordionLayoutContainer con, EventBus eventBus, AppTemplateWizardPresenter presenter) {
             this.con = con;
             this.eventBus = eventBus;
+            this.presenter = presenter;
         }
 
         @Override
         public ArgumentGroupEditor create(int index) {
-            ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus);
+            ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter);
             con.insert(subEditor.asWidget(), index);
             if (index == 0) {
                 // Ensure that the first container is expanded automatically
@@ -71,10 +73,10 @@ public class ArgumentGroupListEditor extends Composite implements IsEditor<ListE
     private final AccordionLayoutContainer groupsContainer;
     private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
 
-    public ArgumentGroupListEditor(final EventBus eventBus) {
+    public ArgumentGroupListEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
         groupsContainer = new AccordionLayoutContainer();
         initWidget(groupsContainer);
-        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus));
+        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter));
     }
 
     @Override

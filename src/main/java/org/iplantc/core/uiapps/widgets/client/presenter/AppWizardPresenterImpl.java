@@ -15,26 +15,6 @@ import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
  * 
- * Validation Strategy
- * 
- * The current method is "Functionally pro-active". The "Launch Analysis" button is only enabled when the entire form is valid.
- * The obvious intent is to simply not allow a user to launch an analysis unless the form is valid.
- * The downside to this method lies in the lack of communication to the user. If there is a required field in any property group
- * other than the first, the user has to hunt for it.
- * This method is also difficult to manage programmatically. Validation of each field has to be monitored with handlers in 
- * order to appropriately set state of the "Launch" button.
- * 
- * So what?
- * Let the user click the launch button whenever they want. There are only two outcomes, the form is valid, or it is not.
- * If the form is valid, proceed.
- * If the form is invalid, tell the user what is wrong.
- * Since our view literally hides fields (because of the accordian design), we HAVE to tell the user what fields are incorrect.
- * 
- * If the form is invalid, there are a few different reasons:
- *   The user simply didn't enter information into a required field.
- *      The validation messages should be displayed to the user, with some indication of where to find them.
- *   The user entered invalid information into a field.
- *      The fields should auto-validate. So if a user enters invalid information, the field should "inform" the user.
  * @author jstroot
  *
  */
@@ -49,9 +29,10 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
      * 
      * This {@link Presenter} implementation differs from the normal pattern since it does not take a
      * <code>View</code> at construction time. This is due to the fact that the
-     * <code>AppWizardView</code> is an editor and needs to be initialized with a valid
+     * <code>AppWizardView</code> contains an editor and needs to be initialized with a valid
      * <code>AppTemplate</code>. Therefore, this presenter is responsible for the instantiation of the
      * <code>AppWizardView</code>.
+     * FIXME JDS This is no longer true. Update documentation.
      */
     public AppWizardPresenterImpl() {
         this.eventBus = EventBus.getInstance();
@@ -74,7 +55,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         view = new AppWizardViewImpl(eventBus);
         view.setPresenter(this);
 
-        view.getEditorDriver().edit(appTemplate);
+        view.edit(appTemplate);
         container.setWidget(view);
     }
 

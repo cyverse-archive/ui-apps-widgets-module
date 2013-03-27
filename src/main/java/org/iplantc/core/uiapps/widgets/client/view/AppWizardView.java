@@ -3,7 +3,6 @@ package org.iplantc.core.uiapps.widgets.client.view;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 
 import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -45,12 +44,8 @@ public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
         void doLaunchAnalysis(AppTemplate at);
     }
 
-    /**
-     * @return the <code>EditorDriver</code> associated with this editor. It is expected that
-     *         implementing classes will initialize this driver at construction time.
-     */
-    SimpleBeanEditorDriver<AppTemplate, ? extends AppWizardView> getEditorDriver();
-
     void setPresenter(AppWizardView.Presenter presenter);
+
+    void edit(AppTemplate appTemplate);
 
 }
