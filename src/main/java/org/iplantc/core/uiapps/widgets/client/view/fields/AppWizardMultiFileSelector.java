@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 import java.util.List;
 import java.util.Set;
 
-import org.iplantc.core.uiapps.widgets.client.I18N;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
@@ -36,9 +36,9 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
  * TODO JDS Implement drag and drop
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public class AppWizardMultiFileSelector extends Composite implements IsField<List<HasId>>, ValueAwareEditor<List<HasId>> {
 
@@ -115,7 +115,7 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
     public void setValue(List<HasId> value) {
         if ((value == null) || !value.isEmpty())
             return;
-        
+
         // TBI JDS Assume the incoming value is a JSON array of ..... ?
 
     }

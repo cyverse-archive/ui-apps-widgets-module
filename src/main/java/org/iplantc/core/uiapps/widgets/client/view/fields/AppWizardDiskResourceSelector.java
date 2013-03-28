@@ -31,12 +31,12 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * Abstract class for single select DiskResource fields.
- * 
+ *
  * TODO JDS All Diskresource selectors (incl multi) need to have a "file_info_type". This will be passed
  * to the DiskResource presenter, which will filter outputs.
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public abstract class AppWizardDiskResourceSelector<R extends DiskResource> extends Component implements IsField<HasId>, ValueAwareEditor<HasId> {
 
@@ -68,7 +68,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
-        
+
         SafeHtmlBuilder builder = new SafeHtmlBuilder();
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
@@ -78,7 +78,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
         sinkEvents(Event.ONCHANGE | Event.ONCLICK | Event.MOUSEEVENTS);
 
-        button = new TextButton(I18N.DISPLAY.browse());
+        button = new TextButton(org.iplantc.core.resources.client.messages.I18N.DISPLAY.browse());
         button.getElement().addClassName(res.style().buttonWrap());
         getElement().appendChild(button.getElement());
         button.addSelectHandler(new SelectHandler() {
@@ -109,7 +109,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
     /**
      * Convenience method which creates a HasId object from a given string id.
-     * 
+     *
      * @param id
      */
     public void setValueFromStringId(String id) {
@@ -118,7 +118,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
     /**
      * Retrieves the resource with the given Id, otherwise returns null.
-     * 
+     *
      * @param value the Id to be used.
      * @return the resource, if it exists. Null otherwise.
      */
@@ -183,7 +183,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
     @Override
     public boolean isValid(boolean preventMark) {
-        // If the input field is not valid, make a call to validate in order to 
+        // If the input field is not valid, make a call to validate in order to
         // propagate errors from the input field to the editor delegate.
         if (!input.isValid(preventMark)) {
             validate(preventMark);

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.metadata.client.validation.ListRuleArgument;
 import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
-import org.iplantc.core.uiapps.widgets.client.I18N;
+import org.iplantc.core.resources.client.messages.I18N;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
@@ -22,9 +22,9 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 /**
  * A Panel that contains a ListRuleArgumentTree and a filtering field that filters the tree items.
- * 
+ *
  * @author psarando
- * 
+ *
  */
 public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
@@ -98,7 +98,7 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
      * Adds a handler to the store that will restore the CheckState of the tree, and expand any Group
      * that is checked or has checked children. This handler must be added after the store is added to
      * the tree, since the tree adds its own handlers that must trigger before this one.
-     * 
+     *
      * @param store
      */
     private void addCheckedRestoreFilterHandler(TreeStore<ListRuleArgument> store) {
@@ -169,7 +169,7 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
     /**
      * Sets the Command to execute after the tree's checked selection changes.
-     * 
+     *
      * @param updateCmd The component value table update Command to execute after selection changes.
      */
     public void addCheckChangedUpdateCommand(Command updateCmd) {
@@ -186,7 +186,7 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
     /**
      * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
-     * 
+     *
      * @param value A string representation of a JSON Array of the values to select.
      */
     public void setSelection(String value) {
