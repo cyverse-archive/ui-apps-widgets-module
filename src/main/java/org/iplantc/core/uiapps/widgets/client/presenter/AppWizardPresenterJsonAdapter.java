@@ -7,6 +7,7 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -111,13 +112,23 @@ public class AppWizardPresenterJsonAdapter {
             }
         }
         if(!splittable.isUndefined("value")){
-            splittable.get("value").assign(subArgument, "value");
+            Splittable valueSplittable = splittable.get("value");
+            if (valueSplittable.isString() && !Strings.isNullOrEmpty(valueSplittable.asString())) {
+                String asString = valueSplittable.asString();
+                try {
+                    StringQuoter.split(asString).assign(subArgument, "value");
+                } catch (RuntimeException e) {
+                    valueSplittable.assign(subArgument, "value");
+                }
+            }else if (valueSplittable.isNumber()){
+                String asNumber = Double.toString(valueSplittable.asNumber());
+                StringQuoter.split(asNumber).assign(subArgument, "value");
+            }else{
+                valueSplittable.assign(subArgument, "value");
+            }
         }
         if(!splittable.isUndefined("omit_if_blank")){
             splittable.get("omit_if_blank").assign(subArgument, "omit_if_blank");
-        }
-        if(!splittable.isUndefined("value")){
-            splittable.get("value").assign(subArgument, "value");
         }
         if(!splittable.isUndefined("order")){
             splittable.get("order").assign(subArgument, "order");

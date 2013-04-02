@@ -34,8 +34,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.TakesValue;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
@@ -59,13 +57,13 @@ public class AppWizardFieldFactory {
         @SafeHtmlTemplates.Template("<span qtip=\"{1}\">{0}</span>")
         SafeHtml fieldLabel(SafeHtml name, String textToolTip);
 
-        @SafeHtmlTemplates.Template("<span style=\"color: red; float: left;\">*&nbsp</span>")
+        @SafeHtmlTemplates.Template("<span style=\"color: red;\">*&nbsp</span>")
         SafeHtml fieldLabelRequired();
     }
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static ArgumentField createArgumentField(Argument argument, boolean editingMode) {
+    public static <T extends ArgumentField> T createArgumentField(Argument argument, boolean editingMode) {
         printGwtLogInfo(argument);
         ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
@@ -190,7 +188,7 @@ public class AppWizardFieldFactory {
             }
         }
 
-        return field;
+        return (T)field;
     }
 
     @SuppressWarnings("unchecked")
@@ -254,18 +252,19 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    private static void setDefaultValue(Argument argument) {
-        String defaultValue = argument.getDefaultValue();
-        if ((defaultValue != null) && !defaultValue.isEmpty()) {
-            try {
-                Splittable create = StringQuoter.split(defaultValue);
-                argument.setValue(create);
-            } catch (Exception e) {
-                // If we couldn't parse as a JSON value, create a string splittable.
-                Splittable create = StringQuoter.create(defaultValue);
-                argument.setValue(create);
-            }
-        }
+    public static void setDefaultValue(Argument argument) {
+        argument.setValue(argument.getDefaultValue());
+//        String defaultValue = argument.getDefaultValue();
+//        if ((defaultValue != null) && !defaultValue.isEmpty()) {
+//            try {
+//                Splittable create = StringQuoter.split(defaultValue);
+//                argument.setValue(create);
+//            } catch (Exception e) {
+//                // If we couldn't parse as a JSON value, create a string splittable.
+//                Splittable create = StringQuoter.create(defaultValue);
+//                argument.setValue(create);
+//            }
+//        }
     }
 
     public static SafeHtml createFieldLabelText(Argument argument){

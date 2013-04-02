@@ -16,7 +16,6 @@ import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
-import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 
 /**
  * 
@@ -66,7 +65,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
 
     @UiHandler("launchButton")
     void onLaunchButtonClicked(SelectEvent event) {
-        FormPanelHelper.isValid(wizard);
 
         // Flush the editor driver to perform validations before calling back to presenter.
         AppTemplate at = wizard.flush();

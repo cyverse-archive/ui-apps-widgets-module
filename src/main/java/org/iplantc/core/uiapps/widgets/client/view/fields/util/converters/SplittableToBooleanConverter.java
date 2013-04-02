@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields.util.converters;
 
+import com.google.common.base.Strings;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.Converter;
@@ -8,7 +9,10 @@ public class SplittableToBooleanConverter implements Converter<Splittable, Boole
 
     @Override
     public Splittable convertFieldValue(Boolean object) {
-        return StringQuoter.create(object);
+        if(object == null){
+            object = Boolean.FALSE;
+        }
+        return StringQuoter.split(String.valueOf(object));
     }
 
     @Override
@@ -19,7 +23,7 @@ public class SplittableToBooleanConverter implements Converter<Splittable, Boole
         Boolean b = null;
         if (object.isBoolean()) {
             b = object.asBoolean();
-        } else if (object.isString()) {
+        } else if (object.isString() && !Strings.isNullOrEmpty(object.asString())) {
             b = Boolean.valueOf(object.asString());
         }
         return b;

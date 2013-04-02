@@ -1,7 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import java.util.Iterator;
-
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uicommons.client.events.EventBus;
@@ -9,21 +7,16 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
-import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 
 /**
  * An editor class for displaying the argument group list in an {@link AppTemplate#getArgumentGroups()}.
- * This class implements <code>HasWidgets</code> in order to support manual validation of view via
- * {@link FormPanelHelper#isValid(HasWidgets)}
  * 
  * @author jstroot
  * 
  */
-public class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>>, HasWidgets {
+class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>> {
 
     /**
      * The EditorSource class for adding indiv. ArgumentGroups to the ui.
@@ -73,7 +66,7 @@ public class ArgumentGroupListEditor extends Composite implements IsEditor<ListE
     private final AccordionLayoutContainer groupsContainer;
     private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
 
-    public ArgumentGroupListEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
+    ArgumentGroupListEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
         groupsContainer = new AccordionLayoutContainer();
         initWidget(groupsContainer);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter));
@@ -84,23 +77,4 @@ public class ArgumentGroupListEditor extends Composite implements IsEditor<ListE
         return editor;
     }
 
-    @Override
-    public void add(Widget w) {
-        groupsContainer.add(w);
-    }
-
-    @Override
-    public void clear() {
-        groupsContainer.clear();
-    }
-
-    @Override
-    public Iterator<Widget> iterator() {
-        return groupsContainer.iterator();
-    }
-
-    @Override
-    public boolean remove(Widget w) {
-        return groupsContainer.remove(w);
-    }
 }

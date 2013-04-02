@@ -2,6 +2,9 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.temp;
 
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
 
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.Converter;
@@ -59,6 +62,18 @@ public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integ
     @Override
     public IsField<?> getField() {
         return slider;
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Splittable> handler) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void fireEvent(GwtEvent<?> event) {
+        // TODO Auto-generated method stub
+
     }
 
 }

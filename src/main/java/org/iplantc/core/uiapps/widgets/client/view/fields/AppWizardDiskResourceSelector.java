@@ -2,7 +2,6 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import java.util.List;
 
-import org.iplantc.core.uiapps.widgets.client.I18N;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
@@ -12,6 +11,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -38,7 +38,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  *
  */
-public abstract class AppWizardDiskResourceSelector<R extends DiskResource> extends Component implements IsField<HasId>, ValueAwareEditor<HasId> {
+public abstract class AppWizardDiskResourceSelector<R extends DiskResource> extends Component implements IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();

@@ -1,10 +1,10 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uicommons.client.events.EventBus;
@@ -14,8 +14,10 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.impl.Refresher;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 
 /**
@@ -28,16 +30,16 @@ import com.sencha.gxt.widget.core.client.Composite;
  * field's corresponding {@link ArgumentPropertyEditor} can be retrieved.
  * 
  * If editing is not enabled, the {@link ArgumentPropertyEditor} will not be available, and will not be
- * initialized with the
- * editor hierarchy.
+ * initialized with the editor hierarchy.
  * 
  * @author jstroot
  * 
  */
-public class AppTemplateWizard extends Composite implements HasWidgets, Editor<AppTemplate>, AppTemplateWizardPresenter {
+public class AppTemplateWizard extends Composite implements Editor<AppTemplate>, AppTemplateWizardPresenter {
     
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
+    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     
     ArgumentGroupListEditor argumentGroups;
 
@@ -77,26 +79,6 @@ public class AppTemplateWizard extends Composite implements HasWidgets, Editor<A
         editorDriver.accept(new Refresher());
     }
 
-    @Override
-    public void add(Widget w) {
-        argumentGroups.add(w);
-    }
-
-    @Override
-    public void clear() {
-        argumentGroups.clear();
-    }
-
-    @Override
-    public Iterator<Widget> iterator() {
-        return argumentGroups.iterator();
-    }
-
-    @Override
-    public boolean remove(Widget w) {
-        return argumentGroups.remove(w);
-    }
-
     public boolean hasErrors() {
         return editorDriver.hasErrors();
     }
@@ -110,4 +92,11 @@ public class AppTemplateWizard extends Composite implements HasWidgets, Editor<A
         return editingMode;
     }
 
+    @Override
+    public Argument copyArgument(Argument value) {
+        AutoBean<Argument> argAb = AutoBeanUtils.getAutoBean(value);
+        Splittable splitCopy = AutoBeanCodex.encode(argAb);
+        
+        return AutoBeanCodex.decode(factory, Argument.class, splitCopy.getPayload()).as();
+    }
 }

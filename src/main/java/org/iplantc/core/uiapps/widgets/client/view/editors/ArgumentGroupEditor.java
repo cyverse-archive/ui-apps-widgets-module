@@ -1,7 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import java.util.Iterator;
-
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uicommons.client.events.EventBus;
@@ -12,23 +10,18 @@ import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.Collapsible;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 
 /**
- * This class implements <code>HasWidgets</code> in order to support manual validation of view via
- * {@link FormPanelHelper#isValid(HasWidgets)}.
  * This class contains a {@link ContentPanel} whose header text is updated when the bound
- * <code>ArgumentGroup</code> is set.
+ * <code>ArgumentGroup</code> is set/updated.
  * 
  * @author jstroot
  * 
  */
-class ArgumentGroupEditor implements IsWidget, Collapsible, ValueAwareEditor<ArgumentGroup>, HasWidgets {
+class ArgumentGroupEditor implements IsWidget, ValueAwareEditor<ArgumentGroup> {
     interface HeaderTextTemplates extends SafeHtmlTemplates {
 
         @SafeHtmlTemplates.Template("<span name=\"{3}\" class=\"{0}\" qtip=\"{2}\">{1}</span>")
@@ -71,41 +64,6 @@ class ArgumentGroupEditor implements IsWidget, Collapsible, ValueAwareEditor<Arg
         // groupField.setHeadingText(value.getLabel());
         labelText.appendEscaped(value.getLabel());
         groupField.setHeadingHtml(labelText.toSafeHtml());
-    }
-
-    @Override
-    public void collapse() {
-        groupField.collapse();
-    }
-
-    @Override
-    public void expand() {
-        groupField.expand();
-    }
-
-    @Override
-    public boolean isExpanded() {
-        return groupField.isExpanded();
-    }
-
-    @Override
-    public void add(Widget w) {
-        argumentsEditor.add(w);
-    }
-
-    @Override
-    public void clear() {
-        argumentsEditor.clear();
-    }
-
-    @Override
-    public Iterator<Widget> iterator() {
-        return argumentsEditor.iterator();
-    }
-
-    @Override
-    public boolean remove(Widget w) {
-        return argumentsEditor.remove(w);
     }
 
     @Override

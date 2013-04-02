@@ -14,6 +14,9 @@ import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,7 +43,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  * @author jstroot
  *
  */
-public class AppWizardMultiFileSelector extends Composite implements IsField<List<HasId>>, ValueAwareEditor<List<HasId>> {
+public class AppWizardMultiFileSelector extends Composite implements IsField<List<HasId>>, ValueAwareEditor<List<HasId>>, HasValueChangeHandlers<List<HasId>> {
 
     interface AppWizardMultiFileSelectorUiBinder extends UiBinder<Widget, AppWizardMultiFileSelector> {}
 
@@ -198,6 +201,12 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
     public void onPropertyChange(String... paths) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<HasId>> handler) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

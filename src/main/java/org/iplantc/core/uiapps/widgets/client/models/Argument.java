@@ -41,10 +41,10 @@ public interface Argument extends HasId, HasLabel, HasDescription, HasVisibility
     void setOmitIfBlank(boolean omitIfBlank);
     
     @PropertyName("value")
-    String getDefaultValue();
+    Splittable getDefaultValue();
     
     @PropertyName("value")
-    void setDefaultValue(String defaultValue);
+    void setDefaultValue(Splittable defaultValue);
     
     /**
      * A property used for holding the values entered via the form fields.

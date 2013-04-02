@@ -1,36 +1,28 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import java.util.Iterator;
-
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 
 /**
- * This class implements <code>HasWidgets</code> in order to support manual validation of view via
- * {@link FormPanelHelper#isValid(HasWidgets)}
- * 
  * @author jstroot
  * 
  */
-class ArgumentListEditor extends Composite implements HasWidgets, IsEditor<ListEditor<Argument, ArgumentEditor>> {
+class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argument, ArgumentEditor>> {
 
     private class PropertyListEditorSource extends EditorSource<ArgumentEditor> {
         private static final int DEF_ARGUMENT_MARGIN = 10;
         private final VerticalLayoutContainer con;
         private final EventBus eventBus;
-        private AppTemplateWizardPresenter presenter;
+        private final AppTemplateWizardPresenter presenter;
 
         public PropertyListEditorSource(final VerticalLayoutContainer con, final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
             this.con = con;
@@ -71,26 +63,6 @@ class ArgumentListEditor extends Composite implements HasWidgets, IsEditor<ListE
     @Override
     public ListEditor<Argument, ArgumentEditor> asEditor() {
         return editor;
-    }
-
-    @Override
-    public void add(Widget w) {
-        argumentsContainer.add(w);
-    }
-
-    @Override
-    public void clear() {
-        argumentsContainer.clear();
-    }
-
-    @Override
-    public Iterator<Widget> iterator() {
-        return argumentsContainer.iterator();
-    }
-
-    @Override
-    public boolean remove(Widget w) {
-        return argumentsContainer.remove(w);
     }
 
 }

@@ -16,7 +16,7 @@ public class SplittableToDoubleConverter implements Converter<Splittable, Double
 
     @Override
     public Double convertModelValue(Splittable object) {
-        if (object == null)
+        if ((object == null) || !object.isNumber())
             return null;
 
         return Double.valueOf(object.asNumber());

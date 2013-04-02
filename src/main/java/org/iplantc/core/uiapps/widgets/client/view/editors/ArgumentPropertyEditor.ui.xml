@@ -3,7 +3,8 @@
 	         xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	         xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
 	         xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
-	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
+	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors">
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
     </ui:with>
@@ -63,41 +64,10 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        
-	        <!-- Field for ArgumentType.FileInput, FolderInput, MultiFileSelector -->
+	        <!-- DefaultValue Editor -->
 	        <con:child layoutData="{fieldLayoutData}">
-	           <form:FieldLabel ui:field="fileTypeField" 
-	                            text="Type of information contained in this file"
-	                            labelAlign="TOP"
-	                            enabled="false">
-                    <form:widget>
-                        <form:TextField text="PlaceHolder for file type information combobox"/>
-                    </form:widget> 	                            
-	           </form:FieldLabel>
+	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
 	        </con:child>
-	        
-            <!-- Field for ArgumentType.Selection, TextSelection, ValueSelection -->
-            <con:child layoutData="{fieldLayoutData}">
-                    <form:FieldLabel ui:field="listSelectionField" 
-                                     text="Create List"
-                                     labelAlign="TOP"
-                                     enabled="false">
-                        <form:widget>
-                            <form:TextField text="PlaceHolder for list selection creation widget" />
-                        </form:widget>
-                    </form:FieldLabel>
-            </con:child>
-
-	        <!-- Field for ArgumentType.Flag -->
-	        <con:child layoutData="{fieldLayoutData}">
-                <form:FieldLabel ui:field="flagField" 
-                                 text="Default State"
-                                 labelAlign="TOP"
-                                 enabled="false">
-                    <form:widget>
-                        <form:TextField text="PlaceHolder for combo box" />
-                    </form:widget>
-                </form:FieldLabel>
-            </con:child>
             
 	    </con:VerticalLayoutContainer>
 	    </gxt:child>
