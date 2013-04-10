@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-4.0.0.xsd">
                    	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iplantc.core</groupId>
-	<artifactId>apps-widgets</artifactId>
+	<artifactId>ui-apps-widgets</artifactId>
 	<packaging>jar</packaging>
 	<version>gxt3Sandbox-SNAPSHOT</version>
 	<name>The iPlant Collaborative widgets for Tools integration</name>
@@ -23,17 +23,17 @@
         <!-- iPlant Dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>diskresource</artifactId>
+			<artifactId>ui-diskresource</artifactId>
 			<version>gxt3Sandbox-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.iplantc.core</groupId>
-			<artifactId>applications</artifactId>
+			<artifactId>ui-applications</artifactId>
 			<version>gxt3Sandbox-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>widgets</finalName>
+		<finalName>ui-apps-widgets</finalName>
         <outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
         <resources>
 		    <resource>
