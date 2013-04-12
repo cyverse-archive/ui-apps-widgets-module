@@ -1,6 +1,9 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.view.editors.lists.SelectionListEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -50,11 +53,30 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
     @UiField(provided = true)
     DefaultArgumentValueEditor defaultValue;
 
+    @Path("")
+    @UiField(provided = true)
+    ArgumentValidatorEditor validatorsEditor;
+
+    @Path("")
+    @UiField(provided = true)
+    SelectionListEditor selectionListEditor;
+
     private final AppTemplateWizardPresenter presenter;
 
     ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         defaultValue = new DefaultArgumentValueEditor(presenter);
+        validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
+        selectionListEditor = new SelectionListEditor();
+
+        /*
+         * Validation control and selection creation control will be created here, bound to argument.
+         * Each will be a value aware editor, and will only instantiate the visible components for the
+         * appropriate Argument type.
+         * 
+         * You will want to get the selective instantiate logic in place before getting the functionality
+         * together.
+         */
         initWidget(BINDER.createAndBindUi(this));
     }
 

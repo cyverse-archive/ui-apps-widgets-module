@@ -4,7 +4,9 @@
 	         xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
 	         xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
 	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
-	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors">
+	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors"
+	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.validation"
+	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.lists">
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
     </ui:with>
@@ -67,6 +69,15 @@
 	        <!-- DefaultValue Editor -->
 	        <con:child layoutData="{fieldLayoutData}">
 	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
+	        </con:child>
+	        
+	        <!-- Argument Validator Editor -->
+	        <con:child layoutData="{fieldLayoutData}">
+	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
+	        </con:child>
+	        
+	        <con:child layoutData="{fieldLayoutData}">
+	           <lists:SelectionListEditor ui:field="selectionListEditor"/>
 	        </con:child>
             
 	    </con:VerticalLayoutContainer>

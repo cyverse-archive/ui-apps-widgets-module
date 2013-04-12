@@ -156,14 +156,21 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                  * indicates that the Argument value/ has been updated on a previous flush in
                  * the editor hierarchy.
                  */
-                boolean valueUpdated = !((argValue == null) && (argCpyValue == null)) && (((argValue == null) && (argCpyValue != null)) || !argCpyValue.getPayload().equals(argValue.getPayload()));
+                boolean argValNull = argValue == null;
+                boolean argCpyValNull = argCpyValue == null;
+                boolean valueUpdated = (!(argValNull && argCpyValNull) && (argValNull ^ argCpyValNull)) 
+                        || (!(argValNull && argCpyValNull) && !argCpyValue.getPayload().equals(argValue.getPayload()));
 
                 /*
                  * Determine if the defaultValue has been updated since last flush. If true, this
                  * indicates that the Argument defaultValue has been updated on a previous flush in
                  * the editor hierarchy.
                  */
-                boolean defaultValueUpdated = !defaultValue.getPayload().equals(argumentCopy.getDefaultValue().getPayload());
+                Splittable defaultValue2 = argumentCopy.getDefaultValue();
+                boolean defaultValNull = defaultValue == null;
+                boolean defaultCopyValNull = defaultValue2 == null;
+                boolean defaultValueUpdated = (!(defaultValNull && defaultCopyValNull) && (defaultValNull ^ defaultCopyValNull))
+                        || (!(defaultValNull && defaultCopyValNull) && !defaultValue.getPayload().equals(defaultValue2.getPayload()));
                 
                 /* Only update if:
                  * -- the flushed value differs from the current value, and 

@@ -5,6 +5,7 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionProperties;
 
 import com.google.gwt.core.client.GWT;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
@@ -15,14 +16,11 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
  * 
  */
 public class AppWizardComboBox extends ComboBox<SelectionArgument> {
-    private final SelectionProperties props = GWT.create(SelectionProperties.class);
-    private final ListStore<SelectionArgument> store = new ListStore<SelectionArgument>(props.id());
-
-    ComboBox<SelectionArgument> field = new ComboBox<SelectionArgument>(store, props.display());
 
     public AppWizardComboBox(Argument argument) {
         this(GWT.<SelectionProperties> create(SelectionProperties.class));
         getStore().addAll(argument.getArguments());
+        setTriggerAction(TriggerAction.ALL);
 
     }
 

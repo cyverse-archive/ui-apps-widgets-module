@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -132,6 +133,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         if (subEditor == null) {
             AppWizardFieldFactory.setDefaultValue(value);
             subEditor = AppWizardFieldFactory.createArgumentField(value, editingMode);
+            AppWizardFieldFactory.setRequiredValidator(value, subEditor);
             if (subEditor != null) {
                 propertyLabel.setWidget(subEditor);
 
@@ -153,7 +155,9 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
             }
         }
 
-        subEditor.setValue(value.getValue());
+        if (!value.getType().equals(ArgumentType.Info)) {
+            subEditor.setValue(value.getValue());
+        }
 
         // Update label
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);

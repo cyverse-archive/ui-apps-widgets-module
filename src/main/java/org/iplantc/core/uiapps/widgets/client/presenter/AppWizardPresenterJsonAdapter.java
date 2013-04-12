@@ -198,6 +198,7 @@ public class AppWizardPresenterJsonAdapter {
                     if (type.equals(ArgumentType.TextSelection) 
                             || type.equals(ArgumentType.IntegerSelection)
                             || type.equals(ArgumentType.DoubleSelection)
+                            || type.equals(ArgumentType.ValueSelection)
                             || type.equals(ArgumentType.Selection)) {
                         Splittable mustContain = rule.get(key);
                         for (int j = 0; j < mustContain.size(); j++) {
@@ -206,7 +207,14 @@ public class AppWizardPresenterJsonAdapter {
                             mustContain.get(j).get("display").assign(arg, "display");
                             mustContain.get(j).get("name").assign(arg, "name");
                             mustContain.get(j).get("value").assign(arg, "value");
-                            mustContain.get(j).get("isDefault").assign(arg, "isDefault");
+                            Splittable isDefaultSplittable = mustContain.get(j).get("isDefault");
+                            if (isDefaultSplittable.isString()) {
+                                StringQuoter.create(Boolean.parseBoolean(isDefaultSplittable.asString())).assign(arg, "isDefault");
+                            } else if (isDefaultSplittable.isBoolean()) {
+                                isDefaultSplittable.assign(arg, "isDefault");
+                            } else {
+                                GWT.log("Unknown type for parsing to boolean.");
+                            }
 
                             arg.assign(arguments, j);
                         }

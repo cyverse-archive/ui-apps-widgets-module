@@ -161,7 +161,6 @@ public class AppWizardFieldFactory {
         }
         
         setDefaultValue(argument);
-        setRequiredValidator(argument, field);
 
         if (editingMode) {
             // Remove Field errorsupport
@@ -192,7 +191,7 @@ public class AppWizardFieldFactory {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
+    public static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
         // Exit if the argument is not required, or the field is not an instance of something with an
         // "addValidator" method
         if (!argument.getRequired() || !((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {

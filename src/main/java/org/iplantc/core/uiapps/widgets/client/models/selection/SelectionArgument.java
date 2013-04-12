@@ -10,6 +10,8 @@ import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
 public interface SelectionArgument extends HasId, HasName, HasDescription, TakesValue<String>, HasDisplayText {
 
+    void setId(String id);
+
     @PropertyName("isDefault")
     boolean isDefault();
 
