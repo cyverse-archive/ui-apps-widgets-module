@@ -19,7 +19,8 @@ public enum ArgumentType {
     // Legacy
     Selection, 
     ValueSelection,
-    Number;
+    Number, 
+    Group;
     // Input
     // Output
 
