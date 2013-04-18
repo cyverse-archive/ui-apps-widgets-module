@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
@@ -61,7 +62,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             argument.setType(type);
             List<Argument> list = editor.getList();
             if (list != null) {
-                list.add(argument);
+                if (adjustSize) {
+                    list.add(argument);
+                }
+                setFireSelectedOnAdd(true);
             }
         }
     }
@@ -80,8 +84,12 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
         @Override
         public ArgumentEditor create(int index) {
-            ArgumentEditor subEditor = new ArgumentEditor(eventBus, presenter);
+            final ArgumentEditor subEditor = new ArgumentEditor(eventBus, presenter);
             con.add(subEditor, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
+            if (isFireSelectedOnAdd()) {
+                setFireSelectedOnAdd(false);
+                eventBus.fireEvent(new ArgumentSelectedEvent(subEditor));
+            }
             return subEditor;
         }
         
@@ -100,6 +108,8 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
     private final ListEditor<Argument, ArgumentEditor> editor;
 
+    private boolean fireSelectedOnAdd;
+
     public ArgumentListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
         argumentsContainer = new VerticalLayoutContainer();
         initWidget(argumentsContainer);
@@ -107,12 +117,14 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
         editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus, presenter));
 
-        // Add drop target and DnD handlers
-        DropTarget dt = new DropTarget(argumentsContainer);
-        AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-        DnDHandler dndHandler = new DnDHandler(editor, factory);
-        dt.addDragEnterHandler(dndHandler);
-        dt.addDropHandler(dndHandler);
+        if (presenter.isEditingMode()) {
+            // If in editing mode, add drop target and DnD handlers
+            DropTarget dt = new DropTarget(argumentsContainer);
+            AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+            DnDHandler dndHandler = new DnDHandler(editor, factory);
+            dt.addDragEnterHandler(dndHandler);
+            dt.addDropHandler(dndHandler);
+        }
     }
 
     @Override
@@ -120,4 +132,11 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         return editor;
     }
 
+    private void setFireSelectedOnAdd(boolean fireSelectedOnAdd) {
+        this.fireSelectedOnAdd = fireSelectedOnAdd;
+    }
+
+    private boolean isFireSelectedOnAdd() {
+        return fireSelectedOnAdd;
+    }
 }

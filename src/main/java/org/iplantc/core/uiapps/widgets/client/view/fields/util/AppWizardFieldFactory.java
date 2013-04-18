@@ -64,7 +64,7 @@ public class AppWizardFieldFactory {
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
     public static <T extends ArgumentField> T createArgumentField(Argument argument, boolean editingMode) {
-        printGwtLogInfo(argument);
+        // printGwtLogInfo(argument);
         ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
         NumberField<Double> dblNumField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());

@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
@@ -11,6 +12,8 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
@@ -61,6 +64,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             List<ArgumentGroup> list = editor.getList();
             if (list != null) {
                 list.add(e);
+                setFireSelectedOnAdd(true);
             }
         }
     }
@@ -89,7 +93,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
         @Override
         public ArgumentGroupEditor create(int index) {
-            ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter);
+            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter);
             ((ContentPanel)subEditor.asWidget()).setCollapsible(true);
             /* 
              * JDS Surround this call in a try-catch to guard against failed assertions in devmode.
@@ -106,6 +110,16 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             if (index == 0) {
                 // Ensure that the first container is expanded automatically
                 con.setActiveWidget(subEditor.asWidget());
+            }
+            if (isFireSelectedOnAdd()) {
+                setFireSelectedOnAdd(false);
+                Scheduler.get().scheduleFinally(new ScheduledCommand() {
+
+                    @Override
+                    public void execute() {
+                        eventBus.fireEvent(new ArgumentGroupSelectedEvent(subEditor));
+                    }
+                });
             }
             return subEditor;
         }
@@ -124,18 +138,22 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
     
     private final AccordionLayoutContainer groupsContainer;
     private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
+    private boolean fireSelectedOnAdd;
 
     ArgumentGroupListEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
         groupsContainer = new AccordionLayoutContainer();
+        groupsContainer.setTitleCollapse(false);
         initWidget(groupsContainer);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter));
 
-        // Add drop target and DnD handlers.
-        DropTarget dt = new DropTarget(groupsContainer);
-        AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-        DnDHandler dndHandler = new DnDHandler(editor, factory);
-        dt.addDragEnterHandler(dndHandler);
-        dt.addDropHandler(dndHandler);
+        if (presenter.isEditingMode()) {
+            // If in editing mode, add drop target and DnD handlers.
+            DropTarget dt = new DropTarget(groupsContainer);
+            AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+            DnDHandler dndHandler = new DnDHandler(editor, factory);
+            dt.addDragEnterHandler(dndHandler);
+            dt.addDropHandler(dndHandler);
+        }
     }
 
     @Override
@@ -143,4 +161,15 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         return editor;
     }
 
+    /**
+     * Sets a flag which is used to determine whether an {@link ArgumentGroupSelectedEvent} should be
+     * fired.
+     */
+    private void setFireSelectedOnAdd(boolean fireSelectedOnAdd) {
+        this.fireSelectedOnAdd = fireSelectedOnAdd;
+    }
+
+    private boolean isFireSelectedOnAdd() {
+        return fireSelectedOnAdd;
+    }
 }

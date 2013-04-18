@@ -14,6 +14,7 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.impl.Refresher;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -37,6 +38,14 @@ import com.sencha.gxt.widget.core.client.Composite;
  */
 public class AppTemplateWizard extends Composite implements Editor<AppTemplate>, AppTemplateWizardPresenter {
     
+    public interface IArgumentEditor {
+        IsWidget getArgumentPropertyEditor();
+    }
+
+    public interface IArgumentGroupEditor {
+        IsWidget getArgumentGroupPropertyEditor();
+    }
+
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);

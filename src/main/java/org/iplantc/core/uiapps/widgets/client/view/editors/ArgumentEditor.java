@@ -7,6 +7,7 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.widget.core.client.Composite;
 
 /**
@@ -23,18 +24,18 @@ import com.sencha.gxt.widget.core.client.Composite;
  * @author jstroot
  * 
  */
-public class ArgumentEditor extends Composite implements Editor<Argument>{
+class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEditor, Editor<Argument> {
 
     @Path("")
     ArgumentValueEditor argValueEditor;
     
     @Path("")
-    ArgumentPropertyEditor argPropBase = null;
+    ArgumentPropertyEditor argPropEditor = null;
 
     ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
         argValueEditor = new ArgumentValueEditor(presenter.isEditingMode(), presenter);
         if (presenter.isEditingMode()) {
-            argPropBase = new ArgumentPropertyEditor(presenter);
+            argPropEditor = new ArgumentPropertyEditor(presenter);
             argValueEditor.addArgumentClickHandler(new ClickHandler() {
 
                 @Override
@@ -47,14 +48,10 @@ public class ArgumentEditor extends Composite implements Editor<Argument>{
         initWidget(argValueEditor);
     }
 
-    /**
-     * TODO JDS May want to make this available through the {@link AppTemplateWizard} instead.
-     * 
-     * @return
-     */
+    @Override
     @Ignore
-    public ArgumentPropertyEditor getArgumentPropertyEditor() {
-        return argPropBase;
+    public IsWidget getArgumentPropertyEditor() {
+        return argPropEditor;
     }
 
 }

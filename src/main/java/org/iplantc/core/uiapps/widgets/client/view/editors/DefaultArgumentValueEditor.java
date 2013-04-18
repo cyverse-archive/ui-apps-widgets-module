@@ -115,7 +115,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                 ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
             }
         }
-        subEditor.setValue(value.getDefaultValue());
+        Splittable defaultValue = value.getDefaultValue();
+        if (defaultValue != null) {
+            subEditor.setValue(defaultValue);
+        }
         this.argumentCopy = presenter.copyArgument(value);
     }
 
