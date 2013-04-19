@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 
 public interface AppTemplateWizardPresenter {
 
@@ -17,5 +18,7 @@ public interface AppTemplateWizardPresenter {
     boolean isEditingMode();
 
     Argument copyArgument(Argument value);
+
+    ArgumentGroup copyArgumentGroup(ArgumentGroup value);
 
 }

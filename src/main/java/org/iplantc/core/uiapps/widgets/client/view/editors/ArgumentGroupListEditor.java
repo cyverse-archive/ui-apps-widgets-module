@@ -1,27 +1,22 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
-import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
-import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
-import com.sencha.gxt.dnd.core.client.DndDragEnterEvent;
-import com.sencha.gxt.dnd.core.client.DndDragEnterEvent.DndDragEnterHandler;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
-import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
-import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
@@ -34,36 +29,28 @@ import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
  */
 class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>> {
 
-    private final class DnDHandler implements DndDragEnterHandler, DndDropHandler {
-        private final AppTemplateAutoBeanFactory factory;
-        private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
+    private final class ArgGrpListEditorDropTarget extends ContainerDropTarget<AccordionLayoutContainer> {
 
-        public DnDHandler(ListEditor<ArgumentGroup, ArgumentGroupEditor> editor, AppTemplateAutoBeanFactory factory) {
-            this.editor = editor;
-            this.factory = factory;
+        private final AppTemplateWizardPresenter presenter;
+
+        private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter) {
+            super(container);
+            this.presenter = presenter;
         }
 
         @Override
-        public void onDragEnter(DndDragEnterEvent event) {
-            Object data = event.getDragSource().getData();
-            // If the drag source data is not what we are expecting, return
-            if ((data == null) || !data.equals(ArgumentType.Group)) {
-                event.getStatusProxy().setEnabled(false);
-                event.setCancelled(true);
-                return;
-            }
-
+        protected boolean verifyDragData(Object dragData) {
+            // Only accept drag data which is an ArgumentGroup
+            return (dragData instanceof ArgumentGroup) && super.verifyDragData(dragData);
         }
 
         @Override
-        public void onDrop(DndDropEvent event) {
-            ArgumentGroup e = factory.argumentGroup().as();
-            e.setArguments(Lists.<Argument> newArrayList());
-            e.setLabel("DEFAULT");
-            // If we are dropping, we need to add a new group.
+        protected void onDragDrop(DndDropEvent event) {
+            super.onDragDrop(event);
             List<ArgumentGroup> list = editor.getList();
+            ArgumentGroup newArgGrp = presenter.copyArgumentGroup((ArgumentGroup)event.getData());
             if (list != null) {
-                list.add(e);
+                list.add(insertIndex, newArgGrp);
                 setFireSelectedOnAdd(true);
             }
         }
@@ -95,18 +82,9 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         public ArgumentGroupEditor create(int index) {
             final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter);
             ((ContentPanel)subEditor.asWidget()).setCollapsible(true);
-            /* 
-             * JDS Surround this call in a try-catch to guard against failed assertions in devmode.
-             * The assertion occurs in AccordionLayoutContainer.onInsert() --> ContentPanel.setCollapsible()
-             * The following bug was filed in GXT's forums:
-             * http://www.sencha.com/forum/showthread.php?261470-Adding-new-ContentPanel-to-AccordionLayoutContainer-at-runtime-issue 
-             */
-            try {
-                con.insert(subEditor.asWidget(), index);
-            } catch (Exception e) {
-                GWT.log("Known error condition caught: " + e.getStackTrace());
-            }
+            con.insert(subEditor.asWidget(), index);
             con.forceLayout();
+
             if (index == 0) {
                 // Ensure that the first container is expanded automatically
                 con.setActiveWidget(subEditor.asWidget());
@@ -148,11 +126,8 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers.
-            DropTarget dt = new DropTarget(groupsContainer);
-            AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-            DnDHandler dndHandler = new DnDHandler(editor, factory);
-            dt.addDragEnterHandler(dndHandler);
-            dt.addDropHandler(dndHandler);
+            ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter);
+            dt.setFeedback(Feedback.BOTH);
         }
     }
 
@@ -171,5 +146,14 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
     private boolean isFireSelectedOnAdd() {
         return fireSelectedOnAdd;
+    }
+
+    public void collapseAllArgumentGroups() {
+        // Collapse all AccordionPanelChildren on valid drag enter.
+        Iterator<Widget> iterator = groupsContainer.iterator();
+        while (iterator.hasNext()) {
+            ContentPanel cp = (ContentPanel)iterator.next();
+            cp.collapse();
+        }
     }
 }

@@ -108,4 +108,16 @@ public class AppTemplateWizard extends Composite implements Editor<AppTemplate>,
         
         return AutoBeanCodex.decode(factory, Argument.class, splitCopy.getPayload()).as();
     }
+
+    public void collapseAllArgumentGroups() {
+        argumentGroups.collapseAllArgumentGroups();
+    }
+
+    @Override
+    public ArgumentGroup copyArgumentGroup(ArgumentGroup value) {
+        AutoBean<ArgumentGroup> argGrpAb = AutoBeanUtils.getAutoBean(value);
+        Splittable splitCopy = AutoBeanCodex.encode(argGrpAb);
+
+        return AutoBeanCodex.decode(factory, ArgumentGroup.class, splitCopy).as();
+    }
 }
