@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.models;
 
+import java.util.Date;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -23,4 +24,16 @@ public interface AppTemplate extends HasId, HasLabel, HasName {
     @PropertyName("groups")
     void setArgumentGroups(List<ArgumentGroup> argumentGroups);
 
+    // JDS Not sure if this should just be a HasId.
+    DeployedComponent getDeployedComponent();
+
+    void setDeployedComponent(DeployedComponent deployedComponent);
+
+    Date getEditedDate();
+
+    void setEditedDate(Date editedDate);
+
+    Date getPublishedDate();
+
+    void setPublishedDate(Date publishedDate);
 }
