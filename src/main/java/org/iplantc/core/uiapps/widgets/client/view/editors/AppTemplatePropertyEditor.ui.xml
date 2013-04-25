@@ -3,7 +3,12 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
-             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
+    <ui:with field="icons"
+        type="org.iplantc.core.resources.client.IplantResources" />
+    <ui:with field="strings"
+        type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" />         
     <ui:with field="margins"
             type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="5"
@@ -11,12 +16,21 @@
                      bottom="5"
                      left="5" />
     </ui:with>             
+    <ui:with type="com.sencha.gxt.core.client.util.Margins" field="margins0">
+        <ui:attributes top="0" 
+                       right="0" 
+                       bottom="0" 
+                       left="0" />
+    </ui:with>
     <ui:with field="marginData"
              type="com.sencha.gxt.widget.core.client.container.MarginData">
        <ui:attributes margins="{margins}"/>
     </ui:with>
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
+    </ui:with>
+    <ui:with type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData" field="boxLayoutDataMargins0Flex1">
+        <ui:attributes margins="{margins0}" flex="1" />
     </ui:with>
              
     <gxt:ContentPanel headingText="Properties">
@@ -26,11 +40,21 @@
                 <con:child layoutData="{fieldLayoutData}">
                     <form:FieldLabel text="Tool Used"
                                      labelAlign="TOP">
+                                     
                         <form:widget>
-                            <form:TextField ui:field="tool"/>
-                        </form:widget>
-                    </form:FieldLabel> 
-                </con:child>                    
+                            <con:HBoxLayoutContainer>
+                                <con:child layoutData="{boxLayoutDataMargins0Flex1}">
+		                            <form:TextField ui:field="tool"
+		                                            readOnly="true"/>
+		                        </con:child>
+                                <con:child>
+		                            <button:TextButton ui:field="searchBtn"
+		                                               icon="{icons.search}"/>
+		                        </con:child>
+                            </con:HBoxLayoutContainer>
+	                    </form:widget>
+                    </form:FieldLabel>
+                </con:child>                                         
                 <con:child layoutData="{fieldLayoutData}">
                     <form:FieldLabel text="App name"
                                      labelAlign="TOP">
@@ -43,7 +67,7 @@
                     <form:FieldLabel text="App description"
                                      labelAlign="TOP">
                         <form:widget>
-                            <form:TextField ui:field="description"/>
+                            <form:TextArea ui:field="description"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    

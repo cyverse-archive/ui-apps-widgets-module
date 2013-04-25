@@ -2,12 +2,14 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.models.DeployedComponent;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.gwt.core.client.GWT;
@@ -27,6 +29,8 @@ import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
 /**
  * A wizard for editing <code>AppTemplate</code>s.
@@ -68,6 +72,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     AppTemplatePropertyEditor appTemplatePropEditor;
 
     private final boolean editingMode;
+    private AppTemplate appTemplate;
     
     public AppTemplateWizard(final EventBus eventBus, boolean editingMode){
         this.editingMode = editingMode;
@@ -155,6 +160,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     @Override
     public void setValue(AppTemplate value) {
+        this.appTemplate = value;
         if (isEditingMode()) {
             SafeHtmlBuilder labelText = new SafeHtmlBuilder();
             labelText.append(SafeHtmlUtils.fromString(value.getName()));
@@ -175,4 +181,22 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     @Override
     public void flush() {/* Do Nothing */}
+
+    @Override
+    public void showToolSearchDialog() {
+        final DCListingDialog dialog = new DCListingDialog();
+        dialog.addHideHandler(new HideHandler() {
+
+            @Override
+            public void onHide(HideEvent event) {
+                DeployedComponent dc = dialog.getSelectedComponent();
+                // Set the deployed component in the AppTemplate
+                if ((dc != null) && (appTemplate != null)) {
+                    appTemplate.setDeployedComponent(dc);
+                    onArgumentPropertyValueChange();
+                }
+            }
+        });
+        dialog.show();
+    }
 }

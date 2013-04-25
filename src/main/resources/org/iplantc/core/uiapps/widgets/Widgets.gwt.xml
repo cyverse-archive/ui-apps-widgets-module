@@ -18,6 +18,10 @@
    <replace-with class="org.iplantc.core.uiapps.widgets.client.presenter.AppWizardPresenterImpl">
       <when-type-is class="org.iplantc.core.uiapps.widgets.client.view.AppWizardView.Presenter"/>
    </replace-with>
+   
+   <replace-with class="org.iplantc.core.uiapps.widgets.client.services.impl.DeployedComponentServicesImpl">
+      <when-type-is class="org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices" />
+   </replace-with>
    <!-- Specify the paths for translatable code                    -->
    <source path='client' />
 </module>
