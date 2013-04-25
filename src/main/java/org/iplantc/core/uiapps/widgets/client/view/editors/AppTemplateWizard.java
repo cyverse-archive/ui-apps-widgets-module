@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
@@ -10,16 +11,22 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 
 /**
  * A wizard for editing <code>AppTemplate</code>s.
@@ -36,28 +43,53 @@ import com.sencha.gxt.widget.core.client.Composite;
  * @author jstroot
  * 
  */
-public class AppTemplateWizard extends Composite implements Editor<AppTemplate>, AppTemplateWizardPresenter {
+public class AppTemplateWizard extends Composite implements IAppTemplateEditor, ValueAwareEditor<AppTemplate>, AppTemplateWizardPresenter {
     
     public interface IArgumentEditor {
         IsWidget getArgumentPropertyEditor();
+
+        Argument getCurrentArgument();
     }
 
     public interface IArgumentGroupEditor {
         IsWidget getArgumentGroupPropertyEditor();
+
+        ArgumentGroup getCurrentArgumentGroup();
     }
 
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     
+    private final ContentPanel con;
     ArgumentGroupListEditor argumentGroups;
+
+    @Path("")
+    AppTemplatePropertyEditor appTemplatePropEditor;
 
     private final boolean editingMode;
     
     public AppTemplateWizard(final EventBus eventBus, boolean editingMode){
         this.editingMode = editingMode;
         argumentGroups = new ArgumentGroupListEditor(eventBus, this);
-        initWidget(argumentGroups);
+        con = new ContentPanel() {
+            @Override
+            protected void onClick(Event ce) {
+                if (header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
+                    eventBus.fireEvent(new AppTemplateSelectedEvent(AppTemplateWizard.this));
+                }
+            }
+        };
+        con.add(argumentGroups);
+
+        if (editingMode) {
+            appTemplatePropEditor = new AppTemplatePropertyEditor(this);
+            con.sinkEvents(Event.ONCLICK);
+        } else {
+            con.setHeaderVisible(false);
+        }
+
+        initWidget(con);
         editorDriver.initialize(this);
     }
 
@@ -78,7 +110,7 @@ public class AppTemplateWizard extends Composite implements Editor<AppTemplate>,
      * @see {@link EditorDriver#flush()}
      * @return
      */
-    public AppTemplate flush() {
+    public AppTemplate flushAppTemplate() {
         return editorDriver.flush();
     }
 
@@ -120,4 +152,27 @@ public class AppTemplateWizard extends Composite implements Editor<AppTemplate>,
 
         return AutoBeanCodex.decode(factory, ArgumentGroup.class, splitCopy).as();
     }
+
+    @Override
+    public void setValue(AppTemplate value) {
+        if (isEditingMode()) {
+            SafeHtmlBuilder labelText = new SafeHtmlBuilder();
+            labelText.append(SafeHtmlUtils.fromString(value.getName()));
+            con.setHeadingHtml(labelText.toSafeHtml());
+        }
+    }
+
+    @Override
+    public IsWidget getAppTemplatePropertyEditor() {
+        return appTemplatePropEditor;
+    }
+
+    @Override
+    public void setDelegate(EditorDelegate<AppTemplate> delegate) {/* Do Nothing */}
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void flush() {/* Do Nothing */}
 }

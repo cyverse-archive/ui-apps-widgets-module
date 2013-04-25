@@ -40,6 +40,7 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
 
     @Path("")
     ArgumentGroupPropertyEditor argGrpPropEditor;
+    private ArgumentGroup currValue;
 
     public ArgumentGroupEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
         groupField = new ContentPanel(){
@@ -55,11 +56,11 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
                 }
             }
         };
-        groupField.sinkEvents(Event.ONCLICK);
         argumentsEditor = new ArgumentListEditor(eventBus, presenter);
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
             argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
+            groupField.sinkEvents(Event.ONCLICK);
         }
     }
     
@@ -74,6 +75,7 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
 
     @Override
     public void setValue(ArgumentGroup value) {
+        this.currValue = value;
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {
@@ -100,6 +102,11 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
     @Override
     public IsWidget getArgumentGroupPropertyEditor() {
         return argGrpPropEditor;
+    }
+
+    @Override
+    public ArgumentGroup getCurrentArgumentGroup() {
+        return currValue;
     }
 
 }

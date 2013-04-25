@@ -32,7 +32,6 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
      * <code>AppWizardView</code> contains an editor and needs to be initialized with a valid
      * <code>AppTemplate</code>. Therefore, this presenter is responsible for the instantiation of the
      * <code>AppWizardView</code>.
-     * FIXME JDS This is no longer true. Update documentation.
      */
     public AppWizardPresenterImpl() {
         this.eventBus = EventBus.getInstance();

@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.models;
 import java.util.Date;
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
@@ -16,7 +17,7 @@ import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
  * @author jstroot
  * 
  */
-public interface AppTemplate extends HasId, HasLabel, HasName {
+public interface AppTemplate extends HasId, HasLabel, HasName, HasDescription {
     
     @PropertyName("groups")
     List<ArgumentGroup> getArgumentGroups();

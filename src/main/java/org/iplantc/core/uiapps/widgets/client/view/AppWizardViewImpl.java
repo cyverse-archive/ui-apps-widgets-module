@@ -67,7 +67,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     void onLaunchButtonClicked(SelectEvent event) {
 
         // Flush the editor driver to perform validations before calling back to presenter.
-        AppTemplate at = wizard.flush();
+        AppTemplate at = wizard.flushAppTemplate();
         if (wizard.hasErrors()) {
             //
             GWT.log("Editor has errors");
