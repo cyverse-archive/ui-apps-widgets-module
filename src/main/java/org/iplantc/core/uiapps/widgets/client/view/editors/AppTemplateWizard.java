@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateUpdatedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
@@ -73,8 +74,10 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     private final boolean editingMode;
     private AppTemplate appTemplate;
+    private final EventBus eventBus;
     
     public AppTemplateWizard(final EventBus eventBus, boolean editingMode){
+        this.eventBus = eventBus;
         this.editingMode = editingMode;
         argumentGroups = new ArgumentGroupListEditor(eventBus, this);
         con = new ContentPanel() {
@@ -123,6 +126,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     public void onArgumentPropertyValueChange() {
         editorDriver.flush();
         editorDriver.accept(new Refresher());
+        eventBus.fireEvent(new AppTemplateUpdatedEvent(this));
     }
 
     public boolean hasErrors() {
