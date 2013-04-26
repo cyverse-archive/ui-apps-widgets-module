@@ -8,6 +8,7 @@ import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
+import com.google.gwt.user.client.ui.HasName;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -18,21 +19,15 @@ import com.google.web.bindery.autobean.shared.Splittable;
  * @author jstroot
  * @see AppWizardPresenterJsonAdapter
  */
-public interface Argument extends HasId, HasLabel, HasDescription, HasVisibility {
-    
-    @PropertyName("name")
-    String getCmdLineOption();
-    
-    @PropertyName("name")
-    void setCmdLineOption(String cmdLineOption);
+public interface Argument extends HasId, HasName, HasLabel, HasDescription, HasVisibility {
     
     ArgumentType getType();
 
     void setType(ArgumentType type);
 
-    int getOrder();
+    Integer getOrder();
     
-    void setOrder(int order);
+    void setOrder(Integer order);
     
     @PropertyName("omit_if_blank")
     boolean isOmitIfBlank();
@@ -85,5 +80,11 @@ public interface Argument extends HasId, HasLabel, HasDescription, HasVisibility
     List<SelectionArgument> getArguments();
 
     void setArguments(List<SelectionArgument> arguments);
+
+    @PropertyName("data_object")
+    DataObject getDataObject();
+
+    @PropertyName("data_object")
+    void setDataObject(DataObject dataObject);
 
 }

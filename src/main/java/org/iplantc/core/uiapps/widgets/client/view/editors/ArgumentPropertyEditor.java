@@ -9,15 +9,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
-import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
-import com.sencha.gxt.widget.core.client.form.SpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 /**
@@ -44,10 +41,7 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
     TextField description;
 
     @UiField
-    TextField cmdLineOption;
-
-    @UiField
-    SpinnerField<Integer> order;
+    TextField name;
 
     @Path("")
     @UiField(provided = true)
@@ -80,14 +74,6 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
         initWidget(BINDER.createAndBindUi(this));
     }
 
-    @Ignore
-    @UiFactory
-    SpinnerField<Integer> createSpinnerField() {
-        SpinnerField<Integer> spinnerField = new SpinnerField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-        spinnerField.setMinValue(0);
-        return spinnerField;
-    }
-    
     /*
      * JDS The following UI Handlers are necessary to inform the presenter that values have changed.
      * This has the effect of propagating data back and forth through the editor hierarchy.
@@ -99,15 +85,10 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
         
     }
 
-    @UiHandler({"label", "description", "cmdLineOption"})
+    @UiHandler({"label", "description", "name"})
     void onStringValueChanged(ValueChangeEvent<String> event) {
         presenter.onArgumentPropertyValueChange();
     }
-
-    // @UiHandler("order")
-    // void onIntegerValueChanged(ValueChangeEvent<Integer> event) {
-    // presenter.onArgumentPropertyValueChange();
-    // }
 
     @UiHandler("defaultValue")
     void onSplittableValueChanged(ValueChangeEvent<Splittable> event) {

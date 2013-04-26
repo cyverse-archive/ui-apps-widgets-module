@@ -53,19 +53,11 @@
 	            <form:FieldLabel text="Argument option"
 	                             labelAlign="TOP">
 	                <form:widget>
-	                    <form:TextField ui:field="cmdLineOption"/>
+	                    <form:TextField ui:field="name"/>
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Argument order"
-	                             labelAlign="TOP">
-	                <form:widget>
-	                    <form:SpinnerField ui:field="order"/>
-	                </form:widget>
-	            </form:FieldLabel>
-	        </con:child>
-	        
+        
 	        <!-- DefaultValue Editor -->
 	        <con:child layoutData="{fieldLayoutData}">
 	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
