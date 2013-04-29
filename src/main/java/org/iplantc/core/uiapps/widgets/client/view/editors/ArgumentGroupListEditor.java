@@ -6,6 +6,7 @@ import java.util.List;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
@@ -31,11 +32,9 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
     private final class ArgGrpListEditorDropTarget extends ContainerDropTarget<AccordionLayoutContainer> {
 
-        private final AppTemplateWizardPresenter presenter;
 
-        private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter) {
+        private ArgGrpListEditorDropTarget(AccordionLayoutContainer container) {
             super(container);
-            this.presenter = presenter;
         }
 
         @Override
@@ -48,7 +47,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
             List<ArgumentGroup> list = editor.getList();
-            ArgumentGroup newArgGrp = presenter.copyArgumentGroup((ArgumentGroup)event.getData());
+            ArgumentGroup newArgGrp = AppTemplateUtils.copyArgumentGroup((ArgumentGroup)event.getData());
             if (list != null) {
                 list.add(insertIndex, newArgGrp);
                 setFireSelectedOnAdd(true);
@@ -126,7 +125,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers.
-            ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter);
+            ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer);
             dt.setFeedback(Feedback.BOTH);
         }
     }

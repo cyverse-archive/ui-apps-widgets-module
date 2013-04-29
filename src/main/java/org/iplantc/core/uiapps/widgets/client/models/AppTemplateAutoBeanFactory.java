@@ -17,4 +17,6 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<SelectionArgument> selectionArgument();
 
+    AutoBean<DataObject> dataObject();
+
 }

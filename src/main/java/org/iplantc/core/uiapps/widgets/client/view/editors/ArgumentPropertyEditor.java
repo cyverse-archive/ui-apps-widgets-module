@@ -59,7 +59,7 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
 
     ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
-        defaultValue = new DefaultArgumentValueEditor(presenter);
+        defaultValue = new DefaultArgumentValueEditor();
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
         selectionListEditor = new SelectionListEditor();
 

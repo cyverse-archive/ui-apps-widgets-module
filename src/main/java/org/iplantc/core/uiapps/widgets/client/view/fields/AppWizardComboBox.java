@@ -19,9 +19,10 @@ public class AppWizardComboBox extends ComboBox<SelectionArgument> {
 
     public AppWizardComboBox(Argument argument) {
         this(GWT.<SelectionProperties> create(SelectionProperties.class));
-        getStore().addAll(argument.getArguments());
         setTriggerAction(TriggerAction.ALL);
-
+        if (argument.getArguments() != null) {
+            getStore().addAll(argument.getArguments());
+        }
     }
 
     protected AppWizardComboBox(SelectionProperties props) {

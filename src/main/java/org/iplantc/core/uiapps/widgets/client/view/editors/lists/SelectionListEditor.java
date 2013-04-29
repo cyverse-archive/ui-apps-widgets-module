@@ -131,6 +131,7 @@ public class SelectionListEditor extends Composite implements ValueAwareEditor<A
         sa.setDefault(false);
         sa.setDescription("Default Description");
         sa.setDisplay("Default Display");
+        selectionArgStore.add(sa);
     }
 
     @UiHandler("delete")

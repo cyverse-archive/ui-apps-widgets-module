@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -29,7 +30,6 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     private final FieldLabel propertyLabel;
     private ConverterFieldAdapter<Splittable, ?> subEditor = null;
     private final List<ValueChangeHandler<Splittable>> valueChangeHandlers = Lists.newArrayList();
-    private final AppTemplateWizardPresenter presenter;
 
     /**
      * The live, bound backing object
@@ -41,8 +41,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
      */
     private Argument argumentCopy;
 
-    DefaultArgumentValueEditor(final AppTemplateWizardPresenter presenter) {
-        this.presenter = presenter;
+    DefaultArgumentValueEditor() {
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
@@ -79,20 +78,17 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                     break;
 
                 case Text:
+                case EnvironmentVariable:
                     createDefaultValueSubEditor(value);
                     break;
 
                 case Number:
                 case Double:
-                    createDefaultValueSubEditor(value);
-                    break;
-
                 case Integer:
                     createDefaultValueSubEditor(value);
                     break;
 
                 case DoubleSelection:
-                case EnvironmentVariable:
                 case Info:
                 case IntegerSelection:
                 case MultiLineText:
@@ -116,10 +112,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
             }
         }
         Splittable defaultValue = value.getDefaultValue();
-        if (defaultValue != null) {
+        if ((subEditor != null) && (defaultValue != null)) {
             subEditor.setValue(defaultValue);
         }
-        this.argumentCopy = presenter.copyArgument(value);
+        this.argumentCopy = AppTemplateUtils.copyArgument(value);
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
@@ -184,7 +180,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
 
                     // Need to set the actual backing object
                     argument.setDefaultValue(split);
-                    argumentCopy = presenter.copyArgument(argument);
+                    argumentCopy = AppTemplateUtils.copyArgument(argument);
                 }
             }
         }

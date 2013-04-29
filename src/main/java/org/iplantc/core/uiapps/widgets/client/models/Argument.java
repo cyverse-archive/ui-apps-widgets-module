@@ -87,4 +87,6 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription, HasV
     @PropertyName("data_object")
     void setDataObject(DataObject dataObject);
 
+    void setId(String id);
+
 }

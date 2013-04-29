@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -169,7 +170,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
             propertyLabel.setHTML(fieldLabelText);
         }
         
-        this.argumentCopy = presenter.copyArgument(value);
+        this.argumentCopy = AppTemplateUtils.copyArgument(value);
 
     }
 
@@ -183,7 +184,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
 
             if (editingMode) {
                 argument.setDefaultValue(split);
-                argumentCopy = presenter.copyArgument(argument);
+                argumentCopy = AppTemplateUtils.copyArgument(argument);
             }
         }
     }

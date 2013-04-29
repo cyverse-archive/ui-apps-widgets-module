@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
@@ -26,11 +27,8 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
     private final class ArgListEditorDropTarget extends ContainerDropTarget<VerticalLayoutContainer> {
 
-        private final AppTemplateWizardPresenter presenter;
-
-        private ArgListEditorDropTarget(VerticalLayoutContainer container, AppTemplateWizardPresenter presenter) {
+        private ArgListEditorDropTarget(VerticalLayoutContainer container) {
             super(container);
-            this.presenter = presenter;
         }
 
         @Override
@@ -43,7 +41,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
             List<Argument> list = editor.getList();
-            Argument newArg = presenter.copyArgument((Argument)event.getData());
+            Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
             if (list != null) {
                 list.add(insertIndex, newArg);
                 setFireSelectedOnAdd(true);
@@ -100,7 +98,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers
-            ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer, presenter);
+            ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer);
             dt.setFeedback(Feedback.BOTH);
         }
     }

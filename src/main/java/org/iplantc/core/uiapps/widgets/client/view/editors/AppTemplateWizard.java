@@ -7,7 +7,6 @@ import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateUpdatedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.DeployedComponent;
@@ -24,10 +23,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
@@ -64,7 +59,6 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
-    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     
     private final ContentPanel con;
     ArgumentGroupListEditor argumentGroups;
@@ -142,24 +136,8 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
         return editingMode;
     }
 
-    @Override
-    public Argument copyArgument(Argument value) {
-        AutoBean<Argument> argAb = AutoBeanUtils.getAutoBean(value);
-        Splittable splitCopy = AutoBeanCodex.encode(argAb);
-        
-        return AutoBeanCodex.decode(factory, Argument.class, splitCopy.getPayload()).as();
-    }
-
     public void collapseAllArgumentGroups() {
         argumentGroups.collapseAllArgumentGroups();
-    }
-
-    @Override
-    public ArgumentGroup copyArgumentGroup(ArgumentGroup value) {
-        AutoBean<ArgumentGroup> argGrpAb = AutoBeanUtils.getAutoBean(value);
-        Splittable splitCopy = AutoBeanCodex.encode(argGrpAb);
-
-        return AutoBeanCodex.decode(factory, ArgumentGroup.class, splitCopy).as();
     }
 
     @Override
