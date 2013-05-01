@@ -35,11 +35,9 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     @UiField
     FormPanel formPanel;
 
-    @Path("")
     @UiField
     AppTemplateWizard wizard;
 
-    @Ignore
     @UiField
     TextButton launchButton;
 
@@ -57,7 +55,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
         this.presenter = presenter;
     }
 
-    @Ignore
     @UiFactory
     AppTemplateWizard createAppTemplateWizard() {
         return new AppTemplateWizard(eventBus, false);

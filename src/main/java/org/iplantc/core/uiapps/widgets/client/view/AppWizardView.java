@@ -2,7 +2,6 @@ package org.iplantc.core.uiapps.widgets.client.view;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 
-import com.google.gwt.editor.client.Editor;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -15,7 +14,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
  * @author jstroot
  * 
  */
-public interface AppWizardView extends IsWidget, Editor<AppTemplate> {
+public interface AppWizardView extends IsWidget {
 
     /**
      * FIXME JDS Add explanation for why the presenter is broken into two interface definitions.
