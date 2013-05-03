@@ -149,6 +149,8 @@ public class AppWizardFieldFactory {
                 field = null;
                 break;
 
+            case FileOutput:
+            case FolderOutput:
             case Output:
                 ConverterFieldAdapter<String, TextField> outputCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
                 field = applyStringValidators(argument, outputCfa);

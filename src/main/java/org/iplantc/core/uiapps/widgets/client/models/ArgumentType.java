@@ -16,6 +16,7 @@ public enum ArgumentType {
     DoubleSelection, // For selecting from a list of doubles
     TreeSelection,
     Output,
+ FileOutput, FolderOutput,
     // Legacy
     Selection, 
     ValueSelection,
