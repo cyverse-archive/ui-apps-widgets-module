@@ -166,7 +166,7 @@ public class AppWizardFieldFactory {
 
         if (editingMode) {
             // Remove Field errorsupport
-            if (field.getField() instanceof Field<?>) {
+            if ((field != null) && (field.getField() instanceof Field<?>)) {
                 Field<?> field2 = (Field<?>)field.getField();
 
                 field2.setValidateOnBlur(false);
