@@ -111,7 +111,7 @@ public class SelectionListEditor extends Composite implements ValueAwareEditor<A
     ColumnModel<SelectionArgument> createColumnModel() {
         List<ColumnConfig<SelectionArgument, ?>> list = Lists.newArrayList();
         SelectionArgumentProperties props = GWT.create(SelectionArgumentProperties.class);
-        displayCol = new ColumnConfig<SelectionArgument, String>(props.display(), 50, "Display");
+        displayCol = new ColumnConfig<SelectionArgument, String>(props.display(), 90, "Display");
         nameCol = new ColumnConfig<SelectionArgument, String>(props.name(), 50, "Argument");
         valueCol = new ColumnConfig<SelectionArgument, String>(props.value(), 50, "Value");
 
