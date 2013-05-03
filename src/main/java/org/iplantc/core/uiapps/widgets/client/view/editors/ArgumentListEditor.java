@@ -27,8 +27,13 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
     private final class ArgListEditorDropTarget extends ContainerDropTarget<VerticalLayoutContainer> {
 
-        private ArgListEditorDropTarget(VerticalLayoutContainer container) {
+        private final AppTemplateWizardPresenter presenter;
+        private final ListEditor<Argument, ArgumentEditor> listEditor;
+
+        private ArgListEditorDropTarget(VerticalLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<Argument, ArgumentEditor> editor) {
             super(container);
+            this.presenter = presenter;
+            this.listEditor = editor;
         }
 
         @Override
@@ -40,11 +45,12 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         @Override
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
-            List<Argument> list = editor.getList();
+            List<Argument> list = listEditor.getList();
             Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
             if (list != null) {
                 list.add(insertIndex, newArg);
                 setFireSelectedOnAdd(true);
+                presenter.onArgumentPropertyValueChange();
             }
         }
     }
@@ -69,6 +75,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
                 setFireSelectedOnAdd(false);
                 eventBus.fireEvent(new ArgumentSelectedEvent(subEditor));
             }
+            con.forceLayout();
             return subEditor;
         }
         
@@ -98,7 +105,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers
-            ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer);
+            ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
         }
     }

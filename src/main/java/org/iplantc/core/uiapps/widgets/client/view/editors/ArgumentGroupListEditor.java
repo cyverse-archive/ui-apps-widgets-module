@@ -33,8 +33,13 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
     private final class ArgGrpListEditorDropTarget extends ContainerDropTarget<AccordionLayoutContainer> {
 
 
-        private ArgGrpListEditorDropTarget(AccordionLayoutContainer container) {
+        private final AppTemplateWizardPresenter presenter;
+        private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
+
+        private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<ArgumentGroup,ArgumentGroupEditor> editor) {
             super(container);
+            this.presenter = presenter;
+            this.listEditor = editor;
         }
 
         @Override
@@ -46,11 +51,12 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         @Override
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
-            List<ArgumentGroup> list = editor.getList();
+            List<ArgumentGroup> list = listEditor.getList();
             ArgumentGroup newArgGrp = AppTemplateUtils.copyArgumentGroup((ArgumentGroup)event.getData());
             if (list != null) {
                 list.add(insertIndex, newArgGrp);
                 setFireSelectedOnAdd(true);
+                presenter.onArgumentPropertyValueChange();
             }
         }
     }
@@ -125,7 +131,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers.
-            ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer);
+            ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
         }
     }
