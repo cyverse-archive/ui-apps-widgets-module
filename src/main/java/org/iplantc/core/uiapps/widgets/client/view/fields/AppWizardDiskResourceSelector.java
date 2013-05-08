@@ -117,13 +117,6 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     protected abstract void onBrowseSelected();
 
     @Override
-    public void onBrowserEvent(Event event) {
-        super.onBrowserEvent(event);
-        // Forward the event
-        button.onBrowserEvent(event);
-    }
-
-    @Override
     protected void doAttachChildren() {
         super.doAttachChildren();
         ComponentHelper.doAttach(input);
