@@ -42,7 +42,7 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
     ArgumentGroupPropertyEditor argGrpPropEditor;
     private ArgumentGroup currValue;
 
-    public ArgumentGroupEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
+    public ArgumentGroupEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
         groupField = new ContentPanel(){
             @Override
             protected void assertPreRender() {
@@ -51,7 +51,8 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
 
             @Override
             protected void onClick(Event ce) {
-                if (header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
+                super.onClick(ce);
+                if (presenter.isEditingMode() && header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
                     eventBus.fireEvent(new ArgumentGroupSelectedEvent(ArgumentGroupEditor.this));
                 }
             }

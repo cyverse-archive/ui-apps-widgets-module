@@ -3,6 +3,7 @@
  */
 package org.iplantc.core.uiapps.widgets.client.view.deployedComponents;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -132,6 +133,14 @@ public class DeployedComponentsListingViewImpl extends Composite implements
         List<ColumnConfig<DeployedComponent, ?>> configs = new LinkedList<ColumnConfig<DeployedComponent, ?>>();
 
         ColumnConfig<DeployedComponent, DeployedComponent> name = new ColumnConfig<DeployedComponent, DeployedComponent>(provider, 100);
+        name.setComparator(new Comparator<DeployedComponent>() {
+
+            @Override
+            public int compare(DeployedComponent o1, DeployedComponent o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        name.setSortable(true);
         name.setHeader(I18N.DISPLAY.name());
         configs.add(name);
         name.setCell(new DCNameHyperlinkCell(this));

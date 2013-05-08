@@ -125,11 +125,11 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
     ArgumentGroupListEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
         groupsContainer = new AccordionLayoutContainer();
-        groupsContainer.setTitleCollapse(false);
         initWidget(groupsContainer);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter));
 
         if (presenter.isEditingMode()) {
+            groupsContainer.setTitleCollapse(false);
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
