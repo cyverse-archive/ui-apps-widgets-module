@@ -64,7 +64,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     private final int buttonOffset = 3;
     private EditorDelegate<HasId> editorDelegate;
     private List<EditorError> errors = Lists.newArrayList();
-    private R selectedResource;
+    private HasId selectedResource;
 
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
@@ -91,20 +91,13 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     }
 
     protected void setSelectedResource(R selectedResource) {
-        this.selectedResource = selectedResource;
-        input.setValue(selectedResource.getId());
-    }
-
-    protected R getSelectedResource() {
-        return selectedResource;
+        setValue(selectedResource);
     }
 
     @Override
     public void setValue(HasId value) {
-        if (value == null)
-            return;
-        input.setValue(value.getId());
-        findDiskResource(value);
+        selectedResource = value;
+        input.setValue(value == null ? null : value.getId());
     }
 
     /**
@@ -114,16 +107,6 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
      */
     public void setValueFromStringId(String id) {
         setValue(CommonModelUtils.createHasIdFromString(id));
-    }
-
-    /**
-     * Retrieves the resource with the given Id, otherwise returns null.
-     *
-     * @param value the Id to be used.
-     * @return the resource, if it exists. Null otherwise.
-     */
-    private void findDiskResource(HasId value) {
-
     }
 
     @Override
