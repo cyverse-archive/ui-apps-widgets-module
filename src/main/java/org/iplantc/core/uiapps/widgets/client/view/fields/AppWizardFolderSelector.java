@@ -14,7 +14,7 @@ public class AppWizardFolderSelector extends AppWizardDiskResourceSelector<Folde
 
     @Override
     protected void onBrowseSelected() {
-        FolderSelectDialog folderSD = new FolderSelectDialog();
+        FolderSelectDialog folderSD = new FolderSelectDialog(getValue());
         folderSD.addHideHandler(new FolderDialogHideHandler(folderSD));
         folderSD.show();
     }

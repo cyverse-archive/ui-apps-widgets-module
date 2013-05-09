@@ -6,6 +6,7 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.TakesValue;
@@ -16,14 +17,17 @@ public class AppWizardFileSelector extends AppWizardDiskResourceSelector<File> {
 
     @Override
     protected void onBrowseSelected() {
-        FileSelectDialog fileSD = FileSelectDialog.singleSelect();
+        List<HasId> selected = null;
+
+        HasId value = getValue();
+        if (value != null) {
+            selected = Lists.newArrayList();
+            selected.add(value);
+        }
+
+        FileSelectDialog fileSD = FileSelectDialog.singleSelect(selected);
         fileSD.addHideHandler(new FileDialogHideHandler(fileSD));
         fileSD.show();
-    }
-
-    @Override
-    public void setValue(HasId value) {
-        super.setValue(value);
     }
 
     private class FileDialogHideHandler implements HideHandler {
