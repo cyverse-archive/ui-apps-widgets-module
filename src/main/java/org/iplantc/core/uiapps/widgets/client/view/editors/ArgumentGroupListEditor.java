@@ -15,6 +15,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
@@ -160,5 +161,10 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             ContentPanel cp = (ContentPanel)iterator.next();
             cp.collapse();
         }
+    }
+
+    void insertFirstInAccordion(IsWidget widget) {
+        groupsContainer.insert(widget, 0);
+        groupsContainer.setActiveWidget(widget.asWidget());
     }
 }

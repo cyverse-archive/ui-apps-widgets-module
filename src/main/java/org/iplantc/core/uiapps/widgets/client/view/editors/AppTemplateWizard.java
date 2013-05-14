@@ -181,4 +181,8 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
         });
         dialog.show();
     }
+
+    public void insertFirstInAccordion(IsWidget widget) {
+        argumentGroups.insertFirstInAccordion(widget);
+    }
 }

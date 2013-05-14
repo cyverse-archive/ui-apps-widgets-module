@@ -1,9 +1,18 @@
 package org.iplantc.core.uiapps.widgets.client.view;
 
-import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
-import org.iplantc.core.uicommons.client.events.EventBus;
+import java.util.List;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
+import org.iplantc.core.uiapps.widgets.client.view.editors.LaunchAnalysisWidget;
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.models.UserSettings;
+
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -15,7 +24,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.form.FormPanel;
 
 /**
  * 
@@ -32,8 +40,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     
     private static AppWizardViewUIUiBinder BINDER = GWT.create(AppWizardViewUIUiBinder.class);
 
-    @UiField
-    FormPanel formPanel;
+    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
 
     @UiField
     AppTemplateWizard wizard;
@@ -41,13 +48,23 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     @UiField
     TextButton launchButton;
 
+    LaunchAnalysisWidget law;
+
     private AppWizardView.Presenter presenter;
     private final EventBus eventBus;
+    private final UserSettings userSettings;
 
-    public AppWizardViewImpl(final EventBus eventBus) {
+    private final UserInfo userInfo;
+
+    private final AppsWidgetsDisplayMessages displayMessages;
+
+    public AppWizardViewImpl(final EventBus eventBus, final UserSettings userSettings, final UserInfo userInfo, final AppsWidgetsDisplayMessages displayMessages) {
         this.eventBus = eventBus;
-        Widget createAndBindUi = BINDER.createAndBindUi(this);
-        initWidget(createAndBindUi);
+        this.userSettings = userSettings;
+        this.userInfo = userInfo;
+        this.displayMessages = displayMessages;
+        law = new LaunchAnalysisWidget();
+        initWidget(BINDER.createAndBindUi(this));
     }
 
     @Override
@@ -65,21 +82,33 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
 
         // Flush the editor driver to perform validations before calling back to presenter.
         AppTemplate at = wizard.flushAppTemplate();
-        if (wizard.hasErrors()) {
+        JobExecution je = law.flushJobExecution();
+        if (wizard.hasErrors() || law.hasErrors()) {
             //
             GWT.log("Editor has errors");
-            for (EditorError error : wizard.getErrors()) {
-                GWT.log("\t-- " + error.getPath() + ": " + error.getMessage());
+            List<EditorError> errors = Lists.newArrayList();
+            errors.addAll(wizard.getErrors());
+            errors.addAll(law.getErrors());
+            for (EditorError error : errors) {
+                GWT.log("\t-- " + ": " + error.getMessage());
             }
         } else {
             // If there are no errors, pass flushed template to presenter.
-            presenter.doLaunchAnalysis(at);
+            presenter.doLaunchAnalysis(at, je);
         }
     }
 
     @Override
     public void edit(AppTemplate appTemplate) {
-        wizard.edit(appTemplate);
-    }
+        // JDS Need to select, and/or create default output folder.
+        JobExecution je = factory.jobExecution().as();
+        je.setAppTemplateId(appTemplate.getId());
+        je.setEmailNotificationEnabled(userSettings.isEnableEmailNotification());
+        je.setWorkspaceId(userInfo.getWorkspaceId());
+        je.setName(appTemplate.getName().replaceAll("\\s", "_") + "_" + displayMessages.defaultAnalysisName());
 
+        law.edit(je);
+        wizard.edit(appTemplate);
+        wizard.insertFirstInAccordion(law);
+    }
 }

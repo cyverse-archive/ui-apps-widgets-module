@@ -1,6 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-
 public interface AppTemplateWizardPresenter {
 
     void onArgumentPropertyValueChange();

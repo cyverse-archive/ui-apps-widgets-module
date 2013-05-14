@@ -19,4 +19,6 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<DataObject> dataObject();
 
+    AutoBean<JobExecution> jobExecution();
+
 }

@@ -1,6 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.view;
 
+import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
+import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
 
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -40,7 +42,9 @@ public interface AppWizardView extends IsWidget {
     }
 
     public interface Presenter extends BasePresenter {
-        void doLaunchAnalysis(AppTemplate at);
+        void doLaunchAnalysis(AppTemplate at, JobExecution je);
+
+        void addAnalysisLaunchHandler(AnalysisLaunchEventHandler handler);
     }
 
     void setPresenter(AppWizardView.Presenter presenter);

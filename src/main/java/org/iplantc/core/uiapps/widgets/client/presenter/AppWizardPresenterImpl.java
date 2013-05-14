@@ -1,13 +1,24 @@
 package org.iplantc.core.uiapps.widgets.client.presenter;
 
+import java.util.List;
+
+import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
+import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.services.AppTemplateServices;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardView;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardViewImpl;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -23,6 +34,11 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     private AppTemplate appTemplate;
     private AppWizardView view;
     private final EventBus eventBus;
+    private final AppTemplateServices atServices;
+    private final UserSettings userSettings;
+    private final UserInfo userInfo;
+    private final IplantDisplayStrings displayMessages;
+    private final List<AnalysisLaunchEventHandler> analysisLaunchHandlers = Lists.newArrayList();
     
     /**
      * Class constructor.
@@ -34,7 +50,11 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
      * <code>AppWizardView</code>.
      */
     public AppWizardPresenterImpl() {
+        this.atServices = GWT.create(AppTemplateServices.class);
         this.eventBus = EventBus.getInstance();
+        this.userSettings = UserSettings.getInstance();
+        this.userInfo = UserInfo.getInstance();
+        this.displayMessages = GWT.create(IplantDisplayStrings.class);
     }
     
     @Override
@@ -51,7 +71,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void go(HasOneWidget container) {
-        view = new AppWizardViewImpl(eventBus);
+        view = new AppWizardViewImpl(eventBus, userSettings, userInfo, displayMessages);
         view.setPresenter(this);
 
         view.edit(appTemplate);
@@ -60,16 +80,6 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void setAppTemplateFromLegacyJson(Splittable legacyJson) {
-        // LegacyAppTemplateAutoBeanFactory legacyFactory =
-        // GWT.create(LegacyAppTemplateAutoBeanFactory.class);
-        // Create Legacy App Template Autobean
-        // AutoBean<LegacyAppTemplate> legacyAppTemplate = AutoBeanCodex.decode(legacyFactory,
-        // LegacyAppTemplate.class, json);
-        // Convert Legacy into AppTemplate
-        // AutoBean<AppTemplate> at = new
-        // LegacyAppTemplateConverter().convertModelValue(legacyAppTemplate);
-
-        // ==== CURRENT ====
         // Create AppTemplateSplittable and assign top level values.
         Splittable appTemplateSplit = AppWizardPresenterJsonAdapter.adaptAppTemplateJsonString(legacyJson);
         
@@ -86,12 +96,26 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     }
 
     @Override
-    public void doLaunchAnalysis(AppTemplate at) {
-        // Temp Test to ensure that identity of objects
-        if (at != appTemplate) {
-            com.google.gwt.core.client.GWT.log("App Templates are not equal");
-        }
+    public void doLaunchAnalysis(final AppTemplate at, JobExecution je) {
+        atServices.launchAnalysis(at, je, new AsyncCallback<String>() {
+
+            @Override
+            public void onSuccess(String result) {
+                GWT.log("SUCCESS: Launch ANalysis reponse: " + result);
+                for (AnalysisLaunchEventHandler handler : analysisLaunchHandlers) {
+                    handler.onAnalysisLaunch(new AnalysisLaunchEvent(at));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+            }
+        });
 
     }
 
+    @Override
+    public void addAnalysisLaunchHandler(AnalysisLaunchEventHandler handler) {
+        analysisLaunchHandlers.add(handler);
+    }
 }

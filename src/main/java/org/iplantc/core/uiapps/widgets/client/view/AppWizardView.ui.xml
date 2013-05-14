@@ -6,26 +6,27 @@
              xmlns:wizardEditors="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors"
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
 
-    <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="display" />
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData">
+    <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" 
+             field="display" />
+    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 
+             field="verticalLayoutData">
         <ui:attributes width="1" height="-1" />
 	</ui:with>
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="verticalLayoutData2">
+    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 
+             field="verticalLayoutData2">
         <ui:attributes width="1" height="1" />
     </ui:with>
-   <form:FormPanel ui:field="formPanel">
-        <container:VerticalLayoutContainer >
-            <container:child layoutData="{verticalLayoutData2}">
-                <wizardEditors:AppTemplateWizard ui:field="wizard"/>
-            </container:child>
-            <container:child layoutData="{verticalLayoutData}">
-                <button:ButtonBar pack="END">
-	                <button:child>
-	                    <button:TextButton ui:field="launchButton"
-	                                       text="{display.launchAnalysis}"/>
-	                </button:child>
-                </button:ButtonBar>
-            </container:child>
-        </container:VerticalLayoutContainer>
-   </form:FormPanel>
+	    <container:VerticalLayoutContainer >
+	        <container:child layoutData="{verticalLayoutData2}">
+	            <wizardEditors:AppTemplateWizard ui:field="wizard"/>
+	        </container:child>
+	        <container:child layoutData="{verticalLayoutData}">
+	            <button:ButtonBar pack="END">
+	             <button:child>
+	                 <button:TextButton ui:field="launchButton"
+	                                    text="{display.launchAnalysis}"/>
+	             </button:child>
+	            </button:ButtonBar>
+	        </container:child>
+	    </container:VerticalLayoutContainer>
 </ui:UiBinder>
