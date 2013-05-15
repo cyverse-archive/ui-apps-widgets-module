@@ -5,7 +5,7 @@
 	<groupId>org.iplantc.core</groupId>
 	<artifactId>ui-apps-widgets</artifactId>
 	<packaging>jar</packaging>
-	<version>gxt3Sandbox-SNAPSHOT</version>
+	<version>dev-SNAPSHOT</version>
 	<name>The iPlant Collaborative widgets for Tools integration</name>
 	<url>http://project.iplantcollaborative.org</url>
 	<!-- convenience to define GWT version in one place -->
@@ -24,12 +24,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ui-diskresource</artifactId>
-			<version>gxt3Sandbox-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.iplantc.core</groupId>
 			<artifactId>ui-applications</artifactId>
-			<version>gxt3Sandbox-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
