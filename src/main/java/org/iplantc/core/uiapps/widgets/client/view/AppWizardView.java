@@ -49,6 +49,6 @@ public interface AppWizardView extends IsWidget {
 
     void setPresenter(AppWizardView.Presenter presenter);
 
-    void edit(AppTemplate appTemplate);
+    void edit(AppTemplate appTemplate, JobExecution je);
 
 }

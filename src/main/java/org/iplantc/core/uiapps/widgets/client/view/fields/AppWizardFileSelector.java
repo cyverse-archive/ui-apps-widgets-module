@@ -7,8 +7,7 @@ import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
@@ -44,13 +43,7 @@ public class AppWizardFileSelector extends AppWizardDiskResourceSelector<File> {
 
             // This class is single select, so only grab first element
             setSelectedResource(takesValue.getValue().get(0));
+            ValueChangeEvent.fire(AppWizardFileSelector.this, takesValue.getValue().get(0));
         }
     }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<HasId> handler) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

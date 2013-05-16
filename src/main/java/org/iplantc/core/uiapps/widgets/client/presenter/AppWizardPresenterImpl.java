@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.presenter;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.constants.IplantValidationConstants;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
@@ -11,6 +12,7 @@ import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.services.AppTemplateServices;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardView;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardViewImpl;
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
@@ -39,6 +41,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     private final UserInfo userInfo;
     private final IplantDisplayStrings displayMessages;
     private final List<AnalysisLaunchEventHandler> analysisLaunchHandlers = Lists.newArrayList();
+    private final IplantValidationConstants valConstants;
     
     /**
      * Class constructor.
@@ -55,6 +58,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         this.userSettings = UserSettings.getInstance();
         this.userInfo = UserInfo.getInstance();
         this.displayMessages = GWT.create(IplantDisplayStrings.class);
+        this.valConstants = GWT.create(IplantValidationConstants.class);
     }
     
     @Override
@@ -70,11 +74,28 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     }
 
     @Override
-    public void go(HasOneWidget container) {
-        view = new AppWizardViewImpl(eventBus, userSettings, userInfo, displayMessages);
+    public void go(final HasOneWidget container) {
+        view = new AppWizardViewImpl(eventBus, userSettings, displayMessages);
         view.setPresenter(this);
 
-        view.edit(appTemplate);
+        final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+        final JobExecution je = factory.jobExecution().as();
+        je.setAppTemplateId(appTemplate.getId());
+        je.setEmailNotificationEnabled(userSettings.isEnableEmailNotification());
+        je.setWorkspaceId(userInfo.getWorkspaceId());
+        // JDS Replace all Cmd Line restricted chars with underscores
+        String newName = appTemplate.getName();
+        for (char restricted : valConstants.restrictedCmdLineChars().toCharArray()) {
+            for (char next : appTemplate.getName().toCharArray()) {
+                if (next == restricted) {
+                    newName.replaceAll(String.valueOf(next), "_"); //$NON-NLS-1$
+                }
+            }
+        }
+        je.setName(newName + "_" + displayMessages.defaultAnalysisName()); //$NON-NLS-1$
+        je.setOutputDirectory(userSettings.getDefaultOutputFolder());
+
+        view.edit(appTemplate, je);
         container.setWidget(view);
     }
 
@@ -95,13 +116,11 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         return appTemplate;
     }
 
-    @Override
-    public void doLaunchAnalysis(final AppTemplate at, JobExecution je) {
+    private void launchAnalysis(final AppTemplate at, final JobExecution je) {
         atServices.launchAnalysis(at, je, new AsyncCallback<String>() {
 
             @Override
             public void onSuccess(String result) {
-                GWT.log("SUCCESS: Launch ANalysis reponse: " + result);
                 for (AnalysisLaunchEventHandler handler : analysisLaunchHandlers) {
                     handler.onAnalysisLaunch(new AnalysisLaunchEvent(at));
                 }
@@ -109,9 +128,15 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
             @Override
             public void onFailure(Throwable caught) {
+                ErrorHandler.post(caught);
             }
         });
+    }
 
+    @Override
+    public void doLaunchAnalysis(final AppTemplate at, final JobExecution je) {
+        // TODO JDS Add Launch Analysis validations.
+        launchAnalysis(at, je);
     }
 
     @Override

@@ -8,14 +8,21 @@ import org.iplantc.core.uidiskresource.client.models.DiskResource;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
@@ -65,6 +72,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     private EditorDelegate<HasId> editorDelegate;
     private List<EditorError> errors = Lists.newArrayList();
     private HasId selectedResource;
+    private final Element infoText;
 
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
@@ -88,6 +96,15 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
                 onBrowseSelected();
             }
         });
+
+        infoText = DOM.createDiv();
+        infoText.getStyle().setDisplay(Display.NONE);
+        getElement().appendChild(infoText);
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<HasId> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
     protected void setSelectedResource(R selectedResource) {
@@ -98,6 +115,27 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     public void setValue(HasId value) {
         selectedResource = value;
         input.setValue(value == null ? null : value.getId());
+    }
+
+    public void setInfoTextClassName(String className) {
+        infoText.setClassName(className);
+    }
+
+    /**
+     * 
+     * @param text the text to be shown in the info text element. Passing in null will hide the element.
+     */
+    public void setInfoText(String text) {
+        if (text == null) {
+            infoText.getStyle().setDisplay(Display.NONE);
+            infoText.setInnerHTML(""); //$NON-NLS-1$
+            return;
+        }
+        // Enable the div
+        infoText.getStyle().setDisplay(Display.BLOCK);
+        // JDS Escape the text as a precaution.
+        SafeHtml safeText = SafeHtmlUtils.fromString(text);
+        infoText.setInnerSafeHtml(safeText);
     }
 
     /**

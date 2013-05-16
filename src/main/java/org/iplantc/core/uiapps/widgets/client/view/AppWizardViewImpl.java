@@ -4,12 +4,10 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
 import org.iplantc.core.uiapps.widgets.client.view.editors.LaunchAnalysisWidget;
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 
 import com.google.common.collect.Lists;
@@ -40,8 +38,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     
     private static AppWizardViewUIUiBinder BINDER = GWT.create(AppWizardViewUIUiBinder.class);
 
-    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-
     @UiField
     AppTemplateWizard wizard;
 
@@ -52,18 +48,10 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
 
     private AppWizardView.Presenter presenter;
     private final EventBus eventBus;
-    private final UserSettings userSettings;
 
-    private final UserInfo userInfo;
-
-    private final AppsWidgetsDisplayMessages displayMessages;
-
-    public AppWizardViewImpl(final EventBus eventBus, final UserSettings userSettings, final UserInfo userInfo, final AppsWidgetsDisplayMessages displayMessages) {
+    public AppWizardViewImpl(final EventBus eventBus, final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages) {
         this.eventBus = eventBus;
-        this.userSettings = userSettings;
-        this.userInfo = userInfo;
-        this.displayMessages = displayMessages;
-        law = new LaunchAnalysisWidget();
+        law = new LaunchAnalysisWidget(userSettings, displayMessages);
         initWidget(BINDER.createAndBindUi(this));
     }
 
@@ -99,14 +87,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     }
 
     @Override
-    public void edit(AppTemplate appTemplate) {
-        // JDS Need to select, and/or create default output folder.
-        JobExecution je = factory.jobExecution().as();
-        je.setAppTemplateId(appTemplate.getId());
-        je.setEmailNotificationEnabled(userSettings.isEnableEmailNotification());
-        je.setWorkspaceId(userInfo.getWorkspaceId());
-        je.setName(appTemplate.getName().replaceAll("\\s", "_") + "_" + displayMessages.defaultAnalysisName());
-
+    public void edit(final AppTemplate appTemplate, final JobExecution je) {
         law.edit(je);
         wizard.edit(appTemplate);
         wizard.insertFirstInAccordion(law);

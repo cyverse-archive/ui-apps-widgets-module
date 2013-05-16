@@ -4,8 +4,7 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
@@ -37,12 +36,7 @@ public class AppWizardFolderSelector extends AppWizardDiskResourceSelector<Folde
                 return;
 
             setSelectedResource(takesValue.getValue());
+            ValueChangeEvent.fire(AppWizardFolderSelector.this, takesValue.getValue());
         }
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<HasId> handler) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

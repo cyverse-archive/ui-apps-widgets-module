@@ -2,10 +2,12 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -13,6 +15,8 @@ import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,7 +35,6 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  */
 public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecution> {
 
-    private final String HEADING_PREFIX = "Analysis Name: ";
     private static LaunchAnalysisWidgetUiBinder BINDER = GWT.create(LaunchAnalysisWidgetUiBinder.class);
 
     interface LaunchAnalysisWidgetUiBinder extends UiBinder<Widget, LaunchAnalysisWidget> {}
@@ -39,6 +42,15 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
     interface EditorDriver extends SimpleBeanEditorDriver<JobExecution, LaunchAnalysisWidget> {}
 
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
+
+    interface Style extends CssResource {
+        String warning();
+    }
+
+    interface Resources extends ClientBundle {
+        @Source("Style.css")
+        Style css();
+    }
 
     @Ignore
     @UiField
@@ -58,8 +70,15 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
     AppWizardFolderSelector awFolderSel;
 
     ConverterEditorAdapter<String, HasId, AppWizardFolderSelector> outputDirectory;
+    private final UserSettings userSettings;
+    private final AppsWidgetsDisplayMessages displayMessages;
+    private final Resources res;
 
-    public LaunchAnalysisWidget() {
+    public LaunchAnalysisWidget(UserSettings userSettings, AppsWidgetsDisplayMessages displayMessages) {
+        this.userSettings = userSettings;
+        this.displayMessages = displayMessages;
+        res = GWT.create(Resources.class);
+        res.css().ensureInjected();
         BINDER.createAndBindUi(this);
         outputDirectory = new ConverterEditorAdapter<String, HasId, AppWizardFolderSelector>(awFolderSel, new Converter<String, HasId>() {
             @Override
@@ -72,12 +91,22 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
                 return CommonModelUtils.createHasIdFromString(object);
             }
         });
+        awFolderSel.setInfoTextClassName(res.css().warning());
         editorDriver.initialize(this);
+    }
+
+    @UiHandler("awFolderSel")
+    void onFolderChanged(ValueChangeEvent<HasId> event) {
+        if ((event.getValue() != null) && !event.getValue().getId().equals(userSettings.getDefaultOutputFolder())) {
+            awFolderSel.setInfoText(displayMessages.nonDefaultFolderWarning());
+        } else {
+            awFolderSel.setInfoText(null);
+        }
     }
 
     @UiHandler("name")
     void onNameChange(ValueChangeEvent<String> event) {
-        contentPanel.setHeadingText(HEADING_PREFIX + name.getCurrentValue());
+        contentPanel.setHeadingText(displayMessages.launchAnalysisDetailsHeadingPrefix() + name.getCurrentValue());
     }
 
     public void edit(JobExecution je) {
@@ -107,7 +136,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
 
     @Override
     public void setValue(JobExecution value) {
-        contentPanel.setHeadingText(HEADING_PREFIX + value.getName());
+        contentPanel.setHeadingText(displayMessages.launchAnalysisDetailsHeadingPrefix() + value.getName());
     }
 
     @Override

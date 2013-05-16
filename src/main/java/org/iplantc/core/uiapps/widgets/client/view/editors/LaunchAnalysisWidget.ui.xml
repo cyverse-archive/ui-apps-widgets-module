@@ -28,7 +28,7 @@
 		<con:VerticalLayoutContainer scrollMode="AUTOY"
 	                                 adjustForScroll="true">
 		    <con:child layoutData="{fieldLayoutData}">
-		        <form:FieldLabel text="Analysis Name"
+		        <form:FieldLabel text="{strings.analysisName}"
 		                         labelAlign="TOP">
 		            <form:widget>
 		                <form:TextField ui:field="name"
@@ -37,7 +37,7 @@
 		        </form:FieldLabel> 
 		    </con:child>                    
 		    <con:child layoutData="{fieldLayoutData}">
-		        <form:FieldLabel text="Description"
+		        <form:FieldLabel text="{strings.description}"
 		                         labelAlign="TOP">
 		            <form:widget>
 		                <form:TextArea ui:field="description"/>
@@ -45,17 +45,16 @@
 		        </form:FieldLabel> 
 		    </con:child>                    
 		    <con:child layoutData="{fieldLayoutData}">
-		        <form:FieldLabel text="Select output folder (a sub-folder will be created by default when [THING] is selected)"
+		        <form:FieldLabel text="{strings.selectOutputFolder}"
 		                         labelAlign="TOP">
 		            <form:widget>
-		                <!-- <form:TextField ui:field="outputDirectory"/> -->
 		                <fields:AppWizardFolderSelector ui:field="awFolderSel"/>
 		            </form:widget>
 		        </form:FieldLabel> 
 		    </con:child>                    
 		    <con:child layoutData="{fieldLayoutData}">
 		        <form:CheckBox ui:field="retainInputs" 
-		                       boxLabel="Retain Inputs? Enabling this flag will copy all the input files into the analysis result folder."/>
+		                       boxLabel="{strings.retainInputs}"/>
 	        </con:child>                    
 	    </con:VerticalLayoutContainer>
     </gxt:ContentPanel>         
