@@ -6,7 +6,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFileSelector;
@@ -14,6 +14,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelecto
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardMultiFileSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
+import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToBooleanConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToDoubleConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdConverter;
@@ -136,12 +137,13 @@ public class AppWizardFieldFactory {
             case ValueSelection:
                 // TODO JDS Map this to either IntegerSelection or DoubleSelection
                 AppWizardComboBox qwCb = new AppWizardComboBox(argument);
-                ConverterFieldAdapter<SelectionArgument, AppWizardComboBox> cbCfa = new ConverterFieldAdapter<SelectionArgument, AppWizardComboBox>(qwCb,
+                ConverterFieldAdapter<SelectionItem, AppWizardComboBox> cbCfa = new ConverterFieldAdapter<SelectionItem, AppWizardComboBox>(qwCb,
                         new SplittableToSelectionArgConverter());
                 field = cbCfa;
                 break;
 
             case TreeSelection:
+                SelectionItemTreePanel sitp = new SelectionItemTreePanel();
                 field = null;
                 break;
 

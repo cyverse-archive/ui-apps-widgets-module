@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.models;
 
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
@@ -15,7 +16,9 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<ArgumentValidator> argumentValidator();
 
-    AutoBean<SelectionArgument> selectionArgument();
+    AutoBean<SelectionItem> selectionItem();
+
+    AutoBean<SelectionItemGroup> selectionItemGroup();
 
     AutoBean<DataObject> dataObject();
 

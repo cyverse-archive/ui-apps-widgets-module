@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.jsonutil.JsonUtil;
-import org.iplantc.core.metadata.client.validation.ListRuleArgument;
-import org.iplantc.core.metadata.client.validation.ListRuleArgumentFactory;
-import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
@@ -25,19 +25,18 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 /**
- * A Checkable Tree for displaying ListRuleArgument in a wizard.
+ * A Checkable Tree for displaying SelectionItem in a wizard.
  * 
  * @author psarando
  * 
  */
-public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
-    private final ListRuleArgumentFactory factory = GWT.create(ListRuleArgumentFactory.class);
-    private ListRuleArgumentGroup root;
+public class SelectionItemTree extends Tree<SelectionItem, String> {
+    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+    private SelectionItemGroup root;
     private Command updateCmd;
     private boolean forceSingleSelection = false;
 
-    public ListRuleArgumentTree(TreeStore<ListRuleArgument> store,
-            ValueProvider<ListRuleArgument, String> valueProvider) {
+    public SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
         super(store, valueProvider);
 
         setBorders(true);
@@ -46,12 +45,12 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         setCheckable(true);
         setCheckStyle(CheckCascade.TRI);
 
-        addBeforeCheckChangeHandler(new BeforeCheckChangeHandler<ListRuleArgument>() {
+        addBeforeCheckChangeHandler(new BeforeCheckChangeHandler<SelectionItem>() {
             @Override
-            public void onBeforeCheckChange(BeforeCheckChangeEvent<ListRuleArgument> event) {
+            public void onBeforeCheckChange(BeforeCheckChangeEvent<SelectionItem> event) {
                 if (forceSingleSelection) {
                     if (event.getChecked() == CheckState.UNCHECKED) {
-                        boolean isGroup = event.getItem() instanceof ListRuleArgumentGroup;
+                        boolean isGroup = event.getItem() instanceof SelectionItemGroup;
                         boolean cascadeToChildren = getCheckStyle() == CheckCascade.TRI
                                 || getCheckStyle() == CheckCascade.CHILDREN;
 
@@ -62,7 +61,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
                             return;
                         }
 
-                        List<ListRuleArgument> checked = getCheckedSelection();
+                        List<SelectionItem> checked = getCheckedSelection();
 
                         if (checked != null && !checked.isEmpty()) {
                             // uncheck all other selections first.
@@ -75,7 +74,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     }
 
     @Override
-    protected SafeHtml renderChild(ListRuleArgument parent, ListRuleArgument child, int depth,
+    protected SafeHtml renderChild(SelectionItem parent, SelectionItem child, int depth,
             TreeView.TreeViewRenderMode renderMode) {
         SafeHtml html = super.renderChild(parent, child, depth, renderMode);
 
@@ -95,7 +94,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     }
 
     @Override
-    protected void onCheckCascade(ListRuleArgument model, CheckState checked) {
+    protected void onCheckCascade(SelectionItem model, CheckState checked) {
         // temporarily enable group selections during cascade events, if SingleSelection is enabled.
         boolean restoreForceSingleSelection = forceSingleSelection;
         forceSingleSelection = false;
@@ -106,33 +105,33 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     }
 
     @Override
-    protected void onCheckClick(Event event, TreeNode<ListRuleArgument> node) {
+    protected void onCheckClick(Event event, TreeNode<SelectionItem> node) {
         super.onCheckClick(event, node);
 
         // Keep track of which node the user clicked on in the isDefault field.
         // This helps with restoring checked state if the tree gets filtered, and will allow any checked
         // args to be submitted to the job, even when filtered out.
-        ListRuleArgument ruleArg = node.getModel();
+        SelectionItem ruleArg = node.getModel();
         ruleArg.setDefault(getChecked(ruleArg) != CheckState.UNCHECKED);
 
         callCheckChangedUpdateCommand();
     }
 
     /**
-     * Resets the tree's contents with the ListRuleArguments in the given root JSON string.
+     * Resets the tree's contents with the SelectionItems in the given root JSON string.
      * 
-     * @param root A JSON string of a ListRuleArgumentGroup.
+     * @param root A JSON string of a SelectionItemGroup.
      */
     public void setItems(String json) {
-        setItems(AutoBeanCodex.decode(factory, ListRuleArgumentGroup.class, json).as());
+        setItems(AutoBeanCodex.decode(factory, SelectionItemGroup.class, json).as());
     }
 
     /**
-     * Resets the tree's contents with the ListRuleArguments in the given root.
+     * Resets the tree's contents with the SelectionItems in the given root.
      * 
-     * @param root A ListRuleArgumentGroup containing the items to populate in this tree.
+     * @param root A SelectionItemGroup containing the items to populate in this tree.
      */
-    public void setItems(ListRuleArgumentGroup root) {
+    public void setItems(SelectionItemGroup root) {
         store.clear();
         this.root = root;
 
@@ -143,16 +142,16 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         forceSingleSelection = root.isSingleSelect();
         setCheckCascade(root);
 
-        List<ListRuleArgument> defaultSelection = new ArrayList<ListRuleArgument>();
+        List<SelectionItem> defaultSelection = new ArrayList<SelectionItem>();
 
         if (root.getGroups() != null) {
-            for (ListRuleArgumentGroup group : root.getGroups()) {
+            for (SelectionItemGroup group : root.getGroups()) {
                 defaultSelection.addAll(addGroupToStore(null, group));
             }
         }
 
         if (root.getArguments() != null) {
-            for (ListRuleArgument ruleArg : root.getArguments()) {
+            for (SelectionItem ruleArg : root.getArguments()) {
                 store.add(ruleArg);
 
                 if (ruleArg.isDefault()) {
@@ -166,7 +165,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
         }
     }
 
-    private void setCheckCascade(ListRuleArgumentGroup root) {
+    private void setCheckCascade(SelectionItemGroup root) {
         CheckCascade cascade = null;
 
         if (root != null && root.getSelectionCascade() != null) {
@@ -186,9 +185,8 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
      * @param group The group to add to the store.
      * @return A list of any items that should be selected by default.
      */
-    private List<ListRuleArgument> addGroupToStore(ListRuleArgumentGroup parent,
-            ListRuleArgumentGroup group) {
-        List<ListRuleArgument> defaultSelection = new ArrayList<ListRuleArgument>();
+    private List<SelectionItem> addGroupToStore(SelectionItemGroup parent, SelectionItemGroup group) {
+        List<SelectionItem> defaultSelection = new ArrayList<SelectionItem>();
 
         if (group != null) {
             if (parent != null) {
@@ -201,13 +199,13 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
             store.update(group);
 
             if (group.getGroups() != null) {
-                for (ListRuleArgumentGroup child : group.getGroups()) {
+                for (SelectionItemGroup child : group.getGroups()) {
                     defaultSelection.addAll(addGroupToStore(group, child));
                 }
             }
 
             if (group.getArguments() != null) {
-                for (ListRuleArgument child : group.getArguments()) {
+                for (SelectionItem child : group.getArguments()) {
                     store.add(group, child);
 
                     if (child.isDefault()) {
@@ -227,31 +225,31 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     /**
      * Returns items selected in the tree, even if they are currently filtered out by the view.
      * 
-     * @return List of selected ListRuleArguments and groups.
+     * @return List of selected SelectionItems and groups.
      */
-    public List<ListRuleArgument> getSelection() {
-        List<ListRuleArgument> selected = new ArrayList<ListRuleArgument>();
+    public List<SelectionItem> getSelection() {
+        List<SelectionItem> selected = new ArrayList<SelectionItem>();
 
         addSelectedFromGroup(selected, root);
 
         return selected;
     }
 
-    private void addSelectedFromGroup(List<ListRuleArgument> selected, ListRuleArgumentGroup group) {
+    private void addSelectedFromGroup(List<SelectionItem> selected, SelectionItemGroup group) {
         if (group == null) {
             return;
         }
 
         if (group.getArguments() != null) {
-            for (ListRuleArgument ruleArg : group.getArguments()) {
+            for (SelectionItem ruleArg : group.getArguments()) {
                 if (ruleArg.isDefault()) {
                     selected.add(ruleArg);
                 }
             }
         }
 
-        if (group.getGroups() != null) {
-            for (ListRuleArgumentGroup subgroup : group.getGroups()) {
+        if (group.getArguments() != null) {
+            for (SelectionItemGroup subgroup : group.getGroups()) {
                 if (subgroup.isDefault()) {
                     selected.add(subgroup);
                 }
@@ -262,7 +260,7 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
     }
 
     /**
-     * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
+     * Sets the tree's checked selection with the SelectionItems in the given JSON Array string.
      * 
      * @param value A string representation of a JSON Array of the values to select.
      */
@@ -275,13 +273,13 @@ public class ListRuleArgumentTree extends Tree<ListRuleArgument, String> {
             JSONArray selectedValues = JSONParser.parseStrict(value).isArray();
 
             if (selectedValues != null && selectedValues.size() > 0) {
-                TreeStore<ListRuleArgument> treeStore = getStore();
+                TreeStore<SelectionItem> treeStore = getStore();
 
                 for (int i = 0; i < selectedValues.size(); i++) {
                     JSONObject jsonRule = JsonUtil.getObjectAt(selectedValues, i);
 
                     if (jsonRule != null) {
-                        ListRuleArgument ruleArg = AutoBeanCodex.decode(factory, ListRuleArgument.class,
+                        SelectionItem ruleArg = AutoBeanCodex.decode(factory, SelectionItem.class,
                                 jsonRule.toString()).as();
 
                         // Ensure the actual model used in the store is the one sent in checked events.

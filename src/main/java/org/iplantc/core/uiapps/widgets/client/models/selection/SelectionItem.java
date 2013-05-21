@@ -8,7 +8,7 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
-public interface SelectionArgument extends HasId, HasName, HasDescription, TakesValue<String>, HasDisplayText {
+public interface SelectionItem extends HasId, HasName, HasDescription, TakesValue<String>, HasDisplayText {
 
     void setId(String id);
 

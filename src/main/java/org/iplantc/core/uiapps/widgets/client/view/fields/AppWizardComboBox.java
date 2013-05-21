@@ -1,8 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionProperties;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
 
 import com.google.gwt.core.client.GWT;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -15,18 +15,18 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
  * @author jstroot
  * 
  */
-public class AppWizardComboBox extends ComboBox<SelectionArgument> {
+public class AppWizardComboBox extends ComboBox<SelectionItem> {
 
     public AppWizardComboBox(Argument argument) {
-        this(GWT.<SelectionProperties> create(SelectionProperties.class));
+        this(GWT.<SelectionItemProperties> create(SelectionItemProperties.class));
         setTriggerAction(TriggerAction.ALL);
-        if (argument.getArguments() != null) {
-            getStore().addAll(argument.getArguments());
+        if (argument.getSelectionItems() != null) {
+            getStore().addAll(argument.getSelectionItems());
         }
     }
 
-    protected AppWizardComboBox(SelectionProperties props) {
-        super(new ListStore<SelectionArgument>(props.id()), props.display());
+    protected AppWizardComboBox(SelectionItemProperties props) {
+        super(new ListStore<SelectionItem>(props.id()), props.displayLabel());
     }
 
 }

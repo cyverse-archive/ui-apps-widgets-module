@@ -18,7 +18,7 @@
  * <dd>- bound to inidividual <code>Arguments</code>s in
  * {@link org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup#getArguments()}</dd>
  * 
- * <dt>{@link org.iplantc.core.uiapps.widgets.client.view.editors.ArgumentPropertyEditor}</dt>
+ * <dt>{@link org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor}</dt>
  * <dd>- bound to {@link org.iplantc.core.uiapps.widgets.client.models.Argument}</dd>
  * 
  * <dt>{@link org.iplantc.core.uiapps.widgets.client.view.editors.ArgumentValueEditor}</dt>
