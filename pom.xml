@@ -27,7 +27,7 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.iplantc.core</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ui-applications</artifactId>
 			<version>${project.version}</version>
 		</dependency>

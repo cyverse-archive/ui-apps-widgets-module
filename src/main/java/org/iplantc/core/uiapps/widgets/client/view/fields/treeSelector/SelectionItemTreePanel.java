@@ -6,6 +6,8 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.core.uiapps.widgets.client.view.SelectionItemTreeStoreEditor;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
@@ -17,7 +19,7 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
@@ -29,30 +31,33 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
  * @author psarando
  * 
  */
-public class SelectionItemTreePanel extends FlowLayoutContainer implements ValueAwareEditor<Argument> {
+public class SelectionItemTreePanel extends VerticalLayoutContainer implements ValueAwareEditor<Argument>, ArgumentSelectionField {
 
     private SelectionItemTree tree;
+
+    SelectionItemTreeStoreEditor selectionItemsEditor;
 
     public SelectionItemTreePanel() {
         TreeStore<SelectionItem> store = buildStore();
 
         initTree(store);
+        selectionItemsEditor = new SelectionItemTreeStoreEditor(store, tree);
 
         // This handler must be added after the store is added to the tree, since the tree adds its own
         // handlers that must trigger before this one.
         addCheckedRestoreFilterHandler(store);
 
-        add(buildFilter(store));
+        add(buildFilter(store), new VerticalLayoutData(1, -1));
         add(tree);
     }
 
     private TreeStore<SelectionItem> buildStore() {
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(new ModelKeyProvider<SelectionItem>() {
-                    @Override
+            @Override
             public String getKey(SelectionItem item) {
-                        return item.getId();
-                    }
-                });
+                return item.getDisplay();
+            }
+        });
 
         return store;
     }
@@ -77,7 +82,7 @@ public class SelectionItemTreePanel extends FlowLayoutContainer implements Value
         };
 
         tree = new SelectionItemTree(store, valueProvider);
-
+        tree.setHeight(200);
         // Store the tree's Checked state in each item's isDefault field.
         tree.addCheckChangeHandler(new CheckChangeHandler<SelectionItem>() {
 
@@ -201,26 +206,16 @@ public class SelectionItemTreePanel extends FlowLayoutContainer implements Value
     }
 
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {
-        // TODO Auto-generated method stub
-
-    }
+    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {
-        // TODO Auto-generated method stub
-
-    }
+    public void flush() {/* Do Nothing */}
 
     @Override
-    public void onPropertyChange(String... paths) {
-        // TODO Auto-generated method stub
-
-    }
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
 
     @Override
     public void setValue(Argument value) {
-        // TODO Auto-generated method stub
-
+        selectionItemsEditor.setValue(value.getSelectionItems());
     }
 }

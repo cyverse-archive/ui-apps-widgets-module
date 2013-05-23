@@ -10,7 +10,7 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
  * 
  * TODO Determine if this interface is necessary anymore
  */
-public interface ArgumentField extends IsField<Splittable>, HasValueChangeHandlers<Splittable> {
+public interface ArgumentValueField extends IsField<Splittable>, HasValueChangeHandlers<Splittable> {
     
     void setToolTipConfig(ToolTipConfig config);
 

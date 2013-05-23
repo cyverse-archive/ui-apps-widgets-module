@@ -82,7 +82,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             // event target gives us the thing we are leaving.
 
             EventTarget relatedTarget = event.getNativeEvent().getRelatedEventTarget();
-            if (Element.as(relatedTarget) == button.getElement()) {
+            if (relatedTarget == null || Element.as(relatedTarget) == button.getElement()) {
                 return;
             }
             currentItemIndex = -1;
@@ -127,6 +127,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             super.onDragDrop(event);
             List<Argument> list = listEditor.getList();
             Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
+
             if (list != null) {
                 // JDS Protect against OBOB issues (caused by argument delete button, which is actually a
                 // child of the argumentsContainer

@@ -2,19 +2,24 @@ package org.iplantc.core.uiapps.widgets.client.view;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTree;
 
-import com.google.common.collect.Lists;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.TreeStore;
 
 /**
  * Binds a {@link TreeStore} of {@link SelectionItem}s to a {@link List} property in an edited model
  * object.
- * This class is modelled after {@link ListStoreEditor}.
+ * This class is modeled after {@link ListStoreEditor}.
  * <p>
  * If bound to a null value, no changes will be made when flushed.
  * </p>
@@ -25,9 +30,12 @@ import com.sencha.gxt.data.shared.TreeStore;
 public class SelectionItemTreeStoreEditor implements ValueAwareEditor<List<SelectionItem>> {
     private final TreeStore<SelectionItem> store;
     private List<SelectionItem> model;
+    private final SelectionItemTree tree;
+    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
 
-    public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store) {
+    public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store, SelectionItemTree tree) {
         this.store = store;
+        this.tree = tree;
     }
 
     @Override
@@ -46,31 +54,39 @@ public class SelectionItemTreeStoreEditor implements ValueAwareEditor<List<Selec
 
     @Override
     public void setValue(List<SelectionItem> value) {
+        if (value == null) {
+            return;
+        }
         store.clear();
-        if(value != null && value.size() > 0){
-            // The first item in this list should be a SelectionItemGroup. This group will contain the
-            // values for isSingleSelect and selectionCascade, which the trees will need for display.
+        /*
+         * JDS This list of SelectionItems is for TreeSelection, and therefore, should only consist of
+         * one element which can be cast to a SelectionItemGroup. This item is used to set the selection
+         * and selection cascade modes of the tree.
+         */
+        if (value.size() == 1) {
+            /*
+             * JDS Have to deserialize the root SelectionItem and reserialize it to a SelectionItemGroup
+             * since it is illegal to "downcast" types (we can't directly cast from SelectionItem to
+             * SelectionItemGroup
+             */
+            SelectionItemGroup rootSelectionItemGroup = AutoBeanCodex.decode(factory, SelectionItemGroup.class, AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(value.get(0)))).as();
 
-            // Q: How will the tree get the single select and selection cascade items?
             // JDS Populate TreeStore.
-            addSelectionItemGroups(null, value);
-        }
-    }
+            tree.setItems(rootSelectionItemGroup);
 
-    private void addSelectionItemGroups(SelectionItemGroup parent, List<SelectionItem> children) {
-    
-        if (parent == null) {
-            store.add(children);
-        } else {
-            store.add(parent, children);
-        }
-    
-        for (SelectionItem si : children) {
-            if (si instanceof SelectionItemGroup) {
-                SelectionItemGroup selectionItemGroup = (SelectionItemGroup)si;
-                addSelectionItemGroups(selectionItemGroup, selectionItemGroup.getArguments());
-                addSelectionItemGroups(selectionItemGroup, Lists.<SelectionItem> newArrayList(selectionItemGroup.getGroups()));
+            // JDS Get the "isSingleSelect" and "selectionCascade" items from the root SelectionItemGroup
+            boolean isSingleSelect = rootSelectionItemGroup.isSingleSelect();
+            if (isSingleSelect) {
+                tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            } else {
+                tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
             }
+            // JDS Propagate tree check style.
+            if (rootSelectionItemGroup.getSelectionCascade() != null) {
+                tree.setCheckStyle(rootSelectionItemGroup.getSelectionCascade().getTreeCheckCascade());
+            }
+        } else {
+            GWT.log(this.getClass().getName() + ".setValue(List<SelectionItem>) given list which is not equal to 1.");
         }
     }
 

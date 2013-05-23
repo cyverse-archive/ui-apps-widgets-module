@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
-import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
@@ -39,13 +39,13 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-class ArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentField>, ValueChangeHandler<Splittable> {
+class ArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentValueField>, ValueChangeHandler<Splittable> {
 
-    private CompositeEditor.EditorChain<Splittable, ArgumentField> chain;
+    private CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain;
 
     private final FieldLabel propertyLabel;
     HasTextEditor label = null;
-    private ArgumentField subEditor = null;
+    private ArgumentValueField subEditor = null;
 
     /**
      * The live, bound backing object
@@ -53,7 +53,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
     private Argument argument;
     
     /**
-     * Copy of backing object from last set/update
+     * Copy of backing object from last set/update, used to determine if default values should be updated
      */
     private Argument argumentCopy;
 
@@ -61,8 +61,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
     private final boolean editingMode;
     private final AppTemplateWizardPresenter presenter;
 
-
-    public ArgumentValueEditor(boolean editingMode, final AppTemplateWizardPresenter presenter) {
+    ArgumentValueEditor(boolean editingMode, final AppTemplateWizardPresenter presenter) {
         this.editingMode = editingMode;
         this.presenter = presenter;
         propertyLabel = new FieldLabel();
@@ -94,7 +93,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
      * Adds a click handler to this class' field label.
      * @param clickHandler
      */
-    public void addArgumentClickHandler(ClickHandler clickHandler) {
+    void addArgumentClickHandler(ClickHandler clickHandler) {
         this.clickHandler = clickHandler;
         propertyLabel.addDomHandler(clickHandler, ClickEvent.getType());
         // If the subEditor's field is a CheckBox, add the click handler to it, since it won't have a
@@ -105,7 +104,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
     }
 
     @Ignore
-    public ArgumentField getArgumentField() {
+    public ArgumentValueField getArgumentField() {
         return subEditor;
     }
 
@@ -121,7 +120,10 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         // Perform editing mode actions.
         if (editingMode && (argumentCopy != null)) {
             
-            // Determine if default value has changed
+            /*
+             * Determine if default value has changed, for coordinating defaultValue changes while in
+             * editing mode.
+             */
             Splittable defaultValue = value.getDefaultValue();
             if (argumentCopy.getDefaultValue() != null) {
                 if (!argumentCopy.getDefaultValue().getPayload().equals(defaultValue.getPayload())) {
@@ -133,12 +135,11 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         
         if (subEditor == null) {
             AppWizardFieldFactory.setDefaultValue(value);
-            subEditor = AppWizardFieldFactory.createArgumentField(value, editingMode);
-            AppWizardFieldFactory.setRequiredValidator(value, subEditor);
+            subEditor = AppWizardFieldFactory.createArgumentValueField(value, editingMode);
             if (subEditor != null) {
                 propertyLabel.setWidget(subEditor);
 
-                if (presenter.isEditingMode()) {
+                if (editingMode) {
                     if (subEditor.getField() instanceof HasValueChangeHandlers) {
                         subEditor.addValueChangeHandler(this);
                     }
@@ -154,9 +155,12 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
                 Splittable formValue = value.getValue();
                 chain.attach(formValue, subEditor);
             }
+            AppWizardFieldFactory.setRequiredValidator(value, subEditor);
         }
 
-        if (!value.getType().equals(ArgumentType.Info)) {
+
+
+        if (subEditor != null && !value.getType().equals(ArgumentType.Info)) {
             subEditor.setValue(value.getValue());
         }
 
@@ -190,17 +194,17 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
     }
 
     @Override
-    public ArgumentField createEditorForTraversal() {
+    public ArgumentValueField createEditorForTraversal() {
         return new ConverterFieldAdapter<String, TextField>(new TextField(), new SplittableToStringConverter());
     }
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, ArgumentField> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain) {
         this.chain = chain;
     }
 
     @Override
-    public String getPathElement(ArgumentField subEditor) {
+    public String getPathElement(ArgumentValueField subEditor) {
         return ".value";
     }
 
