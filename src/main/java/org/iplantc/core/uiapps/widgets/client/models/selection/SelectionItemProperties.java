@@ -14,7 +14,12 @@ public interface SelectionItemProperties extends PropertyAccess<SelectionItem> {
 
     ValueProvider<SelectionItem, String> display();
 
+    ValueProvider<SelectionItem, String> description();
+
     ValueProvider<SelectionItem, String> value();
+
+    @Path("default")
+    ValueProvider<SelectionItem, Boolean> isDefault();
 
     @Path("display")
     LabelProvider<SelectionItem> displayLabel();

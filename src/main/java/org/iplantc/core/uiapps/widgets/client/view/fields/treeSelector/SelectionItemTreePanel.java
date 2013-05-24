@@ -6,6 +6,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup.CheckCascade;
 import org.iplantc.core.uiapps.widgets.client.view.SelectionItemTreeStoreEditor;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 
@@ -13,6 +14,7 @@ import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
@@ -41,7 +43,30 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         TreeStore<SelectionItem> store = buildStore();
 
         initTree(store);
-        selectionItemsEditor = new SelectionItemTreeStoreEditor(store, tree);
+        selectionItemsEditor = new SelectionItemTreeStoreEditor(store) {
+            @Override
+            protected void setCheckStyle(CheckCascade treeCheckCascade) {
+                if (treeCheckCascade == null) {
+                    return;
+                }
+
+                tree.setCheckStyle(treeCheckCascade.getTreeCheckCascade());
+            }
+
+            @Override
+            protected void setSingleSelect(boolean singleSelect) {
+                if (singleSelect) {
+                    tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+                } else {
+                    tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+                }
+            }
+
+            @Override
+            protected void setItems(SelectionItemGroup root) {
+                tree.setItems(root);
+            }
+        };
 
         // This handler must be added after the store is added to the tree, since the tree adds its own
         // handlers that must trigger before this one.

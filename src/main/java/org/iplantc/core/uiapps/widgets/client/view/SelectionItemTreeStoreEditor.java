@@ -5,14 +5,12 @@ import java.util.List;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
-import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTree;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.TreeStore;
 
@@ -27,15 +25,13 @@ import com.sencha.gxt.data.shared.TreeStore;
  * @author jstroot
  * 
  */
-public class SelectionItemTreeStoreEditor implements ValueAwareEditor<List<SelectionItem>> {
+public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<List<SelectionItem>> {
     private final TreeStore<SelectionItem> store;
     private List<SelectionItem> model;
-    private final SelectionItemTree tree;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
 
-    public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store, SelectionItemTree tree) {
+    public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store) {
         this.store = store;
-        this.tree = tree;
     }
 
     @Override
@@ -72,23 +68,24 @@ public class SelectionItemTreeStoreEditor implements ValueAwareEditor<List<Selec
             SelectionItemGroup rootSelectionItemGroup = AutoBeanCodex.decode(factory, SelectionItemGroup.class, AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(value.get(0)))).as();
 
             // JDS Populate TreeStore.
-            tree.setItems(rootSelectionItemGroup);
+            setItems(rootSelectionItemGroup);
+            // tree.setItems(rootSelectionItemGroup);
 
             // JDS Get the "isSingleSelect" and "selectionCascade" items from the root SelectionItemGroup
-            boolean isSingleSelect = rootSelectionItemGroup.isSingleSelect();
-            if (isSingleSelect) {
-                tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-            } else {
-                tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
-            }
+            setSingleSelect(rootSelectionItemGroup.isSingleSelect());
+
             // JDS Propagate tree check style.
-            if (rootSelectionItemGroup.getSelectionCascade() != null) {
-                tree.setCheckStyle(rootSelectionItemGroup.getSelectionCascade().getTreeCheckCascade());
-            }
+            setCheckStyle(rootSelectionItemGroup.getSelectionCascade());
         } else {
             GWT.log(this.getClass().getName() + ".setValue(List<SelectionItem>) given list which is not equal to 1.");
         }
     }
+
+    protected abstract void setCheckStyle(org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup.CheckCascade checkCascade);
+
+    protected abstract void setSingleSelect(boolean singleSelect);
+
+    protected abstract void setItems(SelectionItemGroup root);
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
