@@ -9,10 +9,10 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
-import org.iplantc.core.uiapps.widgets.client.models.DeployedComponent;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;

@@ -10,8 +10,8 @@ import java.util.List;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
 import org.iplantc.core.uiapps.widgets.client.models.DCProperties;
-import org.iplantc.core.uiapps.widgets.client.models.DeployedComponent;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;

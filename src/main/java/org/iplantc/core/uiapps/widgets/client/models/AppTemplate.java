@@ -6,6 +6,7 @@ import java.util.List;
 import org.iplantc.core.uicommons.client.models.HasDescription;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 
 import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
