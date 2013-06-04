@@ -1,7 +1,8 @@
-package org.iplantc.core.uiapps.widgets.client.view.editors;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;

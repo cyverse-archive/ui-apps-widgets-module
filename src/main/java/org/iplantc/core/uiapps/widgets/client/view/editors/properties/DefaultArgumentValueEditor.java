@@ -1,10 +1,10 @@
-package org.iplantc.core.uiapps.widgets.client.view.editors;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
-import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
@@ -24,9 +24,9 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
-class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentField>, HasValueChangeHandlers<Splittable> {
+class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentValueField>, HasValueChangeHandlers<Splittable> {
 
-    private CompositeEditor.EditorChain<Splittable, ArgumentField> chain;
+    private CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain;
     private final FieldLabel propertyLabel;
     private ConverterFieldAdapter<Splittable, ?> subEditor = null;
     private final List<ValueChangeHandler<Splittable>> valueChangeHandlers = Lists.newArrayList();
@@ -119,7 +119,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
-        subEditor = AppWizardFieldFactory.createArgumentField(argument, false);
+        subEditor = AppWizardFieldFactory.createArgumentValueField(argument, false);
         if (subEditor != null) {
             // Apply any validators which may have been set at init-time
             if ((subEditor.getField() instanceof HasValueChangeHandlers) && !valueChangeHandlers.isEmpty()) {
@@ -187,19 +187,19 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     }
 
     @Override
-    public ArgumentField createEditorForTraversal() {
+    public ArgumentValueField createEditorForTraversal() {
         TextField field = new TextField();
         field.setText("DEFAULT VALUE");
         return new ConverterFieldAdapter<String, TextField>(field, new SplittableToStringConverter());
     }
 
     @Override
-    public String getPathElement(ArgumentField subEditor) {
+    public String getPathElement(ArgumentValueField subEditor) {
         return ".defaultValue";
     }
 
     @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, ArgumentField> chain) {
+    public void setEditorChain(CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain) {
         this.chain = chain;
     }
 

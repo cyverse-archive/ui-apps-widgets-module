@@ -2,69 +2,101 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector;
 
 import java.util.List;
 
-import org.iplantc.core.metadata.client.validation.ListRuleArgument;
-import org.iplantc.core.metadata.client.validation.ListRuleArgumentGroup;
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup.CheckCascade;
+import org.iplantc.core.uiapps.widgets.client.view.SelectionItemTreeStoreEditor;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 
+import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 /**
- * A Panel that contains a ListRuleArgumentTree and a filtering field that filters the tree items.
- *
+ * A Panel that contains a SelectionItemTree and a filtering field that filters the tree items.
+ * 
  * @author psarando
- *
+ * 
  */
-public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
+public class SelectionItemTreePanel extends VerticalLayoutContainer implements ValueAwareEditor<Argument>, ArgumentSelectionField {
 
-    private ListRuleArgumentTree tree;
+    private SelectionItemTree tree;
 
-    public ListRuleArgumentTreePanel() {
-        TreeStore<ListRuleArgument> store = buildStore();
+    SelectionItemTreeStoreEditor selectionItemsEditor;
+
+    public SelectionItemTreePanel() {
+        TreeStore<SelectionItem> store = buildStore();
 
         initTree(store);
+        selectionItemsEditor = new SelectionItemTreeStoreEditor(store) {
+            @Override
+            protected void setCheckStyle(CheckCascade treeCheckCascade) {
+                if (treeCheckCascade == null) {
+                    return;
+                }
+
+                tree.setCheckStyle(treeCheckCascade.getTreeCheckCascade());
+            }
+
+            @Override
+            protected void setSingleSelect(boolean singleSelect) {
+                if (singleSelect) {
+                    tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+                } else {
+                    tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+                }
+            }
+
+            @Override
+            protected void setItems(SelectionItemGroup root) {
+                tree.setItems(root);
+            }
+        };
 
         // This handler must be added after the store is added to the tree, since the tree adds its own
         // handlers that must trigger before this one.
         addCheckedRestoreFilterHandler(store);
 
-        add(buildFilter(store));
+        add(buildFilter(store), new VerticalLayoutData(1, -1));
         add(tree);
     }
 
-    private TreeStore<ListRuleArgument> buildStore() {
-        TreeStore<ListRuleArgument> store = new TreeStore<ListRuleArgument>(
-                new ModelKeyProvider<ListRuleArgument>() {
-                    @Override
-                    public String getKey(ListRuleArgument item) {
-                        return item.getId();
-                    }
-                });
+    private TreeStore<SelectionItem> buildStore() {
+        TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(new ModelKeyProvider<SelectionItem>() {
+            @Override
+            public String getKey(SelectionItem item) {
+                return item.getDisplay();
+            }
+        });
 
         return store;
     }
 
-    private void initTree(TreeStore<ListRuleArgument> store) {
-        ValueProvider<ListRuleArgument, String> valueProvider = new ValueProvider<ListRuleArgument, String>() {
+    private void initTree(TreeStore<SelectionItem> store) {
+        ValueProvider<SelectionItem, String> valueProvider = new ValueProvider<SelectionItem, String>() {
 
             @Override
-            public String getValue(ListRuleArgument object) {
+            public String getValue(SelectionItem object) {
                 return object.getDisplay();
             }
 
             @Override
-            public void setValue(ListRuleArgument object, String value) {
+            public void setValue(SelectionItem object, String value) {
                 // intentionally do nothing, since this is not an editor
             }
 
@@ -74,16 +106,16 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
             }
         };
 
-        tree = new ListRuleArgumentTree(store, valueProvider);
-
+        tree = new SelectionItemTree(store, valueProvider);
+        tree.setHeight(200);
         // Store the tree's Checked state in each item's isDefault field.
-        tree.addCheckChangeHandler(new CheckChangeHandler<ListRuleArgument>() {
+        tree.addCheckChangeHandler(new CheckChangeHandler<SelectionItem>() {
 
             @Override
-            public void onCheckChange(CheckChangeEvent<ListRuleArgument> event) {
-                ListRuleArgument ruleArg = event.getItem();
+            public void onCheckChange(CheckChangeEvent<SelectionItem> event) {
+                SelectionItem ruleArg = event.getItem();
                 boolean checked = event.getChecked() == CheckState.CHECKED;
-                boolean isGroup = ruleArg instanceof ListRuleArgumentGroup;
+                boolean isGroup = ruleArg instanceof SelectionItemGroup;
 
                 // Don't set the checked value for Groups if the store is filtered, since a check cascade
                 // can check a group when its filtered-out children are not checked.
@@ -101,15 +133,15 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
      *
      * @param store
      */
-    private void addCheckedRestoreFilterHandler(TreeStore<ListRuleArgument> store) {
+    private void addCheckedRestoreFilterHandler(TreeStore<SelectionItem> store) {
         // Restore the tree's Checked state from each item's isDefault field after it's filtered.
-        store.addStoreFilterHandler(new StoreFilterHandler<ListRuleArgument>() {
+        store.addStoreFilterHandler(new StoreFilterHandler<SelectionItem>() {
 
             @Override
-            public void onFilter(StoreFilterEvent<ListRuleArgument> event) {
-                TreeStore<ListRuleArgument> treeStore = tree.getStore();
+            public void onFilter(StoreFilterEvent<SelectionItem> event) {
+                TreeStore<SelectionItem> treeStore = tree.getStore();
 
-                for (ListRuleArgument ruleArg : treeStore.getAll()) {
+                for (SelectionItem ruleArg : treeStore.getAll()) {
                     if (ruleArg.isDefault()) {
                         tree.setChecked(ruleArg, CheckState.CHECKED);
                     }
@@ -117,9 +149,9 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
 
                 boolean filtered = treeStore.isFiltered();
 
-                for (ListRuleArgument ruleArg : treeStore.getAll()) {
+                for (SelectionItem ruleArg : treeStore.getAll()) {
                     // Ensure any groups with filtered-out children still display the group icon.
-                    if (ruleArg instanceof ListRuleArgumentGroup) {
+                    if (ruleArg instanceof SelectionItemGroup) {
                         tree.setLeaf(ruleArg, false);
                         tree.refresh(ruleArg);
                     }
@@ -133,8 +165,8 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         });
     }
 
-    private StoreFilterField<ListRuleArgument> buildFilter(TreeStore<ListRuleArgument> store) {
-        StoreFilterField<ListRuleArgument> treeFilter = new StoreFilterField<ListRuleArgument>() {
+    private StoreFilterField<SelectionItem> buildFilter(TreeStore<SelectionItem> store) {
+        StoreFilterField<SelectionItem> treeFilter = new StoreFilterField<SelectionItem>() {
             @Override
             protected void onKeyUp(Event event) {
                 tree.mask();
@@ -150,8 +182,7 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
             }
 
             @Override
-            protected boolean doSelect(Store<ListRuleArgument> store, ListRuleArgument parent,
-                    ListRuleArgument item, String filter) {
+            protected boolean doSelect(Store<SelectionItem> store, SelectionItem parent, SelectionItem item, String filter) {
                 String itemDisplay = item.getDisplay().toLowerCase();
                 String searchTerm = filter.toLowerCase();
 
@@ -180,22 +211,36 @@ public class ListRuleArgumentTreePanel extends FlowLayoutContainer {
         tree.setItems(json);
     }
 
-    public List<ListRuleArgument> getSelection() {
+    public List<SelectionItem> getSelection() {
         return tree.getSelection();
     }
 
     /**
-     * Sets the tree's checked selection with the ListRuleArguments in the given JSON Array string.
-     *
+     * Sets the tree's checked selection with the SelectionItems in the given JSON Array string.
+     * 
      * @param value A string representation of a JSON Array of the values to select.
      */
     public void setSelection(String value) {
         tree.setSelection(value);
 
-        for (ListRuleArgument ruleArg : tree.getStore().getAll()) {
+        for (SelectionItem ruleArg : tree.getStore().getAll()) {
             if (ruleArg.isDefault()) {
                 tree.setExpanded(ruleArg, true);
             }
         }
+    }
+
+    @Override
+    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+
+    @Override
+    public void flush() {/* Do Nothing */}
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void setValue(Argument value) {
+        selectionItemsEditor.setValue(value.getSelectionItems());
     }
 }

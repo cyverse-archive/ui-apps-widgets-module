@@ -6,12 +6,12 @@ package org.iplantc.core.uiapps.widgets.client.presenter;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uiapps.widgets.client.models.DeployedComponent;
-import org.iplantc.core.uiapps.widgets.client.models.DeployedComponentAutoBeanFactory;
-import org.iplantc.core.uiapps.widgets.client.models.DeployedComponentList;
 import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentList;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;

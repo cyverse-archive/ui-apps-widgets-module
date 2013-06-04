@@ -1,11 +1,11 @@
-package org.iplantc.core.uiapps.widgets.client.view.editors.lists;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists;
 
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgumentProperties;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -42,13 +42,13 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * @author jstroot
  * 
  */
-public class SelectionListEditor extends Composite implements ValueAwareEditor<Argument> {
+public class SelectionItemPropertyEditor extends Composite implements ValueAwareEditor<Argument> {
 
     private static SelectionListEditorUiBinder BINDER = GWT.create(SelectionListEditorUiBinder.class);
-    interface SelectionListEditorUiBinder extends UiBinder<Widget, SelectionListEditor> {}
+    interface SelectionListEditorUiBinder extends UiBinder<Widget, SelectionItemPropertyEditor> {}
 
     @UiField
-    ListStore<SelectionArgument> selectionArgStore;
+    ListStore<SelectionItem> selectionArgStore;
 
     @UiField
     SimpleContainer con;
@@ -62,31 +62,31 @@ public class SelectionListEditor extends Composite implements ValueAwareEditor<A
     TextButton delete;
 
     @UiField
-    Grid<SelectionArgument> grid;
+    Grid<SelectionItem> grid;
 
-    // The Editor for Argument.getArguments()
-    ListStoreEditor<SelectionArgument> arguments;
+    // The Editor for Argument.getSelectionItems()
+    ListStoreEditor<SelectionItem> selectionItems;
 
-    private ColumnConfig<SelectionArgument, String> displayCol;
+    private ColumnConfig<SelectionItem, String> displayCol;
 
-    private ColumnConfig<SelectionArgument, String> nameCol;
+    private ColumnConfig<SelectionItem, String> nameCol;
 
-    private ColumnConfig<SelectionArgument, String> valueCol;
+    private ColumnConfig<SelectionItem, String> valueCol;
 
-    private final GridEditing<SelectionArgument> editing;
+    private final GridEditing<SelectionItem> editing;
 
-    public SelectionListEditor() {
+    public SelectionItemPropertyEditor() {
         initWidget(BINDER.createAndBindUi(this));
         grid.setHeight(100);
 
-        editing = new GridRowEditing<SelectionArgument>(grid);
+        editing = new GridRowEditing<SelectionItem>(grid);
         editing.addEditor(displayCol, new TextField());
         editing.addEditor(nameCol, new TextField());
 
         // Add selection handler to grid to control enabled state of "delete" button
-        grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<SelectionArgument>() {
+        grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<SelectionItem>() {
             @Override
-            public void onSelectionChanged(SelectionChangedEvent<SelectionArgument> event) {
+            public void onSelectionChanged(SelectionChangedEvent<SelectionItem> event) {
                 if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
                     delete.setEnabled(false);
                 } else if ((event.getSelection() != null) && (event.getSelection().size() >= 1)) {
@@ -94,37 +94,37 @@ public class SelectionListEditor extends Composite implements ValueAwareEditor<A
                 }
             }
         });
-        arguments = new ListStoreEditor<SelectionArgument>(selectionArgStore);
+        selectionItems = new ListStoreEditor<SelectionItem>(selectionArgStore);
     }
 
     @UiFactory
-    ListStore<SelectionArgument> createListStore() {
-        return new ListStore<SelectionArgument>(new ModelKeyProvider<SelectionArgument>() {
+    ListStore<SelectionItem> createListStore() {
+        return new ListStore<SelectionItem>(new ModelKeyProvider<SelectionItem>() {
             @Override
-            public String getKey(SelectionArgument item) {
+            public String getKey(SelectionItem item) {
                 return item.getId();
             }
         });
     }
 
     @UiFactory
-    ColumnModel<SelectionArgument> createColumnModel() {
-        List<ColumnConfig<SelectionArgument, ?>> list = Lists.newArrayList();
-        SelectionArgumentProperties props = GWT.create(SelectionArgumentProperties.class);
-        displayCol = new ColumnConfig<SelectionArgument, String>(props.display(), 90, "Display");
-        nameCol = new ColumnConfig<SelectionArgument, String>(props.name(), 50, "Argument");
-        valueCol = new ColumnConfig<SelectionArgument, String>(props.value(), 50, "Value");
+    ColumnModel<SelectionItem> createColumnModel() {
+        List<ColumnConfig<SelectionItem, ?>> list = Lists.newArrayList();
+        SelectionItemProperties props = GWT.create(SelectionItemProperties.class);
+        displayCol = new ColumnConfig<SelectionItem, String>(props.display(), 90, "Display");
+        nameCol = new ColumnConfig<SelectionItem, String>(props.name(), 50, "Argument");
+        valueCol = new ColumnConfig<SelectionItem, String>(props.value(), 50, "Value");
 
         list.add(displayCol);
         list.add(nameCol);
         list.add(valueCol);
-        return new ColumnModel<SelectionArgument>(list);
+        return new ColumnModel<SelectionItem>(list);
     }
 
     @UiHandler("add")
     void onAddButtonClicked(SelectEvent event) {
         AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-        SelectionArgument sa = factory.selectionArgument().as();
+        SelectionItem sa = factory.selectionItem().as();
 
         // JDS Set up a default id to satisfy ListStore's ModelKeyProvider
         sa.setId("TEMP_ID_" + Math.random() + "-" + selectionArgStore.size() + 100);
@@ -136,11 +136,11 @@ public class SelectionListEditor extends Composite implements ValueAwareEditor<A
 
     @UiHandler("delete")
     void onDeleteButtonClicked(SelectEvent event) {
-        List<SelectionArgument> selection = grid.getSelectionModel().getSelection();
+        List<SelectionItem> selection = grid.getSelectionModel().getSelection();
         if (selection == null) {
             return;
         }
-        for (SelectionArgument sa : selection) {
+        for (SelectionItem sa : selection) {
             selectionArgStore.remove(sa);
         }
     }

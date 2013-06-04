@@ -2,6 +2,8 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.gwt.editor.client.EditorDelegate;
@@ -10,17 +12,28 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 /**
- * This class has two sub-editors; an <code>ArgumentValueEditor</code> which is the only widget visually
- * supplied by this <code>Composite</code>, and an <code>ArgumentPropertyEditor</code> which is available
- * for retrieval when the presenter has 'editingMode' enabled. It is worth noting that the
- * <code>ArgumentPropertyEditor</code> is only constructed (and therefore, part of the Editor
- * hierarchy) if the presenter has 'editingMode' enabled.
- * 
+ * This class contains a {@linkplain SimpleContainer} which is dynamically populated with one of two
+ * <code>Editor<Argument></code> sub-editors based on the bound <code>Argument</code>'s type.
+ * <p>
+ * This class has three sub-editors;<br>
+ * -- an {@link ArgumentValueEditor}<br>
+ * -- an {@link ArgumentSelectionEditor}<br>
+ * -- an <code>ArgumentPropertyEditor</code> which is available for retrieval when the presenter has
+ * 'editingMode' enabled.<br>
+ * When this class' bound <code>Argument</code> is set, if the argument type is any form of selection
+ * type, the <code>ArgumentSelectionEditor</code> will be added to the container. Otherwise, the
+ * <code>ArgumentValueEditor</code> will be added to the container. The editor which is not added to the
+ * container will be disabled. It is worth noting that the <code>ArgumentPropertyEditor</code> is only
+ * constructed (and therefore, part of the Editor hierarchy) if the presenter has 'editingMode' enabled.
+ * </p>
+ * <p>
  * It was necessary to construct the <code>ArgumentPropertyEditor</code> within this class to ensure that
  * all <code>Editor&lt;Argument&gt;</code>s which may be simultaneously editing the same
  * <code>Argument</code> are initialized within the same Editor hierarchy.
+ * </p>
  * 
  * @author jstroot
  * 
@@ -31,24 +44,31 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     ArgumentValueEditor argValueEditor;
     
     @Path("")
+    ArgumentSelectionEditor argSelectionEditor;
+
+    @Path("")
     ArgumentPropertyEditor argPropEditor = null;
 
     private Argument currValue;
+    private final SimpleContainer con = new SimpleContainer();
 
     ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
         argValueEditor = new ArgumentValueEditor(presenter.isEditingMode(), presenter);
+        argSelectionEditor = new ArgumentSelectionEditor(presenter.isEditingMode());
         if (presenter.isEditingMode()) {
             argPropEditor = new ArgumentPropertyEditor(presenter);
-            argValueEditor.addArgumentClickHandler(new ClickHandler() {
+            ClickHandler clickHandler = new ClickHandler() {
 
                 @Override
                 public void onClick(ClickEvent event) {
                     eventBus.fireEvent(new ArgumentSelectedEvent(ArgumentEditor.this));
                 }
-            });
+            };
+            argValueEditor.addArgumentClickHandler(clickHandler);
+            argSelectionEditor.addArgumentClickHandler(clickHandler);
         }
         
-        initWidget(argValueEditor);
+        initWidget(con);
     }
 
     @Override
@@ -60,6 +80,22 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     @Override
     public void setValue(Argument value) {
         this.currValue = value;
+        /*
+         * JDS - All selection argument types need to be handled separately.
+         * This is because there are two things which need to be bound;
+         * The lists, and the item which the user chooses from the list.
+         */
+        if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
+            con.add(argSelectionEditor);
+            argValueEditor.setEnabled(false);
+            argValueEditor.setVisible(false);
+            // argValueEditor = null;
+        } else {
+            con.add(argValueEditor);
+            argSelectionEditor.setEnabled(false);
+            argSelectionEditor.setVisible(false);
+            // argSelectionEditor = null;
+        }
     }
 
     @Override

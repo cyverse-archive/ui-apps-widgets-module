@@ -1,8 +1,10 @@
-package org.iplantc.core.uiapps.widgets.client.view.editors;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.view.editors.lists.SelectionListEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
 
 import com.google.gwt.core.client.GWT;
@@ -53,16 +55,22 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
 
     @Path("")
     @UiField(provided = true)
-    SelectionListEditor selectionListEditor;
+    SelectionItemPropertyEditor selectionItemListEditor;
+
+    @Path("")
+    @UiField(provided = true)
+    SelectionItemTreePropertyEditor selectionItemTreeEditor;
 
     private final AppTemplateWizardPresenter presenter;
 
-    ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter) {
+    public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         defaultValue = new DefaultArgumentValueEditor();
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
-        selectionListEditor = new SelectionListEditor();
+        selectionItemListEditor = new SelectionItemPropertyEditor();
+        selectionItemTreeEditor = new SelectionItemTreePropertyEditor();
 
+        // TODO JDS Need to coordinate changes in selection types.
         /*
          * Validation control and selection creation control will be created here, bound to argument.
          * Each will be a value aware editor, and will only instantiate the visible components for the

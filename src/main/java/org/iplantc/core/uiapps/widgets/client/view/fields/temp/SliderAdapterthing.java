@@ -1,6 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields.temp;
 
-import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -13,7 +13,7 @@ import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
-public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements ArgumentField {
+public class SliderAdapterthing extends ConverterEditorAdapter<Splittable, Integer, Slider> implements ArgumentValueField {
 
     private static MySliderCell sliderCell = new MySliderCell();
     private final Slider slider;

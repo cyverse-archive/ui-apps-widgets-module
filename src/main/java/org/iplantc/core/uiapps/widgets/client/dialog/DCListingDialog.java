@@ -5,11 +5,11 @@ package org.iplantc.core.uiapps.widgets.client.dialog;
 
 import java.util.List;
 
-import org.iplantc.core.uiapps.widgets.client.models.DeployedComponent;
 import org.iplantc.core.uiapps.widgets.client.presenter.DeployedComponentPresenterImpl;
 import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingViewImpl;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 
 import com.google.gwt.core.client.GWT;

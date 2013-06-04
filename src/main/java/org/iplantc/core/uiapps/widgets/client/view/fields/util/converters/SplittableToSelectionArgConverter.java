@@ -1,16 +1,16 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields.util.converters;
 
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.Converter;
 
-public final class SplittableToSelectionArgConverter implements Converter<Splittable, SelectionArgument> {
+public final class SplittableToSelectionArgConverter implements Converter<Splittable, SelectionItem> {
     // private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     @Override
-    public Splittable convertFieldValue(SelectionArgument object) {
+    public Splittable convertFieldValue(SelectionItem object) {
         return AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(object));
     }
 
@@ -24,7 +24,7 @@ public final class SplittableToSelectionArgConverter implements Converter<Splitt
      * you are setting by its ID, not by its value.
      */
     @Override
-    public SelectionArgument convertModelValue(Splittable object) {
+    public SelectionItem convertModelValue(Splittable object) {
         if (object == null)
             return null;
         // AutoBean<SelectionArgument> ab = AutoBeanCodex.decode(factory, SelectionArgument.class,

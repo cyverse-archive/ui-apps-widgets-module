@@ -6,27 +6,29 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionArgument;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFileSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardMultiFileSelector;
-import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
+import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToBooleanConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToDoubleConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdListConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToIntegerConverter;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToSelectionArgConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
@@ -34,6 +36,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.TakesValue;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
@@ -63,8 +66,65 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
-    public static <T extends ArgumentField> T createArgumentField(Argument argument, boolean editingMode) {
-        // printGwtLogInfo(argument);
+    /**
+     * Returns an {@link Editor} which contains sub-editors which are bound to an {@link Argument}'s
+     * {@link Argument#getSelectionItems()} and {@link Argument#getValue()} properties.
+     * 
+     * @param argument used to determine the type of "Selector" editor to create and return;
+     * @param editingMode a flag which represents whether the return object needs to be created for an
+     *            App editor, or not.
+     * @return an {@linkplain Editor} whose sub-editors are bound to an {@linkplain Argument}'s
+     *         "selectionItem" and "value" properties.
+     */
+    public static ArgumentSelectionField createArgumentListField(Argument argument, boolean editingMode) {
+        if (argument.getSelectionItems() == null) {
+            argument.setSelectionItems(Lists.<SelectionItem> newArrayList());
+        }
+        ArgumentSelectionField field = null;
+        switch (argument.getType()) {
+            case TextSelection:
+
+            case IntegerSelection:
+                // TBI JDS Currently returning the textual combobox until an appropriate one is developed
+            case DoubleSelection:
+                // TBI JDS Currently returning the textual combobox until an appropriate one is developed
+
+                // Legacy Types
+            case Selection:
+
+            case ValueSelection:
+                // TODO JDS Map this to either IntegerSelection or DoubleSelection
+                break;
+
+            case TreeSelection:
+                field = new SelectionItemTreePanel();
+                break;
+            default:
+                break;
+        }
+        return field;
+    }
+    
+    public static boolean isSelectionArgumentType(Argument argument){
+        ArgumentType t = argument.getType();
+        return t.equals(ArgumentType.TextSelection)
+                || t.equals(ArgumentType.IntegerSelection)
+                || t.equals(ArgumentType.DoubleSelection)
+                || t.equals(ArgumentType.Selection)
+                || t.equals(ArgumentType.ValueSelection)
+                || t.equals(ArgumentType.TreeSelection);
+    }
+
+    /**
+     * Returns an {@link ArgumentValueField}-derived class based on the given argument's type. This object is
+     * meant to be bound with a splittable.
+     * 
+     * @param argument the argument which is used to determine which Field class to create and return.
+     * @param editingMode a flag which represents whether the return object needs to be created for an
+     *            App editor, or not.
+     * @return an {@link ArgumentValueField}-derived class which can be bound with a {@link Splittable}.
+     */
+    public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode) {
         ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
         NumberField<Double> dblNumField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
@@ -123,24 +183,20 @@ public class AppWizardFieldFactory {
                 field = new ConverterFieldAdapter<Boolean, CheckBox>(cb, new SplittableToBooleanConverter());
                 break;
 
+            /*
+             * All Selection types are handled separately, since they need to be bound not only to the
+             * Argument's value, but to its list of selectionItems as well.
+             */
             case TextSelection:
 
             case IntegerSelection:
-                // TBI JDS Currently returning the textual combobox until an appropriate one is developed
             case DoubleSelection:
-                // TBI JDS Currently returning the textual combobox until an appropriate one is developed
-
-            // Legacy Types
             case Selection:
-
             case ValueSelection:
-                // TODO JDS Map this to either IntegerSelection or DoubleSelection
-                AppWizardComboBox qwCb = new AppWizardComboBox(argument);
-                ConverterFieldAdapter<SelectionArgument, AppWizardComboBox> cbCfa = new ConverterFieldAdapter<SelectionArgument, AppWizardComboBox>(qwCb,
-                        new SplittableToSelectionArgConverter());
-                field = cbCfa;
-                break;
-
+//                AppWizardComboBox qwCb = new AppWizardComboBox(argument);
+//                ConverterFieldAdapter<SelectionItem, AppWizardComboBox> cbCfa = new ConverterFieldAdapter<SelectionItem, AppWizardComboBox>(qwCb,
+//                        new SplittableToSelectionArgConverter());
+//                field = cbCfa;
             case TreeSelection:
                 field = null;
                 break;
@@ -189,7 +245,9 @@ public class AppWizardFieldFactory {
             }
         }
 
-        return (T)field;
+        @SuppressWarnings("unchecked")
+        T ret = (T)field;
+        return ret;
     }
 
     @SuppressWarnings("unchecked")
@@ -209,16 +267,6 @@ public class AppWizardFieldFactory {
             ((ConverterFieldAdapter<T, ?>)field).addValidator(emptyValidator);
         }
 
-    }
-
-    private static void printGwtLogInfo(Argument argument) {
-        List<ArgumentValidator> validators = argument.getValidators();
-        if (validators != null) {
-            GWT.log("Property: " + argument.getLabel() + "; " + argument.getType());
-            for (ArgumentValidator v : validators) {
-                GWT.log("\tValidator: " + v.getType());
-            }
-        }        
     }
 
     /**

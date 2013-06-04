@@ -4,9 +4,10 @@
 	         xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
 	         xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
 	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
-	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors"
+	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties"
 	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.validation"
-	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.lists">
+	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
+	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees">
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
     </ui:with>
@@ -69,7 +70,11 @@
 	        </con:child>
 	        
 	        <con:child layoutData="{fieldLayoutData}">
-	           <lists:SelectionListEditor ui:field="selectionListEditor"/>
+	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
+	        </con:child>
+	        
+	        <con:child layoutData="{fieldLayoutData}">
+	           <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
 	        </con:child>
             
 	    </con:VerticalLayoutContainer>
