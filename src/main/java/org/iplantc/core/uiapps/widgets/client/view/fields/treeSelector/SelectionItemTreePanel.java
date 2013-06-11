@@ -6,12 +6,15 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup.CheckCascade;
-import org.iplantc.core.uiapps.widgets.client.view.SelectionItemTreeStoreEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
+import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemTreeStoreEditor;
 
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.sencha.gxt.core.client.Style.SelectionMode;
@@ -25,6 +28,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 /**
@@ -39,18 +43,18 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
 
     SelectionItemTreeStoreEditor selectionItemsEditor;
 
-    public SelectionItemTreePanel() {
+    public SelectionItemTreePanel(final AppTemplateWizardPresenter presenter) {
         TreeStore<SelectionItem> store = buildStore();
 
         initTree(store);
-        selectionItemsEditor = new SelectionItemTreeStoreEditor(store) {
+        selectionItemsEditor = new SelectionItemTreeStoreEditor(store, this) {
             @Override
             protected void setCheckStyle(CheckCascade treeCheckCascade) {
                 if (treeCheckCascade == null) {
                     return;
                 }
 
-                tree.setCheckStyle(treeCheckCascade.getTreeCheckCascade());
+                tree.setCheckStyle(CheckCascade.valueOf(treeCheckCascade.name()));
             }
 
             @Override
@@ -65,6 +69,27 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
             @Override
             protected void setItems(SelectionItemGroup root) {
                 tree.setItems(root);
+            }
+
+            @Override
+            protected CheckCascade getCheckStyle() {
+                CheckCascade ret = null;
+                if (!presenter.isEditingMode()) {
+                    return null;
+                } else {
+                    ret = tree.getCheckStyle();
+                }
+                return ret;
+            }
+
+            @Override
+            protected boolean getSingleSelect() {
+                return tree.getSelectionModel().getSelectionMode().equals(SelectionMode.SINGLE);
+            }
+
+            @Override
+            protected boolean shouldFlush() {
+                return presenter.getValueChangeEventSource() == SelectionItemTreePanel.this;
             }
         };
 
@@ -234,7 +259,9 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {/* Do Nothing */}
+    public void flush() {/* Do Nothing */
+        selectionItemsEditor.flush();
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
@@ -242,5 +269,10 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     @Override
     public void setValue(Argument value) {
         selectionItemsEditor.setValue(value.getSelectionItems());
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 }

@@ -27,7 +27,7 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
 /**
  * A Checkable Tree for displaying SelectionItem in a wizard.
  * 
- * @author psarando
+ * @author psarando, jstroot
  * 
  */
 public class SelectionItemTree extends Tree<SelectionItem, String> {
@@ -169,7 +169,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> {
         CheckCascade cascade = null;
 
         if (root != null && root.getSelectionCascade() != null) {
-            cascade = root.getSelectionCascade().getTreeCheckCascade();
+            cascade = CheckCascade.valueOf(root.getSelectionCascade().name());
         }
 
         if (cascade != null) {
@@ -291,7 +291,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> {
             }
         } catch (Exception e) {
             // ignore JSON parse errors
-            GWT.log(e.getMessage());
+            GWT.log("Ignore JSON parse errors" + e.getMessage());
         }
     }
 

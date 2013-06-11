@@ -58,17 +58,15 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
     private Argument argumentCopy;
 
     private ClickHandler clickHandler;
-    private final boolean editingMode;
     private final AppTemplateWizardPresenter presenter;
 
-    ArgumentValueEditor(boolean editingMode, final AppTemplateWizardPresenter presenter) {
-        this.editingMode = editingMode;
+    ArgumentValueEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         propertyLabel = new FieldLabel();
         initWidget(propertyLabel);
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         
-        if (editingMode) {
+        if (presenter.isEditingMode()) {
             label = HasTextEditor.of(propertyLabel);
             // Temporary handlers to visually show mouseovers
             propertyLabel.addDomHandler(new MouseOverHandler() {
@@ -113,12 +111,19 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         if (value == null) {
             return;
         }
+        /*
+         * JDS If the argument type is ANY kind of selection type (i.e. deals with lists or trees) then
+         * return and do nothing.
+         */
+        if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
+            return;
+        }
         if (this.argument != value) {
             this.argument = value;
         }
 
         // Perform editing mode actions.
-        if (editingMode && (argumentCopy != null)) {
+        if (presenter.isEditingMode() && (argumentCopy != null)) {
             
             /*
              * Determine if default value has changed, for coordinating defaultValue changes while in
@@ -135,11 +140,11 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         
         if (subEditor == null) {
             AppWizardFieldFactory.setDefaultValue(value);
-            subEditor = AppWizardFieldFactory.createArgumentValueField(value, editingMode);
+            subEditor = AppWizardFieldFactory.createArgumentValueField(value, presenter.isEditingMode());
             if (subEditor != null) {
                 propertyLabel.setWidget(subEditor);
 
-                if (editingMode) {
+                if (presenter.isEditingMode()) {
                     if (subEditor.getField() instanceof HasValueChangeHandlers) {
                         subEditor.addValueChangeHandler(this);
                     }
@@ -186,7 +191,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
             // Need to set the actual backing copy
             argument.setValue(split);
 
-            if (editingMode) {
+            if (presenter.isEditingMode()) {
                 argument.setDefaultValue(split);
                 argumentCopy = AppTemplateUtils.copyArgument(argument);
             }
@@ -216,7 +221,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
 
     @Override
     public void onValueChange(ValueChangeEvent<Splittable> event) {
-        presenter.onArgumentPropertyValueChange();
+        presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
 }

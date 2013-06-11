@@ -71,6 +71,8 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     private final boolean editingMode;
     private AppTemplate appTemplate;
     private final EventBus eventBus;
+
+    private Object valueChangeEventSource;
     
     public AppTemplateWizard(final EventBus eventBus, boolean editingMode){
         this.eventBus = eventBus;
@@ -123,6 +125,13 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
         editorDriver.flush();
         editorDriver.accept(new Refresher());
         eventBus.fireEvent(new AppTemplateUpdatedEvent(this));
+        valueChangeEventSource = null;
+    }
+
+    @Override
+    public void onArgumentPropertyValueChange(Object source) {
+        valueChangeEventSource = source;
+        onArgumentPropertyValueChange();
     }
 
     public boolean hasErrors() {
@@ -186,5 +195,10 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     public void insertFirstInAccordion(IsWidget widget) {
         argumentGroups.insertFirstInAccordion(widget);
+    }
+
+    @Override
+    public Object getValueChangeEventSource() {
+        return valueChangeEventSource;
     }
 }

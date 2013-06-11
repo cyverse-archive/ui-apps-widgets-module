@@ -53,8 +53,8 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     private final SimpleContainer con = new SimpleContainer();
 
     ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
-        argValueEditor = new ArgumentValueEditor(presenter.isEditingMode(), presenter);
-        argSelectionEditor = new ArgumentSelectionEditor(presenter.isEditingMode());
+        argValueEditor = new ArgumentValueEditor(presenter);
+        argSelectionEditor = new ArgumentSelectionEditor(presenter);
         if (presenter.isEditingMode()) {
             argPropEditor = new ArgumentPropertyEditor(presenter);
             ClickHandler clickHandler = new ClickHandler() {
@@ -80,6 +80,10 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     @Override
     public void setValue(Argument value) {
         this.currValue = value;
+        if(con.getWidget() != null){
+            // JDS If we've already set the container's child widget, we don't need to do anything else here.
+            return;
+        }
         /*
          * JDS - All selection argument types need to be handled separately.
          * This is because there are two things which need to be bound;
@@ -87,14 +91,10 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
          */
         if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
             con.add(argSelectionEditor);
-            argValueEditor.setEnabled(false);
-            argValueEditor.setVisible(false);
-            // argValueEditor = null;
+            argValueEditor = null;
         } else {
             con.add(argValueEditor);
-            argSelectionEditor.setEnabled(false);
-            argSelectionEditor.setVisible(false);
-            // argSelectionEditor = null;
+            argSelectionEditor = null;
         }
     }
 

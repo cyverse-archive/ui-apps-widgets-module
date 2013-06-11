@@ -16,4 +16,8 @@ public interface AppTemplateWizardPresenter {
 
     void showToolSearchDialog();
 
+    Object getValueChangeEventSource();
+
+    void onArgumentPropertyValueChange(Object source);
+
 }

@@ -13,7 +13,7 @@ import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentList;
 
-import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;

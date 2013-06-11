@@ -1,14 +1,20 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
+import java.util.List;
+
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,6 +22,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -25,10 +32,13 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class ArgumentPropertyEditor extends Composite implements Editor<Argument> {
+public class ArgumentPropertyEditor extends Composite implements ValueAwareEditor<Argument> {
 
     interface ArgumentPropertyBaseUiBinder extends UiBinder<Widget, ArgumentPropertyEditor> {}
     private static ArgumentPropertyBaseUiBinder BINDER = GWT.create(ArgumentPropertyBaseUiBinder.class);
+
+    @UiField
+    VerticalLayoutContainer con;
 
     @UiField
     CheckBox requiredEditor;
@@ -65,10 +75,10 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
 
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
-        defaultValue = new DefaultArgumentValueEditor();
+        defaultValue = new DefaultArgumentValueEditor(presenter);
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
-        selectionItemListEditor = new SelectionItemPropertyEditor();
-        selectionItemTreeEditor = new SelectionItemTreePropertyEditor();
+        selectionItemListEditor = new SelectionItemPropertyEditor(presenter);
+        selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
 
         // TODO JDS Need to coordinate changes in selection types.
         /*
@@ -89,18 +99,53 @@ public class ArgumentPropertyEditor extends Composite implements Editor<Argument
 
     @UiHandler({"requiredEditor", "omitIfBlank"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
-        presenter.onArgumentPropertyValueChange();
+        presenter.onArgumentPropertyValueChange(event.getSource());
         
     }
 
     @UiHandler({"label", "description", "name"})
     void onStringValueChanged(ValueChangeEvent<String> event) {
-        presenter.onArgumentPropertyValueChange();
+        presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
     @UiHandler("defaultValue")
     void onSplittableValueChanged(ValueChangeEvent<Splittable> event) {
-        presenter.onArgumentPropertyValueChange();
+        presenter.onArgumentPropertyValueChange(event.getSource());
+    }
+
+    @UiHandler({"selectionItemTreeEditor", "selectionItemListEditor"})
+    void onSelectionItemListChanged(ValueChangeEvent<List<SelectionItem>> event) {
+        presenter.onArgumentPropertyValueChange(event.getSource());
+    }
+
+    @Override
+    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+
+    @Override
+    public void flush() {/* Do Nothing */}
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void setValue(Argument value) {
+
+        if (!AppWizardFieldFactory.isSelectionArgumentType(value) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
+            con.remove(selectionItemListEditor);
+            con.remove(selectionItemTreeEditor);
+            selectionItemListEditor.nullifyEditors();
+            selectionItemTreeEditor.nullifyEditors();
+            selectionItemListEditor = null;
+            selectionItemTreeEditor = null;
+        } else if (value.getType().equals(ArgumentType.TreeSelection) && (selectionItemListEditor != null)) {
+            con.remove(selectionItemListEditor);
+            selectionItemListEditor.nullifyEditors();
+            selectionItemListEditor = null;
+        } else if (!value.getType().equals(ArgumentType.TreeSelection) && (selectionItemTreeEditor != null)) {
+            con.remove(selectionItemTreeEditor);
+            selectionItemTreeEditor.nullifyEditors();
+            selectionItemTreeEditor = null;
+        }
     }
 
 }
