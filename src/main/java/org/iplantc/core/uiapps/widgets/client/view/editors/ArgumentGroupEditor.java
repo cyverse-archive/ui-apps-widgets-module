@@ -16,6 +16,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 
 /**
@@ -35,8 +36,11 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
         SafeHtml fieldLabelRequired();
     }
 
+
+
     private final ContentPanel groupField;
     private final HeaderTextTemplates templates = GWT.create(HeaderTextTemplates.class);
+    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
     ArgumentListEditor argumentsEditor;
 
     @Path("")
@@ -44,10 +48,24 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
     private ArgumentGroup currValue;
 
     public ArgumentGroupEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
+        res.selectionCss().ensureInjected();
         groupField = new ContentPanel(){
             @Override
             protected void assertPreRender() {
                 // KLUDGE JDS Do nothing. This is a workaround for the following bug (which was submitted to the GXT forums); http://www.sencha.com/forum/showthread.php?261470-Adding-new-ContentPanel-to-AccordionLayoutContainer-at-runtime-issue
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+                super.onBrowserEvent(event);
+                int type = event.getTypeInt();
+                if (header.getElement().isOrHasChild(event.getEventTarget().<Element> cast()) && (type == Event.ONMOUSEOVER || type == Event.ONMOUSEOUT)) {
+                    XElement target = event.getEventTarget().cast();
+                    if (target != null) {
+                        XElement cast = header.getElement().<XElement> cast();
+                        cast.setClassName(res.selectionCss().selectionTargetHover(), type == Event.ONMOUSEOVER);
+                    }
+                }
             }
 
             @Override
@@ -58,12 +76,15 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
                 }
             }
         };
+        groupField.getHeader().addStyleName(res.selectionCss().selectionTarget());
+
         argumentsEditor = new ArgumentListEditor(eventBus, presenter);
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
             argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
-            groupField.sinkEvents(Event.ONCLICK);
+            groupField.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         }
+
     }
     
     /**

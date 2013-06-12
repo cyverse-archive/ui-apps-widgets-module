@@ -13,10 +13,6 @@ import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -43,22 +39,6 @@ class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argum
 
         if (presenter.isEditingMode()) {
             label = HasTextEditor.of(propertyLabel);
-            // Temporary handlers to visually show mouseovers
-            propertyLabel.addDomHandler(new MouseOverHandler() {
-                @Override
-                public void onMouseOver(MouseOverEvent event) {
-                    propertyLabel.setBorders(true);
-
-                }
-            }, MouseOverEvent.getType());
-
-            propertyLabel.addDomHandler(new MouseOutHandler() {
-
-                @Override
-                public void onMouseOut(MouseOutEvent event) {
-                    propertyLabel.setBorders(false);
-                }
-            }, MouseOutEvent.getType());
         }
 
     }
