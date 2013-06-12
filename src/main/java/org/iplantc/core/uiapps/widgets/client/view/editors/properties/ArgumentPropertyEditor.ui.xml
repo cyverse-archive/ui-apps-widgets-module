@@ -24,7 +24,8 @@
     </ui:with>
       <gxt:ContentPanel headingText="Properties">
         <gxt:child layoutData="{marginData}">
-	    <con:VerticalLayoutContainer scrollMode="AUTOY"
+	    <con:VerticalLayoutContainer ui:field="con" 
+	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:CheckBox ui:field="requiredEditor" 

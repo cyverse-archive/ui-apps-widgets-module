@@ -3,14 +3,15 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup.CheckCascade;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
-import org.iplantc.core.uiapps.widgets.client.view.SelectionItemTreeStoreEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemTreeStoreEditor;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -20,32 +21,24 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.data.shared.event.StoreAddEvent;
-import com.sencha.gxt.data.shared.event.StoreClearEvent;
-import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
-import com.sencha.gxt.data.shared.event.StoreFilterEvent;
-import com.sencha.gxt.data.shared.event.StoreHandlers;
-import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
-import com.sencha.gxt.data.shared.event.StoreRemoveEvent;
-import com.sencha.gxt.data.shared.event.StoreSortEvent;
-import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.dnd.core.client.TreeGridDragSource;
 import com.sencha.gxt.dnd.core.client.TreeGridDropTarget;
@@ -59,7 +52,9 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.RowNumberer;
+import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
 /**
@@ -68,7 +63,7 @@ import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
  * @author psarando, jstroot
  * 
  */
-public class SelectionItemTreePropertyEditor extends Composite implements ValueAwareEditor<Argument> {
+public class SelectionItemTreePropertyEditor extends Composite implements ValueAwareEditor<Argument>, HasValueChangeHandlers<List<SelectionItem>> {
 
     private static final String LIST_RULE_ARG_IS_DEFAULT = "isDefault"; //$NON-NLS-1$
 
@@ -99,11 +94,11 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private final UUIDServiceAsync uuidService = GWT.create(UUIDService.class);
 
-    public SelectionItemTreePropertyEditor() {
+    public SelectionItemTreePropertyEditor(final AppTemplateWizardPresenter presenter) {
         buildTreeGrid();
         initWidget(BINDER.createAndBindUi(this));
 
-        selectionItemsEditor = new SelectionItemTreeStoreEditor(store) {
+        selectionItemsEditor = new SelectionItemTreeStoreEditor(store, this) {
             @Override
             protected void setCheckStyle(CheckCascade treeCheckCascade) {
                 if (treeCheckCascade == null) {
@@ -119,16 +114,42 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
 
             @Override
             protected void setItems(SelectionItemGroup root) {
-                setItems(root);
+                setValues(root);
+            }
+
+            @Override
+            protected CheckCascade getCheckStyle() {
+                CheckCascade ret = null;
+                if (!presenter.isEditingMode()) {
+                    return null;
+                } else if (cascadeOptionsCombo.getCurrentValue() != null) {
+                    ret = cascadeOptionsCombo.getCurrentValue();
+                }
+                return ret;
+            }
+
+            @Override
+            protected boolean getSingleSelect() {
+                return forceSingleSelectCheckBox.getValue();
+            }
+
+            @Override
+            protected boolean shouldFlush() {
+                boolean b = presenter.getValueChangeEventSource() == SelectionItemTreePropertyEditor.this;
+                return b;
             }
         };
-
         cascadeOptionsCombo.add(CheckCascade.TRI);
         cascadeOptionsCombo.add(CheckCascade.PARENTS);
         cascadeOptionsCombo.add(CheckCascade.CHILDREN);
         cascadeOptionsCombo.add(CheckCascade.NONE);
         cascadeOptionsCombo.setValue(CheckCascade.TRI);
-
+        cascadeOptionsCombo.addSelectionHandler(new SelectionHandler<CheckCascade>() {
+            @Override
+            public void onSelection(SelectionEvent<CheckCascade> event) {
+                ValueChangeEvent.fire(SelectionItemTreePropertyEditor.this, Lists.<SelectionItem> newArrayList(selectionItemsEditor.getCurrentTree()));
+            }
+        });
 
         initDragNDrop();
     }
@@ -141,7 +162,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         // Build ColumnModel
         RowNumberer<SelectionItem> numberer = new RowNumberer<SelectionItem>(new IdentityValueProvider<SelectionItem>());
         ColumnConfig<SelectionItem, String> displayConfig = new ColumnConfig<SelectionItem, String>(siProps.display(), 90, "Display");
-        ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 48, "Argument");
+        ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 60, "Argument");
         ColumnConfig<SelectionItem, String> valueConfig = new ColumnConfig<SelectionItem, String>(siProps.value(), 40, "Value");
         ColumnConfig<SelectionItem, String> descriptionConfig = new ColumnConfig<SelectionItem, String>(siProps.description(), 90, "Tool tip text");
         ColumnConfig<SelectionItem, Boolean> defaultColumn = buildIsDefaultConfig();
@@ -166,24 +187,45 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         treeGrid = new TreeGrid<SelectionItem>(store, cm, displayConfig);
 
         GridInlineEditing<SelectionItem> editing = new GridInlineEditing<SelectionItem>(treeGrid);
-        editing.addEditor(displayConfig, new TextField());
-        editing.addEditor(nameConfig, new TextField());
-        editing.addEditor(valueConfig, new TextField());
-        editing.addEditor(descriptionConfig, new TextField());
+        editing.setClicksToEdit(ClicksToEdit.TWO);
+        TextField field = new TextField();
+        field.setSelectOnFocus(true);
+        editing.addEditor(displayConfig, field);
+        editing.addEditor(nameConfig, field);
+        editing.addEditor(valueConfig, field);
+        editing.addEditor(descriptionConfig, field);
 
         numberer.initPlugin(treeGrid);
 
-        treeGrid.getView().setAutoExpandColumn(defaultColumn);
+        treeGrid.getView().setAutoExpandColumn(descriptionConfig);
         treeGrid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     @Ignore
     @UiFactory
     SimpleComboBox<CheckCascade> buildCascadeComboBoxLabelProvider() {
-        return new SimpleComboBox<SelectionItemGroup.CheckCascade>(new LabelProvider<CheckCascade>() {
+        return new SimpleComboBox<CheckCascade>(new LabelProvider<CheckCascade>() {
             @Override
             public String getLabel(CheckCascade item) {
-                return item.getDisplay();
+                String ret = "";
+                switch (item) {
+                    case CHILDREN:
+                        ret = I18N.DISPLAY.treeSelectorCascadeChildren();
+                        break;
+                    case NONE:
+                        ret = I18N.DISPLAY.treeSelectorCascadeNone();
+                        break;
+                    case PARENTS:
+                        ret = I18N.DISPLAY.treeSelectorCascadeParent();
+                        break;
+                    case TRI:
+                        ret = I18N.DISPLAY.treeSelectorCascadeTri();
+                        break;
+
+                    default:
+                        break;
+                }
+                return ret;
             }
         });
     }
@@ -252,6 +294,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
                 }
             }
         }
+        ValueChangeEvent.fire(this, Lists.<SelectionItem> newArrayList(selectionItemsEditor.getCurrentTree()));
     }
 
     @UiHandler("treeGrid")
@@ -285,80 +328,13 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         }
     }
 
-    public void addUpdateCommand(final Command cmdUpdate) {
-        if (cmdUpdate != null) {
-            if (forceSingleSelectCheckBox != null) {
-                forceSingleSelectCheckBox.addChangeHandler(new ChangeHandler() {
-
-                    @Override
-                    public void onChange(ChangeEvent event) {
-                        cmdUpdate.execute();
-                    }
-                });
-            }
-
-            if (cascadeOptionsCombo != null) {
-                cascadeOptionsCombo.addValueChangeHandler(new ValueChangeHandler<CheckCascade>() {
-
-                    @Override
-                    public void onValueChange(ValueChangeEvent<CheckCascade> event) {
-                        cmdUpdate.execute();
-                    }
-                });
-            }
-
-            if (treeGrid != null) {
-                store.addStoreHandlers(new SelectionItemTreeEditorStoreUpdateHandler(cmdUpdate));
-            }
-        }
-    }
-
     private ColumnConfig<SelectionItem, Boolean> buildIsDefaultConfig() {
-        ColumnConfig<SelectionItem, Boolean> defaultConfig = new ColumnConfig<SelectionItem, Boolean>(new ValueProvider<SelectionItem, Boolean>() {
+        ColumnConfig<SelectionItem, Boolean> defaultConfig = new ColumnConfig<SelectionItem, Boolean>(new IsDefaultColumnValueProvider(), 45, "Default");
 
-            @Override
-            public Boolean getValue(SelectionItem object) {
-                return object.isDefault();
-            }
-
-            @Override
-            public void setValue(SelectionItem object, Boolean value) {
-                if (value && isSingleSelect()) {
-                    if ((object instanceof SelectionItemGroup) && isCascadeToChildren()) {
-                        // Do not allow a group to be checked if SingleSelection is enabled and
-                        // selections cascade to children.
-                        return;
-                    }
-
-                    // If the user is checking an argument, uncheck all other arguments.
-                    for (SelectionItem ruleArg : store.getAll()) {
-                        if (ruleArg.isDefault()) {
-                            ruleArg.setDefault(false);
-                            store.update(ruleArg);
-                        }
-                    }
-                }
-
-                // Set the default value on this item, cascading to its children if necessary.
-                setDefaultValue(object, value);
-
-                // Cascade the default value to this item's parents, if necessary.
-                if (!value && isCascadeToChildren()) {
-                    for (SelectionItem parent = store.getParent(object); parent != null; parent = store.getParent(parent)) {
-                        parent.setDefault(value);
-                        store.update(parent);
-                    }
-                }
-            }
-
-            @Override
-            public String getPath() {
-                return LIST_RULE_ARG_IS_DEFAULT;
-            }
-        }, 36, "Default");
-
-        defaultConfig.setCell(new CheckBoxCell());
+        CheckBoxCell cell = new CheckBoxCell();
+        defaultConfig.setCell(cell);
         defaultConfig.setSortable(false);
+        defaultConfig.setMenuDisabled(true);
 
         return defaultConfig;
     }
@@ -478,9 +454,6 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         } else {
             store.add(ruleArg);
         }
-
-        XElement fxEl = XElement.as(treeGrid.getTreeView().getRow(ruleArg));
-        fxEl.scrollIntoView();
     }
 
     private SelectionItemGroup createGroup(String uuid) {
@@ -499,6 +472,28 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         argString.setDisplay("Argument" + countArgLabel++);
 
         return argString;
+    }
+
+    private void addGroupToStore(SelectionItemGroup parent, SelectionItemGroup group) {
+        if (group != null) {
+            if (parent != null) {
+                store.add(parent, group);
+            } else {
+                store.add(group);
+            }
+    
+            if (group.getGroups() != null) {
+                for (SelectionItemGroup child : group.getGroups()) {
+                    addGroupToStore(group, child);
+                }
+            }
+    
+            if (group.getArguments() != null) {
+                for (SelectionItem child : group.getArguments()) {
+                    store.add(group, child);
+                }
+            }
+        }
     }
 
     /**
@@ -531,28 +526,6 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
             if (root.getArguments() != null) {
                 for (SelectionItem ruleArg : root.getArguments()) {
                     store.add(ruleArg);
-                }
-            }
-        }
-    }
-
-    private void addGroupToStore(SelectionItemGroup parent, SelectionItemGroup group) {
-        if (group != null) {
-            if (parent != null) {
-                store.add(parent, group);
-            } else {
-                store.add(group);
-            }
-
-            if (group.getGroups() != null) {
-                for (SelectionItemGroup child : group.getGroups()) {
-                    addGroupToStore(group, child);
-                }
-            }
-
-            if (group.getArguments() != null) {
-                for (SelectionItem child : group.getArguments()) {
-                    store.add(group, child);
                 }
             }
         }
@@ -595,18 +568,10 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
             setVisible(false);
             return;
         }
-
-        /*
-         * JDS The binding should happen automatically, but if it doesn't, we'll have to load up our tree
-         * store editor here
-         */
-        // setValues(root);
     }
 
     @Override
     public void flush() {
-        // TODO JDS
-
     }
 
     @Override
@@ -615,52 +580,55 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
 
-    private final class SelectionItemTreeEditorStoreUpdateHandler implements StoreHandlers<SelectionItem> {
-        private final Command cmdUpdate;
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
 
-        private SelectionItemTreeEditorStoreUpdateHandler(Command cmdUpdate) {
-            this.cmdUpdate = cmdUpdate;
-        }
-
+    private final class IsDefaultColumnValueProvider implements ValueProvider<SelectionItem, Boolean> {
         @Override
-        public void onSort(StoreSortEvent<SelectionItem> event) {
-            // do nothing, sorting the grid does not sort the store.
+        public Boolean getValue(SelectionItem object) {
+            return object.isDefault();
         }
-
+    
         @Override
-        public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
-            cmdUpdate.execute();
+        public void setValue(SelectionItem object, Boolean value) {
+            if (value && isSingleSelect()) {
+                if ((object instanceof SelectionItemGroup) && isCascadeToChildren()) {
+                    // Do not allow a group to be checked if SingleSelection is enabled and
+                    // selections cascade to children.
+                    return;
+                }
+    
+                // If the user is checking an argument, uncheck all other arguments.
+                for (SelectionItem ruleArg : store.getAll()) {
+                    if (ruleArg.isDefault()) {
+                        ruleArg.setDefault(false);
+                        store.update(ruleArg);
+                    }
+                }
+            }
+    
+            // Set the default value on this item, cascading to its children if necessary.
+            setDefaultValue(object, value);
+    
+            // Cascade the default value to this item's parents, if necessary.
+            if (!value && isCascadeToChildren()) {
+                for (SelectionItem parent = store.getParent(object); parent != null; parent = store.getParent(parent)) {
+                    parent.setDefault(value);
+                    store.update(parent);
+                }
+            }
         }
-
+    
         @Override
-        public void onDataChange(StoreDataChangeEvent<SelectionItem> event) {
-            cmdUpdate.execute();
+        public String getPath() {
+            return LIST_RULE_ARG_IS_DEFAULT;
         }
+    }
 
-        @Override
-        public void onUpdate(StoreUpdateEvent<SelectionItem> event) {
-            cmdUpdate.execute();
-        }
-
-        @Override
-        public void onClear(StoreClearEvent<SelectionItem> event) {
-            cmdUpdate.execute();
-        }
-
-        @Override
-        public void onFilter(StoreFilterEvent<SelectionItem> event) {
-            // do nothing
-        }
-
-        @Override
-        public void onRemove(StoreRemoveEvent<SelectionItem> event) {
-            cmdUpdate.execute();
-        }
-
-        @Override
-        public void onAdd(StoreAddEvent<SelectionItem> event) {
-            cmdUpdate.execute();
-        }
+    public void nullifyEditors() {
+        selectionItemsEditor = null;
     }
 
 }

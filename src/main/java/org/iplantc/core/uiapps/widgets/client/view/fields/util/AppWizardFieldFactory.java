@@ -7,6 +7,8 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardDiskResourceSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFileSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
@@ -76,7 +78,7 @@ public class AppWizardFieldFactory {
      * @return an {@linkplain Editor} whose sub-editors are bound to an {@linkplain Argument}'s
      *         "selectionItem" and "value" properties.
      */
-    public static ArgumentSelectionField createArgumentListField(Argument argument, boolean editingMode) {
+    public static ArgumentSelectionField createArgumentListField(Argument argument, AppTemplateWizardPresenter presenter) {
         if (argument.getSelectionItems() == null) {
             argument.setSelectionItems(Lists.<SelectionItem> newArrayList());
         }
@@ -94,10 +96,11 @@ public class AppWizardFieldFactory {
 
             case ValueSelection:
                 // TODO JDS Map this to either IntegerSelection or DoubleSelection
+                field = new AppWizardComboBox();
                 break;
 
             case TreeSelection:
-                field = new SelectionItemTreePanel();
+                field = new SelectionItemTreePanel(presenter);
                 break;
             default:
                 break;
@@ -193,10 +196,6 @@ public class AppWizardFieldFactory {
             case DoubleSelection:
             case Selection:
             case ValueSelection:
-//                AppWizardComboBox qwCb = new AppWizardComboBox(argument);
-//                ConverterFieldAdapter<SelectionItem, AppWizardComboBox> cbCfa = new ConverterFieldAdapter<SelectionItem, AppWizardComboBox>(qwCb,
-//                        new SplittableToSelectionArgConverter());
-//                field = cbCfa;
             case TreeSelection:
                 field = null;
                 break;

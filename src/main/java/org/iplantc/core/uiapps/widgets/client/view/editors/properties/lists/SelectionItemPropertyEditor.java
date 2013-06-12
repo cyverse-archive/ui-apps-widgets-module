@@ -6,11 +6,18 @@ import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
+import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -30,8 +37,9 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
-import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
+import com.sencha.gxt.widget.core.client.grid.editing.AbstractGridEditing;
+import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
+import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -42,7 +50,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * @author jstroot
  * 
  */
-public class SelectionItemPropertyEditor extends Composite implements ValueAwareEditor<Argument> {
+public class SelectionItemPropertyEditor extends Composite implements ValueAwareEditor<Argument>, HasValueChangeHandlers<List<SelectionItem>>, HasEventSuppression {
 
     private static SelectionListEditorUiBinder BINDER = GWT.create(SelectionListEditorUiBinder.class);
     interface SelectionListEditorUiBinder extends UiBinder<Widget, SelectionItemPropertyEditor> {}
@@ -73,15 +81,21 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private ColumnConfig<SelectionItem, String> valueCol;
 
-    private final GridEditing<SelectionItem> editing;
+    private final GridInlineEditing<SelectionItem> editing;
 
-    public SelectionItemPropertyEditor() {
+    private boolean suppressEvent = false;
+
+    public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter) {
         initWidget(BINDER.createAndBindUi(this));
         grid.setHeight(100);
 
-        editing = new GridRowEditing<SelectionItem>(grid);
-        editing.addEditor(displayCol, new TextField());
-        editing.addEditor(nameCol, new TextField());
+        editing = new GridInlineEditing<SelectionItem>(grid);
+        ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);
+        TextField field = new TextField();
+        field.setSelectOnFocus(true);
+        editing.addEditor(displayCol, field);
+        editing.addEditor(nameCol, field);
+
 
         // Add selection handler to grid to control enabled state of "delete" button
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<SelectionItem>() {
@@ -94,17 +108,47 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                 }
             }
         });
-        selectionItems = new ListStoreEditor<SelectionItem>(selectionArgStore);
+        selectionItems = new ListStoreEditor<SelectionItem>(selectionArgStore) {
+            @Override
+            public void flush() {
+                if (!shouldFlush()) {
+                    return;
+                }
+                suppressEvent = true;
+                super.flush();
+                suppressEvent = false;
+            }
+
+            @Override
+            public void setValue(List<SelectionItem> value) {
+                suppressEvent = true;
+                super.setValue(value);
+                suppressEvent = false;
+            }
+
+            private boolean shouldFlush() {
+                return presenter.getValueChangeEventSource() == SelectionItemPropertyEditor.this;
+            }
+        };
     }
+
 
     @UiFactory
     ListStore<SelectionItem> createListStore() {
-        return new ListStore<SelectionItem>(new ModelKeyProvider<SelectionItem>() {
+        ListStore<SelectionItem> listStore = new ListStore<SelectionItem>(new ModelKeyProvider<SelectionItem>() {
             @Override
             public String getKey(SelectionItem item) {
                 return item.getId();
             }
         });
+        listStore.addStoreHandlers(new SelectionItemValueChangeStoreHandler(this, this) {
+
+            @Override
+            protected List<SelectionItem> getCurrentValue() {
+                return selectionArgStore.getAll();
+            }
+        });
+        return listStore;
     }
 
     @UiFactory
@@ -131,7 +175,22 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
         sa.setDefault(false);
         sa.setDescription("Default Description");
         sa.setDisplay("Default Display");
-        selectionArgStore.add(sa);
+
+        /*
+         * JDS Suppress ValueChange event, then manually fire afterward.
+         * This is to prevent a race condition in the GridView which essentially adds the same item twice
+         * to the view. This is a result of the StoreAdd events firing as a result of this method and
+         * then as part of the Editor hierarchy refresh. Both of those events are listened to by the
+         * GridView, but in dev mode, the GridView was getting those events one after the other,
+         * resulting in a view which does not reflect the actual bound ListStore.<br>
+         * By suppressing the ValueChange events from firing, we are preventing the Editor hierarchy from
+         * doing its refresh, thus allowing the GridView to "catch up". Then, we manually fire the
+         * ValueChange event in order to propagate these changes throughout the editor hierarchy.
+         */
+        suppressEvent = true;
+        selectionItems.getStore().add(sa);
+        suppressEvent = false;
+        ValueChangeEvent.fire(this, selectionArgStore.getAll());
     }
 
     @UiHandler("delete")
@@ -141,7 +200,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             return;
         }
         for (SelectionItem sa : selection) {
-            selectionArgStore.remove(sa);
+            selectionItems.getStore().remove(sa);
         }
     }
 
@@ -223,6 +282,20 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             }
             return Double.parseDouble(object);
         }
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    public void nullifyEditors() {
+        selectionItems = null;
+    }
+
+    @Override
+    public boolean suppressEvent() {
+        return suppressEvent;
     }
 
 }

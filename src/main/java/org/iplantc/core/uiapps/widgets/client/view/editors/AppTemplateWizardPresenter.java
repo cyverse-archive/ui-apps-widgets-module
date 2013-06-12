@@ -1,6 +1,21 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+
 public interface AppTemplateWizardPresenter {
+
+    public interface SelectionCss extends CssResource {
+
+        String selectionTargetHover();
+
+        String selectionTarget();
+    }
+
+    public interface Resources extends ClientBundle {
+        @Source("AppTemplateSelection.css")
+        SelectionCss selectionCss();
+    }
 
     void onArgumentPropertyValueChange();
 
@@ -15,5 +30,9 @@ public interface AppTemplateWizardPresenter {
     boolean isEditingMode();
 
     void showToolSearchDialog();
+
+    Object getValueChangeEventSource();
+
+    void onArgumentPropertyValueChange(Object source);
 
 }

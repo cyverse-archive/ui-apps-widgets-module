@@ -63,6 +63,24 @@ public class AppTemplateUtils {
     }
 
     /**
+     * Determines if the given items are equal by serializing them and comparing their
+     * <code>Splittable</code> payloads.
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean areEqual(SelectionItem a, SelectionItem b) {
+        Splittable aSplit = getSplittable(AutoBeanUtils.getAutoBean(a));
+        Splittable bSplit = getSplittable(AutoBeanUtils.getAutoBean(b));
+        return aSplit.getPayload().equals(bSplit.getPayload());
+    }
+
+    private static Splittable getSplittable(AutoBean<?> autoBean) {
+        return AutoBeanCodex.encode(autoBean);
+    }
+
+    /**
      * Takes a list of {@link SelectionItem}s and re-serializes them to {@link SelectionItemGroup}s as
      * necessary.
      * This is to provide some level of type safety for the operations in Hierarchical List Fields and

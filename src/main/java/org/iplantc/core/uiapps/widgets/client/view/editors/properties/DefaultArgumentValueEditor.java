@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -40,8 +41,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
      * Copy of backing object from last set/update
      */
     private Argument argumentCopy;
+    private final AppTemplateWizardPresenter presenter;
 
-    DefaultArgumentValueEditor() {
+    DefaultArgumentValueEditor(AppTemplateWizardPresenter presenter) {
+        this.presenter = presenter;
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
@@ -138,51 +141,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     @Override
     public void flush() {
         Splittable split = chain.getValue(subEditor);
-        // Manually put the default value into the argument
-        if (split != null) {
-            Splittable defaultValue = argument.getDefaultValue();
-            if (defaultValue == null) {
-                argument.setDefaultValue(split);
-            } else {
-
-                boolean defaultValueChanged = !split.getPayload().equals(defaultValue.getPayload());
-
-                Splittable argCpyValue = argumentCopy.getValue();
-                Splittable argValue = argument.getValue();
-
-                /*
-                 * Determine if the value has been updated since last flush. If true, this
-                 * indicates that the Argument value/ has been updated on a previous flush in
-                 * the editor hierarchy.
-                 */
-                boolean argValNull = argValue == null;
-                boolean argCpyValNull = argCpyValue == null;
-                boolean valueUpdated = (!(argValNull && argCpyValNull) && (argValNull ^ argCpyValNull)) 
-                        || (!(argValNull && argCpyValNull) && !argCpyValue.getPayload().equals(argValue.getPayload()));
-
-                /*
-                 * Determine if the defaultValue has been updated since last flush. If true, this
-                 * indicates that the Argument defaultValue has been updated on a previous flush in
-                 * the editor hierarchy.
-                 */
-                Splittable defaultValue2 = argumentCopy.getDefaultValue();
-                boolean defaultValNull = defaultValue == null;
-                boolean defaultCopyValNull = defaultValue2 == null;
-                boolean defaultValueUpdated = (!(defaultValNull && defaultCopyValNull) && (defaultValNull ^ defaultCopyValNull))
-                        || (!(defaultValNull && defaultCopyValNull) && !defaultValue.getPayload().equals(defaultValue2.getPayload()));
-                
-                /* Only update if:
-                 * -- the flushed value differs from the current value, and 
-                 * -- the argument value has not been updated by a higher node in this editor hierarchy, and
-                 * -- the argument default value has not been updated by a higher node in this editor hierarchy. 
-                 */
-                if (defaultValueChanged && !valueUpdated && !defaultValueUpdated) {
-
-                    // Need to set the actual backing object
-                    argument.setDefaultValue(split);
-                    argumentCopy = AppTemplateUtils.copyArgument(argument);
-                }
-            }
+        if (split != null && presenter.getValueChangeEventSource() == subEditor) {
+            argument.setDefaultValue(split);
+            argumentCopy = AppTemplateUtils.copyArgument(argument);
         }
     }
 

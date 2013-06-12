@@ -34,7 +34,7 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
  * @param <F>
  */
 public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U> & HasValueChangeHandlers<U>> extends ConverterEditorAdapter<Splittable, U, F> implements ArgumentValueField,
-        HasKeyDownHandlers, HasValueChangeHandlers<Splittable> {
+ HasKeyDownHandlers {
 
     protected final F field;
     private Splittable value;

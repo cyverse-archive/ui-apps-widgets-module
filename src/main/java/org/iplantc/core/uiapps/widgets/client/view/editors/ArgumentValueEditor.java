@@ -13,10 +13,6 @@ import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -58,34 +54,16 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
     private Argument argumentCopy;
 
     private ClickHandler clickHandler;
-    private final boolean editingMode;
     private final AppTemplateWizardPresenter presenter;
 
-    ArgumentValueEditor(boolean editingMode, final AppTemplateWizardPresenter presenter) {
-        this.editingMode = editingMode;
+    ArgumentValueEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         propertyLabel = new FieldLabel();
         initWidget(propertyLabel);
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         
-        if (editingMode) {
+        if (presenter.isEditingMode()) {
             label = HasTextEditor.of(propertyLabel);
-            // Temporary handlers to visually show mouseovers
-            propertyLabel.addDomHandler(new MouseOverHandler() {
-                @Override
-                public void onMouseOver(MouseOverEvent event) {
-                    propertyLabel.setBorders(true);
-
-                }
-            }, MouseOverEvent.getType());
-
-            propertyLabel.addDomHandler(new MouseOutHandler() {
-
-                @Override
-                public void onMouseOut(MouseOutEvent event) {
-                    propertyLabel.setBorders(false);
-                }
-            }, MouseOutEvent.getType());
         }
     }
 
@@ -113,12 +91,19 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         if (value == null) {
             return;
         }
+        /*
+         * JDS If the argument type is ANY kind of selection type (i.e. deals with lists or trees) then
+         * return and do nothing.
+         */
+        if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
+            return;
+        }
         if (this.argument != value) {
             this.argument = value;
         }
 
         // Perform editing mode actions.
-        if (editingMode && (argumentCopy != null)) {
+        if (presenter.isEditingMode() && (argumentCopy != null)) {
             
             /*
              * Determine if default value has changed, for coordinating defaultValue changes while in
@@ -135,11 +120,11 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         
         if (subEditor == null) {
             AppWizardFieldFactory.setDefaultValue(value);
-            subEditor = AppWizardFieldFactory.createArgumentValueField(value, editingMode);
+            subEditor = AppWizardFieldFactory.createArgumentValueField(value, presenter.isEditingMode());
             if (subEditor != null) {
                 propertyLabel.setWidget(subEditor);
 
-                if (editingMode) {
+                if (presenter.isEditingMode()) {
                     if (subEditor.getField() instanceof HasValueChangeHandlers) {
                         subEditor.addValueChangeHandler(this);
                     }
@@ -186,7 +171,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
             // Need to set the actual backing copy
             argument.setValue(split);
 
-            if (editingMode) {
+            if (presenter.isEditingMode()) {
                 argument.setDefaultValue(split);
                 argumentCopy = AppTemplateUtils.copyArgument(argument);
             }
@@ -216,7 +201,7 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
 
     @Override
     public void onValueChange(ValueChangeEvent<Splittable> event) {
-        presenter.onArgumentPropertyValueChange();
+        presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
 }

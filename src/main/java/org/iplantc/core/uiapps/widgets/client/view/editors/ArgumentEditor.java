@@ -6,11 +6,15 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPr
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uicommons.client.events.EventBus;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
@@ -50,11 +54,25 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     ArgumentPropertyEditor argPropEditor = null;
 
     private Argument currValue;
-    private final SimpleContainer con = new SimpleContainer();
+    private final SimpleContainer con;
+
+    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
 
     ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
-        argValueEditor = new ArgumentValueEditor(presenter.isEditingMode(), presenter);
-        argSelectionEditor = new ArgumentSelectionEditor(presenter.isEditingMode());
+        res.selectionCss().ensureInjected();
+        con = new SimpleContainer() {
+            @Override
+            public void onBrowserEvent(Event event) {
+                super.onBrowserEvent(event);
+                int type = event.getTypeInt();
+                if (getElement().isOrHasChild(event.getEventTarget().<Element> cast()) && (type == Event.ONMOUSEOVER || type == Event.ONMOUSEOUT)) {
+                    XElement cast = getElement().<XElement> cast();
+                    cast.setClassName(res.selectionCss().selectionTargetHover(), type == Event.ONMOUSEOVER);
+                }
+            }
+        };
+        argValueEditor = new ArgumentValueEditor(presenter);
+        argSelectionEditor = new ArgumentSelectionEditor(presenter);
         if (presenter.isEditingMode()) {
             argPropEditor = new ArgumentPropertyEditor(presenter);
             ClickHandler clickHandler = new ClickHandler() {
@@ -67,7 +85,8 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
             argValueEditor.addArgumentClickHandler(clickHandler);
             argSelectionEditor.addArgumentClickHandler(clickHandler);
         }
-        
+        con.sinkEvents(Event.MOUSEEVENTS);
+        con.addStyleName(res.selectionCss().selectionTarget());
         initWidget(con);
     }
 
@@ -80,6 +99,10 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     @Override
     public void setValue(Argument value) {
         this.currValue = value;
+        if(con.getWidget() != null){
+            // JDS If we've already set the container's child widget, we don't need to do anything else here.
+            return;
+        }
         /*
          * JDS - All selection argument types need to be handled separately.
          * This is because there are two things which need to be bound;
@@ -87,14 +110,10 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
          */
         if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
             con.add(argSelectionEditor);
-            argValueEditor.setEnabled(false);
-            argValueEditor.setVisible(false);
-            // argValueEditor = null;
+            argValueEditor = null;
         } else {
             con.add(argValueEditor);
-            argSelectionEditor.setEnabled(false);
-            argSelectionEditor.setVisible(false);
-            // argSelectionEditor = null;
+            argSelectionEditor = null;
         }
     }
 

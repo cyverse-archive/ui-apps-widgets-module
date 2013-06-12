@@ -1,6 +1,9 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import java.util.List;
+
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -10,16 +13,14 @@ import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 
-class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argument, Argument, ArgumentSelectionField> {
+class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argument, Argument, ArgumentSelectionField>, ValueChangeHandler<List<SelectionItem>> {
 
     private CompositeEditor.EditorChain<Argument, ArgumentSelectionField> chain;
 
@@ -27,32 +28,17 @@ class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argum
     HasTextEditor label = null;
     private ArgumentSelectionField subEditor = null;
 
-    private final boolean editingMode;
 
-    ArgumentSelectionEditor(boolean editingMode) {
-        this.editingMode = editingMode;
+    private final AppTemplateWizardPresenter presenter;
+
+    ArgumentSelectionEditor(AppTemplateWizardPresenter presenter) {
+        this.presenter = presenter;
         propertyLabel = new FieldLabel();
         initWidget(propertyLabel);
         propertyLabel.setLabelAlign(LabelAlign.TOP);
 
-        if (editingMode) {
+        if (presenter.isEditingMode()) {
             label = HasTextEditor.of(propertyLabel);
-            // Temporary handlers to visually show mouseovers
-            propertyLabel.addDomHandler(new MouseOverHandler() {
-                @Override
-                public void onMouseOver(MouseOverEvent event) {
-                    propertyLabel.setBorders(true);
-
-                }
-            }, MouseOverEvent.getType());
-
-            propertyLabel.addDomHandler(new MouseOutHandler() {
-
-                @Override
-                public void onMouseOut(MouseOutEvent event) {
-                    propertyLabel.setBorders(false);
-                }
-            }, MouseOutEvent.getType());
         }
 
     }
@@ -62,17 +48,19 @@ class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argum
         if (value == null) {
             return;
         }
+        if (!AppWizardFieldFactory.isSelectionArgumentType(value)) {
+            return;
+        }
 
         if (subEditor == null) {
             AppWizardFieldFactory.setDefaultValue(value);
-            subEditor = AppWizardFieldFactory.createArgumentListField(value, editingMode);
+            subEditor = AppWizardFieldFactory.createArgumentListField(value, presenter);
             if (subEditor != null) {
-                // if (value.getType().equals(ArgumentType.TreeSelection)) {
 
                 propertyLabel.setWidget(subEditor);
 
-                if (editingMode) {
-                    // TODO JDS Determine if value change handlers are necessary.
+                if (presenter.isEditingMode()) {
+                    subEditor.addValueChangeHandler(this);
                 }
                 // TODO JDS Determine if any validators are necessary for Selection types
 
@@ -92,7 +80,7 @@ class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argum
 
     @Override
     public ArgumentSelectionField createEditorForTraversal() {
-        return new SelectionItemTreePanel();
+        return new SelectionItemTreePanel(presenter);
     }
 
     /**
@@ -122,5 +110,10 @@ class ArgumentSelectionEditor extends Composite implements CompositeEditor<Argum
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void onValueChange(ValueChangeEvent<List<SelectionItem>> event) {
+        presenter.onArgumentPropertyValueChange(event.getSource());
+    }
 
 }
