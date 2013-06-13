@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.models.selection;
 import java.util.List;
 
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree;
 
 public interface SelectionItemGroup extends SelectionItem {
 
@@ -21,8 +21,8 @@ public interface SelectionItemGroup extends SelectionItem {
 
     void setGroups(List<SelectionItemGroup> groups);
 
-    CheckCascade getSelectionCascade();
+    Tree.CheckCascade getSelectionCascade();
 
-    void setSelectionCascade(CheckCascade value);
+    void setSelectionCascade(Tree.CheckCascade value);
 
 }

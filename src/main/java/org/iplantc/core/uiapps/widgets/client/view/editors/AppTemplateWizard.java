@@ -11,6 +11,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 
@@ -25,9 +26,9 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
@@ -81,20 +82,14 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
         this.eventBus = eventBus;
         this.editingMode = editingMode;
         argumentGroups = new ArgumentGroupListEditor(eventBus, this);
-        con = new ContentPanel() {
-            @Override
-            public void onBrowserEvent(Event event) {
-                super.onBrowserEvent(event);
-                int type = event.getTypeInt();
-                if (header.getElement().isOrHasChild(event.getEventTarget().<Element> cast()) && (type == Event.ONMOUSEOVER || type == Event.ONMOUSEOUT)) {
-                    XElement target = event.getEventTarget().cast();
-                    if (target != null) {
-                        XElement cast = header.getElement().<XElement> cast();
-                        cast.setClassName(res.selectionCss().selectionTargetHover(), type == Event.ONMOUSEOVER);
-                    }
-                }
-            }
 
+        ContentPanelAppearance cpAppearance;
+        if (editingMode) {
+            cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
+        } else {
+            cpAppearance = GWT.create(ContentPanelAppearance.class);
+        }
+        con = new ContentPanel(cpAppearance) {
             @Override
             protected void onClick(Event ce) {
                 if (header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
@@ -102,10 +97,10 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
                 }
             }
         };
-        con.getHeader().addStyleName(res.selectionCss().selectionTarget());
         con.add(argumentGroups);
 
         if (editingMode) {
+            con.getHeader().addStyleName(res.selectionCss().selectionTargetBg());
             appTemplatePropEditor = new AppTemplatePropertyEditor(this);
             con.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         } else {
@@ -217,5 +212,10 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     @Override
     public Object getValueChangeEventSource() {
         return valueChangeEventSource;
+    }
+
+    @Override
+    public SelectionCss getSelectionCss() {
+        return res.selectionCss();
     }
 }

@@ -30,7 +30,20 @@ public class AppTemplateUtils {
         AutoBean<AppTemplate> argAb = AutoBeanUtils.getAutoBean(value);
         Splittable splitCopy = AutoBeanCodex.encode(argAb);
 
-        return AutoBeanCodex.decode(factory, AppTemplate.class, splitCopy.getPayload()).as();
+        AppTemplate ret = AutoBeanCodex.decode(factory, AppTemplate.class, splitCopy.getPayload()).as();
+
+        // Copy the arguments lists back in.
+        for (int i = 0; i < value.getArgumentGroups().size(); i++) {
+            ArgumentGroup agOrig = value.getArgumentGroups().get(i);
+            ArgumentGroup agNew = ret.getArgumentGroups().get(i);
+            for (int j = 0; j < agOrig.getArguments().size(); j++) {
+                Argument argOrig = agOrig.getArguments().get(j);
+                Argument argNew = agNew.getArguments().get(j);
+                argNew.setSelectionItems(argOrig.getSelectionItems());
+            }
+        }
+
+        return ret;
     }
 
     public static Argument copyArgument(Argument value) {

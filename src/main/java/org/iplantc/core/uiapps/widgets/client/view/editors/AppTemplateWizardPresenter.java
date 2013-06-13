@@ -6,15 +6,15 @@ import com.google.gwt.resources.client.CssResource;
 public interface AppTemplateWizardPresenter {
 
     public interface SelectionCss extends CssResource {
+        String selectionTargetBg();
 
-        String selectionTargetHover();
-
-        String selectionTarget();
+        String selectionTargetMargin();
     }
 
     public interface Resources extends ClientBundle {
         @Source("AppTemplateSelection.css")
         SelectionCss selectionCss();
+
     }
 
     void onArgumentPropertyValueChange();
@@ -34,5 +34,7 @@ public interface AppTemplateWizardPresenter {
     Object getValueChangeEventSource();
 
     void onArgumentPropertyValueChange(Object source);
+
+    SelectionCss getSelectionCss();
 
 }
