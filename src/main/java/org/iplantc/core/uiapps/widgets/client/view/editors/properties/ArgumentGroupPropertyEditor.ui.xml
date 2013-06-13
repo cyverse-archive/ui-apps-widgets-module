@@ -3,7 +3,8 @@
 	         xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	         xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
-             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
     <ui:with field="margins"
             type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="5"
@@ -31,6 +32,10 @@
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    
+                <con:child layoutData="{fieldLayoutData}">
+                    <button:TextButton ui:field="deleteButton"
+                                       text="Delete Group"/>
+                </con:child>
             </con:VerticalLayoutContainer>
         </gxt:child>
     </gxt:ContentPanel>             

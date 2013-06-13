@@ -71,7 +71,7 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
             groupField.getHeader().addStyleName(presenter.getSelectionCss().selectionTargetBg());
-            argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
+            argGrpPropEditor = new ArgumentGroupPropertyEditor(eventBus, presenter);
             groupField.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         }
 

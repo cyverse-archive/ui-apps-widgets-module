@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent;
+import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
@@ -134,6 +136,22 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
+
+            eventBus.addHandler(RequestArgumentGroupDeleteEvent.TYPE, new RequestArgumentGroupDeleteEventHandler() {
+
+                @Override
+                public void onDeleteRequest(RequestArgumentGroupDeleteEvent event) {
+
+                    final ArgumentGroup argumentGroup = event.getArgumentGroup();
+                    if (editor.getList().contains(argumentGroup)) {
+                        // FIXME JDS Now check to see if it contains anything
+                        if (argumentGroup.getArguments().size() > 0) {
+                            // JDS Prompt user if they are ok with deleting a non-empty group
+                            editor.getList().remove(argumentGroup);
+                        }
+                    }
+                }
+            });
         }
     }
 
