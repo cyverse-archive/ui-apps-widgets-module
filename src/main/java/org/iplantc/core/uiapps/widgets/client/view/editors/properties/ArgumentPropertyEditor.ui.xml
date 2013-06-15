@@ -7,7 +7,9 @@
 	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties"
 	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.validation"
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
-	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees">
+	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees"
+	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields"
+	         >
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
     </ui:with>
@@ -70,6 +72,16 @@
 	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
 	        </con:child>
 	        
+	        <con:child layoutData="{fieldLayoutData}">
+	           <form:FieldLabel text="Default Value"
+	                            ui:field="selectionItemDefaultValueLabel"
+                                labelAlign="TOP">
+                    <form:widget>
+			           <fields:AppWizardComboBox ui:field="selectionItemDefaultValue"/>
+                    </form:widget>
+                                 
+               </form:FieldLabel>
+	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
 	        </con:child>

@@ -275,4 +275,10 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
+
+    @Override
+    public void setList(Argument value) {
+        // TODO Auto-generated method stub
+
+    }
 }

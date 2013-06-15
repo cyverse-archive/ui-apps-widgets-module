@@ -23,10 +23,14 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
@@ -85,6 +89,8 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private boolean suppressEvent = false;
 
+    private Argument model;
+
     public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter) {
         initWidget(BINDER.createAndBindUi(this));
         grid.setHeight(100);
@@ -95,7 +101,6 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
         field.setSelectOnFocus(true);
         editing.addEditor(displayCol, field);
         editing.addEditor(nameCol, field);
-
 
         // Add selection handler to grid to control enabled state of "delete" button
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<SelectionItem>() {
@@ -146,6 +151,17 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             @Override
             protected List<SelectionItem> getCurrentValue() {
                 return selectionArgStore.getAll();
+            }
+
+            @Override
+            public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
+                SelectionItem si = event.getRecord().getModel();
+                if (si.isDefault() && (model != null)) {
+                    Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
+                    model.setDefaultValue(encode);
+                    model.setValue(encode);
+                }
+                super.onRecordChange(event);
             }
         });
         return listStore;
@@ -213,6 +229,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
      */
     @Override
     public void setValue(Argument value) {
+        this.model = value;
 
         // May be able to set the proper editor by adding it at this time. The column model will use the
         // value as a String, but I can adjust the editing to be string, integer, double.

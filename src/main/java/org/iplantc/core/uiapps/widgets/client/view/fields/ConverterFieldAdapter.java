@@ -55,13 +55,6 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
         });
     }
 
-    public boolean testNullCheck(Splittable testval) {
-        if (testval != null) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void flush() {
         field.flush();

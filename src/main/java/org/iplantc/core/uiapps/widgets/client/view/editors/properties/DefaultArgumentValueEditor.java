@@ -3,7 +3,6 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
@@ -40,7 +39,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     /**
      * Copy of backing object from last set/update
      */
-    private Argument argumentCopy;
+    // private Argument argumentCopy;
     private final AppTemplateWizardPresenter presenter;
 
     DefaultArgumentValueEditor(AppTemplateWizardPresenter presenter) {
@@ -68,12 +67,6 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                     createDefaultValueSubEditor(value);
                     break;
 
-                case Selection:
-                case TextSelection:
-                case ValueSelection:
-                    createDefaultValueSubEditor(value);
-                    break;
-
                 case Flag:
                     // Change FieldLabel text for the Flag
                     fieldLabelText = SafeHtmlUtils.fromTrustedString("Default State");
@@ -97,6 +90,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                 case MultiLineText:
                 case Output:
                 case TreeSelection:
+                case Selection:
+                case TextSelection:
+                case ValueSelection:
                     // These types currently do not support default values
                     propertyLabel.setEnabled(false);
                     propertyLabel.setVisible(false);
@@ -118,7 +114,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         if ((subEditor != null) && (defaultValue != null)) {
             subEditor.setValue(defaultValue);
         }
-        this.argumentCopy = AppTemplateUtils.copyArgument(value);
+        // this.argumentCopy = AppTemplateUtils.copyArgument(value);
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
@@ -143,7 +139,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         Splittable split = chain.getValue(subEditor);
         if (split != null && presenter.getValueChangeEventSource() == subEditor) {
             argument.setDefaultValue(split);
-            argumentCopy = AppTemplateUtils.copyArgument(argument);
+            // argumentCopy = AppTemplateUtils.copyArgument(argument);
         }
     }
 

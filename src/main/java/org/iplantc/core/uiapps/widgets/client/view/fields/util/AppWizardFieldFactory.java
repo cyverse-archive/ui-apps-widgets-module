@@ -96,7 +96,7 @@ public class AppWizardFieldFactory {
 
             case ValueSelection:
                 // TODO JDS Map this to either IntegerSelection or DoubleSelection
-                field = new AppWizardComboBox();
+                field = new AppWizardComboBox(presenter);
                 break;
 
             case TreeSelection:

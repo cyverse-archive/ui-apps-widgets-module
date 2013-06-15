@@ -10,6 +10,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPres
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
+import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 
 import com.google.gwt.core.client.GWT;
@@ -24,6 +25,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 /**
@@ -65,6 +67,13 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     @Path("")
     @UiField(provided = true)
+    AppWizardComboBox selectionItemDefaultValue;
+
+    @UiField
+    FieldLabel selectionItemDefaultValueLabel;
+
+    @Path("")
+    @UiField(provided = true)
     SelectionItemPropertyEditor selectionItemListEditor;
 
     @Path("")
@@ -77,10 +86,10 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         this.presenter = presenter;
         defaultValue = new DefaultArgumentValueEditor(presenter);
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
+        selectionItemDefaultValue = new AppWizardComboBox(presenter);
         selectionItemListEditor = new SelectionItemPropertyEditor(presenter);
         selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
 
-        // TODO JDS Need to coordinate changes in selection types.
         /*
          * Validation control and selection creation control will be created here, bound to argument.
          * Each will be a value aware editor, and will only instantiate the visible components for the
@@ -118,6 +127,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
+    @UiHandler("selectionItemDefaultValue")
+    void onSelectionItemDefaultValueChanged(ValueChangeEvent<List<SelectionItem>> event) {
+        presenter.onArgumentPropertyValueChange(event.getSource());
+    }
+
     @Override
     public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
 
@@ -130,16 +144,24 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     @Override
     public void setValue(Argument value) {
 
+        // FIXME JDS Visibility/Enabled of all property editors should be controlled here. I'm looking at you ArgumentValidatorEditor!!
+        // JDS Remove any bound components which aren't applicable to the current ArgumentType
         if (!AppWizardFieldFactory.isSelectionArgumentType(value) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
             con.remove(selectionItemListEditor);
             con.remove(selectionItemTreeEditor);
+            con.remove(selectionItemDefaultValueLabel);
             selectionItemListEditor.nullifyEditors();
             selectionItemTreeEditor.nullifyEditors();
+            selectionItemDefaultValueLabel = null;
+            selectionItemDefaultValue = null;
             selectionItemListEditor = null;
             selectionItemTreeEditor = null;
         } else if (value.getType().equals(ArgumentType.TreeSelection) && (selectionItemListEditor != null)) {
             con.remove(selectionItemListEditor);
+            con.remove(selectionItemDefaultValueLabel);
             selectionItemListEditor.nullifyEditors();
+            selectionItemDefaultValueLabel = null;
+            selectionItemDefaultValue = null;
             selectionItemListEditor = null;
         } else if (!value.getType().equals(ArgumentType.TreeSelection) && (selectionItemTreeEditor != null)) {
             con.remove(selectionItemTreeEditor);
