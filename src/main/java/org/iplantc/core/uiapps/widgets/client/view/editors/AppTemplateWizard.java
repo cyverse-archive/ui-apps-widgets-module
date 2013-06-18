@@ -14,6 +14,8 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPr
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.client.UUIDService;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -81,7 +83,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
         res.selectionCss().ensureInjected();
         this.eventBus = eventBus;
         this.editingMode = editingMode;
-        argumentGroups = new ArgumentGroupListEditor(eventBus, this);
+        argumentGroups = new ArgumentGroupListEditor(eventBus, this, GWT.<UUIDServiceAsync> create(UUIDService.class));
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
@@ -134,9 +136,9 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     @Override
     public void onArgumentPropertyValueChange() {
-        editorDriver.flush();
+        AppTemplate atTmp = editorDriver.flush();
         editorDriver.accept(new Refresher());
-        eventBus.fireEvent(new AppTemplateUpdatedEvent(this));
+        eventBus.fireEvent(new AppTemplateUpdatedEvent(this, atTmp));
         valueChangeEventSource = null;
     }
 

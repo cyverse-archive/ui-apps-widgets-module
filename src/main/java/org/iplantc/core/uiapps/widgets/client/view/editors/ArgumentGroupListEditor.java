@@ -11,6 +11,7 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -79,16 +80,18 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         private final AccordionLayoutContainer con;
         private final EventBus eventBus;
         private final AppTemplateWizardPresenter presenter;
+        private final UUIDServiceAsync uuidService;
 
-        public ArgumentGroupEditorSource(AccordionLayoutContainer con, EventBus eventBus, AppTemplateWizardPresenter presenter) {
+        public ArgumentGroupEditorSource(AccordionLayoutContainer con, EventBus eventBus, AppTemplateWizardPresenter presenter, UUIDServiceAsync uuidService) {
             this.con = con;
             this.eventBus = eventBus;
             this.presenter = presenter;
+            this.uuidService = uuidService;
         }
 
         @Override
         public ArgumentGroupEditor create(int index) {
-            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter);
+            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter, uuidService);
             ((ContentPanel)subEditor.asWidget()).setCollapsible(true);
             con.insert(subEditor.asWidget(), index);
             con.forceLayout();
@@ -126,10 +129,10 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
     private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
     private boolean fireSelectedOnAdd;
 
-    ArgumentGroupListEditor(final EventBus eventBus, AppTemplateWizardPresenter presenter) {
+    ArgumentGroupListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         groupsContainer = new AccordionLayoutContainer();
         initWidget(groupsContainer);
-        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter));
+        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter, uuidService));
 
         if (presenter.isEditingMode()) {
             groupsContainer.setTitleCollapse(false);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
@@ -268,6 +269,9 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
 
     @Override
     public void setValue(Argument value) {
+        if ((value == null) || !value.getType().equals(ArgumentType.TreeSelection)) {
+            return;
+        }
         selectionItemsEditor.setValue(value.getSelectionItems());
     }
 
@@ -276,9 +280,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @Override
-    public void setList(Argument value) {
-        // TODO Auto-generated method stub
-
+    public void nullifyEditors() {
+        selectionItemsEditor = null;
     }
 }

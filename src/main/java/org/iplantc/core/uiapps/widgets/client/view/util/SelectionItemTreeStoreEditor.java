@@ -91,7 +91,8 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
     @Override
     public void setValue(List<SelectionItem> value) {
-        if (value == null) {
+        if ((value == null) || (value.size() != 1)) {
+
             return;
         }
         suppressValueChangeEventFire = true;
@@ -124,6 +125,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
         } else {
             GWT.log("SelectionItemTreeStoreEditor" + ".setValue(List<SelectionItem>) given list which is not equal to 1.");
+            return;
         }
         store.clear();
         // JDS Populate TreeStore.

@@ -6,6 +6,7 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentGroupPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -45,7 +46,7 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
     ArgumentGroupPropertyEditor argGrpPropEditor;
     private ArgumentGroup currValue;
 
-    public ArgumentGroupEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
+    public ArgumentGroupEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         ContentPanelAppearance cpAppearance;
         if (presenter.isEditingMode()) {
             cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
@@ -67,7 +68,7 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
             }
         };
 
-        argumentsEditor = new ArgumentListEditor(eventBus, presenter);
+        argumentsEditor = new ArgumentListEditor(eventBus, presenter, uuidService);
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
             groupField.getHeader().addStyleName(presenter.getSelectionCss().selectionTargetBg());

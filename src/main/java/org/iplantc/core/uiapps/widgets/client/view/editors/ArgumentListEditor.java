@@ -8,6 +8,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -147,16 +148,18 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         private final VerticalLayoutContainer con;
         private final EventBus eventBus;
         private final AppTemplateWizardPresenter presenter;
+        private final UUIDServiceAsync uuidService;
 
-        public PropertyListEditorSource(final VerticalLayoutContainer con, final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
+        public PropertyListEditorSource(final VerticalLayoutContainer con, final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
             this.con = con;
             this.eventBus = eventBus;
             this.presenter = presenter;
+            this.uuidService = uuidService;
         }
 
         @Override
         public ArgumentEditor create(int index) {
-            final ArgumentEditor subEditor = new ArgumentEditor(eventBus, presenter);
+            final ArgumentEditor subEditor = new ArgumentEditor(eventBus, presenter, uuidService);
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
@@ -184,13 +187,13 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
     private boolean fireSelectedOnAdd;
     private IconButton argDeleteBtn;
 
-    public ArgumentListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
+    public ArgumentListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         argumentsContainer = new VerticalLayoutContainer();
         initWidget(argumentsContainer);
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus, presenter));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus, presenter, uuidService));
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers

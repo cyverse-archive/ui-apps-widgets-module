@@ -12,6 +12,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.Sele
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -82,12 +83,12 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     private final AppTemplateWizardPresenter presenter;
 
-    public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter) {
+    public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         this.presenter = presenter;
         defaultValue = new DefaultArgumentValueEditor(presenter);
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
         selectionItemDefaultValue = new AppWizardComboBox(presenter);
-        selectionItemListEditor = new SelectionItemPropertyEditor(presenter);
+        selectionItemListEditor = new SelectionItemPropertyEditor(presenter, uuidService);
         selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
 
         /*

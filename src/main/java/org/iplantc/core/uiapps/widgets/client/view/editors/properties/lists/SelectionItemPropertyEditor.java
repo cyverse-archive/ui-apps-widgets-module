@@ -9,6 +9,7 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProp
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -22,6 +23,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -91,7 +93,12 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private Argument model;
 
-    public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter) {
+    private UUIDServiceAsync uuidService;
+
+    protected int selectionItemCount = 1;
+
+    public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+        this.uuidService = uuidService;
         initWidget(BINDER.createAndBindUi(this));
         grid.setHeight(100);
 
@@ -184,29 +191,48 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     @UiHandler("add")
     void onAddButtonClicked(SelectEvent event) {
         AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-        SelectionItem sa = factory.selectionItem().as();
+        final SelectionItem sa = factory.selectionItem().as();
 
-        // JDS Set up a default id to satisfy ListStore's ModelKeyProvider
-        sa.setId("TEMP_ID_" + Math.random() + "-" + selectionArgStore.size() + 100);
-        sa.setDefault(false);
-        sa.setDescription("Default Description");
-        sa.setDisplay("Default Display");
+        uuidService.getUUIDs(1, new AsyncCallback<List<String>>() {
 
-        /*
-         * JDS Suppress ValueChange event, then manually fire afterward.
-         * This is to prevent a race condition in the GridView which essentially adds the same item twice
-         * to the view. This is a result of the StoreAdd events firing as a result of this method and
-         * then as part of the Editor hierarchy refresh. Both of those events are listened to by the
-         * GridView, but in dev mode, the GridView was getting those events one after the other,
-         * resulting in a view which does not reflect the actual bound ListStore.<br>
-         * By suppressing the ValueChange events from firing, we are preventing the Editor hierarchy from
-         * doing its refresh, thus allowing the GridView to "catch up". Then, we manually fire the
-         * ValueChange event in order to propagate these changes throughout the editor hierarchy.
-         */
-        suppressEvent = true;
-        selectionItems.getStore().add(sa);
-        suppressEvent = false;
-        ValueChangeEvent.fire(this, selectionArgStore.getAll());
+            @Override
+            public void onSuccess(List<String> result) {
+
+                // JDS Set up a default id to satisfy ListStore's ModelKeyProvider
+                sa.setId(result.get(0));
+                sa.setDefault(false);
+                sa.setDescription("Default Description");
+                sa.setDisplay("Default Display " + selectionItemCount++);
+
+                /*
+                 * JDS Suppress ValueChange event, then manually fire afterward.
+                 * This is to prevent a race condition in the GridView which essentially adds the same
+                 * item twice
+                 * to the view. This is a result of the StoreAdd events firing as a result of this method
+                 * and
+                 * then as part of the Editor hierarchy refresh. Both of those events are listened to by
+                 * the
+                 * GridView, but in dev mode, the GridView was getting those events one after the other,
+                 * resulting in a view which does not reflect the actual bound ListStore.<br>
+                 * By suppressing the ValueChange events from firing, we are preventing the Editor
+                 * hierarchy from
+                 * doing its refresh, thus allowing the GridView to "catch up". Then, we manually fire
+                 * the
+                 * ValueChange event in order to propagate these changes throughout the editor hierarchy.
+                 */
+                suppressEvent = true;
+                selectionItems.getStore().add(sa);
+                suppressEvent = false;
+                ValueChangeEvent.fire(SelectionItemPropertyEditor.this, selectionArgStore.getAll());
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
     }
 
     @UiHandler("delete")
