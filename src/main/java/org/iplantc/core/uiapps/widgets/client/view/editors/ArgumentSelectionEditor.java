@@ -18,9 +18,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.HasSplittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
@@ -77,7 +77,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             if (value.getSelectionItems() != null && argumentCopy.getDefaultValue() != null && !argumentCopy.getDefaultValue().getPayload().equals(value.getDefaultValue().getPayload())) {
                 for (SelectionItem si : value.getSelectionItems()) {
                     if (si.isDefault()) {
-                        Splittable split = ((HasSplittable)AutoBeanUtils.getAutoBean(si)).getSplittable();
+                        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
                         value.setValue(split);
                         value.setDefaultValue(split);
                     }

@@ -4,6 +4,7 @@ import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.Ap
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.user.client.ui.IsWidget;
 
 public class AppTemplateSelectedEvent extends GwtEvent<AppTemplateSelectedEventHandler> {
 
@@ -12,9 +13,10 @@ public class AppTemplateSelectedEvent extends GwtEvent<AppTemplateSelectedEventH
     }
 
     public static final GwtEvent.Type<AppTemplateSelectedEventHandler> TYPE = new GwtEvent.Type<AppTemplateSelectedEventHandler>();
+    private final IsWidget propertyEditor;
 
-    public AppTemplateSelectedEvent(Object source) {
-        setSource(source);
+    public AppTemplateSelectedEvent(IsWidget propertyEditor) {
+        this.propertyEditor = propertyEditor;
     }
 
     @Override
@@ -25,6 +27,10 @@ public class AppTemplateSelectedEvent extends GwtEvent<AppTemplateSelectedEventH
     @Override
     protected void dispatch(AppTemplateSelectedEventHandler handler) {
         handler.onAppTemplateSelected(this);
+    }
+
+    public IsWidget getAppTemplatePropertyEditor() {
+        return propertyEditor;
     }
 
 }

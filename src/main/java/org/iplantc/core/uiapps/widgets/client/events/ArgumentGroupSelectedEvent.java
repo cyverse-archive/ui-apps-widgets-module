@@ -4,6 +4,7 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.user.client.ui.IsWidget;
 
 public class ArgumentGroupSelectedEvent extends GwtEvent<ArgumentGroupSelectedEventHandler> {
 
@@ -12,9 +13,10 @@ public class ArgumentGroupSelectedEvent extends GwtEvent<ArgumentGroupSelectedEv
     }
 
     public static final GwtEvent.Type<ArgumentGroupSelectedEventHandler> TYPE = new GwtEvent.Type<ArgumentGroupSelectedEventHandler>();
+    private final IsWidget propertyEditor;
 
-    public ArgumentGroupSelectedEvent(Object source) {
-        setSource(source);
+    public ArgumentGroupSelectedEvent(IsWidget propertyEditor) {
+        this.propertyEditor = propertyEditor;
     }
 
     @Override
@@ -25,6 +27,10 @@ public class ArgumentGroupSelectedEvent extends GwtEvent<ArgumentGroupSelectedEv
     @Override
     protected void dispatch(ArgumentGroupSelectedEventHandler handler) {
         handler.onArgumentGroupSelected(this);
+    }
+
+    public IsWidget getArgumentGroupPropertyEditor() {
+        return propertyEditor;
     }
 
 }

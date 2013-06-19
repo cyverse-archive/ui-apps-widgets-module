@@ -4,15 +4,19 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateUpdatedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateUpdatedEvent.AppTemplateUpdatedEventHandler;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -75,15 +79,13 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     private final boolean editingMode;
     private AppTemplate appTemplate;
-    private final EventBus eventBus;
 
     private Object valueChangeEventSource;
     
-    public AppTemplateWizard(final EventBus eventBus, boolean editingMode){
+    public AppTemplateWizard(boolean editingMode) {
         res.selectionCss().ensureInjected();
-        this.eventBus = eventBus;
         this.editingMode = editingMode;
-        argumentGroups = new ArgumentGroupListEditor(eventBus, this, GWT.<UUIDServiceAsync> create(UUIDService.class));
+        argumentGroups = new ArgumentGroupListEditor(this, GWT.<UUIDServiceAsync> create(UUIDService.class));
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
@@ -95,7 +97,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
             @Override
             protected void onClick(Event ce) {
                 if (header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
-                    eventBus.fireEvent(new AppTemplateSelectedEvent(AppTemplateWizard.this));
+                    AppTemplateWizard.this.fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
                 }
             }
         };
@@ -138,7 +140,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     public void onArgumentPropertyValueChange() {
         AppTemplate atTmp = editorDriver.flush();
         editorDriver.accept(new Refresher());
-        eventBus.fireEvent(new AppTemplateUpdatedEvent(this, atTmp));
+        fireEvent(new AppTemplateUpdatedEvent(this, atTmp));
         valueChangeEventSource = null;
     }
 
@@ -200,7 +202,9 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
                 // Set the deployed component in the AppTemplate
                 if ((dc != null) && (appTemplate != null)) {
                     appTemplate.setDeployedComponent(dc);
-                    onArgumentPropertyValueChange();
+                    if (getValueChangeEventSource() != dialog) {
+                        onArgumentPropertyValueChange(dialog);
+                    }
                 }
             }
         });
@@ -219,5 +223,21 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     @Override
     public SelectionCss getSelectionCss() {
         return res.selectionCss();
+    }
+
+    public void addAppTemplateSelectedEventHandler(AppTemplateSelectedEventHandler handler) {
+        addHandler(handler, AppTemplateSelectedEvent.TYPE);
+    }
+
+    public void addAppTemplateUpdatedEventHandler(AppTemplateUpdatedEventHandler handler) {
+        addHandler(handler, AppTemplateUpdatedEvent.TYPE);
+    }
+
+    public void addArgumentSelectedEventHandler(ArgumentSelectedEventHandler handler) {
+        addHandler(handler, ArgumentSelectedEvent.TYPE);
+    }
+
+    public void addArgumentGroupSelectedEventHandler(ArgumentGroupSelectedEventHandler handler) {
+        addHandler(handler, ArgumentGroupSelectedEvent.TYPE);
     }
 }

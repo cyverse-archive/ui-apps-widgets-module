@@ -7,7 +7,6 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -132,12 +131,12 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             if (list != null) {
                 // JDS Protect against OBOB issues (caused by argument delete button, which is actually a
                 // child of the argumentsContainer
+                setFireSelectedOnAdd(true);
                 if (insertIndex >= list.size()) {
                     list.add(newArg);
                 } else {
                     list.add(insertIndex, newArg);
                 }
-                setFireSelectedOnAdd(true);
                 presenter.onArgumentPropertyValueChange();
             }
         }
@@ -146,24 +145,22 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
     private class PropertyListEditorSource extends EditorSource<ArgumentEditor> {
         private static final int DEF_ARGUMENT_MARGIN = 10;
         private final VerticalLayoutContainer con;
-        private final EventBus eventBus;
         private final AppTemplateWizardPresenter presenter;
         private final UUIDServiceAsync uuidService;
 
-        public PropertyListEditorSource(final VerticalLayoutContainer con, final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+        public PropertyListEditorSource(final VerticalLayoutContainer con, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
             this.con = con;
-            this.eventBus = eventBus;
             this.presenter = presenter;
             this.uuidService = uuidService;
         }
 
         @Override
         public ArgumentEditor create(int index) {
-            final ArgumentEditor subEditor = new ArgumentEditor(eventBus, presenter, uuidService);
+            final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService);
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
-                eventBus.fireEvent(new ArgumentSelectedEvent(subEditor));
+                presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getArgumentPropertyEditor()));
             }
             con.forceLayout();
             return subEditor;
@@ -187,13 +184,13 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
     private boolean fireSelectedOnAdd;
     private IconButton argDeleteBtn;
 
-    public ArgumentListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         argumentsContainer = new VerticalLayoutContainer();
         initWidget(argumentsContainer);
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, eventBus, presenter, uuidService));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService));
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers

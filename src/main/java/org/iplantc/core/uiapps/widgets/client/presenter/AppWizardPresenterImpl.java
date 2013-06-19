@@ -13,7 +13,6 @@ import org.iplantc.core.uiapps.widgets.client.services.AppTemplateServices;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardView;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardViewImpl;
 import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
@@ -35,7 +34,6 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     private AppTemplate appTemplate;
     private AppWizardView view;
-    private final EventBus eventBus;
     private final AppTemplateServices atServices;
     private final UserSettings userSettings;
     private final UserInfo userInfo;
@@ -54,7 +52,6 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
      */
     public AppWizardPresenterImpl() {
         this.atServices = GWT.create(AppTemplateServices.class);
-        this.eventBus = EventBus.getInstance();
         this.userSettings = UserSettings.getInstance();
         this.userInfo = UserInfo.getInstance();
         this.displayMessages = GWT.create(IplantDisplayStrings.class);
@@ -75,7 +72,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void go(final HasOneWidget container) {
-        view = new AppWizardViewImpl(eventBus, userSettings, displayMessages);
+        view = new AppWizardViewImpl(userSettings, displayMessages);
         view.setPresenter(this);
 
         final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);

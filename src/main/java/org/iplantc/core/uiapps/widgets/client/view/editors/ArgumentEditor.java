@@ -4,7 +4,6 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.editor.client.EditorDelegate;
@@ -54,7 +53,7 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
     private Argument currValue;
     private final SimpleContainer con;
 
-    ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         con = new SimpleContainer();
         argValueEditor = new ArgumentValueEditor(presenter);
         argSelectionEditor = new ArgumentSelectionEditor(presenter);
@@ -66,7 +65,7 @@ class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEdi
 
                 @Override
                 public void onClick(ClickEvent event) {
-                    eventBus.fireEvent(new ArgumentSelectedEvent(ArgumentEditor.this));
+                    presenter.asWidget().fireEvent(new ArgumentSelectedEvent(argPropEditor));
                 }
             };
             argValueEditor.addArgumentClickHandler(clickHandler);

@@ -57,7 +57,11 @@ public class AppTemplateUtils {
         AutoBean<ArgumentGroup> argGrpAb = AutoBeanUtils.getAutoBean(value);
         Splittable splitCopy = AutoBeanCodex.encode(argGrpAb);
 
-        return AutoBeanCodex.decode(factory, ArgumentGroup.class, splitCopy).as();
+        ArgumentGroup ret = AutoBeanCodex.decode(factory, ArgumentGroup.class, splitCopy).as();
+        if (ret.getArguments() == null) {
+            ret.setArguments(Collections.<Argument> emptyList());
+        }
+        return ret;
     }
 
     public static Argument reserializeTreeSelectionArguments(Argument arg) {

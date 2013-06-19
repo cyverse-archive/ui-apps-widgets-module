@@ -4,7 +4,6 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
-import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -29,12 +28,9 @@ public class ArgumentGroupPropertyEditor extends Composite implements ValueAware
 
     private final AppTemplateWizardPresenter presenter;
 
-    private final EventBus eventBus;
-
     private ArgumentGroup model;
 
-    public ArgumentGroupPropertyEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
-        this.eventBus = eventBus;
+    public ArgumentGroupPropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
     }
@@ -46,7 +42,7 @@ public class ArgumentGroupPropertyEditor extends Composite implements ValueAware
 
     @UiHandler("deleteButton")
     void deleteButtonSelectHandler(SelectEvent event) {
-        eventBus.fireEvent(new RequestArgumentGroupDeleteEvent(model));
+        fireEvent(new RequestArgumentGroupDeleteEvent(model));
     }
 
     @Override

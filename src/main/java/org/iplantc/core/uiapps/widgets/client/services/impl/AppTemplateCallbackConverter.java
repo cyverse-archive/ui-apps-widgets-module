@@ -19,7 +19,6 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.HasSplittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String, AppTemplate> {
@@ -34,14 +33,16 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
     @Override
     public void onSuccess(String result) {
         final Splittable split = StringQuoter.split(result);
-        final Splittable deployedComponentId = split.get("component_id");
-        Splittable deployedComponent = split.get("deployedComponent");
+        boolean hasDeployedComponentId = split.getPropertyKeys().contains("component_id");
+        boolean hasDeployedComponent = split.getPropertyKeys().contains("deployedComponent");
+        // Splittable deployedComponent = split.get("deployedComponent");
         /*
          * JDS If the result contains no "deployedComponent" definition, and the result contains a
          * DeployedComponent id, then search for the DeployedComponent and attach it to the result.
          */
-        if (((deployedComponent == null) || deployedComponent.getPayload().isEmpty()) 
-                && (deployedComponentId != null) && !Strings.isNullOrEmpty(deployedComponentId.asString())) {
+        if (!hasDeployedComponent && hasDeployedComponentId && !Strings.isNullOrEmpty(split.get("component_id").asString())) {
+            final Splittable deployedComponentId = split.get("component_id");
+
             dcServices.getDeployedComponents(new AsyncCallback<List<DeployedComponent>>() {
 
                 @Override
@@ -49,7 +50,7 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
                     String asString = deployedComponentId.asString();
                     for (DeployedComponent dc : result) {
                         if (dc.getId().equalsIgnoreCase(asString)) {
-                            Splittable dcSplittable = ((HasSplittable)AutoBeanUtils.getAutoBean(dc)).getSplittable();
+                            Splittable dcSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(dc));
                             dcSplittable.assign(split, "deployedComponent");
                         }
                     }
@@ -61,6 +62,8 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
                     AppTemplateCallbackConverter.this.onFailure(caught);
                 }
             });
+        } else {
+            super.onSuccess(split.getPayload());
         }
     }
 
@@ -77,8 +80,12 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
         Splittable atGroups = split.get("groups");
         for (int i = 0; i < atGroups.size(); i++) {
             Splittable grp = atGroups.get(i);
-            for (int j = 0; j < grp.get("properties").size(); j++) {
-                Splittable arg = grp.get("properties").get(j);
+            Splittable properties = grp.get("properties");
+            if (properties == null) {
+                continue;
+            }
+            for (int j = 0; j < properties.size(); j++) {
+                Splittable arg = properties.get(j);
                 Splittable type = arg.get("type");
                 if (type.asString().equals(ArgumentType.TreeSelection.name())) {
                     Splittable arguments = arg.get("arguments");

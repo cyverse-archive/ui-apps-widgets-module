@@ -10,11 +10,8 @@ import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.de.client.UUIDServiceAsync;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
@@ -58,8 +55,8 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             List<ArgumentGroup> list = listEditor.getList();
             ArgumentGroup newArgGrp = AppTemplateUtils.copyArgumentGroup((ArgumentGroup)event.getData());
             if (list != null) {
-                list.add(insertIndex, newArgGrp);
                 setFireSelectedOnAdd(true);
+                list.add(insertIndex, newArgGrp);
                 presenter.onArgumentPropertyValueChange();
             }
         }
@@ -78,38 +75,36 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
     private class ArgumentGroupEditorSource extends EditorSource<ArgumentGroupEditor> {
 
         private final AccordionLayoutContainer con;
-        private final EventBus eventBus;
         private final AppTemplateWizardPresenter presenter;
         private final UUIDServiceAsync uuidService;
 
-        public ArgumentGroupEditorSource(AccordionLayoutContainer con, EventBus eventBus, AppTemplateWizardPresenter presenter, UUIDServiceAsync uuidService) {
+        public ArgumentGroupEditorSource(AccordionLayoutContainer con, AppTemplateWizardPresenter presenter, UUIDServiceAsync uuidService) {
             this.con = con;
-            this.eventBus = eventBus;
             this.presenter = presenter;
             this.uuidService = uuidService;
         }
 
         @Override
         public ArgumentGroupEditor create(int index) {
-            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(eventBus, presenter, uuidService);
+            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(presenter, uuidService);
             ((ContentPanel)subEditor.asWidget()).setCollapsible(true);
-            con.insert(subEditor.asWidget(), index);
-            con.forceLayout();
+            con.insert(subEditor, index);
 
             if (index == 0) {
                 // Ensure that the first container is expanded automatically
                 con.setActiveWidget(subEditor.asWidget());
             }
-            if (isFireSelectedOnAdd()) {
-                setFireSelectedOnAdd(false);
-                Scheduler.get().scheduleFinally(new ScheduledCommand() {
 
-                    @Override
-                    public void execute() {
-                        eventBus.fireEvent(new ArgumentGroupSelectedEvent(subEditor));
-                    }
-                });
+            if (presenter.isEditingMode()) {
+                if (isFireSelectedOnAdd()) {
+                    presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(subEditor.getArgumentGroupPropertyEditor()));
+                    con.setActiveWidget(subEditor.asWidget());
+                    setFireSelectedOnAdd(false);
+                }
+                subEditor.addRequestArgumentGroupDeleteEventHandler(handler);
             }
+
+            con.forceLayout();
             return subEditor;
         }
         
@@ -120,7 +115,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         
         @Override
         public void setIndex(ArgumentGroupEditor editor, int index){
-            con.insert(editor.asWidget(), index);
+            // con.insert(editor, index);
         }
 
     }
@@ -128,11 +123,12 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
     private final AccordionLayoutContainer groupsContainer;
     private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
     private boolean fireSelectedOnAdd;
+    private RequestArgumentGroupDeleteEventHandler handler;
 
-    ArgumentGroupListEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    ArgumentGroupListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         groupsContainer = new AccordionLayoutContainer();
         initWidget(groupsContainer);
-        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, eventBus, presenter, uuidService));
+        editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, presenter, uuidService));
 
         if (presenter.isEditingMode()) {
             groupsContainer.setTitleCollapse(false);
@@ -140,7 +136,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
 
-            eventBus.addHandler(RequestArgumentGroupDeleteEvent.TYPE, new RequestArgumentGroupDeleteEventHandler() {
+            handler = new RequestArgumentGroupDeleteEventHandler() {
 
                 @Override
                 public void onDeleteRequest(RequestArgumentGroupDeleteEvent event) {
@@ -148,13 +144,15 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
                     final ArgumentGroup argumentGroup = event.getArgumentGroup();
                     if (editor.getList().contains(argumentGroup)) {
                         // FIXME JDS Now check to see if it contains anything
-                        if (argumentGroup.getArguments().size() > 0) {
+                        if ((argumentGroup.getArguments() != null) && (argumentGroup.getArguments().size() > 0)) {
                             // JDS Prompt user if they are ok with deleting a non-empty group
+                            editor.getList().remove(argumentGroup);
+                        } else {
                             editor.getList().remove(argumentGroup);
                         }
                     }
                 }
-            });
+            };
         }
     }
 

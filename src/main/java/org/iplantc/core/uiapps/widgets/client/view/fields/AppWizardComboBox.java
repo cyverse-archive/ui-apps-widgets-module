@@ -21,9 +21,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiConstructor;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.HasSplittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.ListStore;
@@ -84,7 +84,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         if ((currSi == null) || (presenter.getValueChangeEventSource() != this)) {
             return;
         }
-        Splittable currSiSplittable = ((HasSplittable)AutoBeanUtils.getAutoBean(currSi)).getSplittable();
+        Splittable currSiSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(currSi));
 
         // JDS Set value, if the current value payload does not equal the model's value payload
         if ((model.getValue() == null) || ((model.getValue() != null) && !model.getValue().getPayload().equals(currSiSplittable.getPayload()))) {
