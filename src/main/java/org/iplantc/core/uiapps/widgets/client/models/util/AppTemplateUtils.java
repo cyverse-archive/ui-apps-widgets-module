@@ -92,6 +92,19 @@ public class AppTemplateUtils {
         Splittable bSplit = getSplittable(AutoBeanUtils.getAutoBean(b));
         return aSplit.getPayload().equals(bSplit.getPayload());
     }
+    
+    public static boolean isSelectionArgumentType(Argument argument){
+        return isSimpleSelectionArgumentType(argument) || argument.getType().equals(ArgumentType.TreeSelection);
+    }
+    
+    public static boolean isSimpleSelectionArgumentType(Argument arg){
+        ArgumentType t = arg.getType();
+        return t.equals(ArgumentType.TextSelection)
+                || t.equals(ArgumentType.IntegerSelection)
+                || t.equals(ArgumentType.DoubleSelection)
+                || t.equals(ArgumentType.Selection)
+                || t.equals(ArgumentType.ValueSelection);
+    }
 
     private static Splittable getSplittable(AutoBean<?> autoBean) {
         return AutoBeanCodex.encode(autoBean);

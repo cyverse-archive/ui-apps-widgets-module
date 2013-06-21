@@ -2,8 +2,8 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.editor.client.EditorDelegate;
@@ -92,7 +92,7 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
              * This is because there are two things which need to be bound;
              * The lists, and the item which the user chooses from the list.
              */
-            if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
+            if (AppTemplateUtils.isSelectionArgumentType(value)) {
                 ArgumentSelectionEditor argSelectionEditor = new ArgumentSelectionEditor(presenter);
                 subEditor = argSelectionEditor;
                 addClickHandler(argSelectionEditor);
@@ -104,8 +104,16 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
                 con.add(argValueEditor);
             }
             subEditor.setValue(value);
+            setEnabled(value.isVisible());
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
+            }
         } else {
             subEditor.setValue(value);
+            setEnabled(value.isVisible());
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
+            }
         }
     }
 

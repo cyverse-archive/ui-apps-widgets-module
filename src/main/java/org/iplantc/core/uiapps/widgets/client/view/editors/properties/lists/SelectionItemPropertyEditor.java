@@ -7,8 +7,8 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -250,7 +250,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     public void setValue(Argument value) {
         if((value == null) 
                 || ((value != null) 
-                        && (!AppWizardFieldFactory.isSelectionArgumentType(value) || value.getType().equals(ArgumentType.TreeSelection)))){
+                        && (!AppTemplateUtils.isSelectionArgumentType(value) || value.getType().equals(ArgumentType.TreeSelection)))){
             return;
         }
         this.model = value;

@@ -6,12 +6,12 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -44,10 +44,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     VerticalLayoutContainer con;
 
     @UiField
-    CheckBox requiredEditor;
-
-    @UiField
-    CheckBox omitIfBlank;
+    CheckBox requiredEditor, omitIfBlank, visible;
 
     @UiField
     TextField label;
@@ -71,7 +68,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     AppWizardComboBox selectionItemDefaultValue;
 
     @UiField
-    FieldLabel selectionItemDefaultValueLabel;
+    FieldLabel selectionItemDefaultValueLabel, nameLabel;
 
     @Path("")
     @UiField(provided = true)
@@ -107,7 +104,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
      * This has the effect of propagating data back and forth through the editor hierarchy.
      */
 
-    @UiHandler({"requiredEditor", "omitIfBlank"})
+    @UiHandler({"requiredEditor", "omitIfBlank", "visible"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
         presenter.onArgumentPropertyValueChange(event.getSource());
         
@@ -147,7 +144,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
         // FIXME JDS Visibility/Enabled of all property editors should be controlled here. I'm looking at you ArgumentValidatorEditor!!
         // JDS Remove any bound components which aren't applicable to the current ArgumentType
-        if (!AppWizardFieldFactory.isSelectionArgumentType(value) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
+        if (!AppTemplateUtils.isSelectionArgumentType(value) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
             con.remove(selectionItemListEditor);
             con.remove(selectionItemTreeEditor);
             con.remove(selectionItemDefaultValueLabel);
@@ -169,6 +166,32 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             selectionItemTreeEditor.nullifyEditors();
             selectionItemTreeEditor = null;
         }
+
+        // JDS Disable any controls which aren't for the current type
+        switch (value.getType()) {
+            case TextSelection:
+            case IntegerSelection:
+            case DoubleSelection:
+            case Selection:
+            case ValueSelection:
+            case TreeSelection:
+                nameLabel.disable();
+                break;
+
+            default:
+                break;
+        }
+
+        // JDS Change field labels based on Type
+        switch (value.getType()) {
+            case EnvironmentVariable:
+                nameLabel.setText("Environment Variable name");
+                break;
+
+            default:
+                break;
+        }
+
     }
 
 }

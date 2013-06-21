@@ -46,10 +46,8 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription, HasV
      * 
      * @return
      */
-    @PropertyName("formValue")
     Splittable getValue();
 
-    @PropertyName("formValue")
     void setValue(Splittable formValue);
 
     @PropertyName("required")

@@ -108,16 +108,6 @@ public class AppWizardFieldFactory {
         return field;
     }
     
-    public static boolean isSelectionArgumentType(Argument argument){
-        ArgumentType t = argument.getType();
-        return t.equals(ArgumentType.TextSelection)
-                || t.equals(ArgumentType.IntegerSelection)
-                || t.equals(ArgumentType.DoubleSelection)
-                || t.equals(ArgumentType.Selection)
-                || t.equals(ArgumentType.ValueSelection)
-                || t.equals(ArgumentType.TreeSelection);
-    }
-
     /**
      * Returns an {@link ArgumentValueField}-derived class based on the given argument's type. This object is
      * meant to be bound with a splittable.

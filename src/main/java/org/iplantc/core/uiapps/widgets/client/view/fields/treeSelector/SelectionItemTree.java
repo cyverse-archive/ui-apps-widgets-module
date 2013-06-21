@@ -131,6 +131,9 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
 
     @Override
     protected void onCheckClick(Event event, TreeNode<SelectionItem> node) {
+        if (getSelectionModel().isLocked()) {
+            return;
+        }
         super.onCheckClick(event, node);
 
         // Keep track of which node the user clicked on in the isDefault field.

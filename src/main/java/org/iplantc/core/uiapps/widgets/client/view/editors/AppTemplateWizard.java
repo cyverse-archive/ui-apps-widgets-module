@@ -21,6 +21,7 @@ import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -227,5 +228,15 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
     public void addArgumentGroupSelectedEventHandler(ArgumentGroupSelectedEventHandler handler) {
         addHandler(handler, ArgumentGroupSelectedEvent.TYPE);
+    }
+
+    public void updateAppTemplateId(String id) {
+        if (Strings.isNullOrEmpty(appTemplate.getId())) {
+            appTemplate.setId(id);
+        } else if (appTemplate.getId().equalsIgnoreCase(id)) {
+            // JDS There was an app ID, but now we are changing it. This is undesired.
+            GWT.log("Attempt to change app ID from \"" + appTemplate.getId() + "\" to \"" + id + "\"");
+        }
+
     }
 }

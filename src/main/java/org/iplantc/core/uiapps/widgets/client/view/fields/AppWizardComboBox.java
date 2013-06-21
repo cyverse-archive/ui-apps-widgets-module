@@ -6,8 +6,8 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToSelectionArgConverter;
 
 import com.google.common.collect.Lists;
@@ -79,6 +79,12 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     }
 
     @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        selectionItemsEditor.setEnabled(enabled);
+    }
+
+    @Override
     public void flush() {
         // JDS This may cause a flush to occur twice if this object is actually bound
         selectionItemsStoreBinder.flush();
@@ -105,7 +111,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     @Override
     public void setValue(final Argument value) {
         ArgumentType type = value.getType();
-        if ((value == null) || !AppWizardFieldFactory.isSelectionArgumentType(value) || type.equals(ArgumentType.TreeSelection)) {
+        if ((value == null) || !AppTemplateUtils.isSelectionArgumentType(value) || type.equals(ArgumentType.TreeSelection)) {
             return;
         }
         this.model = value;

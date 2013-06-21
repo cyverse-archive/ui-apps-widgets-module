@@ -35,7 +35,11 @@
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:CheckBox ui:field="omitIfBlank" 
-	                           boxLabel="Exclude Argument option when field is empty"/>
+	                           boxLabel="Exclude Argument when empty"/>
+	        </con:child>
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:CheckBox ui:field="visible" 
+	                           boxLabel="Display in GUI"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel text="Argument label"
@@ -54,7 +58,8 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Argument option"
+	            <form:FieldLabel ui:field="nameLabel"
+	                             text="Argument option"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="name"/>

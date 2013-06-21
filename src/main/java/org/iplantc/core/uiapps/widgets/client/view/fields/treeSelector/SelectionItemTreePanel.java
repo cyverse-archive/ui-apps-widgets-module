@@ -104,6 +104,13 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         add(tree);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        tree.setEnabled(enabled);
+        tree.getSelectionModel().setLocked(!enabled);
+    }
+
     private TreeStore<SelectionItem> buildStore() {
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(new ModelKeyProvider<SelectionItem>() {
             @Override

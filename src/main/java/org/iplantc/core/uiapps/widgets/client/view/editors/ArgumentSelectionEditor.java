@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
@@ -19,6 +20,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -50,7 +52,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
 
     @Override
     public void setValue(Argument value) {
-        if ((value == null) || ((value != null) && !AppWizardFieldFactory.isSelectionArgumentType(value))) {
+        if ((value == null) || ((value != null) && !AppTemplateUtils.isSelectionArgumentType(value))) {
             // JDS If the value is null, or IS NOT a selection type, we must return.
             return;
         }
@@ -96,10 +98,12 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
 
             // TODO JDS Determine how "required" field validation must occur.
             subEditor.setValue(model);
+            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
             // TODO JDS Determine if Tool Tips should/can be applied.
         } else {
             // TODO JDS Determine if Tool Tips should/can be applied.
             subEditor.setValue(model);
+            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
         }
         // Update label
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(model);

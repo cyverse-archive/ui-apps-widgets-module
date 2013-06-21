@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -16,6 +17,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
@@ -58,7 +60,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
 
     @Override
     public void setValue(Argument value) {
-        if ((value == null) || ((value != null) && AppWizardFieldFactory.isSelectionArgumentType(value))) {
+        if ((value == null) || ((value != null) && AppTemplateUtils.isSelectionArgumentType(value))) {
             // JDS If the value is null, or if it is a selection type, then we must do nothing.
             return;
         }
@@ -84,7 +86,13 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             
             subEditor.setValue(model.getValue());
             subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
+            setEnabled(value.isVisible());
+            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
+            }
         } else if (!model.getType().equals(ArgumentType.Info)) {
+            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
             subEditor.setValue(model.getValue());
             subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
         }
