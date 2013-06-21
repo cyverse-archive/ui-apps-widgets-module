@@ -160,7 +160,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
-                presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getArgumentPropertyEditor()));
+                presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getPropertyEditor()));
             }
             con.forceLayout();
             return subEditor;

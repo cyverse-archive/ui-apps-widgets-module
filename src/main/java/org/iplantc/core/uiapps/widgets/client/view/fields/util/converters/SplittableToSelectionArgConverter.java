@@ -30,6 +30,12 @@ public final class SplittableToSelectionArgConverter implements Converter<Splitt
     public SelectionItem convertModelValue(Splittable object) {
         if (object == null)
             return null;
+        if (!object.isKeyed()) {
+            return null;
+        }
+        if (object.isUndefined("display") || object.isUndefined("id")) {
+            return null;
+        }
         AutoBean<SelectionItem> ab = AutoBeanCodex.decode(factory, SelectionItem.class, object);
         return ab.as();
     }

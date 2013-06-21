@@ -67,21 +67,23 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         valueEditor = new ConverterFieldAdapter<SelectionItem, ComboBox<SelectionItem>>(selectionItemsEditor, new SplittableToSelectionArgConverter());
         initWidget(selectionItemsEditor);
 
+        selectionItemsEditor.addSelectionHandler(new SelectionHandler<SelectionItem>() {
+            @Override
+            public void onSelection(SelectionEvent<SelectionItem> event) {
+                SelectionItem selectedItem = event.getSelectedItem();
+                ValueChangeEvent.fire(AppWizardComboBox.this, Lists.<SelectionItem> newArrayList(selectedItem));
+            }
+        });
         if (presenter.isEditingMode()) {
-            selectionItemsEditor.addSelectionHandler(new SelectionHandler<SelectionItem>() {
-                @Override
-                public void onSelection(SelectionEvent<SelectionItem> event) {
-                    SelectionItem selectedItem = event.getSelectedItem();
-                    ValueChangeEvent.fire(AppWizardComboBox.this, Lists.<SelectionItem> newArrayList(selectedItem));
-                }
-            });
         }
     }
 
     @Override
     public void flush() {
+        // JDS This may cause a flush to occur twice if this object is actually bound
+        selectionItemsStoreBinder.flush();
         SelectionItem currSi = selectionItemsEditor.getCurrentValue();
-        if ((currSi == null) || (presenter.getValueChangeEventSource() != this)) {
+        if (currSi == null) {
             return;
         }
         Splittable currSiSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(currSi));
@@ -89,13 +91,13 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         // JDS Set value, if the current value payload does not equal the model's value payload
         if ((model.getValue() == null) || ((model.getValue() != null) && !model.getValue().getPayload().equals(currSiSplittable.getPayload()))) {
             model.setValue(currSiSplittable);
+            model.setDefaultValue(currSiSplittable);
             if (presenter.isEditingMode()) {
                 // JDS Reset default value of all items in the current list
                 for (SelectionItem si : listStore.getAll()) {
                     si.setDefault(false);
                 }
                 currSi.setDefault(true);
-                model.setDefaultValue(currSiSplittable);
             }
         }
     }
@@ -108,16 +110,19 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         }
         this.model = value;
 
+        if (model.getSelectionItems() != null) {
+            selectionItemsStoreBinder.setValue(model.getSelectionItems());
+        }
         selectionItemsEditor.clear();
         selectionItemsEditor.setText("");
-        if (value.getValue() != null) {
+        if (model.getValue() != null) {
             // JDS Defer updating of combo box to avoid "race condition" with bound liststore
             Scheduler.get().scheduleFinally(new ScheduledCommand() {
 
                 @Override
                 public void execute() {
-                    if (value.getValue() != null && value.getValue().get("id") != null) {
-                        String id = value.getValue().get("id").asString();
+                    if ((model.getValue() != null) && model.getValue().isKeyed() && !model.getValue().isUndefined("id")) {
+                        String id = model.getValue().get("id").asString();
                         SelectionItem si = listStore.findModelWithKey(id);
                         if (si != null) {
                             // KLUDGE JDS Call setValue twice in order to get the view to refresh with updated
@@ -144,8 +149,14 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     public void onPropertyChange(String... paths) {/* Do Nothing */}
 
     public void nullifyEditors() {
+        selectionItemsEditor.disable();
         selectionItemsStoreBinder = null;
         valueEditor = null;
+    }
+
+    @Override
+    public Argument getValue() {
+        return model;
     }
 
 }

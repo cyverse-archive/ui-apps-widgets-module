@@ -69,7 +69,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
         AppTemplate at = wizard.flushAppTemplate();
         JobExecution je = law.flushJobExecution();
         if (wizard.hasErrors() || law.hasErrors()) {
-            //
             GWT.log("Editor has errors");
             List<EditorError> errors = Lists.newArrayList();
             errors.addAll(wizard.getErrors());

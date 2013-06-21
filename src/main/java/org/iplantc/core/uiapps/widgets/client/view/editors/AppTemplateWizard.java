@@ -53,26 +53,14 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
  * @author jstroot
  * 
  */
-public class AppTemplateWizard extends Composite implements IAppTemplateEditor, ValueAwareEditor<AppTemplate>, AppTemplateWizardPresenter {
+public class AppTemplateWizard extends Composite implements HasPropertyEditor, ValueAwareEditor<AppTemplate>, AppTemplateWizardPresenter {
     
-    public interface IArgumentEditor {
-        IsWidget getArgumentPropertyEditor();
-
-        Argument getCurrentArgument();
-    }
-
-    public interface IArgumentGroupEditor {
-        IsWidget getArgumentGroupPropertyEditor();
-
-        ArgumentGroup getCurrentArgumentGroup();
-    }
-
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
+    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
     
     private final ContentPanel con;
     ArgumentGroupListEditor argumentGroups;
-    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
 
     @Path("")
     AppTemplatePropertyEditor appTemplatePropEditor;
@@ -138,7 +126,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
 
     @Override
     public void onArgumentPropertyValueChange() {
-        AppTemplate atTmp = editorDriver.flush();
+        AppTemplate atTmp = flushAppTemplate();
         editorDriver.accept(new Refresher());
         fireEvent(new AppTemplateUpdatedEvent(this, atTmp));
         valueChangeEventSource = null;
@@ -178,7 +166,7 @@ public class AppTemplateWizard extends Composite implements IAppTemplateEditor, 
     }
 
     @Override
-    public IsWidget getAppTemplatePropertyEditor() {
+    public IsWidget getPropertyEditor() {
         return appTemplatePropEditor;
     }
 

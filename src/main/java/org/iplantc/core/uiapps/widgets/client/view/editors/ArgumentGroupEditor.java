@@ -29,7 +29,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
  * @author jstroot
  * 
  */
-class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsWidget, ValueAwareEditor<ArgumentGroup> {
+class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEditor<ArgumentGroup> {
     interface HeaderTextTemplates extends SafeHtmlTemplates {
 
         @SafeHtmlTemplates.Template("<span name=\"{3}\" class=\"{0}\" qtip=\"{2}\">{1}</span>")
@@ -45,7 +45,6 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
 
     @Path("")
     ArgumentGroupPropertyEditor argGrpPropEditor;
-    private ArgumentGroup currValue;
 
     public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         ContentPanelAppearance cpAppearance;
@@ -90,7 +89,6 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
 
     @Override
     public void setValue(ArgumentGroup value) {
-        this.currValue = value;
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {
@@ -115,13 +113,8 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
     public void onPropertyChange(String... paths) {/* Do Nothing */}
 
     @Override
-    public IsWidget getArgumentGroupPropertyEditor() {
+    public IsWidget getPropertyEditor() {
         return argGrpPropEditor;
-    }
-
-    @Override
-    public ArgumentGroup getCurrentArgumentGroup() {
-        return currValue;
     }
 
     public void addRequestArgumentGroupDeleteEventHandler(RequestArgumentGroupDeleteEventHandler handler) {

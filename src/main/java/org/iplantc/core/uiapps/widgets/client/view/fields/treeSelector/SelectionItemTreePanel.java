@@ -11,6 +11,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPres
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemTreeStoreEditor;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -26,8 +27,6 @@ import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
@@ -43,6 +42,8 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     private SelectionItemTree tree;
 
     SelectionItemTreeStoreEditor selectionItemsEditor;
+
+    private Argument model;
 
     public SelectionItemTreePanel(final AppTemplateWizardPresenter presenter) {
         TreeStore<SelectionItem> store = buildStore();
@@ -90,7 +91,8 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
 
             @Override
             protected boolean shouldFlush() {
-                return presenter.getValueChangeEventSource() == SelectionItemTreePanel.this;
+                // return presenter.getValueChangeEventSource() == SelectionItemTreePanel.this;
+                return true;
             }
         };
 
@@ -134,19 +136,13 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
 
         tree = new SelectionItemTree(store, valueProvider);
         tree.setHeight(200);
-        // Store the tree's Checked state in each item's isDefault field.
-        tree.addCheckChangeHandler(new CheckChangeHandler<SelectionItem>() {
+
+        tree.addValueChangeHandler(new ValueChangeHandler<List<SelectionItem>>() {
 
             @Override
-            public void onCheckChange(CheckChangeEvent<SelectionItem> event) {
-                SelectionItem ruleArg = event.getItem();
-                boolean checked = event.getChecked() == CheckState.CHECKED;
-                boolean isGroup = ruleArg instanceof SelectionItemGroup;
-
-                // Don't set the checked value for Groups if the store is filtered, since a check cascade
-                // can check a group when its filtered-out children are not checked.
-                if (!(checked && isGroup && tree.getStore().isFiltered())) {
-                    ruleArg.setDefault(checked);
+            public void onValueChange(ValueChangeEvent<List<SelectionItem>> event) {
+                if (!selectionItemsEditor.suppressEvent()) {
+                    ValueChangeEvent.fire(SelectionItemTreePanel.this, Lists.<SelectionItem> newArrayList(selectionItemsEditor.getCurrentTree()));
                 }
             }
         });
@@ -272,6 +268,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         if ((value == null) || !value.getType().equals(ArgumentType.TreeSelection)) {
             return;
         }
+        this.model = value;
         selectionItemsEditor.setValue(value.getSelectionItems());
     }
 
@@ -282,5 +279,10 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
 
     public void nullifyEditors() {
         selectionItemsEditor = null;
+    }
+
+    @Override
+    public Argument getValue() {
+        return model;
     }
 }

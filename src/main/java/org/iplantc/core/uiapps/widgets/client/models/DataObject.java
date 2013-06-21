@@ -29,4 +29,8 @@ public interface DataObject {
 
     @PropertyName("is_implicit")
     void setImplicit(boolean implicit);
+
+    void setCmdSwitch(String string);
+
+    String getCmdSwitch();
 }

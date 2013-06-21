@@ -302,17 +302,6 @@ public class AppWizardFieldFactory {
 
     public static void setDefaultValue(Argument argument) {
         argument.setValue(argument.getDefaultValue());
-//        String defaultValue = argument.getDefaultValue();
-//        if ((defaultValue != null) && !defaultValue.isEmpty()) {
-//            try {
-//                Splittable create = StringQuoter.split(defaultValue);
-//                argument.setValue(create);
-//            } catch (Exception e) {
-//                // If we couldn't parse as a JSON value, create a string splittable.
-//                Splittable create = StringQuoter.create(defaultValue);
-//                argument.setValue(create);
-//            }
-//        }
     }
 
     public static SafeHtml createFieldLabelText(Argument argument){

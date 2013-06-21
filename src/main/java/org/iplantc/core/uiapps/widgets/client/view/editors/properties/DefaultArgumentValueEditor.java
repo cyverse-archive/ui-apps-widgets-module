@@ -34,16 +34,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     /**
      * The live, bound backing object
      */
-    private Argument argument;
-
-    /**
-     * Copy of backing object from last set/update
-     */
-    // private Argument argumentCopy;
-    private final AppTemplateWizardPresenter presenter;
+    private Argument model;
 
     DefaultArgumentValueEditor(AppTemplateWizardPresenter presenter) {
-        this.presenter = presenter;
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
@@ -54,40 +47,37 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         if (value == null)
             return;
 
-        if (this.argument != value) {
-            this.argument = value;
+        if (this.model != value) {
+            this.model = value;
         }
 
         if (subEditor == null) {
             SafeHtml fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Value");
-            switch (value.getType()) {
-                case FileInput:
-                case FolderInput:
-                case MultiFileSelector:
-                    createDefaultValueSubEditor(value);
-                    break;
-
+            switch (model.getType()) {
                 case Flag:
                     // Change FieldLabel text for the Flag
                     fieldLabelText = SafeHtmlUtils.fromTrustedString("Default State");
-                    createDefaultValueSubEditor(value);
+                    createDefaultValueSubEditor(model);
                     break;
 
                 case Text:
                 case EnvironmentVariable:
-                    createDefaultValueSubEditor(value);
+                case MultiLineText:
+                    createDefaultValueSubEditor(model);
                     break;
 
                 case Number:
                 case Double:
                 case Integer:
-                    createDefaultValueSubEditor(value);
+                    createDefaultValueSubEditor(model);
                     break;
 
+                case FileInput:
+                case FolderInput:
+                case MultiFileSelector:
                 case DoubleSelection:
                 case Info:
                 case IntegerSelection:
-                case MultiLineText:
                 case Output:
                 case TreeSelection:
                 case Selection:
@@ -110,11 +100,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                 ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
             }
         }
-        Splittable defaultValue = value.getDefaultValue();
+        Splittable defaultValue = model.getDefaultValue();
         if ((subEditor != null) && (defaultValue != null)) {
             subEditor.setValue(defaultValue);
         }
-        // this.argumentCopy = AppTemplateUtils.copyArgument(value);
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
@@ -136,9 +125,13 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
 
     @Override
     public void flush() {
+        if (chain == null)
+            return;
+
         Splittable split = chain.getValue(subEditor);
-        if (split != null && presenter.getValueChangeEventSource() == subEditor) {
-            argument.setDefaultValue(split);
+        // if (split != null && presenter.getValueChangeEventSource() == subEditor) {
+        if (split != null) {
+            model.setDefaultValue(split);
             // argumentCopy = AppTemplateUtils.copyArgument(argument);
         }
     }

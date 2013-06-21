@@ -35,10 +35,8 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription, HasV
     @PropertyName("omit_if_blank")
     void setOmitIfBlank(boolean omitIfBlank);
 
-    @PropertyName("value")
     Splittable getDefaultValue();
 
-    @PropertyName("value")
     void setDefaultValue(Splittable defaultValue);
 
     /**

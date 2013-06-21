@@ -97,7 +97,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
             if (presenter.isEditingMode()) {
                 if (isFireSelectedOnAdd()) {
-                    presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(subEditor.getArgumentGroupPropertyEditor()));
+                    presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(subEditor.getPropertyEditor()));
                     con.setActiveWidget(subEditor.asWidget());
                     setFireSelectedOnAdd(false);
                 }

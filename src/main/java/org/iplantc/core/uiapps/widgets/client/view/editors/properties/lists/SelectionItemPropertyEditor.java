@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -50,8 +52,6 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 /**
- * 
- * TODO JDS Flushing of this as well as validator editor needs to be tested as well.
  * 
  * @author jstroot
  * 
@@ -246,39 +246,39 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.google.gwt.editor.client.ValueAwareEditor#setValue(java.lang.Object)
-     * 
-     * -- Determine if this control should be shown
-     */
     @Override
     public void setValue(Argument value) {
+        if((value == null) 
+                || ((value != null) 
+                        && (!AppWizardFieldFactory.isSelectionArgumentType(value) || value.getType().equals(ArgumentType.TreeSelection)))){
+            return;
+        }
         this.model = value;
 
         // May be able to set the proper editor by adding it at this time. The column model will use the
         // value as a String, but I can adjust the editing to be string, integer, double.
-        switch (value.getType()) {
-            case Selection:
-            case TextSelection:
-                editing.addEditor(valueCol, new TextField());
-                break;
+        if (editing.getEditor(valueCol) == null) {
+            switch (model.getType()) {
+                case Selection:
+                case TextSelection:
+                    editing.addEditor(valueCol, new TextField());
+                    break;
 
-            case DoubleSelection:
-                editing.addEditor(valueCol, new StringToDoubleConverter(), new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor()));
-                break;
+                case DoubleSelection:
+                    editing.addEditor(valueCol, new StringToDoubleConverter(), new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor()));
+                    break;
 
-            case IntegerSelection:
-                editing.addEditor(valueCol, new StringToIntegerConverter(), new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor()));
-                break;
+                case IntegerSelection:
+                    editing.addEditor(valueCol, new StringToIntegerConverter(), new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor()));
+                    break;
 
-            default:
-                // The current argument is not a valid type for this control.
-                // So, disable and hide ourself so the user doesn't see it.
-                con.setEnabled(false);
-                con.setVisible(false);
-                break;
+                default:
+                    // The current argument is not a valid type for this control.
+                    // So, disable and hide ourself so the user doesn't see it.
+                    con.setEnabled(false);
+                    con.setVisible(false);
+                    break;
+            }
         }
     }
 

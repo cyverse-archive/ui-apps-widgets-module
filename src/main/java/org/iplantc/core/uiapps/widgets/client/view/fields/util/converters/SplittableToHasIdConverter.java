@@ -20,7 +20,8 @@ public class SplittableToHasIdConverter implements Converter<Splittable, HasId> 
 
     @Override
     public HasId convertModelValue(Splittable object) {
-        if (object == null)
+        if ((object == null) || ((object != null) 
+                && (!object.isKeyed() || object.isUndefined("id"))))
             return null;
         HasId ret = null;
         Splittable idKeyValue = object.get("id");

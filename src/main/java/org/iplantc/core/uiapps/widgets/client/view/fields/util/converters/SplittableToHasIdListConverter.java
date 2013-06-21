@@ -21,7 +21,7 @@ public class SplittableToHasIdListConverter implements Converter<Splittable, Lis
     @Override
     public List<HasId> convertModelValue(Splittable object) {
         // Assume that the splittable is an array of strings
-        if ((object == null) || object.isIndexed())
+        if ((object == null) || ((object != null) && !object.isIndexed()))
             return Collections.emptyList();
 
         List<HasId> hasIdList = Lists.newArrayList();

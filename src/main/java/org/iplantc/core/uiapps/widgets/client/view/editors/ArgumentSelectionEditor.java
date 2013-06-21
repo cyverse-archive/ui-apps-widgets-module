@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
-import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
@@ -15,8 +14,10 @@ import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -25,30 +26,19 @@ import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 
-class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argument>, ValueChangeHandler<List<SelectionItem>> {
+class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argument>, ValueChangeHandler<List<SelectionItem>>, HasClickHandlers {
 
     private final FieldLabel propertyLabel;
     HasTextEditor label = null;
     private ArgumentSelectionField subEditor = null;
 
-    @Path("")
-    AppWizardComboBox simpleSelectionEditor;
-
-    @Path("")
-    SelectionItemTreePanel treeSelectionEditor;
-
     private final AppTemplateWizardPresenter presenter;
 
-    /**
-     * Copy of backing object from last set/update, used to determine if default values should be updated
-     */
-    private Argument argumentCopy;
+    private Argument model;
 
     ArgumentSelectionEditor(AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         propertyLabel = new FieldLabel();
-        simpleSelectionEditor = new AppWizardComboBox(presenter);
-        treeSelectionEditor = new SelectionItemTreePanel(presenter);
         initWidget(propertyLabel);
         propertyLabel.setLabelAlign(LabelAlign.TOP);
 
@@ -60,75 +50,79 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
 
     @Override
     public void setValue(Argument value) {
-        if (value == null) {
+        if ((value == null) || ((value != null) && !AppWizardFieldFactory.isSelectionArgumentType(value))) {
+            // JDS If the value is null, or IS NOT a selection type, we must return.
             return;
         }
-        if (!AppWizardFieldFactory.isSelectionArgumentType(value)) {
-            return;
-        }
-        // Perform editing mode actions.
+        this.model = value;
 
-        if (presenter.isEditingMode()) {
-
-            if (argumentCopy == null) {
-                this.argumentCopy = AppTemplateUtils.copyArgument(value);
-            }
-
-            if (value.getSelectionItems() != null && argumentCopy.getDefaultValue() != null && !argumentCopy.getDefaultValue().getPayload().equals(value.getDefaultValue().getPayload())) {
-                for (SelectionItem si : value.getSelectionItems()) {
-                    if (si.isDefault()) {
-                        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
-                        value.setValue(split);
-                        value.setDefaultValue(split);
-                    }
+        // JDS Set default value to value
+        if ((model.getDefaultValue() != null) && model.getDefaultValue().isKeyed()) {
+            model.setValue(model.getDefaultValue());
+        } else if (model.getSelectionItems() != null) {
+            for (SelectionItem si : model.getSelectionItems()) {
+                if (si.isDefault()) {
+                    Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
+                    model.setValue(split);
+                    model.setDefaultValue(split);
                 }
             }
-
         }
 
         if (subEditor == null) {
             if (value.getDefaultValue() != null) {
                 value.setValue(value.getDefaultValue());
             }
-            switch (value.getType()) {
+            // JDS Then we must initialize
+            switch (model.getType()) {
                 case TextSelection:
                 case ValueSelection:
                 case Selection:
                 case IntegerSelection:
                 case DoubleSelection:
-                    subEditor = simpleSelectionEditor;
-                    treeSelectionEditor.nullifyEditors();
-                    treeSelectionEditor = null;
-                    propertyLabel.setWidget(subEditor);
-                    if (presenter.isEditingMode()) {
-                        subEditor.addValueChangeHandler(this);
-                    }
+                    subEditor = new AppWizardComboBox(presenter);
                     break;
                 case TreeSelection:
-                    subEditor = treeSelectionEditor;
-                    simpleSelectionEditor.nullifyEditors();
-                    simpleSelectionEditor = null;
-                    propertyLabel.setWidget(subEditor);
-                    if (presenter.isEditingMode()) {
-                        subEditor.addValueChangeHandler(this);
-                    }
+                    subEditor = new SelectionItemTreePanel(presenter);
                 default:
+
                     break;
             }
-            if (subEditor != null) {
+            assert subEditor != null : "ArgumentSelectionEditor subEditor should not be null.";
+            propertyLabel.setWidget(subEditor);
+            subEditor.addValueChangeHandler(this);
 
-                // TODO JDS Determine if any validators are necessary for Selection types
+            // TODO JDS Determine if any validators are necessary for Selection types
 
-                // TODO JDS Determine how "required" field validation must occur.
-            }
-            
+            // TODO JDS Determine how "required" field validation must occur.
+            subEditor.setValue(model);
+            // TODO JDS Determine if Tool Tips should/can be applied.
+        } else {
+            // TODO JDS Determine if Tool Tips should/can be applied.
+            subEditor.setValue(model);
         }
         // Update label
-        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
+        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(model);
         propertyLabel.setHTML(fieldLabelText);
+    }
 
-        this.argumentCopy = AppTemplateUtils.copyArgument(value);
+    @Override
+    public void flush() {
+        if (presenter.getValueChangeEventSource() != this) {
+            return;
+        }
+        subEditor.flush();
+    }
 
+    @Override
+    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void onValueChange(ValueChangeEvent<List<SelectionItem>> event) {
+        presenter.onArgumentPropertyValueChange(this);
     }
 
     /**
@@ -141,17 +135,8 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
     }
 
     @Override
-    public void flush() {/* Do Nothing */}
-
-    @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
-
-    @Override
-    public void onValueChange(ValueChangeEvent<List<SelectionItem>> event) {
-        presenter.onArgumentPropertyValueChange(event.getSource());
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return propertyLabel.addDomHandler(handler, ClickEvent.getType());
     }
 
 }
