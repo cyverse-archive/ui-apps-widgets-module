@@ -86,7 +86,6 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             
             subEditor.setValue(model.getValue());
             subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
-            setEnabled(value.isVisible());
             ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());

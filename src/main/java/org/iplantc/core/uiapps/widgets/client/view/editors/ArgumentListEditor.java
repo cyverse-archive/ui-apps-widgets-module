@@ -95,6 +95,12 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             if (currentItemIndex >= 0) {
                 listEditor.getList().remove(currentItemIndex);
                 presenter.onArgumentPropertyValueChange();
+
+                /*
+                 * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers that
+                 * the selection should be cleared
+                 */
+                presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
             }
         }
     }

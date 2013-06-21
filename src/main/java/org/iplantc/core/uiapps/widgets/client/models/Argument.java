@@ -9,7 +9,6 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.gwt.user.client.ui.HasName;
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 import com.google.web.bindery.autobean.shared.Splittable;
 
@@ -19,7 +18,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
  * @author jstroot
  * @see AppWizardPresenterJsonAdapter
  */
-public interface Argument extends HasId, HasName, HasLabel, HasDescription, HasVisibility {
+public interface Argument extends HasId, HasName, HasLabel, HasDescription {
 
     ArgumentType getType();
 
@@ -60,13 +59,11 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription, HasV
 
     void setValidators(List<ArgumentValidator> validators);
 
-    @Override
     @PropertyName("isVisible")
-    boolean isVisible();
+    Boolean isVisible();
 
-    @Override
     @PropertyName("isVisible")
-    void setVisible(boolean visible);
+    void setVisible(Boolean visible);
 
     @PropertyName("arguments")
     List<SelectionItem> getSelectionItems();

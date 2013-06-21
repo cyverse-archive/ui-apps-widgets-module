@@ -68,7 +68,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     AppWizardComboBox selectionItemDefaultValue;
 
     @UiField
-    FieldLabel selectionItemDefaultValueLabel, nameLabel;
+    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel;
 
     @Path("")
     @UiField(provided = true)
@@ -178,6 +178,14 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 nameLabel.disable();
                 break;
 
+            case Info:
+                requiredEditor.setVisible(false);
+                omitIfBlank.setVisible(false);
+                visible.setVisible(false);
+                descriptionLabel.setVisible(false);
+                nameLabel.setVisible(false);
+                break;
+
             default:
                 break;
         }
@@ -187,6 +195,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case EnvironmentVariable:
                 nameLabel.setText("Environment Variable name");
                 break;
+            case Info:
+                argLabelLabel.setText("Text");
 
             default:
                 break;

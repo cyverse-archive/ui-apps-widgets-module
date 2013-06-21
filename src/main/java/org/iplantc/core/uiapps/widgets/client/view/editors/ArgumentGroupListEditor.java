@@ -150,6 +150,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
                         } else {
                             editor.getList().remove(argumentGroup);
                         }
+                        presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(null));
                     }
                 }
             };

@@ -42,7 +42,8 @@
 	                           boxLabel="Display in GUI"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Argument label"
+	            <form:FieldLabel ui:field="argLabelLabel" 
+	                             text="Argument label"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="label"/>
@@ -50,7 +51,8 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Tool tip text"
+	            <form:FieldLabel ui:field="descriptionLabel" 
+	                             text="Tool tip text"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="description"/>

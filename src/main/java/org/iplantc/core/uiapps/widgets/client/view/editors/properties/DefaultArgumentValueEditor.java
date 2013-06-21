@@ -72,6 +72,8 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                     createDefaultValueSubEditor(model);
                     break;
 
+                case FileOutput:
+                case FolderOutput:
                 case FileInput:
                 case FolderInput:
                 case MultiFileSelector:

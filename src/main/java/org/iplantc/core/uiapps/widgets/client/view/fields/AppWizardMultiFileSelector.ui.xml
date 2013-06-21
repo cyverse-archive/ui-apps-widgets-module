@@ -18,25 +18,37 @@
       <ui:attributes forceFit="true"
                      autoFill="true"/>
    </ui:with>
+   <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="toolBarData">
+        <ui:attributes width="1"
+                       height="-1" />
+    </ui:with>
+   <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="gridData">
+        <ui:attributes width="1"
+                       height="1" />
+    </ui:with>
 
    <container:VerticalLayoutContainer>
-      <toolbar:ToolBar ui:field="toolbar"
-                       pack="END">
-         <toolbar:child>
-            <button:TextButton ui:field="addButton"
-                               text="{display.add}"
-                               icon="{icons.add}"/>
-         </toolbar:child>
-         <toolbar:child>
-            <button:TextButton ui:field="deleteButton"
-                               text="{display.delete}"
-                               icon="{icons.delete}"
-                               enabled="false"/>
-         </toolbar:child>
-      </toolbar:ToolBar>
-      <grid:Grid ui:field="grid"
-                 cm="{cm}"
-                 store="{listStore}"
-                 view="{gridView}" />
+      <container:child layoutData="{toolBarData}">
+	      <toolbar:ToolBar ui:field="toolbar"
+	                       pack="END">
+	         <toolbar:child>
+	            <button:TextButton ui:field="addButton"
+	                               text="{display.add}"
+	                               icon="{icons.add}"/>
+	         </toolbar:child>
+	         <toolbar:child>
+	            <button:TextButton ui:field="deleteButton"
+	                               text="{display.delete}"
+	                               icon="{icons.delete}"
+	                               enabled="false"/>
+	         </toolbar:child>
+	      </toolbar:ToolBar>
+      </container:child>
+      <container:child layoutData="{gridData}">
+	      <grid:Grid ui:field="grid"
+	                 cm="{cm}"
+	                 store="{listStore}"
+	                 view="{gridView}" />
+      </container:child>
    </container:VerticalLayoutContainer>
 </ui:UiBinder>
