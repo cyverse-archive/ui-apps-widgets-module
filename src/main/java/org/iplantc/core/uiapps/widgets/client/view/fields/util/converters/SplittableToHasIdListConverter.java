@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 
 import com.google.common.collect.Lists;
 import com.google.web.bindery.autobean.shared.Splittable;

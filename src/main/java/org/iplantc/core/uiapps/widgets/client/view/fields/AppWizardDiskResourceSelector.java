@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;

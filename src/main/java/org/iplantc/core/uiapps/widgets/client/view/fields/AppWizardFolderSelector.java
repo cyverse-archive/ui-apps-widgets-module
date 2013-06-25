@@ -1,7 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
