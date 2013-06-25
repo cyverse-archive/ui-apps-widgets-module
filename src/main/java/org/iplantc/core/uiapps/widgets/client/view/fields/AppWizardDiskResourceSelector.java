@@ -73,6 +73,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     private List<EditorError> errors = Lists.newArrayList();
     private HasId selectedResource;
     private final Element infoText;
+    private boolean browseButtonEnabled = true;
 
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
@@ -93,6 +94,9 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
             @Override
             public void onSelect(SelectEvent event) {
+                if (!browseButtonEnabled) {
+                    return;
+                }
                 onBrowseSelected();
             }
         });
@@ -237,4 +241,11 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
         editorDelegate = delegate;
     }
 
+    public void disableBrowseButton() {
+        browseButtonEnabled = false;
+    }
+
+    protected boolean isBrowseButtonEnabled() {
+        return browseButtonEnabled;
+    }
 }

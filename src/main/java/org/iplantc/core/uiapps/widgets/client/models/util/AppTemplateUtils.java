@@ -17,6 +17,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateUtils {
     private static final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
@@ -93,12 +94,11 @@ public class AppTemplateUtils {
         return aSplit.getPayload().equals(bSplit.getPayload());
     }
     
-    public static boolean isSelectionArgumentType(Argument argument){
-        return isSimpleSelectionArgumentType(argument) || argument.getType().equals(ArgumentType.TreeSelection);
+    public static boolean isSelectionArgumentType(ArgumentType type) {
+        return isSimpleSelectionArgumentType(type) || type.equals(ArgumentType.TreeSelection);
     }
     
-    public static boolean isSimpleSelectionArgumentType(Argument arg){
-        ArgumentType t = arg.getType();
+    public static boolean isSimpleSelectionArgumentType(ArgumentType t) {
         return t.equals(ArgumentType.TextSelection)
                 || t.equals(ArgumentType.IntegerSelection)
                 || t.equals(ArgumentType.DoubleSelection)
@@ -149,4 +149,52 @@ public class AppTemplateUtils {
         return selectionItemsRet;
 
     }
+
+    public static boolean isDiskResourceArgumentType(Argument arg) {
+        return arg.getType().equals(ArgumentType.FileInput) || arg.getType().equals(ArgumentType.FolderInput);
+    }
+
+    public static boolean isTextType(ArgumentType type) {
+        return type.equals(ArgumentType.Text) || type.equals(ArgumentType.MultiLineText) || type.equals(ArgumentType.EnvironmentVariable) || type.equals(ArgumentType.Output)
+                || type.equals(ArgumentType.Number) || type.equals(ArgumentType.Integer) || type.equals(ArgumentType.Double);
+    }
+
+    public static List<SelectionItem> getSelectedTreeItems(SelectionItemGroup sig) {
+        if ((sig == null) || (sig.getArguments() == null)) {
+            return Collections.emptyList();
+        }
+        List<SelectionItem> ret = Lists.newArrayList();
+        for (SelectionItem si : sig.getArguments()) {
+            if (si.isDefault()) {
+                ret.add(si);
+            }
+        }
+
+        if (sig.getGroups() != null) {
+            for (SelectionItemGroup subSig : sig.getGroups()) {
+                ret.addAll(getSelectedTreeItems(subSig));
+            }
+        }
+
+        return ret;
+    }
+
+    public static Splittable getSelectedTreeItemsAsSplittable(SelectionItemGroup sig) {
+        List<SelectionItem> selectedItems = getSelectedTreeItems(sig);
+        Splittable splitArr = StringQuoter.createIndexed();
+        int i = 0;
+        for (SelectionItem si : selectedItems) {
+            Splittable siSplit = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
+            siSplit.assign(splitArr, i++);
+        }
+
+        return splitArr;
+    }
+
+    public static SelectionItemGroup selectionItemToSelectionItemGroup(SelectionItem selectionItem) {
+        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(selectionItem));
+        SelectionItemGroup ret = AutoBeanCodex.decode(factory, SelectionItemGroup.class, split).as();
+        return ret;
+    }
+
 }

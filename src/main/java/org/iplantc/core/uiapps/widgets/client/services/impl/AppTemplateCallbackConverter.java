@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
@@ -33,13 +35,13 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
     @Override
     public void onSuccess(String result) {
         final Splittable split = StringQuoter.split(result);
-        boolean hasDeployedComponentId = split.getPropertyKeys().contains("component_id");
-        boolean hasDeployedComponent = split.getPropertyKeys().contains("deployedComponent");
-        // Splittable deployedComponent = split.get("deployedComponent");
+
         /*
          * JDS If the result contains no "deployedComponent" definition, and the result contains a
          * DeployedComponent id, then search for the DeployedComponent and attach it to the result.
          */
+        boolean hasDeployedComponentId = split.getPropertyKeys().contains("component_id");
+        boolean hasDeployedComponent = split.getPropertyKeys().contains("deployedComponent");
         if (!hasDeployedComponent && hasDeployedComponentId && !Strings.isNullOrEmpty(split.get("component_id").asString())) {
             final Splittable deployedComponentId = split.get("component_id");
 
@@ -93,6 +95,17 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
                         SelectionItemGroup sig = AutoBeanCodex.decode(factory, SelectionItemGroup.class, arguments.get(0)).as();
                         atAb.as().getArgumentGroups().get(i).getArguments().get(j).setSelectionItems(Lists.<SelectionItem> newArrayList(sig));
                     }
+                }
+            }
+        }
+
+        /*
+         * JDS If any argument has a "defaultValue", forward it to the "value" field
+         */
+        for (ArgumentGroup ag : atAb.as().getArgumentGroups()) {
+            for (Argument arg : ag.getArguments()) {
+                if (arg.getDefaultValue() != null) {
+                    arg.setValue(arg.getDefaultValue());
                 }
             }
         }

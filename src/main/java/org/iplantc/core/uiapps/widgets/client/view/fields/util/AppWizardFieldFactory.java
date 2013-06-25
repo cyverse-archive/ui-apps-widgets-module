@@ -125,12 +125,18 @@ public class AppWizardFieldFactory {
         switch (argument.getType()) {
             case FileInput:
                 AppWizardFileSelector awFileSel = new AppWizardFileSelector();
+                if (editingMode) {
+                    awFileSel.disableBrowseButton();
+                }
                 ConverterFieldAdapter<HasId, AppWizardFileSelector> fileSelCfa = new ConverterFieldAdapter<HasId, AppWizardFileSelector>(awFileSel, new SplittableToHasIdConverter());
                 field = applyDiskResourceValidators(argument, fileSelCfa);
                 break;
 
             case FolderInput:
                 AppWizardFolderSelector awFolderSel = new AppWizardFolderSelector();
+                if (editingMode) {
+                    awFolderSel.disableBrowseButton();
+                }
                 ConverterFieldAdapter<HasId, AppWizardFolderSelector> folderSelCfa = new ConverterFieldAdapter<HasId, AppWizardFolderSelector>(awFolderSel, new SplittableToHasIdConverter());
                 field = applyDiskResourceValidators(argument, folderSelCfa);
                 break;

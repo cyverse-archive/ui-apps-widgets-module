@@ -92,7 +92,7 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
              * This is because there are two things which need to be bound;
              * The lists, and the item which the user chooses from the list.
              */
-            if (AppTemplateUtils.isSelectionArgumentType(value)) {
+            if (AppTemplateUtils.isSelectionArgumentType(value.getType())) {
                 ArgumentSelectionEditor argSelectionEditor = new ArgumentSelectionEditor(presenter);
                 subEditor = argSelectionEditor;
                 addClickHandler(argSelectionEditor);

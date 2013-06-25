@@ -20,28 +20,25 @@
    </ui:with>
    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="toolBarData">
         <ui:attributes width="1"
-                       height="-1" />
+                       height="30" />
     </ui:with>
    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="gridData">
         <ui:attributes width="1"
                        height="1" />
     </ui:with>
 
-   <container:VerticalLayoutContainer>
+   <container:VerticalLayoutContainer height="300">
       <container:child layoutData="{toolBarData}">
-	      <toolbar:ToolBar ui:field="toolbar"
-	                       pack="END">
-	         <toolbar:child>
+	      <toolbar:ToolBar ui:field="toolbar">
+	                       <!-- pack="END"> -->
+	           <toolbar:FillToolItem/>
 	            <button:TextButton ui:field="addButton"
 	                               text="{display.add}"
 	                               icon="{icons.add}"/>
-	         </toolbar:child>
-	         <toolbar:child>
 	            <button:TextButton ui:field="deleteButton"
 	                               text="{display.delete}"
 	                               icon="{icons.delete}"
 	                               enabled="false"/>
-	         </toolbar:child>
 	      </toolbar:ToolBar>
       </container:child>
       <container:child layoutData="{gridData}">

@@ -110,38 +110,8 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
         editing.addEditor(nameCol, field);
 
         // Add selection handler to grid to control enabled state of "delete" button
-        grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<SelectionItem>() {
-            @Override
-            public void onSelectionChanged(SelectionChangedEvent<SelectionItem> event) {
-                if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
-                    delete.setEnabled(false);
-                } else if ((event.getSelection() != null) && (event.getSelection().size() >= 1)) {
-                    delete.setEnabled(true);
-                }
-            }
-        });
-        selectionItems = new ListStoreEditor<SelectionItem>(selectionArgStore) {
-            @Override
-            public void flush() {
-                if (!shouldFlush()) {
-                    return;
-                }
-                suppressEvent = true;
-                super.flush();
-                suppressEvent = false;
-            }
-
-            @Override
-            public void setValue(List<SelectionItem> value) {
-                suppressEvent = true;
-                super.setValue(value);
-                suppressEvent = false;
-            }
-
-            private boolean shouldFlush() {
-                return presenter.getValueChangeEventSource() == SelectionItemPropertyEditor.this;
-            }
-        };
+        grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionChangedHandler());
+        selectionItems = new MyListStoreEditor(selectionArgStore, presenter);
     }
 
 
@@ -153,24 +123,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                 return item.getId();
             }
         });
-        listStore.addStoreHandlers(new SelectionItemValueChangeStoreHandler(this, this) {
-
-            @Override
-            protected List<SelectionItem> getCurrentValue() {
-                return selectionArgStore.getAll();
-            }
-
-            @Override
-            public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
-                SelectionItem si = event.getRecord().getModel();
-                if (si.isDefault() && (model != null)) {
-                    Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
-                    model.setDefaultValue(encode);
-                    model.setValue(encode);
-                }
-                super.onRecordChange(event);
-            }
-        });
+        listStore.addStoreHandlers(new MyStoreHandler(this, this));
         return listStore;
     }
 
@@ -250,7 +203,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     public void setValue(Argument value) {
         if((value == null) 
                 || ((value != null) 
-                        && (!AppTemplateUtils.isSelectionArgumentType(value) || value.getType().equals(ArgumentType.TreeSelection)))){
+ && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)))) {
             return;
         }
         this.model = value;
@@ -261,15 +214,21 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             switch (model.getType()) {
                 case Selection:
                 case TextSelection:
-                    editing.addEditor(valueCol, new TextField());
+                    TextField textField = new TextField();
+                    textField.setSelectOnFocus(true);
+                    editing.addEditor(valueCol, textField);
                     break;
 
                 case DoubleSelection:
-                    editing.addEditor(valueCol, new StringToDoubleConverter(), new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor()));
+                    NumberField<Double> dblField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+                    dblField.setSelectOnFocus(true);
+                    editing.addEditor(valueCol, new StringToDoubleConverter(), dblField);
                     break;
 
                 case IntegerSelection:
-                    editing.addEditor(valueCol, new StringToIntegerConverter(), new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor()));
+                    NumberField<Integer> intField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+                    intField.setSelectOnFocus(true);
+                    editing.addEditor(valueCol, new StringToIntegerConverter(), intField);
                     break;
 
                 default:
@@ -290,6 +249,80 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+
+    @Override
+    public boolean suppressEvent() {
+        return suppressEvent;
+    }
+
+    private final class MyStoreHandler extends SelectionItemValueChangeStoreHandler {
+        private MyStoreHandler(HasEventSuppression hasEventSuppression, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
+            super(hasEventSuppression, valueChangeTarget);
+        }
+    
+        @Override
+        protected List<SelectionItem> getCurrentValue() {
+            return selectionArgStore.getAll();
+        }
+    
+        @Override
+        public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
+            SelectionItem si = event.getRecord().getModel();
+            if (si.isDefault() && (model != null)) {
+                Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
+                model.setDefaultValue(encode);
+                model.setValue(encode);
+            }
+            super.onRecordChange(event);
+        }
+    }
+
+    private final class MyListStoreEditor extends ListStoreEditor<SelectionItem> {
+        private final AppTemplateWizardPresenter presenter;
+    
+        private MyListStoreEditor(ListStore<SelectionItem> store, AppTemplateWizardPresenter presenter) {
+            super(store);
+            this.presenter = presenter;
+        }
+    
+        @Override
+        public void flush() {
+            if (!shouldFlush()) {
+                return;
+            }
+            suppressEvent = true;
+            super.flush();
+            suppressEvent = false;
+        }
+    
+        @Override
+        public void setValue(List<SelectionItem> value) {
+            suppressEvent = true;
+            super.setValue(value);
+            suppressEvent = false;
+        }
+    
+        private boolean shouldFlush() {
+            return presenter.getValueChangeEventSource() == SelectionItemPropertyEditor.this;
+        }
+    }
+
+    private final class GridSelectionChangedHandler implements SelectionChangedHandler<SelectionItem> {
+        @Override
+        public void onSelectionChanged(SelectionChangedEvent<SelectionItem> event) {
+            if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
+                delete.setEnabled(false);
+            } else if ((event.getSelection() != null) && (event.getSelection().size() >= 1)) {
+                delete.setEnabled(true);
+            }
+        }
+    }
 
     private final class StringToIntegerConverter implements Converter<String, Integer> {
         @Override
@@ -325,20 +358,6 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             }
             return Double.parseDouble(object);
         }
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
-    }
-
-    public void nullifyEditors() {
-        selectionItems = null;
-    }
-
-    @Override
-    public boolean suppressEvent() {
-        return suppressEvent;
     }
 
 }

@@ -39,6 +39,14 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
  */
 public class AppWizardComboBox extends Composite implements ArgumentSelectionField {
 
+    private final class MySelectionHandler implements SelectionHandler<SelectionItem> {
+        @Override
+        public void onSelection(SelectionEvent<SelectionItem> event) {
+            SelectionItem selectedItem = event.getSelectedItem();
+            ValueChangeEvent.fire(AppWizardComboBox.this, Lists.<SelectionItem> newArrayList(selectedItem));
+        }
+    }
+
     private final SelectionItemProperties props = GWT.<SelectionItemProperties> create(SelectionItemProperties.class);
 
     private final ListStore<SelectionItem> listStore;
@@ -67,15 +75,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         valueEditor = new ConverterFieldAdapter<SelectionItem, ComboBox<SelectionItem>>(selectionItemsEditor, new SplittableToSelectionArgConverter());
         initWidget(selectionItemsEditor);
 
-        selectionItemsEditor.addSelectionHandler(new SelectionHandler<SelectionItem>() {
-            @Override
-            public void onSelection(SelectionEvent<SelectionItem> event) {
-                SelectionItem selectedItem = event.getSelectedItem();
-                ValueChangeEvent.fire(AppWizardComboBox.this, Lists.<SelectionItem> newArrayList(selectedItem));
-            }
-        });
-        if (presenter.isEditingMode()) {
-        }
+        selectionItemsEditor.addSelectionHandler(new MySelectionHandler());
     }
 
     @Override
@@ -87,7 +87,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     @Override
     public void flush() {
         // JDS This may cause a flush to occur twice if this object is actually bound
-        selectionItemsStoreBinder.flush();
+        // selectionItemsStoreBinder.flush();
         SelectionItem currSi = selectionItemsEditor.getCurrentValue();
         if (currSi == null) {
             return;
@@ -96,8 +96,6 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
         // JDS Set value, if the current value payload does not equal the model's value payload
         if ((model.getValue() == null) || ((model.getValue() != null) && !model.getValue().getPayload().equals(currSiSplittable.getPayload()))) {
-            model.setValue(currSiSplittable);
-            model.setDefaultValue(currSiSplittable);
             if (presenter.isEditingMode()) {
                 // JDS Reset default value of all items in the current list
                 for (SelectionItem si : listStore.getAll()) {
@@ -105,13 +103,16 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
                 }
                 currSi.setDefault(true);
             }
+            currSiSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(currSi));
+            model.setValue(currSiSplittable);
+            model.setDefaultValue(currSiSplittable);
         }
     }
 
     @Override
     public void setValue(final Argument value) {
         ArgumentType type = value.getType();
-        if ((value == null) || !AppTemplateUtils.isSelectionArgumentType(value) || type.equals(ArgumentType.TreeSelection)) {
+        if ((value == null) || !AppTemplateUtils.isSelectionArgumentType(value.getType()) || type.equals(ArgumentType.TreeSelection)) {
             return;
         }
         this.model = value;
@@ -153,12 +154,6 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
-
-    public void nullifyEditors() {
-        selectionItemsEditor.disable();
-        selectionItemsStoreBinder = null;
-        valueEditor = null;
-    }
 
     @Override
     public Argument getValue() {

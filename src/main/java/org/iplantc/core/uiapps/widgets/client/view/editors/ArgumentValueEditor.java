@@ -60,7 +60,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
 
     @Override
     public void setValue(Argument value) {
-        if ((value == null) || ((value != null) && AppTemplateUtils.isSelectionArgumentType(value))) {
+        if ((value == null) || ((value != null) && AppTemplateUtils.isSelectionArgumentType(value.getType()))) {
             // JDS If the value is null, or if it is a selection type, then we must do nothing.
             return;
         }

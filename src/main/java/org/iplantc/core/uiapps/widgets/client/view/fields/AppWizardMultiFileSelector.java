@@ -15,6 +15,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -132,12 +133,6 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
         return hasIdList;
     }
 
-    // @Override
-    // public HandlerRegistration addInvalidHandler(InvalidHandler handler) {return null;}
-    //
-    // @Override
-    // public HandlerRegistration addValidHandler(ValidHandler handler) {return null;}
-
     private final class FileSelectDialogHideHandler implements HideHandler {
         private final FileSelectDialog dlg;
         private final ListStore<DiskResource> store;
@@ -153,6 +148,7 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
             if ((diskResources == null) || diskResources.isEmpty())
                 return;
             store.addAll(diskResources);
+            ValueChangeEvent.fire(AppWizardMultiFileSelector.this, Lists.<HasId> newArrayList(store.getAll()));
         }
     }
 
@@ -205,8 +201,7 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<HasId>> handler) {
-        // TODO Auto-generated method stub
-        return null;
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
 }

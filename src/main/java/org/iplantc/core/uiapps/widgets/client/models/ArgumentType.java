@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.models;
 
 public enum ArgumentType {
+    Input,
     FileInput,
     FolderInput,
     MultiFileSelector,

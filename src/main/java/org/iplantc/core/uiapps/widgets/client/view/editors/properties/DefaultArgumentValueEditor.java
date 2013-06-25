@@ -24,6 +24,13 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
+/**
+ * FIXME JDS This class is no longer part of the AppTemplateWizard editor driver chain. (It is not bound). Evaluate necessity of implemented interfaces. 
+ *           The primary goal in doing so is to make sure that this class' intent is clear and unambiguous. 
+ *           
+ * @author jstroot
+ *
+ */
 class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentValueField>, HasValueChangeHandlers<Splittable> {
 
     private CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain;
@@ -47,9 +54,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         if (value == null)
             return;
 
-        if (this.model != value) {
-            this.model = value;
-        }
+        this.model = value;
 
         if (subEditor == null) {
             SafeHtml fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Value");
@@ -121,27 +126,31 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
             propertyLabel.setWidget(subEditor);
             // attach it to the chain. Attach the formvalue
             Splittable defaultValue = argument.getDefaultValue();
-            chain.attach(defaultValue, subEditor);
+            if (chain != null) {
+                chain.attach(defaultValue, subEditor);
+            }
         }
     }
 
     @Override
     public void flush() {
-        if (chain == null)
-            return;
+        Splittable split;
+        if (chain == null) {
+            // JDS If chain is null, then we flush manually.
+            subEditor.flush();
+            split = subEditor.getValue();
+        } else {
+            split = chain.getValue(subEditor);
+        }
 
-        Splittable split = chain.getValue(subEditor);
-        // if (split != null && presenter.getValueChangeEventSource() == subEditor) {
         if (split != null) {
             model.setDefaultValue(split);
-            // argumentCopy = AppTemplateUtils.copyArgument(argument);
         }
     }
 
     @Override
     public ArgumentValueField createEditorForTraversal() {
         TextField field = new TextField();
-        field.setText("DEFAULT VALUE");
         return new ConverterFieldAdapter<String, TextField>(field, new SplittableToStringConverter());
     }
 

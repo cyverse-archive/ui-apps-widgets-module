@@ -55,16 +55,16 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     @UiField
     TextField name;
 
-    @Path("")
     @UiField(provided = true)
+    @Ignore
     DefaultArgumentValueEditor defaultValue;
 
     @Path("")
     @UiField(provided = true)
     ArgumentValidatorEditor validatorsEditor;
 
-    @Path("")
     @UiField(provided = true)
+    @Ignore
     AppWizardComboBox selectionItemDefaultValue;
 
     @UiField
@@ -79,6 +79,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     SelectionItemTreePropertyEditor selectionItemTreeEditor;
 
     private final AppTemplateWizardPresenter presenter;
+
+    private Argument model;
 
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         this.presenter = presenter;
@@ -134,74 +136,107 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {/* Do Nothing */}
+    public void flush() {
+        if (defaultValue != null) {
+            defaultValue.flush();
+        } else if (selectionItemDefaultValue != null) {
+            selectionItemDefaultValue.flush();
+        }
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
 
     @Override
     public void setValue(Argument value) {
+        if (value == null) {
+            return;
+        }
+
+        if (model == null) {
+            // JDS First time through, remove any components which aren't applicable to the current
+            // ArgumentType
+            if (!AppTemplateUtils.isSelectionArgumentType(value.getType()) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
+                // JDS The ArgumentType is NOT a Selection-based type. Remove all 'list' related controls
+                con.remove(selectionItemListEditor);
+                con.remove(selectionItemTreeEditor);
+                con.remove(selectionItemDefaultValueLabel);
+                selectionItemDefaultValueLabel = null;
+                selectionItemDefaultValue = null;
+                selectionItemListEditor = null;
+                selectionItemTreeEditor = null;
+                if (value.getType().equals(ArgumentType.MultiFileSelector)) {
+                    con.remove(defaultValue);
+                    defaultValue = null;
+                }
+            } else if (value.getType().equals(ArgumentType.TreeSelection) && (selectionItemListEditor != null)) {
+                // JDS Remove all controls except for those related to TreeSelection
+                con.remove(selectionItemListEditor);
+                con.remove(selectionItemDefaultValueLabel);
+                con.remove(defaultValue);
+                selectionItemDefaultValueLabel = null;
+                selectionItemDefaultValue = null;
+                selectionItemListEditor = null;
+                defaultValue = null;
+            } else if (!value.getType().equals(ArgumentType.TreeSelection) && (selectionItemTreeEditor != null)) {
+                // JDS Remove all controls except for those related to Simple selections (i.e. non-tree)
+                con.remove(selectionItemTreeEditor);
+                con.remove(defaultValue);
+                selectionItemTreeEditor = null;
+                defaultValue = null;
+            }
+            // JDS Disable any controls which aren't for the current type
+            switch (value.getType()) {
+                case TextSelection:
+                case IntegerSelection:
+                case DoubleSelection:
+                case Selection:
+                case ValueSelection:
+                case TreeSelection:
+                    nameLabel.disable();
+                    break;
+
+                case Info:
+                    requiredEditor.setVisible(false);
+                    omitIfBlank.setVisible(false);
+                    visible.setVisible(false);
+                    descriptionLabel.setVisible(false);
+                    nameLabel.setVisible(false);
+                    break;
+
+                default:
+                    break;
+            }
+
+            // JDS Change field labels based on Type
+            switch (value.getType()) {
+                case EnvironmentVariable:
+                    nameLabel.setText("Environment Variable name");
+                    break;
+                case Info:
+                    argLabelLabel.setText("Text");
+
+                default:
+                    break;
+            }
+        }
+
+        this.model = value;
 
         // FIXME JDS Visibility/Enabled of all property editors should be controlled here. I'm looking at you ArgumentValidatorEditor!!
-        // JDS Remove any bound components which aren't applicable to the current ArgumentType
-        if (!AppTemplateUtils.isSelectionArgumentType(value) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
-            con.remove(selectionItemListEditor);
-            con.remove(selectionItemTreeEditor);
-            con.remove(selectionItemDefaultValueLabel);
-            selectionItemListEditor.nullifyEditors();
-            selectionItemTreeEditor.nullifyEditors();
-            selectionItemDefaultValueLabel = null;
-            selectionItemDefaultValue = null;
-            selectionItemListEditor = null;
-            selectionItemTreeEditor = null;
-        } else if (value.getType().equals(ArgumentType.TreeSelection) && (selectionItemListEditor != null)) {
-            con.remove(selectionItemListEditor);
-            con.remove(selectionItemDefaultValueLabel);
-            selectionItemListEditor.nullifyEditors();
-            selectionItemDefaultValueLabel = null;
-            selectionItemDefaultValue = null;
-            selectionItemListEditor = null;
-        } else if (!value.getType().equals(ArgumentType.TreeSelection) && (selectionItemTreeEditor != null)) {
-            con.remove(selectionItemTreeEditor);
-            selectionItemTreeEditor.nullifyEditors();
-            selectionItemTreeEditor = null;
+
+        // JDS Manually forward the value to the non-bound controls
+        if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
+            selectionItemDefaultValue.setValue(model);
+        } else if (value.getType().equals(ArgumentType.MultiFileSelector) || value.getType().equals(ArgumentType.TreeSelection)) {
+        } else {
+            // It is not a selection type, nor a MultiFileSelector
+            if (defaultValue == null) {
+                GWT.log("This is a problem!");
+            }
+            defaultValue.setValue(model);
+
         }
-
-        // JDS Disable any controls which aren't for the current type
-        switch (value.getType()) {
-            case TextSelection:
-            case IntegerSelection:
-            case DoubleSelection:
-            case Selection:
-            case ValueSelection:
-            case TreeSelection:
-                nameLabel.disable();
-                break;
-
-            case Info:
-                requiredEditor.setVisible(false);
-                omitIfBlank.setVisible(false);
-                visible.setVisible(false);
-                descriptionLabel.setVisible(false);
-                nameLabel.setVisible(false);
-                break;
-
-            default:
-                break;
-        }
-
-        // JDS Change field labels based on Type
-        switch (value.getType()) {
-            case EnvironmentVariable:
-                nameLabel.setText("Environment Variable name");
-                break;
-            case Info:
-                argLabelLabel.setText("Text");
-
-            default:
-                break;
-        }
-
     }
 
 }
