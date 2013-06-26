@@ -80,7 +80,6 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
         /*
          * 1. Have to determine which non-bound argument "editor" will need to be used. Once it is
          * chosen, we need to set its value.
-         * ----- NOTE: We may want to only instantiate the "editor" in this method.
          * 
          * 2. After this first step, each subsequent call to this method will need to pass the given
          * value to the chosen "editor"

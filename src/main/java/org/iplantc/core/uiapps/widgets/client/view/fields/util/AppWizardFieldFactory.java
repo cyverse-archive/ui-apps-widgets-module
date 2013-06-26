@@ -44,6 +44,7 @@ import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -120,8 +121,8 @@ public class AppWizardFieldFactory {
     public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode) {
         ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
-        NumberField<Double> dblNumField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-        NumberField<Integer> intNumField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+        SpinnerField<Double> dblSpinnerField = new SpinnerField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+        SpinnerField<Integer> intSpinnerField = new SpinnerField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
         switch (argument.getType()) {
             case FileInput:
                 AppWizardFileSelector awFileSel = new AppWizardFileSelector();
@@ -171,12 +172,12 @@ public class AppWizardFieldFactory {
                 break;
 
             case Double:
-                ConverterFieldAdapter<Double, NumberField<Double>> dblCfa = new ConverterFieldAdapter<Double, NumberField<Double>>(dblNumField, new SplittableToDoubleConverter());
+                ConverterFieldAdapter<Double, SpinnerField<Double>> dblCfa = new ConverterFieldAdapter<Double, SpinnerField<Double>>(dblSpinnerField, new SplittableToDoubleConverter());
                 field = applyDoubleValidators(argument, dblCfa);
                 break;
 
             case Integer:
-                ConverterFieldAdapter<Integer, NumberField<Integer>> intCfa = new ConverterFieldAdapter<Integer, NumberField<Integer>>(intNumField, new SplittableToIntegerConverter());
+                ConverterFieldAdapter<Integer, SpinnerField<Integer>> intCfa = new ConverterFieldAdapter<Integer, SpinnerField<Integer>>(intSpinnerField, new SplittableToIntegerConverter());
                 field = applyIntegerValidators(argument, intCfa);
                 break;
 
@@ -336,7 +337,7 @@ public class AppWizardFieldFactory {
         return labelText.toSafeHtml();
     }
 
-    static ConverterFieldAdapter<Integer, NumberField<Integer>> applyIntegerValidators(Argument argument, ConverterFieldAdapter<Integer, NumberField<Integer>> field) {
+    static ConverterFieldAdapter<Integer, ?> applyIntegerValidators(Argument argument, ConverterFieldAdapter<Integer, ?> field) {
         List<ArgumentValidator> validators = argument.getValidators();
         if (validators != null) {
             for (ArgumentValidator argValidator : validators) {

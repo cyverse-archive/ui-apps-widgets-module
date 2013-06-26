@@ -263,7 +263,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {/* Do Nothing */
+    public void flush() {
         selectionItemsEditor.flush();
     }
 
