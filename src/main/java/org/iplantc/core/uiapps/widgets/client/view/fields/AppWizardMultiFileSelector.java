@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
@@ -15,6 +15,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -70,6 +71,8 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
     @UiField
     ColumnModel<DiskResource> cm;
 
+    private boolean addDeleteButtonsEnabled = true;
+
     public AppWizardMultiFileSelector() {
         initWidget(BINDER.createAndBindUi(this));
 
@@ -101,6 +104,9 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @UiHandler("addButton")
     void onAddButtonSelected(SelectEvent event) {
+        if (!addDeleteButtonsEnabled) {
+            return;
+        }
         // Open a multiselect file selector
         FileSelectDialog dlg = new FileSelectDialog();
         dlg.addHideHandler(new FileSelectDialogHideHandler(dlg, listStore));
@@ -109,6 +115,9 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @UiHandler("deleteButton")
     void onDeleteButtonSelected(SelectEvent event) {
+        if (!addDeleteButtonsEnabled) {
+            return;
+        }
         for (DiskResource dr : grid.getSelectionModel().getSelectedItems()) {
             listStore.remove(dr);
         }
@@ -132,12 +141,6 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
         return hasIdList;
     }
 
-    // @Override
-    // public HandlerRegistration addInvalidHandler(InvalidHandler handler) {return null;}
-    //
-    // @Override
-    // public HandlerRegistration addValidHandler(ValidHandler handler) {return null;}
-
     private final class FileSelectDialogHideHandler implements HideHandler {
         private final FileSelectDialog dlg;
         private final ListStore<DiskResource> store;
@@ -153,6 +156,7 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
             if ((diskResources == null) || diskResources.isEmpty())
                 return;
             store.addAll(diskResources);
+            ValueChangeEvent.fire(AppWizardMultiFileSelector.this, Lists.<HasId> newArrayList(store.getAll()));
         }
     }
 
@@ -205,8 +209,11 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<HasId>> handler) {
-        // TODO Auto-generated method stub
-        return null;
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    public void disableAddDeleteButtons() {
+        addDeleteButtonsEnabled = false;
     }
 
 }

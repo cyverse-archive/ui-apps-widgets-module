@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
-public interface IAppTemplateEditor {
+public interface HasPropertyEditor {
 
-    IsWidget getAppTemplatePropertyEditor();
+    IsWidget getPropertyEditor();
 }

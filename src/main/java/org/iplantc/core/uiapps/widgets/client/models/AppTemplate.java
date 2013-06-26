@@ -39,4 +39,6 @@ public interface AppTemplate extends HasId, HasLabel, HasName, HasDescription {
 
     void setPublishedDate(Date publishedDate);
 
+    void setId(String id);
+
 }

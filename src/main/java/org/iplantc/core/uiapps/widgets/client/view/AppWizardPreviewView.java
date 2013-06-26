@@ -2,7 +2,6 @@ package org.iplantc.core.uiapps.widgets.client.view;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
-import org.iplantc.core.uicommons.client.events.EventBus;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,8 +21,8 @@ public class AppWizardPreviewView extends Window {
     @UiField(provided = true)
     AppTemplateWizard wizard;
 
-    public AppWizardPreviewView(EventBus eventBus, AppTemplate appTemplate) {
-        wizard = new AppTemplateWizard(eventBus, false);
+    public AppWizardPreviewView(AppTemplate appTemplate) {
+        wizard = new AppTemplateWizard(false);
         setWidget(BINDER.createAndBindUi(this));
         setHeadingText("Preview of " + appTemplate.getName());
         setSize("640", "375");

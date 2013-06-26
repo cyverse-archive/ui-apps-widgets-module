@@ -2,19 +2,17 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
-import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.de.client.UUIDServiceAsync;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
@@ -42,91 +40,99 @@ import com.sencha.gxt.widget.core.client.container.SimpleContainer;
  * @author jstroot
  * 
  */
-class ArgumentEditor extends Composite implements AppTemplateWizard.IArgumentEditor, ValueAwareEditor<Argument> {
-
-    @Path("")
-    ArgumentValueEditor argValueEditor;
-    
-    @Path("")
-    ArgumentSelectionEditor argSelectionEditor;
+class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareEditor<Argument> {
 
     @Path("")
     ArgumentPropertyEditor argPropEditor = null;
 
-    private Argument currValue;
     private final SimpleContainer con;
+    private ValueAwareEditor<Argument> subEditor = null;
 
-    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
+    private final AppTemplateWizardPresenter presenter;
 
-    ArgumentEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
-        res.selectionCss().ensureInjected();
-        con = new SimpleContainer() {
-            @Override
-            public void onBrowserEvent(Event event) {
-                super.onBrowserEvent(event);
-                int type = event.getTypeInt();
-                if (getElement().isOrHasChild(event.getEventTarget().<Element> cast()) && (type == Event.ONMOUSEOVER || type == Event.ONMOUSEOUT)) {
-                    XElement cast = getElement().<XElement> cast();
-                    cast.setClassName(res.selectionCss().selectionTargetHover(), type == Event.ONMOUSEOVER);
-                }
-            }
-        };
-        argValueEditor = new ArgumentValueEditor(presenter);
-        argSelectionEditor = new ArgumentSelectionEditor(presenter);
+    private ClickHandler clickHandler;
+
+    ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+        this.presenter = presenter;
+        con = new SimpleContainer();
         if (presenter.isEditingMode()) {
-            argPropEditor = new ArgumentPropertyEditor(presenter);
-            ClickHandler clickHandler = new ClickHandler() {
-
+            con.sinkEvents(Event.MOUSEEVENTS);
+            con.addStyleName(presenter.getSelectionCss().selectionTargetMargin());
+            argPropEditor = new ArgumentPropertyEditor(presenter, uuidService);
+            clickHandler = new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    eventBus.fireEvent(new ArgumentSelectedEvent(ArgumentEditor.this));
+                    presenter.asWidget().fireEvent(new ArgumentSelectedEvent(argPropEditor));
                 }
             };
-            argValueEditor.addArgumentClickHandler(clickHandler);
-            argSelectionEditor.addArgumentClickHandler(clickHandler);
         }
-        con.sinkEvents(Event.MOUSEEVENTS);
-        con.addStyleName(res.selectionCss().selectionTarget());
         initWidget(con);
     }
 
     @Override
     @Ignore
-    public IsWidget getArgumentPropertyEditor() {
+    public IsWidget getPropertyEditor() {
         return argPropEditor;
     }
 
     @Override
     public void setValue(Argument value) {
-        this.currValue = value;
-        if(con.getWidget() != null){
-            // JDS If we've already set the container's child widget, we don't need to do anything else here.
-            return;
-        }
         /*
-         * JDS - All selection argument types need to be handled separately.
-         * This is because there are two things which need to be bound;
-         * The lists, and the item which the user chooses from the list.
+         * 1. Have to determine which non-bound argument "editor" will need to be used. Once it is
+         * chosen, we need to set its value.
+         * ----- NOTE: We may want to only instantiate the "editor" in this method.
+         * 
+         * 2. After this first step, each subsequent call to this method will need to pass the given
+         * value to the chosen "editor"
          */
-        if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
-            con.add(argSelectionEditor);
-            argValueEditor = null;
+        if (subEditor == null) {
+            // Then we need to initialize
+            /*
+             * JDS - All selection argument types need to be handled separately.
+             * This is because there are two things which need to be bound;
+             * The lists, and the item which the user chooses from the list.
+             */
+            if (AppTemplateUtils.isSelectionArgumentType(value.getType())) {
+                ArgumentSelectionEditor argSelectionEditor = new ArgumentSelectionEditor(presenter);
+                subEditor = argSelectionEditor;
+                addClickHandler(argSelectionEditor);
+                con.add(argSelectionEditor);
+            } else {
+                ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter);
+                subEditor = argValueEditor;
+                addClickHandler(argValueEditor);
+                con.add(argValueEditor);
+            }
+            subEditor.setValue(value);
+            setEnabled(value.isVisible());
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
+            }
         } else {
-            con.add(argValueEditor);
-            argSelectionEditor = null;
+            subEditor.setValue(value);
+            setEnabled(value.isVisible());
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
+            }
         }
     }
 
-    @Override
-    public Argument getCurrentArgument() {
-        return currValue;
+    private void addClickHandler(HasClickHandlers subEditor) {
+        if (presenter.isEditingMode()) {
+            subEditor.addClickHandler(clickHandler);
+        }
     }
 
     @Override
     public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {/* Do Nothing */}
+    public void flush() {
+        /*
+         * Since our subEditor is not actually bound, we need to manually flush it.
+         */
+        subEditor.flush();
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}

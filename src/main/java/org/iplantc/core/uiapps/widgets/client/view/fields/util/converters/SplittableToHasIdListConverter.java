@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 
 import com.google.common.collect.Lists;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -21,7 +21,7 @@ public class SplittableToHasIdListConverter implements Converter<Splittable, Lis
     @Override
     public List<HasId> convertModelValue(Splittable object) {
         // Assume that the splittable is an array of strings
-        if ((object == null) || object.isIndexed())
+        if ((object == null) || ((object != null) && !object.isIndexed()))
             return Collections.emptyList();
 
         List<HasId> hasIdList = Lists.newArrayList();

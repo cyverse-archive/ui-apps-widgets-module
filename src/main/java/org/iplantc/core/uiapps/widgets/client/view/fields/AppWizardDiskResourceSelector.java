@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
@@ -73,6 +73,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     private List<EditorError> errors = Lists.newArrayList();
     private HasId selectedResource;
     private final Element infoText;
+    private boolean browseButtonEnabled = true;
 
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
@@ -93,6 +94,9 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
             @Override
             public void onSelect(SelectEvent event) {
+                if (!browseButtonEnabled) {
+                    return;
+                }
                 onBrowseSelected();
             }
         });
@@ -237,4 +241,11 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
         editorDelegate = delegate;
     }
 
+    public void disableBrowseButton() {
+        browseButtonEnabled = false;
+    }
+
+    protected boolean isBrowseButtonEnabled() {
+        return browseButtonEnabled;
+    }
 }

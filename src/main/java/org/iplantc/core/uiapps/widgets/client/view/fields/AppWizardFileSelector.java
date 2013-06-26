@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
 import com.google.common.collect.Lists;

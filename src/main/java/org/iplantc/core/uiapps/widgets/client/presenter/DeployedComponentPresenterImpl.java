@@ -10,14 +10,9 @@ import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentList;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
 /**
  * @author sriram
@@ -27,8 +22,6 @@ public class DeployedComponentPresenterImpl implements DeployedComponentsListing
 
     private final DeployedComponentsListingView view;
     private List<DeployedComponent> depCompList;
-    private final
-    DeployedComponentAutoBeanFactory factory = GWT.create(DeployedComponentAutoBeanFactory.class);
     private final DeployedComponentServices dcService;
 
     public DeployedComponentPresenterImpl(DeployedComponentsListingView view, final DeployedComponentServices dcService) {
@@ -55,18 +48,18 @@ public class DeployedComponentPresenterImpl implements DeployedComponentsListing
         if (filter != null && !filter.isEmpty()) {
             if (filter.length() >= 3) {
                 view.mask();
-                dcService.searchDeployedComponents(filter, new AsyncCallback<String>() {
-
+                dcService.searchDeployedComponents(filter, new AsyncCallback<List<DeployedComponent>>() {
+                    
+                    @Override
+                    public void onSuccess(List<DeployedComponent> result) {
+                        view.loadDC(result);
+                        view.unmask();
+                    }
+                    
                     @Override
                     public void onFailure(Throwable caught) {
                         ErrorHandler.post(caught);
-                        view.unmask();
-                    }
-
-                    @Override
-                    public void onSuccess(String result) {
-                        view.loadDC(parseResult(result));
-                        view.unmask();
+                        view.unmask();                        
                     }
                 });
             }
@@ -85,15 +78,13 @@ public class DeployedComponentPresenterImpl implements DeployedComponentsListing
     public void loadDeployedComponents() {
         view.mask();
         if (depCompList == null) {
-            dcService.getDeployedComponents(new AsyncCallback<String>() {
+            dcService.getDeployedComponents(new AsyncCallback<List<DeployedComponent>>() {
+
                 @Override
-                public void onSuccess(String result) {
-                    // setCurrentCompSelection(currentSelection);
-                    // cache result
-                    depCompList = parseResult(result);
+                public void onSuccess(List<DeployedComponent> result) {
+                    depCompList = result;
                     view.loadDC(depCompList);
                     view.unmask();
-
                 }
 
                 @Override
@@ -107,13 +98,4 @@ public class DeployedComponentPresenterImpl implements DeployedComponentsListing
             view.unmask();
         }
     }
-
-    private List<DeployedComponent> parseResult(String result) {
-        AutoBean<DeployedComponentList> autoBean = AutoBeanCodex.decode(factory,
-                DeployedComponentList.class, result);
-        List<DeployedComponent> items = autoBean.as().getDCList();
-        return items;
-
-    }
-
 }

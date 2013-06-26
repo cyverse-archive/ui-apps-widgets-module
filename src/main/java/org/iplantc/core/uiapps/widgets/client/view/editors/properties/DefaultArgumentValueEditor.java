@@ -3,7 +3,6 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
@@ -25,6 +24,13 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
+/**
+ * FIXME JDS This class is no longer part of the AppTemplateWizard editor driver chain. (It is not bound). Evaluate necessity of implemented interfaces. 
+ *           The primary goal in doing so is to make sure that this class' intent is clear and unambiguous. 
+ *           
+ * @author jstroot
+ *
+ */
 class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentValueField>, HasValueChangeHandlers<Splittable> {
 
     private CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain;
@@ -35,16 +41,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     /**
      * The live, bound backing object
      */
-    private Argument argument;
-
-    /**
-     * Copy of backing object from last set/update
-     */
-    private Argument argumentCopy;
-    private final AppTemplateWizardPresenter presenter;
+    private Argument model;
 
     DefaultArgumentValueEditor(AppTemplateWizardPresenter presenter) {
-        this.presenter = presenter;
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
@@ -55,48 +54,42 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         if (value == null)
             return;
 
-        if (this.argument != value) {
-            this.argument = value;
-        }
+        this.model = value;
 
         if (subEditor == null) {
             SafeHtml fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Value");
-            switch (value.getType()) {
-                case FileInput:
-                case FolderInput:
-                case MultiFileSelector:
-                    createDefaultValueSubEditor(value);
-                    break;
-
-                case Selection:
-                case TextSelection:
-                case ValueSelection:
-                    createDefaultValueSubEditor(value);
-                    break;
-
+            switch (model.getType()) {
                 case Flag:
                     // Change FieldLabel text for the Flag
                     fieldLabelText = SafeHtmlUtils.fromTrustedString("Default State");
-                    createDefaultValueSubEditor(value);
+                    createDefaultValueSubEditor(model);
                     break;
 
                 case Text:
                 case EnvironmentVariable:
-                    createDefaultValueSubEditor(value);
+                case MultiLineText:
+                    createDefaultValueSubEditor(model);
                     break;
 
                 case Number:
                 case Double:
                 case Integer:
-                    createDefaultValueSubEditor(value);
+                    createDefaultValueSubEditor(model);
                     break;
 
+                case FileOutput:
+                case FolderOutput:
+                case FileInput:
+                case FolderInput:
+                case MultiFileSelector:
                 case DoubleSelection:
                 case Info:
                 case IntegerSelection:
-                case MultiLineText:
                 case Output:
                 case TreeSelection:
+                case Selection:
+                case TextSelection:
+                case ValueSelection:
                     // These types currently do not support default values
                     propertyLabel.setEnabled(false);
                     propertyLabel.setVisible(false);
@@ -114,11 +107,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                 ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
             }
         }
-        Splittable defaultValue = value.getDefaultValue();
+        Splittable defaultValue = model.getDefaultValue();
         if ((subEditor != null) && (defaultValue != null)) {
             subEditor.setValue(defaultValue);
         }
-        this.argumentCopy = AppTemplateUtils.copyArgument(value);
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
@@ -134,23 +126,31 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
             propertyLabel.setWidget(subEditor);
             // attach it to the chain. Attach the formvalue
             Splittable defaultValue = argument.getDefaultValue();
-            chain.attach(defaultValue, subEditor);
+            if (chain != null) {
+                chain.attach(defaultValue, subEditor);
+            }
         }
     }
 
     @Override
     public void flush() {
-        Splittable split = chain.getValue(subEditor);
-        if (split != null && presenter.getValueChangeEventSource() == subEditor) {
-            argument.setDefaultValue(split);
-            argumentCopy = AppTemplateUtils.copyArgument(argument);
+        Splittable split;
+        if (chain == null) {
+            // JDS If chain is null, then we flush manually.
+            subEditor.flush();
+            split = subEditor.getValue();
+        } else {
+            split = chain.getValue(subEditor);
+        }
+
+        if (split != null) {
+            model.setDefaultValue(split);
         }
     }
 
     @Override
     public ArgumentValueField createEditorForTraversal() {
         TextField field = new TextField();
-        field.setText("DEFAULT VALUE");
         return new ConverterFieldAdapter<String, TextField>(field, new SplittableToStringConverter());
     }
 

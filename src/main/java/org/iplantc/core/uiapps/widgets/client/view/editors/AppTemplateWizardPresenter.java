@@ -2,19 +2,20 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.user.client.ui.IsWidget;
 
-public interface AppTemplateWizardPresenter {
+public interface AppTemplateWizardPresenter extends IsWidget {
 
     public interface SelectionCss extends CssResource {
+        String selectionTargetBg();
 
-        String selectionTargetHover();
-
-        String selectionTarget();
+        String selectionTargetMargin();
     }
 
     public interface Resources extends ClientBundle {
         @Source("AppTemplateSelection.css")
         SelectionCss selectionCss();
+
     }
 
     void onArgumentPropertyValueChange();
@@ -34,5 +35,7 @@ public interface AppTemplateWizardPresenter {
     Object getValueChangeEventSource();
 
     void onArgumentPropertyValueChange(Object source);
+
+    SelectionCss getSelectionCss();
 
 }

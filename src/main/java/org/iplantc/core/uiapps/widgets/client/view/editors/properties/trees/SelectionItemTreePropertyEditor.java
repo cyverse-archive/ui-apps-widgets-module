@@ -98,58 +98,13 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         buildTreeGrid();
         initWidget(BINDER.createAndBindUi(this));
 
-        selectionItemsEditor = new SelectionItemTreeStoreEditor(store, this) {
-            @Override
-            protected void setCheckStyle(CheckCascade treeCheckCascade) {
-                if (treeCheckCascade == null) {
-                    return;
-                }
-                cascadeOptionsCombo.setValue(treeCheckCascade);
-            }
-
-            @Override
-            protected void setSingleSelect(boolean singleSelect) {
-                forceSingleSelectCheckBox.setValue(singleSelect);
-            }
-
-            @Override
-            protected void setItems(SelectionItemGroup root) {
-                setValues(root);
-            }
-
-            @Override
-            protected CheckCascade getCheckStyle() {
-                CheckCascade ret = null;
-                if (!presenter.isEditingMode()) {
-                    return null;
-                } else if (cascadeOptionsCombo.getCurrentValue() != null) {
-                    ret = cascadeOptionsCombo.getCurrentValue();
-                }
-                return ret;
-            }
-
-            @Override
-            protected boolean getSingleSelect() {
-                return forceSingleSelectCheckBox.getValue();
-            }
-
-            @Override
-            protected boolean shouldFlush() {
-                boolean b = presenter.getValueChangeEventSource() == SelectionItemTreePropertyEditor.this;
-                return b;
-            }
-        };
+        selectionItemsEditor = new MyTreeStoreEditor(store, this, presenter);
         cascadeOptionsCombo.add(CheckCascade.TRI);
         cascadeOptionsCombo.add(CheckCascade.PARENTS);
         cascadeOptionsCombo.add(CheckCascade.CHILDREN);
         cascadeOptionsCombo.add(CheckCascade.NONE);
         cascadeOptionsCombo.setValue(CheckCascade.TRI);
-        cascadeOptionsCombo.addSelectionHandler(new SelectionHandler<CheckCascade>() {
-            @Override
-            public void onSelection(SelectionEvent<CheckCascade> event) {
-                ValueChangeEvent.fire(SelectionItemTreePropertyEditor.this, Lists.<SelectionItem> newArrayList(selectionItemsEditor.getCurrentTree()));
-            }
-        });
+        cascadeOptionsCombo.addSelectionHandler(new CascadeOptionsComboSelectionHandler());
 
         initDragNDrop();
     }
@@ -627,8 +582,60 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         }
     }
 
-    public void nullifyEditors() {
-        selectionItemsEditor = null;
+    private final class MyTreeStoreEditor extends SelectionItemTreeStoreEditor {
+        private final AppTemplateWizardPresenter presenter;
+
+        private MyTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget, AppTemplateWizardPresenter presenter) {
+            super(store, valueChangeTarget);
+            this.presenter = presenter;
+        }
+
+        @Override
+        protected void setCheckStyle(CheckCascade treeCheckCascade) {
+            if (treeCheckCascade == null) {
+                return;
+            }
+            cascadeOptionsCombo.setValue(treeCheckCascade);
+        }
+
+        @Override
+        protected void setSingleSelect(boolean singleSelect) {
+            forceSingleSelectCheckBox.setValue(singleSelect);
+        }
+
+        @Override
+        protected void setItems(SelectionItemGroup root) {
+            setValues(root);
+        }
+
+        @Override
+        protected CheckCascade getCheckStyle() {
+            CheckCascade ret = null;
+            if (!presenter.isEditingMode()) {
+                return null;
+            } else if (cascadeOptionsCombo.getCurrentValue() != null) {
+                ret = cascadeOptionsCombo.getCurrentValue();
+            }
+            return ret;
+        }
+
+        @Override
+        protected boolean getSingleSelect() {
+            return forceSingleSelectCheckBox.getValue();
+        }
+
+        @Override
+        protected boolean shouldFlush() {
+            boolean b = presenter.getValueChangeEventSource() == SelectionItemTreePropertyEditor.this;
+            return b;
+        }
+    }
+
+    private final class CascadeOptionsComboSelectionHandler implements SelectionHandler<CheckCascade> {
+        @Override
+        public void onSelection(SelectionEvent<CheckCascade> event) {
+            ValueChangeEvent.fire(SelectionItemTreePropertyEditor.this, Lists.<SelectionItem> newArrayList(selectionItemsEditor.getCurrentTree()));
+        }
     }
 
 }

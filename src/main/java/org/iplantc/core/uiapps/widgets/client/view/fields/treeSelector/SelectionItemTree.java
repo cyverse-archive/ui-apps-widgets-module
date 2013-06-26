@@ -9,6 +9,10 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -21,6 +25,8 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
@@ -30,7 +36,7 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  * @author psarando, jstroot
  * 
  */
-public class SelectionItemTree extends Tree<SelectionItem, String> {
+public class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueChangeHandlers<List<SelectionItem>> {
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private SelectionItemGroup root;
     private Command updateCmd;
@@ -71,6 +77,25 @@ public class SelectionItemTree extends Tree<SelectionItem, String> {
                 }
             }
         });
+
+        // Store the tree's Checked state in each item's isDefault field.
+        addCheckChangeHandler(new CheckChangeHandler<SelectionItem>() {
+
+            @Override
+            public void onCheckChange(CheckChangeEvent<SelectionItem> event) {
+                SelectionItem ruleArg = event.getItem();
+                boolean checked = event.getChecked() == CheckState.CHECKED;
+                boolean isGroup = ruleArg instanceof SelectionItemGroup;
+
+                // Don't set the checked value for Groups if the store is filtered, since a check cascade
+                // can check a group when its filtered-out children are not checked.
+                if (!(checked && isGroup && getStore().isFiltered())) {
+                    ruleArg.setDefault(checked);
+                }
+
+                ValueChangeEvent.fire(SelectionItemTree.this, getStore().getAll());
+            }
+        });
     }
 
     @Override
@@ -106,6 +131,9 @@ public class SelectionItemTree extends Tree<SelectionItem, String> {
 
     @Override
     protected void onCheckClick(Event event, TreeNode<SelectionItem> node) {
+        if (getSelectionModel().isLocked()) {
+            return;
+        }
         super.onCheckClick(event, node);
 
         // Keep track of which node the user clicked on in the isDefault field.
@@ -308,5 +336,10 @@ public class SelectionItemTree extends Tree<SelectionItem, String> {
         if (updateCmd != null) {
             updateCmd.execute();
         }
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 }

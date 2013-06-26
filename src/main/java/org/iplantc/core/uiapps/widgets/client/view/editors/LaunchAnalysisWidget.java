@@ -48,7 +48,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
     }
 
     interface Resources extends ClientBundle {
-        @Source("Style.css")
+        @Source("LaunchAnalysisStyle.css")
         Style css();
     }
 

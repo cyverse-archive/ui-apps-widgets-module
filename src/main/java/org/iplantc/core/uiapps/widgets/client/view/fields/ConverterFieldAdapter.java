@@ -37,7 +37,7 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
  HasKeyDownHandlers {
 
     protected final F field;
-    private Splittable value;
+    private Splittable model;
     private List<EditorError> errors;
     private EditorDelegate<Splittable> delegate;
     private final HandlerManager handlerManager;
@@ -55,18 +55,12 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
         });
     }
 
-    public boolean testNullCheck(Splittable testval) {
-        if (testval != null) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void flush() {
         field.flush();
-        value = getConverter().convertFieldValue(field.getValue());
+        model = getConverter().convertFieldValue(field.getValue());
         validate(false);
+
         if (errors != null) {
             for (EditorError e : errors) {
                 delegate.recordError(e.getMessage(), e.getValue(), this);
@@ -86,12 +80,13 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
 
     @Override
     public void setValue(Splittable value) {
-        field.setValue(getConverter().convertModelValue(value));
+        this.model = value;
+        field.setValue(getConverter().convertModelValue(model));
     }
 
     @Override
     public Splittable getValue() {
-        return value;
+        return model;
     }
 
     @Override

@@ -7,10 +7,16 @@
 	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties"
 	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.validation"
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
-	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees">
+	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees"
+	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields"
+	         >
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
     </ui:with>
+    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData_END">
+        <ui:attributes width="1" height="1" />
+    </ui:with>
+ 
     <ui:with field="margins"
             type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="5"
@@ -33,10 +39,15 @@
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:CheckBox ui:field="omitIfBlank" 
-	                           boxLabel="Exclude Argument option when field is empty"/>
+	                           boxLabel="Exclude Argument when empty"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Argument label"
+	            <form:CheckBox ui:field="visible" 
+	                           boxLabel="Display in GUI"/>
+	        </con:child>
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:FieldLabel ui:field="argLabelLabel" 
+	                             text="Argument label"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="label"/>
@@ -44,7 +55,8 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Tool tip text"
+	            <form:FieldLabel ui:field="descriptionLabel" 
+	                             text="Tool tip text"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="description"/>
@@ -52,7 +64,8 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel text="Argument option"
+	            <form:FieldLabel ui:field="nameLabel"
+	                             text="Argument option"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="name"/>
@@ -71,10 +84,20 @@
 	        </con:child>
 	        
 	        <con:child layoutData="{fieldLayoutData}">
+	           <form:FieldLabel text="Default Value"
+	                            ui:field="selectionItemDefaultValueLabel"
+                                labelAlign="TOP">
+                    <form:widget>
+			           <fields:AppWizardComboBox ui:field="selectionItemDefaultValue"/>
+                    </form:widget>
+                                 
+               </form:FieldLabel>
+	        </con:child>
+	        <con:child layoutData="{fieldLayoutData_END}">
 	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
 	        </con:child>
 	        
-	        <con:child layoutData="{fieldLayoutData}">
+	        <con:child layoutData="{fieldLayoutData_END}">
 	           <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
 	        </con:child>
             

@@ -96,7 +96,7 @@ public class AppWizardFieldFactory {
 
             case ValueSelection:
                 // TODO JDS Map this to either IntegerSelection or DoubleSelection
-                field = new AppWizardComboBox();
+                field = new AppWizardComboBox(presenter);
                 break;
 
             case TreeSelection:
@@ -108,16 +108,6 @@ public class AppWizardFieldFactory {
         return field;
     }
     
-    public static boolean isSelectionArgumentType(Argument argument){
-        ArgumentType t = argument.getType();
-        return t.equals(ArgumentType.TextSelection)
-                || t.equals(ArgumentType.IntegerSelection)
-                || t.equals(ArgumentType.DoubleSelection)
-                || t.equals(ArgumentType.Selection)
-                || t.equals(ArgumentType.ValueSelection)
-                || t.equals(ArgumentType.TreeSelection);
-    }
-
     /**
      * Returns an {@link ArgumentValueField}-derived class based on the given argument's type. This object is
      * meant to be bound with a splittable.
@@ -135,18 +125,27 @@ public class AppWizardFieldFactory {
         switch (argument.getType()) {
             case FileInput:
                 AppWizardFileSelector awFileSel = new AppWizardFileSelector();
+                if (editingMode) {
+                    awFileSel.disableBrowseButton();
+                }
                 ConverterFieldAdapter<HasId, AppWizardFileSelector> fileSelCfa = new ConverterFieldAdapter<HasId, AppWizardFileSelector>(awFileSel, new SplittableToHasIdConverter());
                 field = applyDiskResourceValidators(argument, fileSelCfa);
                 break;
 
             case FolderInput:
                 AppWizardFolderSelector awFolderSel = new AppWizardFolderSelector();
+                if (editingMode) {
+                    awFolderSel.disableBrowseButton();
+                }
                 ConverterFieldAdapter<HasId, AppWizardFolderSelector> folderSelCfa = new ConverterFieldAdapter<HasId, AppWizardFolderSelector>(awFolderSel, new SplittableToHasIdConverter());
                 field = applyDiskResourceValidators(argument, folderSelCfa);
                 break;
 
             case MultiFileSelector:
                 AppWizardMultiFileSelector awMultFileSel = new AppWizardMultiFileSelector();
+                if (editingMode) {
+                    awMultFileSel.disableAddDeleteButtons();
+                }
                 ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> multFileSelCfa = new ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector>(awMultFileSel,
                         new SplittableToHasIdListConverter());
                 field = applyDiskResourceListValidators(argument, multFileSelCfa);
@@ -302,17 +301,6 @@ public class AppWizardFieldFactory {
 
     public static void setDefaultValue(Argument argument) {
         argument.setValue(argument.getDefaultValue());
-//        String defaultValue = argument.getDefaultValue();
-//        if ((defaultValue != null) && !defaultValue.isEmpty()) {
-//            try {
-//                Splittable create = StringQuoter.split(defaultValue);
-//                argument.setValue(create);
-//            } catch (Exception e) {
-//                // If we couldn't parse as a JSON value, create a string splittable.
-//                Splittable create = StringQuoter.create(defaultValue);
-//                argument.setValue(create);
-//            }
-//        }
     }
 
     public static SafeHtml createFieldLabelText(Argument argument){

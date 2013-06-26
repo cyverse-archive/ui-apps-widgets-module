@@ -7,7 +7,6 @@ import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
 import org.iplantc.core.uiapps.widgets.client.view.editors.LaunchAnalysisWidget;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 
 import com.google.common.collect.Lists;
@@ -47,10 +46,8 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     LaunchAnalysisWidget law;
 
     private AppWizardView.Presenter presenter;
-    private final EventBus eventBus;
 
-    public AppWizardViewImpl(final EventBus eventBus, final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages) {
-        this.eventBus = eventBus;
+    public AppWizardViewImpl(final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages) {
         law = new LaunchAnalysisWidget(userSettings, displayMessages);
         initWidget(BINDER.createAndBindUi(this));
     }
@@ -62,7 +59,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
 
     @UiFactory
     AppTemplateWizard createAppTemplateWizard() {
-        return new AppTemplateWizard(eventBus, false);
+        return new AppTemplateWizard(false);
     }
 
     @UiHandler("launchButton")
@@ -72,7 +69,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
         AppTemplate at = wizard.flushAppTemplate();
         JobExecution je = law.flushJobExecution();
         if (wizard.hasErrors() || law.hasErrors()) {
-            //
             GWT.log("Editor has errors");
             List<EditorError> errors = Lists.newArrayList();
             errors.addAll(wizard.getErrors());

@@ -1,10 +1,13 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent;
+import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentGroupPropertyEditor;
-import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -16,8 +19,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 
 /**
  * This class contains a {@link ContentPanel} whose header text is updated when the bound
@@ -26,7 +29,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
  * @author jstroot
  * 
  */
-class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsWidget, ValueAwareEditor<ArgumentGroup> {
+class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEditor<ArgumentGroup> {
     interface HeaderTextTemplates extends SafeHtmlTemplates {
 
         @SafeHtmlTemplates.Template("<span name=\"{3}\" class=\"{0}\" qtip=\"{2}\">{1}</span>")
@@ -36,51 +39,39 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
         SafeHtml fieldLabelRequired();
     }
 
-
-
     private final ContentPanel groupField;
     private final HeaderTextTemplates templates = GWT.create(HeaderTextTemplates.class);
-    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
     ArgumentListEditor argumentsEditor;
 
     @Path("")
     ArgumentGroupPropertyEditor argGrpPropEditor;
-    private ArgumentGroup currValue;
 
-    public ArgumentGroupEditor(final EventBus eventBus, final AppTemplateWizardPresenter presenter) {
-        res.selectionCss().ensureInjected();
-        groupField = new ContentPanel(){
+    public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+        ContentPanelAppearance cpAppearance;
+        if (presenter.isEditingMode()) {
+            cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
+        } else {
+            cpAppearance = GWT.create(ContentPanelAppearance.class);
+        }
+        groupField = new ContentPanel(cpAppearance) {
             @Override
             protected void assertPreRender() {
                 // KLUDGE JDS Do nothing. This is a workaround for the following bug (which was submitted to the GXT forums); http://www.sencha.com/forum/showthread.php?261470-Adding-new-ContentPanel-to-AccordionLayoutContainer-at-runtime-issue
             }
 
             @Override
-            public void onBrowserEvent(Event event) {
-                super.onBrowserEvent(event);
-                int type = event.getTypeInt();
-                if (header.getElement().isOrHasChild(event.getEventTarget().<Element> cast()) && (type == Event.ONMOUSEOVER || type == Event.ONMOUSEOUT)) {
-                    XElement target = event.getEventTarget().cast();
-                    if (target != null) {
-                        XElement cast = header.getElement().<XElement> cast();
-                        cast.setClassName(res.selectionCss().selectionTargetHover(), type == Event.ONMOUSEOVER);
-                    }
-                }
-            }
-
-            @Override
             protected void onClick(Event ce) {
                 super.onClick(ce);
                 if (presenter.isEditingMode() && header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
-                    eventBus.fireEvent(new ArgumentGroupSelectedEvent(ArgumentGroupEditor.this));
+                    presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(argGrpPropEditor));
                 }
             }
         };
-        groupField.getHeader().addStyleName(res.selectionCss().selectionTarget());
 
-        argumentsEditor = new ArgumentListEditor(eventBus, presenter);
+        argumentsEditor = new ArgumentListEditor(presenter, uuidService);
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
+            groupField.getHeader().addStyleName(presenter.getSelectionCss().selectionTargetBg());
             argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
             groupField.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         }
@@ -98,7 +89,6 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
 
     @Override
     public void setValue(ArgumentGroup value) {
-        this.currValue = value;
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {
@@ -123,13 +113,12 @@ class ArgumentGroupEditor implements AppTemplateWizard.IArgumentGroupEditor, IsW
     public void onPropertyChange(String... paths) {/* Do Nothing */}
 
     @Override
-    public IsWidget getArgumentGroupPropertyEditor() {
+    public IsWidget getPropertyEditor() {
         return argGrpPropEditor;
     }
 
-    @Override
-    public ArgumentGroup getCurrentArgumentGroup() {
-        return currValue;
+    public void addRequestArgumentGroupDeleteEventHandler(RequestArgumentGroupDeleteEventHandler handler) {
+        argGrpPropEditor.addHandler(handler, RequestArgumentGroupDeleteEvent.TYPE);
     }
 
 }

@@ -6,24 +6,25 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
 
-import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
-import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
  * This <code>Editor</code> is responsible for dynamically binding <code>Splittable</code> sub-editors
@@ -35,24 +36,14 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-class ArgumentValueEditor extends Composite implements CompositeEditor<Argument, Splittable, ArgumentValueField>, ValueChangeHandler<Splittable> {
-
-    private CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain;
+class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument>, ValueChangeHandler<Splittable>, HasClickHandlers {
 
     private final FieldLabel propertyLabel;
     HasTextEditor label = null;
     private ArgumentValueField subEditor = null;
 
-    /**
-     * The live, bound backing object
-     */
-    private Argument argument;
+    private Argument model;
     
-    /**
-     * Copy of backing object from last set/update, used to determine if default values should be updated
-     */
-    private Argument argumentCopy;
-
     private ClickHandler clickHandler;
     private final AppTemplateWizardPresenter presenter;
 
@@ -67,90 +58,46 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         }
     }
 
-    /**
-     * Adds a click handler to this class' field label.
-     * @param clickHandler
-     */
-    void addArgumentClickHandler(ClickHandler clickHandler) {
-        this.clickHandler = clickHandler;
-        propertyLabel.addDomHandler(clickHandler, ClickEvent.getType());
-        // If the subEditor's field is a CheckBox, add the click handler to it, since it won't have a
-        // field label.
-        if ((subEditor != null) && (subEditor.getField() instanceof CheckBox)) {
-            subEditor.getField().asWidget().addDomHandler(clickHandler, ClickEvent.getType());
-        }
-    }
-
-    @Ignore
-    public ArgumentValueField getArgumentField() {
-        return subEditor;
-    }
-
     @Override
     public void setValue(Argument value) {
-        if (value == null) {
+        if ((value == null) || ((value != null) && AppTemplateUtils.isSelectionArgumentType(value.getType()))) {
+            // JDS If the value is null, or if it is a selection type, then we must do nothing.
             return;
         }
-        /*
-         * JDS If the argument type is ANY kind of selection type (i.e. deals with lists or trees) then
-         * return and do nothing.
-         */
-        if (AppWizardFieldFactory.isSelectionArgumentType(value)) {
-            return;
-        }
-        if (this.argument != value) {
-            this.argument = value;
-        }
+        this.model = value;
 
-        // Perform editing mode actions.
-        if (presenter.isEditingMode() && (argumentCopy != null)) {
+        AppWizardFieldFactory.setDefaultValue(model);
+        if ((subEditor == null) && !model.getType().equals(ArgumentType.Info)) {
+            subEditor = AppWizardFieldFactory.createArgumentValueField(model, presenter.isEditingMode());
+            assert subEditor != null : "ArgumentValueEditor subEditor should not be null.";
+            propertyLabel.setWidget(subEditor);
+
+            subEditor.addValueChangeHandler(this);
+
+            // Apply any validators which may have been set at init-time
+            Widget o = subEditor.asWidget();
+            if (o instanceof CheckBox) {
+                if (clickHandler != null) {
+                    o.addDomHandler(clickHandler, ClickEvent.getType());
+                }
+            }
+
+            AppWizardFieldFactory.setRequiredValidator(model, subEditor);
             
-            /*
-             * Determine if default value has changed, for coordinating defaultValue changes while in
-             * editing mode.
-             */
-            Splittable defaultValue = value.getDefaultValue();
-            if (argumentCopy.getDefaultValue() != null) {
-                if (!argumentCopy.getDefaultValue().getPayload().equals(defaultValue.getPayload())) {
-                    // Default value has changed, update value with default value
-                    value.setValue(defaultValue);
-                }
+            subEditor.setValue(model.getValue());
+            subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
+            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
             }
-        }
-        
-        if (subEditor == null) {
-            AppWizardFieldFactory.setDefaultValue(value);
-            subEditor = AppWizardFieldFactory.createArgumentValueField(value, presenter.isEditingMode());
-            if (subEditor != null) {
-                propertyLabel.setWidget(subEditor);
-
-                if (presenter.isEditingMode()) {
-                    if (subEditor.getField() instanceof HasValueChangeHandlers) {
-                        subEditor.addValueChangeHandler(this);
-                    }
-                }
-                // Apply any validators which may have been set at init-time
-                Widget o = subEditor.asWidget();
-                if (o instanceof CheckBox) {
-                    if (clickHandler != null) {
-                        o.addDomHandler(clickHandler, ClickEvent.getType());
-                    }
-                }
-                // attach it to the chain. Attach the formvalue
-                Splittable formValue = value.getValue();
-                chain.attach(formValue, subEditor);
-            }
-            AppWizardFieldFactory.setRequiredValidator(value, subEditor);
-        }
-
-
-
-        if (subEditor != null && !value.getType().equals(ArgumentType.Info)) {
-            subEditor.setValue(value.getValue());
+        } else if (!model.getType().equals(ArgumentType.Info)) {
+            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            subEditor.setValue(model.getValue());
+            subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
         }
 
         // Update label
-        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(value);
+        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(model);
         if ((subEditor != null) && (subEditor.asWidget() instanceof CheckBox)) {
             propertyLabel.setHTML("");
             propertyLabel.setLabelSeparator("");
@@ -158,39 +105,28 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
         } else {
             propertyLabel.setHTML(fieldLabelText);
         }
-        
-        this.argumentCopy = AppTemplateUtils.copyArgument(value);
 
     }
 
     @Override
     public void flush() {
-        Splittable split = chain.getValue(subEditor);
+        if (presenter.getValueChangeEventSource() != this) {
+            return;
+        }
+        // TODO JDS Investigate getting rid of ArgumentValueField definition.
+        ((ConverterFieldAdapter<?, ?>)subEditor).flush();
+        Splittable split = subEditor.getValue();
+
         // Manually put the value into the argument
         if (split != null) {
             // Need to set the actual backing copy
-            argument.setValue(split);
+            model.setValue(split);
 
+            model.setDefaultValue(split);
             if (presenter.isEditingMode()) {
-                argument.setDefaultValue(split);
-                argumentCopy = AppTemplateUtils.copyArgument(argument);
+                model.setDefaultValue(split);
             }
         }
-    }
-
-    @Override
-    public ArgumentValueField createEditorForTraversal() {
-        return new ConverterFieldAdapter<String, TextField>(new TextField(), new SplittableToStringConverter());
-    }
-
-    @Override
-    public void setEditorChain(CompositeEditor.EditorChain<Splittable, ArgumentValueField> chain) {
-        this.chain = chain;
-    }
-
-    @Override
-    public String getPathElement(ArgumentValueField subEditor) {
-        return ".value";
     }
 
     @Override
@@ -201,7 +137,21 @@ class ArgumentValueEditor extends Composite implements CompositeEditor<Argument,
 
     @Override
     public void onValueChange(ValueChangeEvent<Splittable> event) {
-        presenter.onArgumentPropertyValueChange(event.getSource());
+        presenter.onArgumentPropertyValueChange(this);
+    }
+
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        this.clickHandler = handler;
+        HandlerRegistration reg;
+        // If the subEditor's field is a CheckBox, add the click handler to it, since it won't have a
+        // field label.
+        if ((subEditor != null) && (subEditor.getField() instanceof CheckBox)) {
+            reg = subEditor.getField().asWidget().addDomHandler(clickHandler, ClickEvent.getType());
+        } else {
+            reg = propertyLabel.addDomHandler(clickHandler, ClickEvent.getType());
+        }
+        return reg;
     }
 
 }
