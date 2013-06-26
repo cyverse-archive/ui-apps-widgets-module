@@ -11,10 +11,10 @@ public interface DataObject {
     void setFileInfoType(FileInfoType fileInfoType);
     
     @PropertyName("data_source")
-    String getDataSource();
+    DataSource getDataSource();
 
     @PropertyName("data_source")
-    void setDataSource(String dataSource);
+    void setDataSource(DataSource dataSource);
 
     boolean isRetain();
 

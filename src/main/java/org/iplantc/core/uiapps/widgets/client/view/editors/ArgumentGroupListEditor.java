@@ -36,6 +36,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
         private final AppTemplateWizardPresenter presenter;
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
+        private int grpCountInt = 2;
 
         private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<ArgumentGroup,ArgumentGroupEditor> editor) {
             super(container);
@@ -54,6 +55,9 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
             super.onDragDrop(event);
             List<ArgumentGroup> list = listEditor.getList();
             ArgumentGroup newArgGrp = AppTemplateUtils.copyArgumentGroup((ArgumentGroup)event.getData());
+            // Update new group label
+            newArgGrp.setLabel("Group " + grpCountInt++);
+
             if (list != null) {
                 setFireSelectedOnAdd(true);
                 list.add(insertIndex, newArgGrp);

@@ -34,20 +34,8 @@
 	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="requiredEditor" 
-	                           boxLabel="This field is required"/>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="omitIfBlank" 
-	                           boxLabel="Exclude Argument when empty"/>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="visible" 
-	                           boxLabel="Display in GUI"/>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="argLabelLabel" 
-	                             text="Argument label"
+	                             text="Label"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="label"/>
@@ -55,35 +43,20 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel ui:field="descriptionLabel" 
-	                             text="Tool tip text"
-	                             labelAlign="TOP">
-	                <form:widget>
-	                    <form:TextField ui:field="description"/>
-	                </form:widget>
-	            </form:FieldLabel>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="nameLabel"
-	                             text="Argument option"
+	                             text="Command line option"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="name"/>
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>
-        
-	        <!-- DefaultValue Editor -->
+	        
+		    <!-- DefaultValue Editors -->
 	        <con:child layoutData="{fieldLayoutData}">
 	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
 	        </con:child>
-	        
-	        <!-- Argument Validator Editor -->
-	        <con:child layoutData="{fieldLayoutData}">
-	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
-	        </con:child>
-	        
-	        <con:child layoutData="{fieldLayoutData}">
+		    <con:child layoutData="{fieldLayoutData}">
 	           <form:FieldLabel text="Default Value"
 	                            ui:field="selectionItemDefaultValueLabel"
                                 labelAlign="TOP">
@@ -92,7 +65,39 @@
                     </form:widget>
                                  
                </form:FieldLabel>
+	        </con:child>                
+
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:CheckBox ui:field="visible" 
+	                           boxLabel="Display in GUI"/>
 	        </con:child>
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:CheckBox ui:field="requiredEditor" 
+	                           boxLabel="This field is required"/>
+	        </con:child>
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:CheckBox ui:field="omitIfBlank" 
+	                           boxLabel="Exclude Argument when empty"/>
+	        </con:child>
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:FieldLabel ui:field="descriptionLabel" 
+	                             text="Tool tip text"
+	                             labelAlign="TOP">
+	                <form:widget>
+	                    <form:TextField ui:field="description"
+	                                    emptyText="Enter tooltip here"/>
+	                </form:widget>
+	            </form:FieldLabel>
+	        </con:child>
+        
+
+
+	        <!-- Argument Validator Editor -->
+	        <con:child layoutData="{fieldLayoutData_END}">
+	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
+	        </con:child>
+	        
+
 	        <con:child layoutData="{fieldLayoutData_END}">
 	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
 	        </con:child>

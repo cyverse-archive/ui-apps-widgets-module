@@ -115,6 +115,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
         private final AppTemplateWizardPresenter presenter;
         private final ListEditor<Argument, ArgumentEditor> listEditor;
+        private int argCountInt = 1;
 
         private ArgListEditorDropTarget(VerticalLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<Argument, ArgumentEditor> editor) {
             super(container);
@@ -133,6 +134,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             super.onDragDrop(event);
             List<Argument> list = listEditor.getList();
             Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
+
+            // Update new argument label.
+            String label = newArg.getLabel() + " - " + argCountInt++;
+            newArg.setLabel(label);
 
             if (list != null) {
                 // JDS Protect against OBOB issues (caused by argument delete button, which is actually a

@@ -108,6 +108,48 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     @UiHandler({"requiredEditor", "omitIfBlank", "visible"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
+        if (event.getSource() == requiredEditor) {
+            if (event.getValue()) {
+                omitIfBlank.setValue(false);
+                omitIfBlank.disable();
+            } else {
+                omitIfBlank.enable();
+            }
+        }
+        if (event.getSource() == visible) {
+            // If the "Display in GUI" checkbox is not selected
+            if (!event.getValue()) {
+                // Clear the "require user input" checkbox
+                requiredEditor.setValue(false);
+
+                omitIfBlank.setVisible(false);
+                requiredEditor.setVisible(false);
+                descriptionLabel.setVisible(false);
+                if (validatorsEditor != null) {
+                    validatorsEditor.setVisible(false);
+                }
+                if (selectionItemListEditor != null) {
+                    selectionItemListEditor.setVisible(false);
+                }
+                if (selectionItemTreeEditor != null) {
+                    selectionItemTreeEditor.setVisible(false);
+                }
+            } else {
+                omitIfBlank.setVisible(true);
+                omitIfBlank.enable();
+                requiredEditor.setVisible(true);
+                descriptionLabel.setVisible(true);
+                if (validatorsEditor != null) {
+                    validatorsEditor.setVisible(true);
+                }
+                if (selectionItemListEditor != null) {
+                    selectionItemListEditor.setVisible(true);
+                }
+                if (selectionItemTreeEditor != null) {
+                    selectionItemTreeEditor.setVisible(true);
+                }
+            }
+        }
         presenter.onArgumentPropertyValueChange(event.getSource());
         
     }
@@ -156,7 +198,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         boolean isInfoType = value.getType().equals(ArgumentType.Info);
         boolean isMultiSelectorType = value.getType().equals(ArgumentType.MultiFileSelector);
         boolean isTreeSelectionType = value.getType().equals(ArgumentType.TreeSelection);
-        boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value);
+        boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value.getType());
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
@@ -206,6 +248,17 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     visible.setVisible(false);
                     descriptionLabel.setVisible(false);
                     nameLabel.setVisible(false);
+                    break;
+
+                case Flag:
+                    requiredEditor.setVisible(false);
+                    omitIfBlank.setVisible(false);
+                    break;
+
+                case FileInput:
+                case FolderInput:
+                case MultiFileSelector:
+                    visible.setVisible(false);
                     break;
 
                 default:
