@@ -112,6 +112,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public void edit(AppTemplate apptemplate) {
         editorDriver.edit(apptemplate);
+        fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
     }
 
     /**
