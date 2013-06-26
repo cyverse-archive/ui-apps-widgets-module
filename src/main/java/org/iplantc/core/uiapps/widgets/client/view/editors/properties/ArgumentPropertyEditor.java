@@ -153,10 +153,14 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             return;
         }
 
+        boolean isInfoType = value.getType().equals(ArgumentType.Info);
+        boolean isMultiSelectorType = value.getType().equals(ArgumentType.MultiFileSelector);
+        boolean isTreeSelectionType = value.getType().equals(ArgumentType.TreeSelection);
+        boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value);
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
-            if (!AppTemplateUtils.isSelectionArgumentType(value.getType()) && (selectionItemListEditor != null) && (selectionItemTreeEditor != null)) {
+            if (!AppTemplateUtils.isSelectionArgumentType(value.getType())) {
                 // JDS The ArgumentType is NOT a Selection-based type. Remove all 'list' related controls
                 con.remove(selectionItemListEditor);
                 con.remove(selectionItemTreeEditor);
@@ -165,11 +169,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 selectionItemDefaultValue = null;
                 selectionItemListEditor = null;
                 selectionItemTreeEditor = null;
-                if (value.getType().equals(ArgumentType.MultiFileSelector)) {
+                if (isMultiSelectorType || isInfoType || isDiskResourceArgumentType || value.getType().equals(ArgumentType.FileOutput) || value.getType().equals(ArgumentType.FolderOutput)) {
                     con.remove(defaultValue);
                     defaultValue = null;
                 }
-            } else if (value.getType().equals(ArgumentType.TreeSelection) && (selectionItemListEditor != null)) {
+            } else if (isTreeSelectionType) {
                 // JDS Remove all controls except for those related to TreeSelection
                 con.remove(selectionItemListEditor);
                 con.remove(selectionItemDefaultValueLabel);
@@ -178,7 +182,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 selectionItemDefaultValue = null;
                 selectionItemListEditor = null;
                 defaultValue = null;
-            } else if (!value.getType().equals(ArgumentType.TreeSelection) && (selectionItemTreeEditor != null)) {
+            } else if (!isTreeSelectionType) {
                 // JDS Remove all controls except for those related to Simple selections (i.e. non-tree)
                 con.remove(selectionItemTreeEditor);
                 con.remove(defaultValue);
@@ -228,7 +232,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
             selectionItemDefaultValue.setValue(model);
-        } else if (value.getType().equals(ArgumentType.MultiFileSelector) || value.getType().equals(ArgumentType.TreeSelection)) {
+        } else if (isMultiSelectorType || isTreeSelectionType || isInfoType || isDiskResourceArgumentType || value.getType().equals(ArgumentType.FileOutput)
+                || value.getType().equals(ArgumentType.FolderOutput)) {
         } else {
             // It is not a selection type, nor a MultiFileSelector
             if (defaultValue == null) {

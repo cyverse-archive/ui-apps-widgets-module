@@ -71,6 +71,8 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
     @UiField
     ColumnModel<DiskResource> cm;
 
+    private boolean addDeleteButtonsEnabled = true;
+
     public AppWizardMultiFileSelector() {
         initWidget(BINDER.createAndBindUi(this));
 
@@ -102,6 +104,9 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @UiHandler("addButton")
     void onAddButtonSelected(SelectEvent event) {
+        if (!addDeleteButtonsEnabled) {
+            return;
+        }
         // Open a multiselect file selector
         FileSelectDialog dlg = new FileSelectDialog();
         dlg.addHideHandler(new FileSelectDialogHideHandler(dlg, listStore));
@@ -110,6 +115,9 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
 
     @UiHandler("deleteButton")
     void onDeleteButtonSelected(SelectEvent event) {
+        if (!addDeleteButtonsEnabled) {
+            return;
+        }
         for (DiskResource dr : grid.getSelectionModel().getSelectedItems()) {
             listStore.remove(dr);
         }
@@ -202,6 +210,10 @@ public class AppWizardMultiFileSelector extends Composite implements IsField<Lis
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<HasId>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    public void disableAddDeleteButtons() {
+        addDeleteButtonsEnabled = false;
     }
 
 }

@@ -13,6 +13,10 @@
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
         <ui:attributes width="1" height="-1" />
     </ui:with>
+    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData_END">
+        <ui:attributes width="1" height="1" />
+    </ui:with>
+ 
     <ui:with field="margins"
             type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="5"
@@ -89,11 +93,11 @@
                                  
                </form:FieldLabel>
 	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
+	        <con:child layoutData="{fieldLayoutData_END}">
 	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
 	        </con:child>
 	        
-	        <con:child layoutData="{fieldLayoutData}">
+	        <con:child layoutData="{fieldLayoutData_END}">
 	           <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
 	        </con:child>
             

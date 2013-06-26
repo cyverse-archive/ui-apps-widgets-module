@@ -143,6 +143,9 @@ public class AppWizardFieldFactory {
 
             case MultiFileSelector:
                 AppWizardMultiFileSelector awMultFileSel = new AppWizardMultiFileSelector();
+                if (editingMode) {
+                    awMultFileSel.disableAddDeleteButtons();
+                }
                 ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> multFileSelCfa = new ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector>(awMultFileSel,
                         new SplittableToHasIdListConverter());
                 field = applyDiskResourceListValidators(argument, multFileSelCfa);
