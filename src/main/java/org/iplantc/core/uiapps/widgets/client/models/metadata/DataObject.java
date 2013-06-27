@@ -11,10 +11,10 @@ public interface DataObject {
     void setFileInfoType(FileInfoTypeEnum fileInfoType);
     
     @PropertyName("data_source")
-    DataSource getDataSource();
+    DataSourceEnum getDataSource();
 
     @PropertyName("data_source")
-    void setDataSource(DataSource dataSource);
+    void setDataSource(DataSourceEnum dataSource);
 
     boolean isRetain();
 
@@ -25,10 +25,10 @@ public interface DataObject {
     void setFormat(String format);
 
     @PropertyName("is_implicit")
-    boolean isImplicit();
+    Boolean isImplicit();
 
     @PropertyName("is_implicit")
-    void setImplicit(boolean implicit);
+    void setImplicit(Boolean implicit);
 
     void setCmdSwitch(String string);
 

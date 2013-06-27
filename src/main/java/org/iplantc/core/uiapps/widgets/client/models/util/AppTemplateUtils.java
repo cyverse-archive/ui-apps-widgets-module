@@ -151,7 +151,11 @@ public class AppTemplateUtils {
     }
 
     public static boolean isDiskResourceArgumentType(ArgumentType type) {
-        return type.equals(ArgumentType.FileInput) || type.equals(ArgumentType.FolderInput) || type.equals(ArgumentType.MultiFileSelector) || type.equals(ArgumentType.FileOutput)
+        return type.equals(ArgumentType.FileInput) || type.equals(ArgumentType.FolderInput) || type.equals(ArgumentType.MultiFileSelector) || isDiskResourceOutputType(type);
+    }
+
+    public static boolean isDiskResourceOutputType(ArgumentType type) {
+        return type.equals(ArgumentType.FileOutput)
                 || type.equals(ArgumentType.FolderOutput) || type.equals(ArgumentType.MultiFileOutput);
     }
 

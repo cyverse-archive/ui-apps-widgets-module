@@ -52,6 +52,11 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        
+	        <con:child layoutData="{fieldLayoutData}">
+                <form:CheckBox ui:field="isImplicit" 
+                               boxLabel="Do not pass this argument to the command line"/>
+            </con:child>
+	        
 		    <!-- DefaultValue Editors -->
 	        <con:child layoutData="{fieldLayoutData}">
 	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
@@ -90,7 +95,16 @@
 	            </form:FieldLabel>
 	        </con:child>
 	        
-	        
+	        <con:child layoutData="{fieldLayoutData}">
+                <form:FieldLabel ui:field="dataSourceLabel" 
+                                 text="Source of Output"
+                                 labelAlign="TOP">
+                    <form:widget>
+                        <form:ComboBox ui:field="dataSourceComboBox"/>
+                    </form:widget>
+                </form:FieldLabel>
+            </con:child>
+            
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="fileInfoTypeLabel" 
                                  text="Type of information in this file"

@@ -1,6 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.models;
 
 import org.iplantc.core.uiapps.widgets.client.models.metadata.DataObject;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSource;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
@@ -31,5 +33,9 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
     AutoBean<FileInfoType> fileInfoType();
 
     AutoBean<FileInfoTypeList> fileInfoTypeList();
+
+    AutoBean<DataSource> dataSource();
+
+    AutoBean<DataSourceList> dataSourceList();
 
 }

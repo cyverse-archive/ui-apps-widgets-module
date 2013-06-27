@@ -8,6 +8,8 @@ import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSource;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperties;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
@@ -36,7 +38,9 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private final DeployedComponentServices dcServices = GWT.create(DeployedComponentServices.class);
     private final FileInfoTypeProperties fileInfoTypeProperties = GWT.create(FileInfoTypeProperties.class);
+    private final DataSourceProperties dataSourceProperties = GWT.create(DataSourceProperties.class);
     private final List<FileInfoType> fileInfoTypeList = Lists.newArrayList();
+    private final List<DataSource> dataSourceList = Lists.newArrayList();
 
     @Override
     public void getAppTemplate(HasId appId, AsyncCallback<AppTemplate> callback) {
@@ -169,6 +173,20 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
 
     }
 
+    @Override
+    public void getDataSources(AsyncCallback<List<DataSource>> callback) {
+        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/data-sources"; //$NON-NLS-1$
+
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+        if (!dataSourceList.isEmpty()) {
+            callback.onSuccess(dataSourceList);
+            return;
+        }
+
+        DEServiceFacade.getInstance().getServiceData(wrapper, new DataSourceCallbackConverter(dataSourceList, factory, callback));
+
+    }
+
     private Splittable appTemplateToSplittable(AppTemplate at){
         Splittable ret = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(at));
         if(at.getDeployedComponent() != null){
@@ -197,6 +215,11 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     @Override
     public FileInfoTypeProperties getFileInfoTypeProperties() {
         return fileInfoTypeProperties;
+    }
+
+    @Override
+    public DataSourceProperties getDataSourceProperties() {
+        return dataSourceProperties;
     }
 
 }
