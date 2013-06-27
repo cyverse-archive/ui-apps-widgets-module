@@ -1,5 +1,9 @@
 package org.iplantc.core.uiapps.widgets.client.models;
 
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataObject;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeList;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
@@ -23,5 +27,9 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
     AutoBean<DataObject> dataObject();
 
     AutoBean<JobExecution> jobExecution();
+
+    AutoBean<FileInfoType> fileInfoType();
+
+    AutoBean<FileInfoTypeList> fileInfoTypeList();
 
 }

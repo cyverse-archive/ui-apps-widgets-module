@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
-import org.iplantc.core.uiapps.widgets.client.models.DCProperties;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 
 import com.google.gwt.core.client.GWT;
@@ -128,7 +128,7 @@ public class DeployedComponentsListingViewImpl extends Composite implements
 
     @UiFactory
     ColumnModel<DeployedComponent> createColumnModel() {
-        DCProperties properties = GWT.create(DCProperties.class);
+        DeployedComponentProperties properties = GWT.create(DeployedComponentProperties.class);
         IdentityValueProvider<DeployedComponent> provider = new IdentityValueProvider<DeployedComponent>();
         List<ColumnConfig<DeployedComponent, ?>> configs = new LinkedList<ColumnConfig<DeployedComponent, ?>>();
 

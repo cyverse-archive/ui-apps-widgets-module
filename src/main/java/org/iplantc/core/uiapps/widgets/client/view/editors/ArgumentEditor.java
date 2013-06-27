@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -52,13 +53,13 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     private ClickHandler clickHandler;
 
-    ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
         con = new SimpleContainer();
         if (presenter.isEditingMode()) {
             con.sinkEvents(Event.MOUSEEVENTS);
             con.addStyleName(presenter.getSelectionCss().selectionTargetMargin());
-            argPropEditor = new ArgumentPropertyEditor(presenter, uuidService);
+            argPropEditor = new ArgumentPropertyEditor(presenter, uuidService, appMetadataService);
             clickHandler = new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {

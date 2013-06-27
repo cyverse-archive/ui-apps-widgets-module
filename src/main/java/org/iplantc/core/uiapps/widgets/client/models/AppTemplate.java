@@ -26,7 +26,6 @@ public interface AppTemplate extends HasId, HasLabel, HasName, HasDescription {
     @PropertyName("groups")
     void setArgumentGroups(List<ArgumentGroup> argumentGroups);
 
-    // JDS Not sure if this should just be a HasId.
     DeployedComponent getDeployedComponent();
 
     void setDeployedComponent(DeployedComponent deployedComponent);

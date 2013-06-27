@@ -89,6 +89,17 @@
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>
+	        
+	        
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:FieldLabel ui:field="fileInfoTypeLabel" 
+                                 text="Type of information in this file"
+                                 labelAlign="TOP">
+                    <form:widget>
+                        <form:ComboBox ui:field="fileInfoTypeComboBox"/>
+                    </form:widget>
+                </form:FieldLabel>
+	        </con:child>
         
 
 

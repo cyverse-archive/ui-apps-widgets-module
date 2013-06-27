@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view;
 
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;

@@ -14,11 +14,11 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.Argum
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
@@ -71,10 +71,10 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
     private Object valueChangeEventSource;
     
-    public AppTemplateWizard(boolean editingMode) {
+    public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         res.selectionCss().ensureInjected();
         this.editingMode = editingMode;
-        argumentGroups = new ArgumentGroupListEditor(this, GWT.<UUIDServiceAsync> create(UUIDService.class));
+        argumentGroups = new ArgumentGroupListEditor(this, uuidService, appMetadataService);
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {

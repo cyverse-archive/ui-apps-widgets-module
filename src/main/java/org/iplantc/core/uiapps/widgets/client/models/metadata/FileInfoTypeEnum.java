@@ -1,6 +1,6 @@
-package org.iplantc.core.uiapps.widgets.client.models;
+package org.iplantc.core.uiapps.widgets.client.models.metadata;
 
-public enum FileInfoType {
+public enum FileInfoTypeEnum {
     File, 
     ReferenceGenome,
     ReferenceSequence, 

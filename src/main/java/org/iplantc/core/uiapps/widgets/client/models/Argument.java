@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.models;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataObject;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.presenter.AppWizardPresenterJsonAdapter;
 import org.iplantc.core.uicommons.client.models.HasDescription;

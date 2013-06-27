@@ -1,14 +1,14 @@
-package org.iplantc.core.uiapps.widgets.client.models;
+package org.iplantc.core.uiapps.widgets.client.models.metadata;
 
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
 public interface DataObject {
 
     @PropertyName("file_info_type")
-    FileInfoType getFileInfoType();
+    FileInfoTypeEnum getFileInfoType();
     
     @PropertyName("file_info_type")
-    void setFileInfoType(FileInfoType fileInfoType);
+    void setFileInfoType(FileInfoTypeEnum fileInfoType);
     
     @PropertyName("data_source")
     DataSource getDataSource();

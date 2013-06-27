@@ -5,6 +5,7 @@ import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteE
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentGroupPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -46,7 +47,7 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
     @Path("")
     ArgumentGroupPropertyEditor argGrpPropEditor;
 
-    public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         ContentPanelAppearance cpAppearance;
         if (presenter.isEditingMode()) {
             cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
@@ -68,7 +69,7 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
             }
         };
 
-        argumentsEditor = new ArgumentListEditor(presenter, uuidService);
+        argumentsEditor = new ArgumentListEditor(presenter, uuidService, appMetadataService);
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
             groupField.getHeader().addStyleName(presenter.getSelectionCss().selectionTargetBg());

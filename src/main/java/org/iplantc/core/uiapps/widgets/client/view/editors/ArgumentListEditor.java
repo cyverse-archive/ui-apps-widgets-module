@@ -6,6 +6,7 @@ import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -164,16 +165,19 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         private final VerticalLayoutContainer con;
         private final AppTemplateWizardPresenter presenter;
         private final UUIDServiceAsync uuidService;
+        private final AppMetadataServiceFacade appMetadataService;
 
-        public PropertyListEditorSource(final VerticalLayoutContainer con, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+        public PropertyListEditorSource(final VerticalLayoutContainer con, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService,
+                final AppMetadataServiceFacade appMetadataService) {
             this.con = con;
             this.presenter = presenter;
             this.uuidService = uuidService;
+            this.appMetadataService = appMetadataService;
         }
 
         @Override
         public ArgumentEditor create(int index) {
-            final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService);
+            final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
@@ -201,13 +205,13 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
     private boolean fireSelectedOnAdd;
     private IconButton argDeleteBtn;
 
-    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         argumentsContainer = new VerticalLayoutContainer();
         initWidget(argumentsContainer);
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService, appMetadataService));
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers
