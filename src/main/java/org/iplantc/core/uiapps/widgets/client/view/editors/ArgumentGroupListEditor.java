@@ -148,13 +148,25 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
                     final ArgumentGroup argumentGroup = event.getArgumentGroup();
                     if (editor.getList().contains(argumentGroup)) {
                         // FIXME JDS Now check to see if it contains anything
+                        int indexRemoved = 0;
                         if ((argumentGroup.getArguments() != null) && (argumentGroup.getArguments().size() > 0)) {
                             // JDS Prompt user if they are ok with deleting a non-empty group
+                            indexRemoved = editor.getList().indexOf(argumentGroup);
                             editor.getList().remove(argumentGroup);
                         } else {
+                            indexRemoved = editor.getList().indexOf(argumentGroup);
                             editor.getList().remove(argumentGroup);
                         }
-                        presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(null));
+
+                        // JDS If possible, select the previous group, else, clear selection
+                        if (editor.getList().size() > 0) {
+                            int index = (indexRemoved > 0) ? indexRemoved - 1 : 0;
+                            ArgumentGroupEditor toBeSelected = editor.getEditors().get(index);
+                            presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(toBeSelected.getPropertyEditor()));
+                        } else {
+                            presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(null));
+
+                        }
                     }
                 }
             };
