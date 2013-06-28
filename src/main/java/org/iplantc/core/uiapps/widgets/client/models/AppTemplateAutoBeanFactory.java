@@ -8,6 +8,7 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemList;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
@@ -23,6 +24,8 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
     AutoBean<ArgumentValidator> argumentValidator();
 
     AutoBean<SelectionItem> selectionItem();
+
+    AutoBean<SelectionItemList> selectionItemList();
 
     AutoBean<SelectionItemGroup> selectionItemGroup();
 

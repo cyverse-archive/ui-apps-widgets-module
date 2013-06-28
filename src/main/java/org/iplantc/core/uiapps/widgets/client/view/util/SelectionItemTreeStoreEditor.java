@@ -36,6 +36,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
     private List<SelectionItem> model;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     boolean suppressValueChangeEventFire = false;
+    private boolean restoreCheckedSelectionFromTree;
 
     public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
         this.store = store;
@@ -53,14 +54,14 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
         if (!shouldFlush()) {
             return;
         }
-        suppressValueChangeEventFire = true;
+        setSuppressEvent(true);
         store.commitChanges();
 
         if (model != null) {
             model.clear();
             model.add(getCurrentTree());
         }
-        suppressValueChangeEventFire = false;
+        setSuppressEvent(false);
     }
 
     public SelectionItemGroup getCurrentTree() {
@@ -95,7 +96,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
             return;
         }
-        suppressValueChangeEventFire = true;
+        setSuppressEvent(true);
         model = value;
         SelectionItemGroup newRoot = null;
 
@@ -136,7 +137,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
         // JDS Propagate tree check style.
         setCheckStyle(newRoot.getSelectionCascade());
-        suppressValueChangeEventFire = false;
+        setSuppressEvent(false);
     }
 
 
@@ -225,8 +226,13 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
     }
 
     @Override
-    public boolean suppressEvent() {
+    public boolean isSuppressEvent() {
         return suppressValueChangeEventFire;
+    }
+
+    @Override
+    public void setSuppressEvent(boolean suppressValueChangeEventFire) {
+        this.suppressValueChangeEventFire = suppressValueChangeEventFire;
     }
 
 }

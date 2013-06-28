@@ -93,7 +93,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private Argument model;
 
-    private UUIDServiceAsync uuidService;
+    private final UUIDServiceAsync uuidService;
 
     protected int selectionItemCount = 1;
 
@@ -173,9 +173,9 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                  * the
                  * ValueChange event in order to propagate these changes throughout the editor hierarchy.
                  */
-                suppressEvent = true;
+                setSuppressEvent(true);
                 selectionItems.getStore().add(sa);
-                suppressEvent = false;
+                setSuppressEvent(false);
                 ValueChangeEvent.fire(SelectionItemPropertyEditor.this, selectionArgStore.getAll());
             }
 
@@ -257,8 +257,13 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
 
     @Override
-    public boolean suppressEvent() {
+    public boolean isSuppressEvent() {
         return suppressEvent;
+    }
+
+    @Override
+    public void setSuppressEvent(boolean suppressEventFire) {
+        this.suppressEvent = suppressEventFire;
     }
 
     private final class MyStoreHandler extends SelectionItemValueChangeStoreHandler {
@@ -296,16 +301,16 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             if (!shouldFlush()) {
                 return;
             }
-            suppressEvent = true;
+            setSuppressEvent(true);
             super.flush();
-            suppressEvent = false;
+            setSuppressEvent(false);
         }
     
         @Override
         public void setValue(List<SelectionItem> value) {
-            suppressEvent = true;
+            setSuppressEvent(true);
             super.setValue(value);
-            suppressEvent = false;
+            setSuppressEvent(false);
         }
     
         private boolean shouldFlush() {

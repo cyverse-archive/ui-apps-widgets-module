@@ -144,8 +144,10 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
                 }
                 if (AppTemplateUtils.isSimpleSelectionArgumentType(arg.getType())) {
                     value.assign(configSplit, arg.getId());
-                } else if (AppTemplateUtils.isDiskResourceArgumentType(arg.getType())) {
+                } else if (AppTemplateUtils.isDiskResourceArgumentType(arg.getType()) && !arg.getType().equals(ArgumentType.MultiFileSelector)) {
                     value.get("id").assign(configSplit, arg.getId());
+                } else if (arg.getType().equals(ArgumentType.MultiFileSelector) && value.isIndexed()) {
+                    value.assign(configSplit, arg.getId());
                 } else if (arg.getType().equals(ArgumentType.TreeSelection) && (arg.getSelectionItems() != null) && (arg.getSelectionItems().size() == 1)) {
                     SelectionItemGroup sig = AppTemplateUtils.selectionItemToSelectionItemGroup(arg.getSelectionItems().get(0));
                     Splittable sigSplit = AppTemplateUtils.getSelectedTreeItemsAsSplittable(sig);
