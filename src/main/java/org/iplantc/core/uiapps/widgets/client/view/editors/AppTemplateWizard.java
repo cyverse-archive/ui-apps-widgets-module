@@ -29,6 +29,8 @@ import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
@@ -157,12 +159,23 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         argumentGroups.collapseAllArgumentGroups();
     }
 
+    interface FieldLabelTextTemplates extends SafeHtmlTemplates {
+
+        @SafeHtmlTemplates.Template("<span style=\"color: red;\">&nbsp[NO TOOL SELECTED]</span>")
+        SafeHtml fieldLabelRequired();
+    }
+
+    private final FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class);
+
     @Override
     public void setValue(AppTemplate value) {
         this.appTemplate = value;
         if (isEditingMode()) {
             SafeHtmlBuilder labelText = new SafeHtmlBuilder();
             labelText.append(SafeHtmlUtils.fromString(value.getName()));
+            if (value.getDeployedComponent() == null) {
+                labelText.append(templates.fieldLabelRequired());
+            }
             con.setHeadingHtml(labelText.toSafeHtml());
         }
     }
