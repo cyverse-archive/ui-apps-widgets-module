@@ -116,6 +116,10 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
                         }
                         arg.setValue(StringQuoter.create(retVal.trim()));
                     }
+                } else if (arg.getType().equals(ArgumentType.EnvironmentVariable)) {
+                    // Exclude environment variables from the command line
+                    arg.setValue(null);
+                    arg.setName("");
                 }
             }
         }
