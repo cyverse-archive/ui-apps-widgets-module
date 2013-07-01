@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -42,8 +42,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
      * The live, bound backing object
      */
     private Argument model;
+    private final AppMetadataServiceFacade appMetadataService;
 
-    DefaultArgumentValueEditor(AppTemplateWizardPresenter presenter) {
+    DefaultArgumentValueEditor(final AppMetadataServiceFacade appMetadataService) {
+        this.appMetadataService = appMetadataService;
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
@@ -77,15 +79,27 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                     createDefaultValueSubEditor(model);
                     break;
 
+                case Output:
                 case FileOutput:
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Output file name");
+                    createDefaultValueSubEditor(model);
+                    break;
+
                 case FolderOutput:
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Output folder name");
+                    createDefaultValueSubEditor(model);
+                    break;
+                case MultiFileOutput:
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Output file names");
+                    createDefaultValueSubEditor(model);
+                    break;
+
                 case FileInput:
                 case FolderInput:
                 case MultiFileSelector:
                 case DoubleSelection:
                 case Info:
                 case IntegerSelection:
-                case Output:
                 case TreeSelection:
                 case Selection:
                 case TextSelection:
@@ -114,7 +128,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
-        subEditor = AppWizardFieldFactory.createArgumentValueField(argument, false);
+        subEditor = AppWizardFieldFactory.createArgumentValueField(argument, false, appMetadataService);
         if (subEditor != null) {
             // Apply any validators which may have been set at init-time
             if ((subEditor.getField() instanceof HasValueChangeHandlers) && !valueChangeHandlers.isEmpty()) {
@@ -134,12 +148,12 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
 
     @Override
     public void flush() {
-        Splittable split;
-        if (chain == null) {
+        Splittable split = null;
+        if ((chain == null) && (subEditor != null)) {
             // JDS If chain is null, then we flush manually.
             subEditor.flush();
             split = subEditor.getValue();
-        } else {
+        } else if (subEditor != null) {
             split = chain.getValue(subEditor);
         }
 

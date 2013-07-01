@@ -6,6 +6,8 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeList;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemList;
@@ -40,5 +42,9 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
     AutoBean<DataSource> dataSource();
 
     AutoBean<DataSourceList> dataSourceList();
+
+    AutoBean<ReferenceGenome> referenceGenome();
+
+    AutoBean<ReferenceGenomeList> referenceGenomeList();
 
 }

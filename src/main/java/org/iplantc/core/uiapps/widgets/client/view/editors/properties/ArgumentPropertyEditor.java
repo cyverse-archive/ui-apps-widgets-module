@@ -34,6 +34,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.event.StoreAddEvent;
 import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
@@ -115,7 +117,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
-        defaultValue = new DefaultArgumentValueEditor(presenter);
+        defaultValue = new DefaultArgumentValueEditor(appMetadataService);
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
         selectionItemDefaultValue = new AppWizardComboBox(presenter);
         selectionItemListEditor = new SelectionItemPropertyEditor(presenter, uuidService);
@@ -136,7 +138,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     }
 
     private ComboBox<FileInfoType> createFileInfoTypeComboBox(AppMetadataServiceFacade appMetadataService) {
-        FileInfoTypeProperties props = appMetadataService.getFileInfoTypeProperties();
+        final FileInfoTypeProperties props = appMetadataService.getFileInfoTypeProperties();
 
         final ListStore<FileInfoType> store = new ListStore<FileInfoType>(props.id());
         fileInfoTypeStoreAddHandlerReg = store.addStoreAddHandler(new StoreAddHandler<FileInfoType>() {
@@ -151,6 +153,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             public void onSuccess(List<FileInfoType> result) {
                 if (store.getAll().isEmpty()) {
                     store.addAll(result);
+                    store.addSortInfo(new StoreSortInfo<FileInfoType>(props.labelValue(), SortDir.ASC));
                 }
             }
 
@@ -172,7 +175,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     }
 
     private ComboBox<DataSource> createDataSourceComboBox(AppMetadataServiceFacade appMetadataService) {
-        DataSourceProperties props = appMetadataService.getDataSourceProperties();
+        final DataSourceProperties props = appMetadataService.getDataSourceProperties();
         final ListStore<DataSource> store = new ListStore<DataSource>(props.id());
         dataSourceStoreAddHandlerReg = store.addStoreAddHandler(new StoreAddHandler<DataSource>() {
             @Override
@@ -185,6 +188,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             public void onSuccess(List<DataSource> result) {
                 if (store.getAll().isEmpty()) {
                     store.addAll(result);
+                    store.addSortInfo(new StoreSortInfo<DataSource>(props.labelValue(), SortDir.ASC));
                 }
             }
 
@@ -317,6 +321,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         boolean isMultiSelectorType = value.getType().equals(ArgumentType.MultiFileSelector);
         boolean isTreeSelectionType = value.getType().equals(ArgumentType.TreeSelection);
         boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value.getType());
+
+        boolean isDiskResourceOutputType = AppTemplateUtils.isDiskResourceOutputType(value.getType());
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
@@ -329,7 +335,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 selectionItemDefaultValue = null;
                 selectionItemListEditor = null;
                 selectionItemTreeEditor = null;
-                if (isMultiSelectorType || isInfoType || isDiskResourceArgumentType || value.getType().equals(ArgumentType.FileOutput) || value.getType().equals(ArgumentType.FolderOutput)) {
+                if ((isDiskResourceArgumentType && !isDiskResourceOutputType) || isInfoType) {
                     con.remove(defaultValue);
                     defaultValue = null;
                 }
@@ -350,12 +356,12 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 defaultValue = null;
             }
 
-            // JDS Disable any controls which aren't for the current type
+            // DISABLE CONTROLS
             if (!isDiskResourceArgumentType) {
                 // This is only visible to Disk Resource types
                 fileInfoTypeLabel.setVisible(false);
             }
-            if (!AppTemplateUtils.isDiskResourceOutputType(value.getType())) {
+            if (!isDiskResourceOutputType) {
                 // This is only visible to Disk Resource output types
                 isImplicit.setVisible(false);
                 dataSourceLabel.setVisible(false);
@@ -367,6 +373,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case Selection:
                 case ValueSelection:
                 case TreeSelection:
+                    visible.setVisible(false);
                     nameLabel.disable();
                     break;
 
@@ -387,13 +394,13 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case FileInput:
                 case FolderInput:
                 case MultiFileSelector:
+                    visible.setVisible(false);
+                    break;
+
                 case Output:
                 case FileOutput:
                 case FolderOutput:
                 case MultiFileOutput:
-                    visible.setVisible(false);
-                    break;
-
                 case Double:
                 case EnvironmentVariable:
                 case Group:
@@ -412,6 +419,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     break;
                 case Info:
                     argLabelLabel.setText("Text");
+                    break;
 
                 default:
                     break;
@@ -431,6 +439,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             updateFileInfoTypeSelection(model);
             updateIsImplicit(model);
             updateDataSourceSelection(model);
+            if (isDiskResourceOutputType) {
+                defaultValue.setValue(model);
+            }
         } else {
             // It is not a selection type, nor a MultiFileSelector
             if (defaultValue == null) {

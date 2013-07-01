@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -46,9 +47,11 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
     
     private ClickHandler clickHandler;
     private final AppTemplateWizardPresenter presenter;
+    private final AppMetadataServiceFacade appMetadataService;
 
-    ArgumentValueEditor(final AppTemplateWizardPresenter presenter) {
+    ArgumentValueEditor(final AppTemplateWizardPresenter presenter, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
+        this.appMetadataService = appMetadataService;
         propertyLabel = new FieldLabel();
         initWidget(propertyLabel);
         propertyLabel.setLabelAlign(LabelAlign.TOP);
@@ -68,7 +71,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
 
         AppWizardFieldFactory.setDefaultValue(model);
         if ((subEditor == null) && !model.getType().equals(ArgumentType.Info)) {
-            subEditor = AppWizardFieldFactory.createArgumentValueField(model, presenter.isEditingMode());
+            subEditor = AppWizardFieldFactory.createArgumentValueField(model, presenter.isEditingMode(), appMetadataService);
             assert subEditor != null : "ArgumentValueEditor subEditor should not be null.";
             propertyLabel.setWidget(subEditor);
 

@@ -53,8 +53,11 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     private ClickHandler clickHandler;
 
+    private final AppMetadataServiceFacade appMetadataService;
+
     ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
+        this.appMetadataService = appMetadataService;
         con = new SimpleContainer();
         if (presenter.isEditingMode()) {
             con.sinkEvents(Event.MOUSEEVENTS);
@@ -98,7 +101,7 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
                 addClickHandler(argSelectionEditor);
                 con.add(argSelectionEditor);
             } else {
-                ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter);
+                ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter, appMetadataService);
                 subEditor = argValueEditor;
                 addClickHandler(argValueEditor);
                 con.add(argValueEditor);

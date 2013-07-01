@@ -6,13 +6,13 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
-public interface DataSourceProperties extends PropertyAccess<DataSource> {
+public interface ReferenceGenomeProperties extends PropertyAccess<ReferenceGenome> {
 
-    ModelKeyProvider<DataSource> id();
+    ModelKeyProvider<ReferenceGenome> id();
 
-    LabelProvider<DataSource> label();
+    LabelProvider<ReferenceGenome> name();
 
-    @Path("label")
-    ValueProvider<DataSource, String> labelValue();
+    @Path("name")
+    ValueProvider<ReferenceGenome, String> nameValue();
 
 }

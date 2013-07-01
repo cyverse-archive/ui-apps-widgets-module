@@ -13,6 +13,8 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperti
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
@@ -39,8 +41,10 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     private final DeployedComponentServices dcServices = GWT.create(DeployedComponentServices.class);
     private final FileInfoTypeProperties fileInfoTypeProperties = GWT.create(FileInfoTypeProperties.class);
     private final DataSourceProperties dataSourceProperties = GWT.create(DataSourceProperties.class);
+    private final ReferenceGenomeProperties referenceGenomeProperties = GWT.create(ReferenceGenomeProperties.class);
     private final List<FileInfoType> fileInfoTypeList = Lists.newArrayList();
     private final List<DataSource> dataSourceList = Lists.newArrayList();
+    private final List<ReferenceGenome> refGenList = Lists.newArrayList();
 
     @Override
     public void getAppTemplate(HasId appId, AsyncCallback<AppTemplate> callback) {
@@ -120,6 +124,11 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
                     // Exclude environment variables from the command line
                     arg.setValue(null);
                     arg.setName("");
+                } else if (AppTemplateUtils.isDiskResourceOutputType(arg.getType())) {
+                    if (arg.getDataObject().isImplicit()) {
+                        arg.setValue(null);
+                        arg.setName("");
+                    }
                 }
             }
         }
@@ -133,7 +142,7 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     @Override
     public void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback) {
         String address = DEProperties.getInstance().getMuleServiceBaseUrl() 
-                + "workspaces/" + je.getWorkspaceId() + "/newexperiment"; //$NON-NLS-1$
+                + "workspaces/" + je.getWorkspaceId() + "/newexperiment"; //$NON-NLS-1$ //$NON-NLS-2$
         Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(je));
         Splittable configSplit = StringQuoter.createSplittable();
         for (ArgumentGroup ag : at.getArgumentGroups()) {
@@ -167,7 +176,7 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
 
     @Override
     public void getFileInfoTypes(AsyncCallback<List<FileInfoType>> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/info-types";
+        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/info-types";//$NON-NLS-1$
         ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
 
         if (!fileInfoTypeList.isEmpty()) {
@@ -193,10 +202,24 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
 
     }
 
+    @Override
+    public void getReferenceGenomes(AsyncCallback<List<ReferenceGenome>> callback) {
+        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "reference-genomes"; //$NON-NLS-1$
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+
+        if (!refGenList.isEmpty()) {
+            callback.onSuccess(refGenList);
+            return;
+        }
+
+        DEServiceFacade.getInstance().getServiceData(wrapper, new ReferenceGenomeCallbackConverter(refGenList, factory, callback));
+
+    }
+
     private Splittable appTemplateToSplittable(AppTemplate at){
         Splittable ret = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(at));
         if(at.getDeployedComponent() != null){
-            StringQuoter.create(at.getDeployedComponent().getId()).assign(ret, "component_id");
+            StringQuoter.create(at.getDeployedComponent().getId()).assign(ret, "component_id");//$NON-NLS-1$
         }
         // JDS Convert Argument.getValue() which contain any selected/checked *Selection types to only
         // contain their value.
@@ -226,6 +249,11 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     @Override
     public DataSourceProperties getDataSourceProperties() {
         return dataSourceProperties;
+    }
+
+    @Override
+    public ReferenceGenomeProperties getReferenceGenomeProperties() {
+        return referenceGenomeProperties;
     }
 
 }

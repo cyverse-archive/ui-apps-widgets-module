@@ -6,7 +6,10 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardDiskResourceSelector;
@@ -22,7 +25,9 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.Splitt
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdListConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToIntegerConverter;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToReferenceGenomeConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
@@ -38,8 +43,14 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.Splittable;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
@@ -118,11 +129,13 @@ public class AppWizardFieldFactory {
      *            App editor, or not.
      * @return an {@link ArgumentValueField}-derived class which can be bound with a {@link Splittable}.
      */
-    public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode) {
+    public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode, final AppMetadataServiceFacade appMetadataService) {
         ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
         SpinnerField<Double> dblSpinnerField = new SpinnerField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
         SpinnerField<Integer> intSpinnerField = new SpinnerField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+        dblSpinnerField.setMinValue(-Double.MAX_VALUE);
+        intSpinnerField.setMinValue(Integer.MIN_VALUE);
         switch (argument.getType()) {
             case FileInput:
                 AppWizardFileSelector awFileSel = new AppWizardFileSelector();
@@ -212,6 +225,18 @@ public class AppWizardFieldFactory {
                 field = applyStringValidators(argument, outputCfa);
                 break;
 
+            case ReferenceAnnotation:
+            case ReferenceGenome:
+            case ReferenceSequence:
+                ReferenceGenomeProperties props = appMetadataService.getReferenceGenomeProperties();
+                final ListStore<ReferenceGenome> store = getReferenceGenomeStore(appMetadataService);
+                ComboBox<ReferenceGenome> comboBox = new ComboBox<ReferenceGenome>(store, props.name());
+                comboBox.setTriggerAction(TriggerAction.ALL);
+                ConverterFieldAdapter<ReferenceGenome, ComboBox<ReferenceGenome>> refGenCfa = new ConverterFieldAdapter<ReferenceGenome, ComboBox<ReferenceGenome>>(comboBox,
+                        new SplittableToReferenceGenomeConverter());
+                field = refGenCfa;
+                break;
+
             default:
                 GWT.log(AppWizardFieldFactory.class.getName() + ": Unknown " + ArgumentType.class.getName() + " type.");
                 field = null;
@@ -248,6 +273,32 @@ public class AppWizardFieldFactory {
         @SuppressWarnings("unchecked")
         T ret = (T)field;
         return ret;
+    }
+
+    private static ListStore<ReferenceGenome> refGenStore = null;
+
+    private static ListStore<ReferenceGenome> getReferenceGenomeStore(final AppMetadataServiceFacade appMetadataService) {
+        if (refGenStore == null) {
+            final ReferenceGenomeProperties referenceGenomeProperties = appMetadataService.getReferenceGenomeProperties();
+            refGenStore = new ListStore<ReferenceGenome>(referenceGenomeProperties.id());
+
+            appMetadataService.getReferenceGenomes(new AsyncCallback<List<ReferenceGenome>>() {
+
+                @Override
+                public void onSuccess(List<ReferenceGenome> result) {
+                    if (refGenStore.getAll().isEmpty()) {
+                        refGenStore.addAll(result);
+                        refGenStore.addSortInfo(new StoreSortInfo<ReferenceGenome>(referenceGenomeProperties.nameValue(), SortDir.ASC));
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
+                }
+            });
+        }
+        return refGenStore;
     }
 
     @SuppressWarnings("unchecked")

@@ -18,6 +18,9 @@ public enum ArgumentType {
     TreeSelection,
     Output,
  FileOutput, FolderOutput, MultiFileOutput,
+    ReferenceGenome,
+    ReferenceSequence, 
+    ReferenceAnnotation,
     // Legacy
     Selection, 
     ValueSelection,
