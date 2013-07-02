@@ -17,8 +17,10 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
+import org.iplantc.core.uicommons.client.util.RegExp;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.extjs.gxt.ui.client.util.Format;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -88,14 +90,8 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         je.setEmailNotificationEnabled(userSettings.isEnableEmailNotification());
         je.setWorkspaceId(userInfo.getWorkspaceId());
         // JDS Replace all Cmd Line restricted chars with underscores
-        String newName = appTemplate.getName();
-        for (char restricted : valConstants.restrictedCmdLineChars().toCharArray()) {
-            for (char next : appTemplate.getName().toCharArray()) {
-                if (next == restricted) {
-                    newName.replaceAll(String.valueOf(next), "_"); //$NON-NLS-1$
-                }
-            }
-        }
+        String regex = Format.substitute("[{0}]", RegExp.escapeCharacterClassSet(valConstants.restrictedCmdLineChars()));
+        String newName = appTemplate.getName().replaceAll(regex, "_");
         je.setName(newName + "_" + displayMessages.defaultAnalysisName()); //$NON-NLS-1$
         je.setOutputDirectory(userSettings.getDefaultOutputFolder());
 
