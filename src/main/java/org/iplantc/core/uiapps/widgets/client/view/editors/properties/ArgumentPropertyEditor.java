@@ -30,6 +30,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -423,6 +424,19 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
                 default:
                     break;
+            }
+
+            if (presenter.isOnlyLabelEditMode()) {
+                // Disable all controls, then re-enable valid controls
+                for (int i = 0; i < con.getWidgetCount(); i++) {
+                    Widget w = con.getWidget(i);
+                    if (w instanceof HasEnabled) {
+                        ((HasEnabled)w).setEnabled(false);
+                    }
+                }
+
+                argLabelLabel.enable();
+                descriptionLabel.enable();
             }
         }
 

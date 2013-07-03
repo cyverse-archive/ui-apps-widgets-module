@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -22,6 +23,9 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     private static AppTemplatePropertyEditorUiBinder BINDER = GWT.create(AppTemplatePropertyEditorUiBinder.class);
 
     interface AppTemplatePropertyEditorUiBinder extends UiBinder<Widget, AppTemplatePropertyEditor> {}
+
+    @UiField
+    FieldLabel toolLabel;
 
     @Ignore
     @UiField
@@ -64,6 +68,9 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
         if (value.getDeployedComponent() != null) {
             tool.setValue(value.getDeployedComponent().getName());
+        }
+        if (presenter.isOnlyLabelEditMode()) {
+            toolLabel.disable();
         }
     }
 

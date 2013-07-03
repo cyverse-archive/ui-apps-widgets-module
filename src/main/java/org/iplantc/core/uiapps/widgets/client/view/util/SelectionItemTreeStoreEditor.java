@@ -36,7 +36,6 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
     private List<SelectionItem> model;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     boolean suppressValueChangeEventFire = false;
-    private boolean restoreCheckedSelectionFromTree;
 
     public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
         this.store = store;

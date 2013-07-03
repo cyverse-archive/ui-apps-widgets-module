@@ -38,4 +38,8 @@ public interface AppTemplateWizardPresenter extends IsWidget {
 
     SelectionCss getSelectionCss();
 
+    boolean isOnlyLabelEditMode();
+
+    void setOnlyLabelEditMode(boolean onlyLabelEditMode);
+
 }

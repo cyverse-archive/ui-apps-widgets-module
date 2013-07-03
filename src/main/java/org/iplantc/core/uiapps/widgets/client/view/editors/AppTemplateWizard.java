@@ -166,6 +166,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
     }
 
     private final FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class);
+    private boolean onlyLabelEditMode = false;
 
     @Override
     public void setValue(AppTemplate value) {
@@ -252,5 +253,15 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
             GWT.log("Attempt to change app ID from \"" + appTemplate.getId() + "\" to \"" + id + "\"");
         }
 
+    }
+
+    @Override
+    public boolean isOnlyLabelEditMode() {
+        return onlyLabelEditMode;
+    }
+
+    @Override
+    public void setOnlyLabelEditMode(boolean onlyLabelEditMode) {
+        this.onlyLabelEditMode = onlyLabelEditMode;
     }
 }

@@ -48,7 +48,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
         @Override
         protected boolean verifyDragData(Object dragData) {
             // Only accept drag data which is an ArgumentGroup
-            return (dragData instanceof ArgumentGroup) && super.verifyDragData(dragData);
+            return (dragData instanceof ArgumentGroup) && super.verifyDragData(dragData) && !presenter.isOnlyLabelEditMode();
         }
 
         @Override

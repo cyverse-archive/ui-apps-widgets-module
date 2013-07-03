@@ -5,6 +5,7 @@ import java.util.List;
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
@@ -68,6 +69,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
                 if (child.isOrHasChild(target) && (target != button.getElement())) {
                     // Determine if button needs to be placed,
                     // if so, then place it.
+                    Argument arg = listEditor.getList().get(j);
+                    if (presenter.isOnlyLabelEditMode() && !arg.getType().equals(ArgumentType.Info)) {
+                        break;
+                    }
                     currentItemIndex = j;
                     button.setEnabled(true);
                     button.setVisible(true);
@@ -94,6 +99,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         @Override
         public void onSelect(SelectEvent event) {
             if (currentItemIndex >= 0) {
+                Argument arg = listEditor.getList().get(currentItemIndex);
+                if (presenter.isOnlyLabelEditMode() && !arg.getType().equals(ArgumentType.Info)) {
+                    return;
+                }
                 listEditor.getList().remove(currentItemIndex);
                 presenter.onArgumentPropertyValueChange();
 
@@ -133,7 +142,8 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         @Override
         protected boolean verifyDragData(Object dragData) {
             // Only accept drag data which is an Argument
-            return (dragData instanceof Argument) && super.verifyDragData(dragData);
+            return (dragData instanceof Argument) && super.verifyDragData(dragData)
+                    && (!presenter.isOnlyLabelEditMode() || (presenter.isOnlyLabelEditMode() && ((Argument)dragData).getType().equals(ArgumentType.Info)));
         }
 
         @Override

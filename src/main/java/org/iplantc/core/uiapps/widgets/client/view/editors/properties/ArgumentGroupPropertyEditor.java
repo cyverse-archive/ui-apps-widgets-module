@@ -14,6 +14,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -25,6 +26,10 @@ public class ArgumentGroupPropertyEditor extends Composite implements ValueAware
 
     @UiField
     TextField label;
+
+    @Ignore
+    @UiField
+    TextButton deleteButton;
 
     private final AppTemplateWizardPresenter presenter;
 
@@ -48,6 +53,9 @@ public class ArgumentGroupPropertyEditor extends Composite implements ValueAware
     @Override
     public void setValue(ArgumentGroup value) {
         this.model = value;
+        if (presenter.isOnlyLabelEditMode()) {
+            deleteButton.disable();
+        }
     }
 
     @Override

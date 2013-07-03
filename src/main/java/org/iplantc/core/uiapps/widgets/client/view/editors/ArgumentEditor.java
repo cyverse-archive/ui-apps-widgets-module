@@ -107,13 +107,11 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
                 con.add(argValueEditor);
             }
             subEditor.setValue(value);
-            setEnabled(value.isVisible());
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }
         } else {
             subEditor.setValue(value);
-            setEnabled(value.isVisible());
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }

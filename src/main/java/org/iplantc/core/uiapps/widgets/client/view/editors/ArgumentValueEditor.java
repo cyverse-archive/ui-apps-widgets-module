@@ -89,12 +89,22 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             
             subEditor.setValue(model.getValue());
             subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
-            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            HasEnabled w = (HasEnabled)subEditor.asWidget();
+            if (presenter.isOnlyLabelEditMode()) {
+                w.setEnabled(false);
+            } else {
+                w.setEnabled(value.isVisible());
+            }
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }
         } else if (!model.getType().equals(ArgumentType.Info)) {
-            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            HasEnabled w = (HasEnabled)subEditor.asWidget();
+            if (presenter.isOnlyLabelEditMode()) {
+                w.setEnabled(false);
+            } else {
+                w.setEnabled(value.isVisible());
+            }
             subEditor.setValue(model.getValue());
             subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
         }

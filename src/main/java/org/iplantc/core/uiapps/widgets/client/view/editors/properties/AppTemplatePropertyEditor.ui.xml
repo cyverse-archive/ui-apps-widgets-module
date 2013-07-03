@@ -38,7 +38,8 @@
             <con:VerticalLayoutContainer scrollMode="AUTOY"
                                          adjustForScroll="true">
                 <con:child layoutData="{fieldLayoutData}">
-                    <form:FieldLabel text="Tool Used"
+                    <form:FieldLabel ui:field="toolLabel"
+                                     text="Tool Used"
                                      labelAlign="TOP">
                                      
                         <form:widget>
