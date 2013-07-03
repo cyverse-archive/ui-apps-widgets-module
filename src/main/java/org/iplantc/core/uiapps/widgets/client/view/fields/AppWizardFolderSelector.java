@@ -59,7 +59,7 @@ public class AppWizardFolderSelector extends AppWizardDiskResourceSelector<Folde
             setSelectedResource(value);
             // cache the last used path
             if (userSettings.isRememberLastPath()) {
-                userSettings.setLastPathId(DiskResourceUtil.parseParent(value.getId()));
+                userSettings.setLastPathId(value.getId());
             }
             ValueChangeEvent.fire(AppWizardFolderSelector.this, value);
         }
