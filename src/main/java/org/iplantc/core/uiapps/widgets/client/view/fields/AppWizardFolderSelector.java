@@ -1,7 +1,10 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields;
 
+import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -11,9 +14,26 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
 public class AppWizardFolderSelector extends AppWizardDiskResourceSelector<Folder> {
 
+    UserSettings userSettings = UserSettings.getInstance();
+
     @Override
     protected void onBrowseSelected() {
-        FolderSelectDialog folderSD = new FolderSelectDialog(getValue());
+        HasId value = getValue();
+        FolderSelectDialog folderSD = null;
+        if (value != null) {
+            folderSD = new FolderSelectDialog(value);
+        } else {
+            if (userSettings.isRememberLastPath()) {
+                String id = userSettings.getLastPathId();
+                if (id != null) {
+                    folderSD = new FolderSelectDialog(CommonModelUtils.createHasIdFromString(id));
+                } else {
+                    folderSD = new FolderSelectDialog(null);
+                }
+            } else {
+                folderSD = new FolderSelectDialog(null);
+            }
+        }
         folderSD.addHideHandler(new FolderDialogHideHandler(folderSD));
         folderSD.show();
     }
@@ -32,11 +52,16 @@ public class AppWizardFolderSelector extends AppWizardDiskResourceSelector<Folde
 
         @Override
         public void onHide(HideEvent event) {
-            if (takesValue.getValue() == null)
+            Folder value = takesValue.getValue();
+            if (value == null)
                 return;
 
-            setSelectedResource(takesValue.getValue());
-            ValueChangeEvent.fire(AppWizardFolderSelector.this, takesValue.getValue());
+            setSelectedResource(value);
+            // cache the last used path
+            if (userSettings.isRememberLastPath()) {
+                userSettings.setLastPathId(DiskResourceUtil.parseParent(value.getId()));
+            }
+            ValueChangeEvent.fire(AppWizardFolderSelector.this, value);
         }
     }
 }
