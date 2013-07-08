@@ -34,6 +34,14 @@ public interface AppTemplateServices {
     void saveAndPublishAppTemplate(AppTemplate at, AsyncCallback<String> callback);
 
     /**
+     * Submits a published app template with non-functional changes.
+     * 
+     * @param at
+     * @param callback
+     */
+    void updateAppLabels(AppTemplate at, AsyncCallback<String> callback);
+
+    /**
      * Retrieves a UI preview of the given <code>AppTemplate</code>.
      * 
      * @param at the <code>AppTemplate</code> for which the preview should be produced.

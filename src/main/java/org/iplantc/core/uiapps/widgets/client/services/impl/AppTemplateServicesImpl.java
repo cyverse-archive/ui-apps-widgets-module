@@ -73,6 +73,15 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     }
     
     @Override
+    public void updateAppLabels(AppTemplate at, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "update-app-labels"; //$NON-NLS-1$
+        Splittable split = appTemplateToSplittable(at);
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.POST, address, split.getPayload());
+        callSecuredService(callback, wrapper);
+
+    }
+
+    @Override
     public void getAppTemplatePreview(AppTemplate at, AsyncCallback<AppTemplate> callback) {
         String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() 
                 + "preview-template"; //$NON-NLS-1$

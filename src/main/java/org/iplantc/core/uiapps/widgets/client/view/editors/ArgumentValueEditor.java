@@ -117,6 +117,10 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
         } else {
             propertyLabel.setHTML(fieldLabelText);
+            if (model.getType().equals(ArgumentType.Info)) {
+                propertyLabel.setLabelSeparator("");
+                propertyLabel.disable();
+            }
         }
 
     }

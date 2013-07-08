@@ -136,6 +136,7 @@ public class AppWizardFieldFactory {
         SpinnerField<Integer> intSpinnerField = new SpinnerField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
         dblSpinnerField.setMinValue(-Double.MAX_VALUE);
         intSpinnerField.setMinValue(Integer.MIN_VALUE);
+        NameValidator3 nameValidator = new NameValidator3();
         switch (argument.getType()) {
             case FileInput:
                 AppWizardFileSelector awFileSel = new AppWizardFileSelector();
@@ -167,16 +168,19 @@ public class AppWizardFieldFactory {
 
             case Text:
                 ConverterFieldAdapter<String, TextField> textCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
+                textCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, textCfa);
                 break;
 
             case EnvironmentVariable:
                 ConverterFieldAdapter<String, TextField> envCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
+                envCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, envCfa);
                 break;
 
             case MultiLineText:
                 ConverterFieldAdapter<String, TextArea> mltCfa = new ConverterFieldAdapter<String, TextArea>(new TextArea(), new SplittableToStringConverter());
+                mltCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, mltCfa);
                 break;
 
@@ -222,6 +226,7 @@ public class AppWizardFieldFactory {
             case MultiFileOutput:
             case Output:
                 ConverterFieldAdapter<String, TextField> outputCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
+                outputCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, outputCfa);
                 break;
 
