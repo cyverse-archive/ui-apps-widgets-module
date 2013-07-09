@@ -32,18 +32,17 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.shared.ListStore;
@@ -80,6 +79,8 @@ public class AppWizardFieldFactory {
     
     private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
     
+    private static ListStore<ReferenceGenome> refGenStore = null;
+
     /**
      * Returns an {@link Editor} which contains sub-editors which are bound to an {@link Argument}'s
      * {@link Argument#getSelectionItems()} and {@link Argument#getValue()} properties.
@@ -279,8 +280,6 @@ public class AppWizardFieldFactory {
         T ret = (T)field;
         return ret;
     }
-
-    private static ListStore<ReferenceGenome> refGenStore = null;
 
     private static ListStore<ReferenceGenome> getReferenceGenomeStore(final AppMetadataServiceFacade appMetadataService) {
         if (refGenStore == null) {
@@ -487,6 +486,8 @@ public class AppWizardFieldFactory {
             default:
                 throw new UnsupportedOperationException("Given validator type is not an Integer validator type.");
         }
+        AutoBean<ArgumentValidator> ab = AutoBeanUtils.getAutoBean(tv);
+        ab.setTag(ArgumentValidator.VALIDATOR, validator);
         return validator;
     }
 
@@ -514,18 +515,28 @@ public class AppWizardFieldFactory {
                 throw new UnsupportedOperationException("Given validator type is not a Double validator type.");
     
         }
+        AutoBean<ArgumentValidator> ab = AutoBeanUtils.getAutoBean(tv);
+        ab.setTag(ArgumentValidator.VALIDATOR, validator);
         return validator;
     }
 
     static Validator<String> createStringValidator(ArgumentValidator tv, ConverterFieldAdapter<String,?> cfa) {
+        AutoBean<ArgumentValidator> ab = AutoBeanUtils.getAutoBean(tv);
         Validator<String> validator;
         switch (tv.getType()) {
             case CharacterLimit:
                 // Array containing single integer
                 int min = Double.valueOf(tv.getParams().get(0).asNumber()).intValue();
                 // Add key down handler to prevent entry once limit is hit.
-                cfa.addKeyDownHandler(new PreventEntryAfterLimitHandler(cfa.getField(), min));
+                PreventEntryAfterLimitHandler handler = new PreventEntryAfterLimitHandler(cfa.getField(), min);
+                HandlerRegistration addKeyDownHandlerReg = cfa.addKeyDownHandler(handler);
+
                 validator = new MaxLengthValidator(min);
+
+                // JDS Add ArgumentValidator metadata
+                ab.setTag(ArgumentValidator.KEY_DOWN_HANDLER, handler);
+                ab.setTag(ArgumentValidator.KEY_DOWN_HANDLER_REG, addKeyDownHandlerReg);
+                ab.setTag(ArgumentValidator.VALIDATOR, validator);
                 break;
             case Regex:
                 // Array containing one string
@@ -539,23 +550,66 @@ public class AppWizardFieldFactory {
                 throw new UnsupportedOperationException("Given validator type is not a String validator type.");
     
         }
+        ab.setTag(ArgumentValidator.VALIDATOR, validator);
         return validator;
     }
     
-    static class PreventEntryAfterLimitHandler implements KeyDownHandler {
-        private final TakesValue<String> hasText;
-        private final int limit;
+    public static Validator<?> createValidator(ArgumentValidator av) {
+        AutoBean<ArgumentValidator> ab = AutoBeanUtils.getAutoBean(av);
+        Validator<?> validator;
+        switch (av.getType()) {
+            case IntRange:
+                // array of two integers
+                int minInt = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
+                int maxInt = Double.valueOf(av.getParams().get(1).asNumber()).intValue();
+                validator = new NumberRangeValidator<Integer>(minInt, maxInt);
+                break;
+            case IntAbove:
+                // array of one integer
+                int min2 = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
+                validator = new MinNumberValidator<Integer>(min2);
+                break;
+            case IntBelow:
+                // array of one integer
+                int max2 = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
+                validator = new MaxNumberValidator<Integer>(max2);
+                break;
+            case DoubleRange:
+                // Array of two doubles
+                double minDbl = Double.valueOf(av.getParams().get(0).asNumber());
+                double maxDbl = Double.valueOf(av.getParams().get(1).asNumber());
+                validator = new NumberRangeValidator<Double>(minDbl, maxDbl);
+                break;
+            case DoubleAbove:
+                // Array of one double
+                double minDbl2 = Double.valueOf(av.getParams().get(0).asNumber());
+                validator = new MinNumberValidator<Double>(minDbl2);
+                break;
+            case DoubleBelow:
+                // Array of one double
+                double maxDbl2 = Double.valueOf(av.getParams().get(0).asNumber());
+                validator = new MaxNumberValidator<Double>(maxDbl2);
+                break;
+            case CharacterLimit:
+                // Array containing single integer
+                int maxCharLimit = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
+                validator = new MaxLengthValidator(maxCharLimit);
 
-        public PreventEntryAfterLimitHandler(TakesValue<String> hasText, int limit) {
-            this.hasText = hasText;
-            this.limit = limit;
-        }
+                break;
+            case Regex:
+                // Array containing one string
+                String regex = av.getParams().get(0).asString();
+                validator = new RegExValidator(regex, "Input must match the Regular Expression: " + regex);
+                break;
+            case FileName:
+                validator = new NameValidator3();
+                break;
+            default:
+                throw new UnsupportedOperationException("Given validator type is not a String validator type.");
 
-        @Override
-        public void onKeyDown(KeyDownEvent event) {
-            if (!Strings.isNullOrEmpty(hasText.getValue()) && hasText.getValue().length() > limit) {
-                event.preventDefault();
-            }
         }
+        // JDS Add ArgumentValidator metadata
+        ab.setTag(ArgumentValidator.VALIDATOR, validator);
+        return validator;
     }
 }

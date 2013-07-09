@@ -9,4 +9,4 @@
  * @author jstroot
  * 
  */
-package org.iplantc.core.uiapps.widgets.client.view.editors.validation;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation;

@@ -203,7 +203,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     public void setValue(Argument value) {
         if((value == null) 
                 || ((value != null) 
- && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)))) {
+                && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)))) {
             return;
         }
         this.model = value;

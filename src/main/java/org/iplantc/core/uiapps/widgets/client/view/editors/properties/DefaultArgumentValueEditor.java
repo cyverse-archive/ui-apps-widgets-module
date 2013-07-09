@@ -12,6 +12,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.Splitt
 import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -120,10 +121,12 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                 propertyLabel.setLabelSeparator("");
                 ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
             }
-        }
-        Splittable defaultValue = model.getDefaultValue();
-        if ((subEditor != null) && (defaultValue != null)) {
+            Splittable defaultValue = model.getDefaultValue();
             subEditor.setValue(defaultValue);
+        } else {
+            Splittable defaultValue = model.getDefaultValue();
+            subEditor.setValue(defaultValue);
+            subEditor.applyValidators(model.getValidators());
         }
     }
 
@@ -148,14 +151,11 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
 
     @Override
     public void flush() {
-        Splittable split = null;
-        if ((chain == null) && (subEditor != null)) {
-            // JDS If chain is null, then we flush manually.
-            subEditor.flush();
-            split = subEditor.getValue();
-        } else if (subEditor != null) {
-            split = chain.getValue(subEditor);
+        if (subEditor == null) {
+            return;
         }
+        subEditor.flush();
+        Splittable split = subEditor.getValue();
 
         if (split != null) {
             model.setDefaultValue(split);
@@ -193,6 +193,10 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
             return subEditor.addValueChangeHandler(handler);
         }
         return null;
+    }
+
+    public List<EditorError> getErrors() {
+        return subEditor.getErrors();
     }
 
 }

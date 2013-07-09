@@ -55,6 +55,8 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     private final AppMetadataServiceFacade appMetadataService;
 
+    private EditorDelegate<Argument> delegate;
+
     ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
         this.appMetadataService = appMetadataService;
@@ -110,6 +112,9 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }
+
+            // JDS Manually set the subeditor delegate, since it is not bound.
+            subEditor.setDelegate(delegate);
         } else {
             subEditor.setValue(value);
             if (!presenter.isEditingMode()) {
@@ -125,7 +130,9 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
     }
 
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<Argument> delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public void flush() {
@@ -137,5 +144,14 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    public boolean hasErrors() {
+        if (subEditor instanceof ArgumentValueEditor) {
+            if (((ArgumentValueEditor)subEditor).hasErrors() || argPropEditor.hasErrors()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

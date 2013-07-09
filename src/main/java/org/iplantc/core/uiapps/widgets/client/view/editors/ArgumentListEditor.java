@@ -258,4 +258,13 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
     private boolean isFireSelectedOnAdd() {
         return fireSelectedOnAdd;
     }
+
+    public boolean hasErrors() {
+        for (ArgumentEditor ae : editor.getEditors()) {
+            if (ae.hasErrors()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

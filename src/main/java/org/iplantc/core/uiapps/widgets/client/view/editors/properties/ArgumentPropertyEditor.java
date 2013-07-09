@@ -5,6 +5,7 @@ import java.util.List;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSource;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperties;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
@@ -15,13 +16,14 @@ import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
-import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -44,6 +46,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 /**
@@ -115,6 +118,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     private HandlerRegistration fileInfoTypeStoreAddHandlerReg;
 
     private HandlerRegistration dataSourceStoreAddHandlerReg;
+
+    private EditorDelegate<Argument> delegate;
 
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
@@ -281,13 +286,24 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
+    @UiHandler("validatorsEditor")
+    void onValidatorListChanged(ValueChangeEvent<List<ArgumentValidator>> event) {
+        presenter.onArgumentPropertyValueChange(event.getSource());
+    }
+
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<Argument> delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public void flush() {
         if (defaultValue != null) {
             defaultValue.flush();
+            List<EditorError> errors = defaultValue.getErrors();
+            for (EditorError e : errors) {
+                delegate.recordError(e.getMessage(), e.getValue(), e.getEditor());
+            }
         } else if (selectionItemDefaultValue != null) {
             selectionItemDefaultValue.flush();
         }
@@ -305,8 +321,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     model.getDataObject().setDataSource(dataSource.getType());
                 }
             }
-
         }
+
     }
 
     @Override
@@ -366,6 +382,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 // This is only visible to Disk Resource output types
                 isImplicit.setVisible(false);
                 dataSourceLabel.setVisible(false);
+            }
+            if (!AppTemplateUtils.typeSupportsValidators(value.getType())) {
+                validatorsEditor.setVisible(false);
             }
             switch (value.getType()) {
                 case TextSelection:
@@ -442,8 +461,6 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
         this.model = value;
 
-        // FIXME JDS Visibility/Enabled of all property editors should be controlled here. I'm looking at you ArgumentValidatorEditor!!
-
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
             selectionItemDefaultValue.setValue(model);
@@ -505,6 +522,10 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         }
 
+    }
+
+    public boolean hasErrors() {
+        return !FormPanelHelper.isValid(con) || ((defaultValue.getErrors() != null) && !defaultValue.getErrors().isEmpty());
     }
 
 }

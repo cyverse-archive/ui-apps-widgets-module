@@ -9,6 +9,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -48,6 +49,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
     private ClickHandler clickHandler;
     private final AppTemplateWizardPresenter presenter;
     private final AppMetadataServiceFacade appMetadataService;
+    private EditorDelegate<Argument> delegate;
 
     ArgumentValueEditor(final AppTemplateWizardPresenter presenter, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
@@ -107,6 +109,12 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             }
             subEditor.setValue(model.getValue());
             subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
+
+            if (presenter.isEditingMode()) {
+                // JDS Re-apply validators if we are in editing mode.
+                subEditor.applyValidators(model.getValidators());
+                AppWizardFieldFactory.setRequiredValidator(model, subEditor);
+            }
         }
 
         // Update label
@@ -119,7 +127,6 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             propertyLabel.setHTML(fieldLabelText);
             if (model.getType().equals(ArgumentType.Info)) {
                 propertyLabel.setLabelSeparator("");
-                propertyLabel.disable();
             }
         }
 
@@ -127,6 +134,14 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
 
     @Override
     public void flush() {
+        if (subEditor == null) {
+            return;
+        }
+        subEditor.validate(false);
+        // JDS Transfer errors to delegate
+        for (EditorError err : subEditor.getErrors()) {
+            delegate.recordError(err.getMessage(), err.getValue(), err.getEditor());
+        }
         if (presenter.getValueChangeEventSource() != this) {
             return;
         }
@@ -147,7 +162,9 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
     }
 
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<Argument> delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
@@ -169,6 +186,11 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             reg = propertyLabel.addDomHandler(clickHandler, ClickEvent.getType());
         }
         return reg;
+    }
+
+    public boolean hasErrors() {
+        subEditor.validate(false);
+        return (subEditor.getErrors() != null) && !subEditor.getErrors().isEmpty();
     }
 
 }

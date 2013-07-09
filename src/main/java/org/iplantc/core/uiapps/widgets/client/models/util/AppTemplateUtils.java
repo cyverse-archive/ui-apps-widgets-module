@@ -164,6 +164,10 @@ public class AppTemplateUtils {
                 || type.equals(ArgumentType.Number) || type.equals(ArgumentType.Integer) || type.equals(ArgumentType.Double);
     }
 
+    public static boolean typeSupportsValidators(ArgumentType type) {
+        return type.equals(ArgumentType.Text) || type.equals(ArgumentType.Double) || type.equals(ArgumentType.Integer);
+    }
+
     public static List<SelectionItem> getSelectedTreeItems(SelectionItemGroup sig) {
         if ((sig == null) || (sig.getArguments() == null)) {
             return Collections.emptyList();

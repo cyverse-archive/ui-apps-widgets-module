@@ -22,6 +22,7 @@ import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -35,6 +36,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.core.client.dom.XElement;
+import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
@@ -87,7 +90,8 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         con = new ContentPanel(cpAppearance) {
             @Override
             protected void onClick(Event ce) {
-                if (header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
+                XElement element = XElement.as(header.getElement());
+                if (element.isOrHasChild(ce.getEventTarget().<Element> cast())) {
                     AppTemplateWizard.this.fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
                 }
             }
@@ -114,6 +118,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public void edit(AppTemplate apptemplate) {
         editorDriver.edit(apptemplate);
+        onArgumentPropertyValueChange();
         fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
     }
 
@@ -125,13 +130,30 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      * @return
      */
     public AppTemplate flushAppTemplate() {
-        return editorDriver.flush();
+        AppTemplate flush = editorDriver.flush();
+        if (hasErrors()) {
+            GWT.log("Editor has errors");
+            List<EditorError> errors = Lists.newArrayList();
+            errors.addAll(getErrors());
+            for (EditorError error : errors) {
+                GWT.log("\t-- " + ": " + error.getMessage());
+                if (error.getEditor() instanceof Component) {
+                    ((Component)error.getEditor()).focus();
+                    break;
+                }
+            }
+        }
+        return flush;
     }
 
     @Override
     public void onArgumentPropertyValueChange() {
         AppTemplate atTmp = flushAppTemplate();
         editorDriver.accept(new Refresher());
+        if (isEditingMode()) {
+            // JDS If in editing mode, refresh second time to sync editor error validation detection.
+            editorDriver.accept(new Refresher());
+        }
         fireEvent(new AppTemplateUpdatedEvent(this, atTmp));
         valueChangeEventSource = null;
     }

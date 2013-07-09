@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
@@ -11,7 +12,9 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHov
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
@@ -38,6 +41,9 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
 
         @SafeHtmlTemplates.Template("<span style=\"color: red; float: left;\">*&nbsp</span>")
         SafeHtml fieldLabelRequired();
+
+        @SafeHtmlTemplates.Template("<span style=\"color: red;\">&nbsp{0}</span>")
+        SafeHtml redText(String text);
     }
 
     private final ContentPanel groupField;
@@ -46,6 +52,7 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
 
     @Path("")
     ArgumentGroupPropertyEditor argGrpPropEditor;
+    private final ImageElement headerErrorIcon;
 
     public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         ContentPanelAppearance cpAppearance;
@@ -76,7 +83,8 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
             argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
             groupField.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         }
-
+        headerErrorIcon = Document.get().createImageElement();
+        headerErrorIcon.setSrc(IplantResources.RESOURCES.exclamation().getSafeUri().asString());
     }
     
     /**
@@ -91,6 +99,9 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
     @Override
     public void setValue(ArgumentGroup value) {
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
+        if (argumentsEditor.hasErrors()) {
+            labelText.appendHtmlConstant(headerErrorIcon.getString());
+        }
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {
                 // If any field is required, it needs to be marked as such.
@@ -99,7 +110,6 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
             }
         }
         // When the value is set, update the FieldSet header text
-        // groupField.setHeadingText(value.getLabel());
         labelText.appendEscaped(value.getLabel());
         groupField.setHeadingHtml(labelText.toSafeHtml());
     }

@@ -5,31 +5,32 @@
 	         xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
 	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
 	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties"
-	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.validation"
+	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation"
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
 	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees"
-	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields"
-	         >
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
-        <ui:attributes width="1" height="-1" />
-    </ui:with>
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData_END">
-        <ui:attributes width="1" height="1" />
-    </ui:with>
- 
+	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields">
+	         
     <ui:with field="margins"
-            type="com.sencha.gxt.core.client.util.Margins">
-      <ui:attributes top="5"
+             type="com.sencha.gxt.core.client.util.Margins">
+      <ui:attributes top="10"
                      right="5"
-                     bottom="5"
+                     bottom="10"
                      left="5" />
     </ui:with>
-    <ui:with field="marginData"
-             type="com.sencha.gxt.widget.core.client.container.MarginData">
-       <ui:attributes margins="{margins}"/>
+    <ui:with field="fieldLayoutData"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" >
+        <ui:attributes width="1" 
+                       height="-1" 
+                       margins="{margins}"/>
     </ui:with>
-      <gxt:ContentPanel headingText="Properties">
-        <gxt:child layoutData="{marginData}">
+    <ui:with field="fieldLayoutData_END"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+        <ui:attributes width="1" 
+                       height="1" 
+                       margins="{margins}"/>
+    </ui:with>
+ 
+    <gxt:ContentPanel headingText="Properties">
 	    <con:VerticalLayoutContainer ui:field="con" 
 	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
@@ -132,7 +133,6 @@
 	        </con:child>
             
 	    </con:VerticalLayoutContainer>
-	    </gxt:child>
 	 </gxt:ContentPanel>
 
 </ui:UiBinder> 

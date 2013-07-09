@@ -1,4 +1,4 @@
-package org.iplantc.core.uiapps.widgets.client.view.editors.validation;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation;
 
 import java.util.Map;
 import java.util.Set;
@@ -7,6 +7,7 @@ import org.iplantc.core.resources.client.uiapps.widgets.ArgumentValidatorMessage
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 
 import com.google.common.collect.Maps;
@@ -19,6 +20,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -42,6 +44,7 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
 
 // TODO JDS Consider renaming *AboveField and *BelowField to *LowerBoundField and *UpperBoundField
 /**
@@ -342,13 +345,18 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
             default:
                 break;
         }
-        ArgumentValidator av = factory.argumentValidator().as();
+        AutoBean<ArgumentValidator> avAutobean = factory.argumentValidator();
         // JDS Set a temporary id for this client-created validator. This is for client purposes, and
         // will be ignored if submitted to the server.
-        av.setId("TEMP_ID_" + System.currentTimeMillis());
-        av.setType(validatorTypeCB.getCurrentValue());
-        av.setParams(params);
-        return av;
+        avAutobean.as().setId("TEMP_ID_" + System.currentTimeMillis());
+        avAutobean.as().setType(validatorTypeCB.getCurrentValue());
+        avAutobean.as().setParams(params);
+
+        // JDS Get the actual validator, and add it as metadata to the autobean.
+        Validator<?> validator = AppWizardFieldFactory.createValidator(avAutobean.as());
+        avAutobean.setTag(ArgumentValidator.VALIDATOR, validator);
+
+        return avAutobean.as();
     }
 
 
