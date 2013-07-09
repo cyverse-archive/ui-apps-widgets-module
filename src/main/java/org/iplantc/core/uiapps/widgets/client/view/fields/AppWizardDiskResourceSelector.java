@@ -199,6 +199,12 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
         input.reset();
     }
 
+    public void addValidator(Validator<String> validator) {
+        if (validator != null) {
+            input.addValidator(validator);
+        }
+    }
+
     @Override
     public boolean isValid(boolean preventMark) {
         // If the input field is not valid, make a call to validate in order to
