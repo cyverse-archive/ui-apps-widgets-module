@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -95,6 +96,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
             }
         });
         awFolderSel.setInfoTextClassName(res.css().warning());
+        awFolderSel.addValidator(new AnalysisOutputValidator());
         editorDriver.initialize(this);
     }
 
@@ -105,6 +107,8 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
         } else {
             awFolderSel.setInfoText(null);
         }
+
+        awFolderSel.validate(false);
     }
 
     @UiHandler("name")
