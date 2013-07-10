@@ -22,7 +22,7 @@ public class AppWizardPreviewView extends Window {
     AppTemplateWizard wizard;
 
     public AppWizardPreviewView(AppTemplate appTemplate) {
-        wizard = new AppTemplateWizard(false);
+        wizard = new AppTemplateWizard(false, null, null);
         setWidget(BINDER.createAndBindUi(this));
         setHeadingText("Preview of " + appTemplate.getName());
         setSize("640", "375");

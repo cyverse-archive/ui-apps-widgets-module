@@ -1,4 +1,4 @@
-package org.iplantc.core.uiapps.widgets.client.view.editors.validation;
+package org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation;
 
 import java.util.List;
 import java.util.Set;
@@ -7,12 +7,17 @@ import org.iplantc.core.resources.client.uiapps.widgets.ArgumentValidatorMessage
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -25,7 +30,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -43,7 +48,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * @author jstroot
  * 
  */
-public class ArgumentValidatorEditor extends Composite implements ValueAwareEditor<Argument> {
+public class ArgumentValidatorEditor extends Composite implements ValueAwareEditor<Argument>, HasValueChangeHandlers<List<ArgumentValidator>> {
     
     interface MyUiBinder extends UiBinder<Widget, ArgumentValidatorEditor> {}
     private static MyUiBinder BINDER = GWT.create(MyUiBinder.class);
@@ -52,7 +57,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
     ListStore<ArgumentValidator> validatorStore;
 
     @UiField
-    SimpleContainer con;
+    NorthSouthContainer con;
 
     @Ignore
     @UiField
@@ -76,10 +81,11 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
 
     private final ArgumentValidatorMessages avMessages;
 
+    private Argument model;
+
     public ArgumentValidatorEditor(ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
         initWidget(BINDER.createAndBindUi(this));
-        grid.setHeight(100);
 
         // Add selection handler to grid to control enabled state of "edit" and "delete" buttons.
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ArgumentValidator>() {
@@ -122,24 +128,33 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
 
     @UiHandler("add")
     void onAddButtonSelected(SelectEvent event) {
-        AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
+       final  AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
         dlg.addOkButtonSelectHandler(new AddValidatorOkBtnSelectHndlr(dlg));
-        // Position dialog over this widget.
-        dlg.setPagePosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
+        dlg.addCancelButtonSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                //do nothing. just hide
+                dlg.hide();
+            }
+        });
         dlg.show();
     }
 
     @UiHandler("edit")
     void onEditButtonSelected(SelectEvent event) {
-        if (grid.getSelectionModel().getSelectedItem() == null) {
+        final ArgumentValidator selectedItem = grid.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
             return;
         }
+        // JDS Remove
+        final int selectedItemIndex = validators.getStore().indexOf(selectedItem);
+        validators.getStore().remove(selectedItem);
         AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
         dlg.addOkButtonSelectHandler(new AddValidatorOkBtnSelectHndlr(dlg));
+        dlg.addCancelButtonSelectHandler(new AddValidatorCancelBtnSelectHandler(selectedItemIndex, selectedItem));
 
-        dlg.setArgumentValidator(grid.getSelectionModel().getSelectedItem());
-        // Position dialog over this widget.
-        dlg.setPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
+        dlg.setArgumentValidator(selectedItem);
         dlg.show();
     }
 
@@ -166,35 +181,45 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
      */
     @Override
     public void setValue(Argument value) {
-        // Selectively instantiate the sub editor based on argument type
-        // Set supported validator types here.
-
-        switch (value.getType()) {
-            case Number:
-            case Double:
-                supportedValidatorTypes.add(ArgumentValidatorType.DoubleAbove);
-                supportedValidatorTypes.add(ArgumentValidatorType.DoubleBelow);
-                supportedValidatorTypes.add(ArgumentValidatorType.DoubleRange);
-                break;
-
-            case Integer:
-                supportedValidatorTypes.add(ArgumentValidatorType.IntAbove);
-                supportedValidatorTypes.add(ArgumentValidatorType.IntBelow);
-                supportedValidatorTypes.add(ArgumentValidatorType.IntRange);
-                break;
-
-            case Text:
-                supportedValidatorTypes.add(ArgumentValidatorType.CharacterLimit);
-                supportedValidatorTypes.add(ArgumentValidatorType.Regex);
-                break;
-
-            default:
-                // The current argument is not a valid type for this control.
-                // So, disable and hide ourself so the user doesn't see it.
-                con.setEnabled(false);
-                con.setVisible(false);
-                break;
+        if ((value == null) || !AppTemplateUtils.typeSupportsValidators(value.getType())) {
+            return;
         }
+
+        if (model == null) {
+            if (value.getValidators() == null) {
+                value.setValidators(Lists.<ArgumentValidator> newArrayList());
+            }
+            // Selectively instantiate the sub editor based on argument type
+            // Set supported validator types here.
+            switch (value.getType()) {
+                case Number:
+                case Double:
+                    supportedValidatorTypes.add(ArgumentValidatorType.DoubleAbove);
+                    supportedValidatorTypes.add(ArgumentValidatorType.DoubleBelow);
+                    supportedValidatorTypes.add(ArgumentValidatorType.DoubleRange);
+                    break;
+
+                case Integer:
+                    supportedValidatorTypes.add(ArgumentValidatorType.IntAbove);
+                    supportedValidatorTypes.add(ArgumentValidatorType.IntBelow);
+                    supportedValidatorTypes.add(ArgumentValidatorType.IntRange);
+                    break;
+
+                case Text:
+                    supportedValidatorTypes.add(ArgumentValidatorType.CharacterLimit);
+                    supportedValidatorTypes.add(ArgumentValidatorType.Regex);
+                    break;
+
+                default:
+                    // The current argument is not a valid type for this control.
+                    // So, disable and hide ourself so the user doesn't see it.
+                    con.setEnabled(false);
+                    con.setVisible(false);
+                    break;
+            }
+        }
+
+        this.model = value;
     }
 
     @Override
@@ -207,6 +232,11 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
 
     @Override
     public void onPropertyChange(String... arg0) {/* Do Nothing */}
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ArgumentValidator>> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
 
     private final class ValidatorValueProvider implements ValueProvider<ArgumentValidator, String> {
         @Override
@@ -270,16 +300,33 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
 
     private final class AddValidatorOkBtnSelectHndlr implements SelectHandler {
         private final AddValidatorDialog dlg;
-
+    
         public AddValidatorOkBtnSelectHndlr(final AddValidatorDialog dlg) {
             this.dlg = dlg;
         }
-
+    
         @Override
         public void onSelect(SelectEvent event) {
             // When ok button is selected, fetch the current argument validator and add it to the store.
             ArgumentValidator arg = dlg.getArgumentValidator();
-            validatorStore.add(arg);
+            validators.getStore().add(arg);
+            ValueChangeEvent.fire(ArgumentValidatorEditor.this, validators.getStore().getAll());
+        }
+    }
+
+    private final class AddValidatorCancelBtnSelectHandler implements SelectHandler {
+        private final int selectedItemIndex;
+        private final ArgumentValidator selectedItem;
+    
+        private AddValidatorCancelBtnSelectHandler(int selectedItemIndex, ArgumentValidator selectedItem) {
+            this.selectedItemIndex = selectedItemIndex;
+            this.selectedItem = selectedItem;
+        }
+    
+        @Override
+        public void onSelect(SelectEvent event) {
+            // JDS If we have cancelled, re-add the item at its prev index.
+            validators.getStore().add(selectedItemIndex, selectedItem);
         }
     }
 

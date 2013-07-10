@@ -150,13 +150,22 @@ public class AppTemplateUtils {
 
     }
 
-    public static boolean isDiskResourceArgumentType(Argument arg) {
-        return arg.getType().equals(ArgumentType.FileInput) || arg.getType().equals(ArgumentType.FolderInput);
+    public static boolean isDiskResourceArgumentType(ArgumentType type) {
+        return type.equals(ArgumentType.FileInput) || type.equals(ArgumentType.FolderInput) || type.equals(ArgumentType.MultiFileSelector) || isDiskResourceOutputType(type);
+    }
+
+    public static boolean isDiskResourceOutputType(ArgumentType type) {
+        return type.equals(ArgumentType.FileOutput)
+                || type.equals(ArgumentType.FolderOutput) || type.equals(ArgumentType.MultiFileOutput);
     }
 
     public static boolean isTextType(ArgumentType type) {
         return type.equals(ArgumentType.Text) || type.equals(ArgumentType.MultiLineText) || type.equals(ArgumentType.EnvironmentVariable) || type.equals(ArgumentType.Output)
                 || type.equals(ArgumentType.Number) || type.equals(ArgumentType.Integer) || type.equals(ArgumentType.Double);
+    }
+
+    public static boolean typeSupportsValidators(ArgumentType type) {
+        return type.equals(ArgumentType.Text) || type.equals(ArgumentType.Double) || type.equals(ArgumentType.Integer);
     }
 
     public static List<SelectionItem> getSelectedTreeItems(SelectionItemGroup sig) {

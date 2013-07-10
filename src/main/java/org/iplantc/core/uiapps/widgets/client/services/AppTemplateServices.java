@@ -1,7 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.services;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uicommons.client.models.HasId;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,6 +32,14 @@ public interface AppTemplateServices {
      * @param callback
      */
     void saveAndPublishAppTemplate(AppTemplate at, AsyncCallback<String> callback);
+
+    /**
+     * Submits a published app template with non-functional changes.
+     * 
+     * @param at
+     * @param callback
+     */
+    void updateAppLabels(AppTemplate at, AsyncCallback<String> callback);
 
     /**
      * Retrieves a UI preview of the given <code>AppTemplate</code>.
@@ -66,4 +74,5 @@ public interface AppTemplateServices {
      * @param callback
      */
     void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback);
+
 }

@@ -3,11 +3,13 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
-import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
+import org.iplantc.core.uicommons.client.validators.NameValidator3;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -80,6 +82,8 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
         res = GWT.create(Resources.class);
         res.css().ensureInjected();
         BINDER.createAndBindUi(this);
+        name.addValidator(new NameValidator3());
+        name.setAllowBlank(false);
         outputDirectory = new ConverterEditorAdapter<String, HasId, AppWizardFolderSelector>(awFolderSel, new Converter<String, HasId>() {
             @Override
             public String convertFieldValue(HasId object) {
@@ -92,6 +96,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
             }
         });
         awFolderSel.setInfoTextClassName(res.css().warning());
+        awFolderSel.addValidator(new AnalysisOutputValidator());
         editorDriver.initialize(this);
     }
 
@@ -102,6 +107,8 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
         } else {
             awFolderSel.setInfoText(null);
         }
+
+        awFolderSel.validate(false);
     }
 
     @UiHandler("name")

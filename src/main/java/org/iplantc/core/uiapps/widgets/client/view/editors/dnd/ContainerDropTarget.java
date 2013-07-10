@@ -33,8 +33,8 @@ public class ContainerDropTarget<W extends Container> extends DropTarget {
             return;
         }
 
-        event.setCancelled(true);
         event.getStatusProxy().setStatus(false);
+        event.setCancelled(true);
     }
 
     @Override
@@ -60,7 +60,9 @@ public class ContainerDropTarget<W extends Container> extends DropTarget {
 
     @Override
     protected void showFeedback(DndDragMoveEvent event) {
-        event.getStatusProxy().setStatus(true);
+        if (event.isCancelled()) {
+            return;
+        }
         EventTarget target = event.getDragMoveEvent().getNativeEvent().getEventTarget();
 
         if (feedback == Feedback.INSERT || feedback == Feedback.BOTH) {

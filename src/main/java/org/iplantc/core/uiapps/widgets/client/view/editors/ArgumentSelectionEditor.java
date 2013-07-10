@@ -98,12 +98,22 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
 
             // TODO JDS Determine how "required" field validation must occur.
             subEditor.setValue(model);
-            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            HasEnabled w = ((HasEnabled)subEditor.asWidget());
+            if (presenter.isOnlyLabelEditMode()) {
+                w.setEnabled(false);
+            } else {
+                w.setEnabled(value.isVisible());
+            }
             // TODO JDS Determine if Tool Tips should/can be applied.
         } else {
             // TODO JDS Determine if Tool Tips should/can be applied.
             subEditor.setValue(model);
-            ((HasEnabled)subEditor.asWidget()).setEnabled(value.isVisible());
+            HasEnabled w = ((HasEnabled)subEditor.asWidget());
+            if (presenter.isOnlyLabelEditMode()) {
+                w.setEnabled(false);
+            } else {
+                w.setEnabled(value.isVisible());
+            }
         }
         // Update label
         SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(model);

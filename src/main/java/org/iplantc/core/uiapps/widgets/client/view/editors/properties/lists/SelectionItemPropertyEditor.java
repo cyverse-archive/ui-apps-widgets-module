@@ -37,7 +37,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -65,7 +65,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     ListStore<SelectionItem> selectionArgStore;
 
     @UiField
-    SimpleContainer con;
+    NorthSouthContainer con;
 
     @Ignore
     @UiField
@@ -93,21 +93,21 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private Argument model;
 
-    private UUIDServiceAsync uuidService;
+    private final UUIDServiceAsync uuidService;
 
     protected int selectionItemCount = 1;
 
     public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         this.uuidService = uuidService;
         initWidget(BINDER.createAndBindUi(this));
-        grid.setHeight(100);
 
         editing = new GridInlineEditing<SelectionItem>(grid);
         ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);
         TextField field = new TextField();
         field.setSelectOnFocus(true);
-        editing.addEditor(displayCol, field);
+        editing.addEditor(valueCol, field);
         editing.addEditor(nameCol, field);
+        
 
         // Add selection handler to grid to control enabled state of "delete" button
         grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionChangedHandler());
@@ -155,7 +155,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                 sa.setId(result.get(0));
                 sa.setDefault(false);
                 sa.setDescription("Default Description");
-                sa.setDisplay("Default Display " + selectionItemCount++);
+                sa.setValue("Value " + selectionItemCount++);
 
                 /*
                  * JDS Suppress ValueChange event, then manually fire afterward.
@@ -173,9 +173,9 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                  * the
                  * ValueChange event in order to propagate these changes throughout the editor hierarchy.
                  */
-                suppressEvent = true;
+                setSuppressEvent(true);
                 selectionItems.getStore().add(sa);
-                suppressEvent = false;
+                setSuppressEvent(false);
                 ValueChangeEvent.fire(SelectionItemPropertyEditor.this, selectionArgStore.getAll());
             }
 
@@ -203,32 +203,32 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     public void setValue(Argument value) {
         if((value == null) 
                 || ((value != null) 
- && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)))) {
+                && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)))) {
             return;
         }
         this.model = value;
 
         // May be able to set the proper editor by adding it at this time. The column model will use the
         // value as a String, but I can adjust the editing to be string, integer, double.
-        if (editing.getEditor(valueCol) == null) {
+        if (editing.getEditor(displayCol) == null) {
             switch (model.getType()) {
                 case Selection:
                 case TextSelection:
                     TextField textField = new TextField();
                     textField.setSelectOnFocus(true);
-                    editing.addEditor(valueCol, textField);
+                    editing.addEditor(displayCol, textField);
                     break;
 
                 case DoubleSelection:
                     NumberField<Double> dblField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
                     dblField.setSelectOnFocus(true);
-                    editing.addEditor(valueCol, new StringToDoubleConverter(), dblField);
+                    editing.addEditor(displayCol, new StringToDoubleConverter(), dblField);
                     break;
 
                 case IntegerSelection:
                     NumberField<Integer> intField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
                     intField.setSelectOnFocus(true);
-                    editing.addEditor(valueCol, new StringToIntegerConverter(), intField);
+                    editing.addEditor(displayCol, new StringToIntegerConverter(), intField);
                     break;
 
                 default:
@@ -257,8 +257,13 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
 
     @Override
-    public boolean suppressEvent() {
+    public boolean isSuppressEvent() {
         return suppressEvent;
+    }
+
+    @Override
+    public void setSuppressEvent(boolean suppressEventFire) {
+        this.suppressEvent = suppressEventFire;
     }
 
     private final class MyStoreHandler extends SelectionItemValueChangeStoreHandler {
@@ -296,16 +301,16 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             if (!shouldFlush()) {
                 return;
             }
-            suppressEvent = true;
+            setSuppressEvent(true);
             super.flush();
-            suppressEvent = false;
+            setSuppressEvent(false);
         }
     
         @Override
         public void setValue(List<SelectionItem> value) {
-            suppressEvent = true;
+            setSuppressEvent(true);
             super.setValue(value);
-            suppressEvent = false;
+            setSuppressEvent(false);
         }
     
         private boolean shouldFlush() {

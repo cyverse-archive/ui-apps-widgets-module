@@ -14,14 +14,15 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.Argum
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -29,10 +30,14 @@ import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.core.client.dom.XElement;
+import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
@@ -71,10 +76,10 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
     private Object valueChangeEventSource;
     
-    public AppTemplateWizard(boolean editingMode) {
+    public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         res.selectionCss().ensureInjected();
         this.editingMode = editingMode;
-        argumentGroups = new ArgumentGroupListEditor(this, GWT.<UUIDServiceAsync> create(UUIDService.class));
+        argumentGroups = new ArgumentGroupListEditor(this, uuidService, appMetadataService);
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
@@ -85,7 +90,8 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         con = new ContentPanel(cpAppearance) {
             @Override
             protected void onClick(Event ce) {
-                if (header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
+                XElement element = XElement.as(header.getElement());
+                if (element.isOrHasChild(ce.getEventTarget().<Element> cast())) {
                     AppTemplateWizard.this.fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
                 }
             }
@@ -112,6 +118,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public void edit(AppTemplate apptemplate) {
         editorDriver.edit(apptemplate);
+        fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
     }
 
     /**
@@ -122,13 +129,31 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      * @return
      */
     public AppTemplate flushAppTemplate() {
-        return editorDriver.flush();
+        AppTemplate flush = editorDriver.flush();
+        if (hasErrors()) {
+            editorDriver.accept(new Refresher());
+            GWT.log("Editor has errors");
+            List<EditorError> errors = Lists.newArrayList();
+            errors.addAll(getErrors());
+            for (EditorError error : errors) {
+                GWT.log("\t-- " + ": " + error.getMessage());
+                if (error.getEditor() instanceof Component) {
+                    ((Component)error.getEditor()).focus();
+                    break;
+                }
+            }
+        }
+        return flush;
     }
 
     @Override
     public void onArgumentPropertyValueChange() {
         AppTemplate atTmp = flushAppTemplate();
         editorDriver.accept(new Refresher());
+        if (isEditingMode()) {
+            // JDS If in editing mode, refresh second time to sync editor error validation detection.
+            editorDriver.accept(new Refresher());
+        }
         fireEvent(new AppTemplateUpdatedEvent(this, atTmp));
         valueChangeEventSource = null;
     }
@@ -156,12 +181,24 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         argumentGroups.collapseAllArgumentGroups();
     }
 
+    interface FieldLabelTextTemplates extends SafeHtmlTemplates {
+
+        @SafeHtmlTemplates.Template("<span style=\"color: red;\">&nbsp[NO TOOL SELECTED]</span>")
+        SafeHtml fieldLabelRequired();
+    }
+
+    private final FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class);
+    private boolean onlyLabelEditMode = false;
+
     @Override
     public void setValue(AppTemplate value) {
         this.appTemplate = value;
         if (isEditingMode()) {
             SafeHtmlBuilder labelText = new SafeHtmlBuilder();
             labelText.append(SafeHtmlUtils.fromString(value.getName()));
+            if (value.getDeployedComponent() == null) {
+                labelText.append(templates.fieldLabelRequired());
+            }
             con.setHeadingHtml(labelText.toSafeHtml());
         }
     }
@@ -238,5 +275,15 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
             GWT.log("Attempt to change app ID from \"" + appTemplate.getId() + "\" to \"" + id + "\"");
         }
 
+    }
+
+    @Override
+    public boolean isOnlyLabelEditMode() {
+        return onlyLabelEditMode;
+    }
+
+    @Override
+    public void setOnlyLabelEditMode(boolean onlyLabelEditMode) {
+        this.onlyLabelEditMode = onlyLabelEditMode;
     }
 }

@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields.util.converters;
 
+import com.google.common.base.Strings;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.Converter;
@@ -16,10 +17,20 @@ public class SplittableToDoubleConverter implements Converter<Splittable, Double
 
     @Override
     public Double convertModelValue(Splittable object) {
-        if ((object == null) || !object.isNumber())
+        if (object == null)
             return null;
 
-        return Double.valueOf(object.asNumber());
+        Double dblValue = null;
+        if (object.isNumber()) {
+            dblValue = Double.valueOf(object.asNumber());
+        } else if (object.isString() && !Strings.isNullOrEmpty(object.asString())) {
+            try {
+                dblValue = Double.valueOf(object.asString());
+            } catch (NumberFormatException e) {
+                dblValue = null;
+            }
+        }
+        return dblValue;
     }
 
 }

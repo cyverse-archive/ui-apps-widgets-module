@@ -5,34 +5,85 @@
 	         xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
 	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
 	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties"
-	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.validation"
+	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation"
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
 	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees"
-	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields"
-	         >
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData">
-        <ui:attributes width="1" height="-1" />
-    </ui:with>
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="fieldLayoutData_END">
-        <ui:attributes width="1" height="1" />
-    </ui:with>
- 
+	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields">
+	         
     <ui:with field="margins"
-            type="com.sencha.gxt.core.client.util.Margins">
-      <ui:attributes top="5"
+             type="com.sencha.gxt.core.client.util.Margins">
+      <ui:attributes top="10"
                      right="5"
-                     bottom="5"
+                     bottom="10"
                      left="5" />
     </ui:with>
-    <ui:with field="marginData"
-             type="com.sencha.gxt.widget.core.client.container.MarginData">
-       <ui:attributes margins="{margins}"/>
+    <ui:with field="marginsBottom"
+             type="com.sencha.gxt.core.client.util.Margins">
+      <ui:attributes top="0"
+                     right="5"
+                     bottom="0"
+                     left="5" />
     </ui:with>
-      <gxt:ContentPanel headingText="Properties">
-        <gxt:child layoutData="{marginData}">
+    <ui:with field="fieldLayoutData"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" >
+        <ui:attributes width="1" 
+                       height="-1" 
+                       margins="{margins}"/>
+    </ui:with>
+    <ui:with field="fieldLayoutData_END"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+        <ui:attributes width="1" 
+                       height="1"
+                       margins="{marginsBottom}"/>
+    </ui:with>
+ 
+    <gxt:ContentPanel headingText="Properties">
 	    <con:VerticalLayoutContainer ui:field="con" 
 	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:FieldLabel ui:field="argLabelLabel" 
+	                             text="Label"
+	                             labelAlign="TOP">
+	                <form:widget>
+	                    <form:TextField ui:field="label"/>
+	                </form:widget>
+	            </form:FieldLabel>
+	        </con:child>
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:FieldLabel ui:field="nameLabel"
+	                             text="Command line option"
+	                             labelAlign="TOP">
+	                <form:widget>
+	                    <form:TextField ui:field="name"/>
+	                </form:widget>
+	            </form:FieldLabel>
+	        </con:child>
+	        
+	        <con:child layoutData="{fieldLayoutData}">
+                <form:CheckBox ui:field="isImplicit" 
+                               boxLabel="Do not pass this argument to the command line"/>
+            </con:child>
+	        
+		    <!-- DefaultValue Editors -->
+	        <con:child layoutData="{fieldLayoutData}">
+	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
+	        </con:child>
+		    <con:child layoutData="{fieldLayoutData}">
+	           <form:FieldLabel text="Default Value"
+	                            ui:field="selectionItemDefaultValueLabel"
+                                labelAlign="TOP">
+                    <form:widget>
+			           <fields:AppWizardComboBox ui:field="selectionItemDefaultValue"/>
+                    </form:widget>
+                                 
+               </form:FieldLabel>
+	        </con:child>                
+
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:CheckBox ui:field="visible" 
+	                           boxLabel="Display in GUI"/>
+	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:CheckBox ui:field="requiredEditor" 
 	                           boxLabel="This field is required"/>
@@ -42,57 +93,41 @@
 	                           boxLabel="Exclude Argument when empty"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="visible" 
-	                           boxLabel="Display in GUI"/>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel ui:field="argLabelLabel" 
-	                             text="Argument label"
-	                             labelAlign="TOP">
-	                <form:widget>
-	                    <form:TextField ui:field="label"/>
-	                </form:widget>
-	            </form:FieldLabel>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="descriptionLabel" 
 	                             text="Tool tip text"
 	                             labelAlign="TOP">
 	                <form:widget>
-	                    <form:TextField ui:field="description"/>
+	                    <form:TextField ui:field="description"
+	                                    emptyText="Enter tooltip here"/>
 	                </form:widget>
 	            </form:FieldLabel>
-	        </con:child>
-	        <con:child layoutData="{fieldLayoutData}">
-	            <form:FieldLabel ui:field="nameLabel"
-	                             text="Argument option"
-	                             labelAlign="TOP">
-	                <form:widget>
-	                    <form:TextField ui:field="name"/>
-	                </form:widget>
-	            </form:FieldLabel>
-	        </con:child>
-        
-	        <!-- DefaultValue Editor -->
-	        <con:child layoutData="{fieldLayoutData}">
-	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
 	        </con:child>
 	        
-	        <!-- Argument Validator Editor -->
 	        <con:child layoutData="{fieldLayoutData}">
+                <form:FieldLabel ui:field="dataSourceLabel" 
+                                 text="Source of Output"
+                                 labelAlign="TOP">
+                    <form:widget>
+                        <form:ComboBox ui:field="dataSourceComboBox"/>
+                    </form:widget>
+                </form:FieldLabel>
+            </con:child>
+            
+	        <con:child layoutData="{fieldLayoutData}">
+	            <form:FieldLabel ui:field="fileInfoTypeLabel" 
+                                 text="Type of information in this file"
+                                 labelAlign="TOP">
+                    <form:widget>
+                        <form:ComboBox ui:field="fileInfoTypeComboBox"/>
+                    </form:widget>
+                </form:FieldLabel>
+	        </con:child>
+
+	        <!-- Argument Validator Editor -->
+	        <con:child layoutData="{fieldLayoutData_END}">
 	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
 	        </con:child>
-	        
-	        <con:child layoutData="{fieldLayoutData}">
-	           <form:FieldLabel text="Default Value"
-	                            ui:field="selectionItemDefaultValueLabel"
-                                labelAlign="TOP">
-                    <form:widget>
-			           <fields:AppWizardComboBox ui:field="selectionItemDefaultValue"/>
-                    </form:widget>
-                                 
-               </form:FieldLabel>
-	        </con:child>
+
 	        <con:child layoutData="{fieldLayoutData_END}">
 	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
 	        </con:child>
@@ -102,7 +137,6 @@
 	        </con:child>
             
 	    </con:VerticalLayoutContainer>
-	    </gxt:child>
 	 </gxt:ContentPanel>
 
 </ui:UiBinder> 

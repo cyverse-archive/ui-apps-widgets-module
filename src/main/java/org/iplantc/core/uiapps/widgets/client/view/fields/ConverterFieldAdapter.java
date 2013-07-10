@@ -2,7 +2,12 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.core.uiapps.widgets.client.view.fields.util.PreventEntryAfterLimitHandler;
+
 import com.google.common.collect.Lists;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
@@ -15,7 +20,10 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.Component;
@@ -33,18 +41,23 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
  * @param <U>
  * @param <F>
  */
-public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U> & HasValueChangeHandlers<U>> extends ConverterEditorAdapter<Splittable, U, F> implements ArgumentValueField,
+// public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U> &
+// HasValueChangeHandlers<U>> extends ConverterEditorAdapter<Splittable, U, F> implements
+// ArgumentValueField,
+public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U> & HasValueChangeHandlers<U> & TakesValue<U>> extends ConverterEditorAdapter<Splittable, U, F> implements
+        ArgumentValueField,
  HasKeyDownHandlers {
 
     protected final F field;
     private Splittable model;
-    private List<EditorError> errors;
+    private final List<EditorError> errors;
     private EditorDelegate<Splittable> delegate;
     private final HandlerManager handlerManager;
 
     public ConverterFieldAdapter(F field, Converter<Splittable, U> converter) {
         super(field, converter);
         this.field = field;
+        errors = Lists.newArrayList();
         handlerManager = new HandlerManager(this);
         this.field.addValueChangeHandler(new ValueChangeHandler<U>() {
             @Override
@@ -59,11 +72,16 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     public void flush() {
         field.flush();
         model = getConverter().convertFieldValue(field.getValue());
-        validate(false);
+        boolean isValid = validate(false);
 
-        if (errors != null) {
+        if (!isValid) {
+            GWT.log("Not valid");
+        }
+        if ((errors != null) && (delegate != null)) {
             for (EditorError e : errors) {
-                delegate.recordError(e.getMessage(), e.getValue(), this);
+                String message = e.getMessage();
+                Object value = e.getValue();
+                delegate.recordError(message, value, this);
             }
         }
     }
@@ -106,7 +124,7 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
 
     @Override
     public boolean isValid(boolean preventMark) {
-        boolean valid = field.isValid(preventMark);
+        boolean valid = field.validate(preventMark);
         transferErrorsToDelegate();
         return valid;
     }
@@ -120,11 +138,18 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
 
     @SuppressWarnings("unchecked")
     private void transferErrorsToDelegate() {
-        errors = Lists.newArrayList();
-        if (!(field instanceof Field<?>)) {
+        errors.clear();
+        List<Validator<U>> validators = Lists.newArrayList();
+        if (field instanceof Field<?>) {
+            validators.addAll(((Field<U>)field).getValidators());
+        } else if (field instanceof AppWizardDiskResourceSelector<?>) {
+            for (Validator<String> v : ((AppWizardDiskResourceSelector<?>)field).getValidators()) {
+                validators.add((Validator<U>)v);
+            }
+        } else {
             return;
         }
-        for (Validator<U> v : ((Field<U>)field).getValidators()) {
+        for (Validator<U> v : validators) {
             List<EditorError> errs = v.validate(field, field.getValue());
             if (errs != null) {
                 errors.addAll(errs);
@@ -141,7 +166,62 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     public void addValidator(Validator<U> validator) {
         if(field instanceof Field<?>){
             ((Field<U>)field).addValidator(validator);
+        } else if (field instanceof AppWizardDiskResourceSelector<?>) {
+            ((AppWizardDiskResourceSelector<?>)field).addValidator((Validator<String>)validator);
         }
+    }
+
+    @Override
+    public void applyValidators(List<ArgumentValidator> validators) {
+        if (validators == null) {
+            return;
+        }
+        if (field instanceof Field<?>) {
+            @SuppressWarnings("unchecked")
+            Field<U> fieldObj = (Field<U>)field;
+
+            // JDS Clear all existing validators
+            fieldObj.getValidators().clear();
+
+            for (ArgumentValidator av : validators) {
+                AutoBean<ArgumentValidator> autoBean = AutoBeanUtils.getAutoBean(av);
+
+                if (av.getType().equals(ArgumentValidatorType.CharacterLimit)) {
+                    // Remove previous keyDown handler (if it exists)
+                    Object hndlrReg = autoBean.getTag(ArgumentValidator.KEY_DOWN_HANDLER_REG);
+                    if ((hndlrReg != null)) {
+                        ((HandlerRegistration)hndlrReg).removeHandler();
+                    }
+
+                    // Re-apply the keyDown handler (if it exists)
+                    Object keyDownHndlr = autoBean.getTag(ArgumentValidator.KEY_DOWN_HANDLER);
+                    if (keyDownHndlr != null) {
+                        HandlerRegistration newHndlrReg = addKeyDownHandler((KeyDownHandler)keyDownHndlr);
+                        autoBean.setTag(ArgumentValidator.KEY_DOWN_HANDLER_REG, newHndlrReg);
+                    } else {
+                        int maxCharLimit = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
+                        @SuppressWarnings("unchecked")
+                        TakesValue<String> takesValue = (TakesValue<String>)field;
+                        PreventEntryAfterLimitHandler newHandler = new PreventEntryAfterLimitHandler(takesValue, maxCharLimit);
+                        HandlerRegistration newHndlrReg = addKeyDownHandler(newHandler);
+                        autoBean.setTag(ArgumentValidator.KEY_DOWN_HANDLER_REG, newHndlrReg);
+                        autoBean.setTag(ArgumentValidator.KEY_DOWN_HANDLER, newHandler);
+                    }
+
+                }
+
+                // Re-apply the actual validator
+                Object validator = autoBean.getTag(ArgumentValidator.VALIDATOR);
+                if (validator != null) {
+                    @SuppressWarnings("unchecked")
+                    Validator<U> val = (Validator<U>)validator;
+                    addValidator(val);
+                }
+            }
+        }
+
+        validate(false);
+
     }
 
     @Override
@@ -165,6 +245,11 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Splittable> handler) {
         return handlerManager.addHandler(ValueChangeEvent.getType(), handler);
+    }
+
+    @Override
+    public List<EditorError> getErrors() {
+        return errors;
     }
 
 }

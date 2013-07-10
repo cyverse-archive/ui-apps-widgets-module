@@ -1,5 +1,6 @@
-package org.iplantc.core.uiapps.widgets.client.models;
+package org.iplantc.core.uiapps.widgets.client.models.metadata;
 
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uicommons.client.models.HasDescription;
 
 import com.google.gwt.user.client.ui.HasName;

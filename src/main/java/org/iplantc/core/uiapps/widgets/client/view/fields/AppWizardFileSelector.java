@@ -3,7 +3,9 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
 import com.google.common.collect.Lists;
@@ -14,6 +16,8 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
 public class AppWizardFileSelector extends AppWizardDiskResourceSelector<File> {
 
+    UserSettings userSettings = UserSettings.getInstance();
+
     @Override
     protected void onBrowseSelected() {
         List<HasId> selected = null;
@@ -23,8 +27,21 @@ public class AppWizardFileSelector extends AppWizardDiskResourceSelector<File> {
             selected = Lists.newArrayList();
             selected.add(value);
         }
-
-        FileSelectDialog fileSD = FileSelectDialog.singleSelect(selected);
+        FileSelectDialog fileSD = null;
+        if (selected != null && selected.size() > 0) {
+            fileSD = FileSelectDialog.singleSelect(selected);
+        } else {
+            if (userSettings.isRememberLastPath()) {
+                String id = userSettings.getLastPathId();
+                if (id != null) {
+                    fileSD = FileSelectDialog.selectParentFolderById(id);
+                } else {
+                    fileSD = FileSelectDialog.singleSelect(null);
+                }
+            } else {
+                fileSD = FileSelectDialog.singleSelect(null);
+            }
+        }
         fileSD.addHideHandler(new FileDialogHideHandler(fileSD));
         fileSD.show();
     }
@@ -42,8 +59,13 @@ public class AppWizardFileSelector extends AppWizardDiskResourceSelector<File> {
                 return;
 
             // This class is single select, so only grab first element
-            setSelectedResource(takesValue.getValue().get(0));
-            ValueChangeEvent.fire(AppWizardFileSelector.this, takesValue.getValue().get(0));
+            File selectedResource = takesValue.getValue().get(0);
+            setSelectedResource(selectedResource);
+            // cache the last used path
+            if (userSettings.isRememberLastPath()) {
+                userSettings.setLastPathId(DiskResourceUtil.parseParent(selectedResource.getId()));
+            }
+            ValueChangeEvent.fire(AppWizardFileSelector.this, selectedResource);
         }
     }
 }

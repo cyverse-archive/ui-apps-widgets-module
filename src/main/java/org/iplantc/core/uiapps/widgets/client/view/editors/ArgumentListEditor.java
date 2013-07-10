@@ -5,7 +5,9 @@ import java.util.List;
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -67,6 +69,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
                 if (child.isOrHasChild(target) && (target != button.getElement())) {
                     // Determine if button needs to be placed,
                     // if so, then place it.
+                    Argument arg = listEditor.getList().get(j);
+                    if (presenter.isOnlyLabelEditMode() && !arg.getType().equals(ArgumentType.Info)) {
+                        break;
+                    }
                     currentItemIndex = j;
                     button.setEnabled(true);
                     button.setVisible(true);
@@ -93,14 +99,24 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         @Override
         public void onSelect(SelectEvent event) {
             if (currentItemIndex >= 0) {
+                Argument arg = listEditor.getList().get(currentItemIndex);
+                if (presenter.isOnlyLabelEditMode() && !arg.getType().equals(ArgumentType.Info)) {
+                    return;
+                }
                 listEditor.getList().remove(currentItemIndex);
                 presenter.onArgumentPropertyValueChange();
 
                 /*
                  * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers that
-                 * the selection should be cleared
+                 * the selection should be cleared, or the previous argument selected, if possible.
                  */
-                presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
+                if (listEditor.getList().size() > 0) {
+                    int index = (currentItemIndex > 0) ? currentItemIndex - 1 : 0;
+                    ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
+                    presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
+                } else {
+                    presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
+                }
             }
         }
     }
@@ -115,6 +131,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
         private final AppTemplateWizardPresenter presenter;
         private final ListEditor<Argument, ArgumentEditor> listEditor;
+        private int argCountInt = 1;
 
         private ArgListEditorDropTarget(VerticalLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<Argument, ArgumentEditor> editor) {
             super(container);
@@ -125,7 +142,8 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         @Override
         protected boolean verifyDragData(Object dragData) {
             // Only accept drag data which is an Argument
-            return (dragData instanceof Argument) && super.verifyDragData(dragData);
+            return (dragData instanceof Argument) && super.verifyDragData(dragData)
+                    && (!presenter.isOnlyLabelEditMode() || (presenter.isOnlyLabelEditMode() && ((Argument)dragData).getType().equals(ArgumentType.Info)));
         }
 
         @Override
@@ -133,6 +151,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             super.onDragDrop(event);
             List<Argument> list = listEditor.getList();
             Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
+
+            // Update new argument label.
+            String label = newArg.getLabel() + " - " + argCountInt++;
+            newArg.setLabel(label);
 
             if (list != null) {
                 // JDS Protect against OBOB issues (caused by argument delete button, which is actually a
@@ -153,16 +175,19 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         private final VerticalLayoutContainer con;
         private final AppTemplateWizardPresenter presenter;
         private final UUIDServiceAsync uuidService;
+        private final AppMetadataServiceFacade appMetadataService;
 
-        public PropertyListEditorSource(final VerticalLayoutContainer con, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+        public PropertyListEditorSource(final VerticalLayoutContainer con, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService,
+                final AppMetadataServiceFacade appMetadataService) {
             this.con = con;
             this.presenter = presenter;
             this.uuidService = uuidService;
+            this.appMetadataService = appMetadataService;
         }
 
         @Override
         public ArgumentEditor create(int index) {
-            final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService);
+            final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
@@ -190,13 +215,13 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
     private boolean fireSelectedOnAdd;
     private IconButton argDeleteBtn;
 
-    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         argumentsContainer = new VerticalLayoutContainer();
         initWidget(argumentsContainer);
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService, appMetadataService));
 
         if (presenter.isEditingMode()) {
             // If in editing mode, add drop target and DnD handlers
@@ -232,5 +257,14 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
     private boolean isFireSelectedOnAdd() {
         return fireSelectedOnAdd;
+    }
+
+    public boolean hasErrors() {
+        for (ArgumentEditor ae : editor.getEditors()) {
+            if (ae.hasErrors()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

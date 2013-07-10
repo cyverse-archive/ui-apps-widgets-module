@@ -53,14 +53,14 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
         if (!shouldFlush()) {
             return;
         }
-        suppressValueChangeEventFire = true;
+        setSuppressEvent(true);
         store.commitChanges();
 
         if (model != null) {
             model.clear();
             model.add(getCurrentTree());
         }
-        suppressValueChangeEventFire = false;
+        setSuppressEvent(false);
     }
 
     public SelectionItemGroup getCurrentTree() {
@@ -95,7 +95,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
             return;
         }
-        suppressValueChangeEventFire = true;
+        setSuppressEvent(true);
         model = value;
         SelectionItemGroup newRoot = null;
 
@@ -136,7 +136,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
         // JDS Propagate tree check style.
         setCheckStyle(newRoot.getSelectionCascade());
-        suppressValueChangeEventFire = false;
+        setSuppressEvent(false);
     }
 
 
@@ -225,8 +225,13 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
     }
 
     @Override
-    public boolean suppressEvent() {
+    public boolean isSuppressEvent() {
         return suppressValueChangeEventFire;
+    }
+
+    @Override
+    public void setSuppressEvent(boolean suppressValueChangeEventFire) {
+        this.suppressValueChangeEventFire = suppressValueChangeEventFire;
     }
 
 }

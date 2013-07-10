@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -52,13 +53,18 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     private ClickHandler clickHandler;
 
-    ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    private final AppMetadataServiceFacade appMetadataService;
+
+    private EditorDelegate<Argument> delegate;
+
+    ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
+        this.appMetadataService = appMetadataService;
         con = new SimpleContainer();
         if (presenter.isEditingMode()) {
             con.sinkEvents(Event.MOUSEEVENTS);
             con.addStyleName(presenter.getSelectionCss().selectionTargetMargin());
-            argPropEditor = new ArgumentPropertyEditor(presenter, uuidService);
+            argPropEditor = new ArgumentPropertyEditor(presenter, uuidService, appMetadataService);
             clickHandler = new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -80,7 +86,6 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
         /*
          * 1. Have to determine which non-bound argument "editor" will need to be used. Once it is
          * chosen, we need to set its value.
-         * ----- NOTE: We may want to only instantiate the "editor" in this method.
          * 
          * 2. After this first step, each subsequent call to this method will need to pass the given
          * value to the chosen "editor"
@@ -98,19 +103,20 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
                 addClickHandler(argSelectionEditor);
                 con.add(argSelectionEditor);
             } else {
-                ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter);
+                ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter, appMetadataService);
                 subEditor = argValueEditor;
                 addClickHandler(argValueEditor);
                 con.add(argValueEditor);
             }
             subEditor.setValue(value);
-            setEnabled(value.isVisible());
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }
+
+            // JDS Manually set the subeditor delegate, since it is not bound.
+            subEditor.setDelegate(delegate);
         } else {
             subEditor.setValue(value);
-            setEnabled(value.isVisible());
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }
@@ -124,7 +130,9 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
     }
 
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<Argument> delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public void flush() {
@@ -136,5 +144,14 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    public boolean hasErrors() {
+        if (subEditor instanceof ArgumentValueEditor) {
+            if (((ArgumentValueEditor)subEditor).hasErrors() || ((argPropEditor != null) && argPropEditor.hasErrors())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

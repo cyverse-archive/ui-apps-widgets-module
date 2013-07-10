@@ -3,8 +3,6 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.core.jsonutil.JsonUtil;
-import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
@@ -13,14 +11,12 @@ import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
@@ -37,10 +33,10 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  * 
  */
 public class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueChangeHandlers<List<SelectionItem>> {
-    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private SelectionItemGroup root;
     private Command updateCmd;
     private boolean forceSingleSelection = false;
+    private boolean restoreCheckedSelectionFromTree;
 
     public SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
         super(store, valueProvider);
@@ -146,15 +142,6 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
     }
 
     /**
-     * Resets the tree's contents with the SelectionItems in the given root JSON string.
-     * 
-     * @param root A JSON string of a SelectionItemGroup.
-     */
-    public void setItems(String json) {
-        setItems(AutoBeanCodex.decode(factory, SelectionItemGroup.class, json).as());
-    }
-
-    /**
      * Resets the tree's contents with the SelectionItems in the given root.
      * 
      * @param root A SelectionItemGroup containing the items to populate in this tree.
@@ -174,7 +161,10 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
 
         if (root.getGroups() != null) {
             for (SelectionItemGroup group : root.getGroups()) {
-                defaultSelection.addAll(addGroupToStore(null, group));
+                List<SelectionItem> addGroupToStore = addGroupToStore(null, group);
+                if (restoreCheckedSelectionFromTree) {
+                    defaultSelection.addAll(addGroupToStore);
+                }
             }
         }
 
@@ -182,13 +172,15 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
             for (SelectionItem ruleArg : root.getArguments()) {
                 store.add(ruleArg);
 
-                if (ruleArg.isDefault()) {
+                if (restoreCheckedSelectionFromTree && ruleArg.isDefault()) {
                     defaultSelection.add(ruleArg);
+                } else if (!restoreCheckedSelectionFromTree && ruleArg.isDefault()) {
+                    ruleArg.setDefault(false);
                 }
             }
         }
 
-        if (!defaultSelection.isEmpty()) {
+        if (restoreCheckedSelectionFromTree && !defaultSelection.isEmpty()) {
             setCheckedSelection(defaultSelection);
         }
     }
@@ -228,7 +220,10 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
 
             if (group.getGroups() != null) {
                 for (SelectionItemGroup child : group.getGroups()) {
-                    defaultSelection.addAll(addGroupToStore(group, child));
+                    List<SelectionItem> addGroupToStore = addGroupToStore(group, child);
+                    if (restoreCheckedSelectionFromTree) {
+                        defaultSelection.addAll(addGroupToStore);
+                    }
                 }
             }
 
@@ -236,13 +231,15 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
                 for (SelectionItem child : group.getArguments()) {
                     store.add(group, child);
 
-                    if (child.isDefault()) {
+                    if (restoreCheckedSelectionFromTree && child.isDefault()) {
                         defaultSelection.add(child);
+                    } else if (!restoreCheckedSelectionFromTree && child.isDefault()) {
+                        child.setDefault(false);
                     }
                 }
             }
 
-            if (group.isDefault()) {
+            if (restoreCheckedSelectionFromTree && group.isDefault()) {
                 defaultSelection.add(group);
             }
         }
@@ -287,39 +284,17 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         }
     }
 
-    /**
-     * Sets the tree's checked selection with the SelectionItems in the given JSON Array string.
-     * 
-     * @param value A string representation of a JSON Array of the values to select.
-     */
-    public void setSelection(String value) {
-        if (value == null || value.isEmpty()) {
-            return;
-        }
+    public void setSelection(List<SelectionItem> items) {
 
-        try {
-            JSONArray selectedValues = JSONParser.parseStrict(value).isArray();
-
-            if (selectedValues != null && selectedValues.size() > 0) {
-                TreeStore<SelectionItem> treeStore = getStore();
-
-                for (int i = 0; i < selectedValues.size(); i++) {
-                    JSONObject jsonRule = JsonUtil.getObjectAt(selectedValues, i);
-
-                    if (jsonRule != null) {
-                        SelectionItem ruleArg = AutoBeanCodex.decode(factory, SelectionItem.class,
-                                jsonRule.toString()).as();
-
-                        // Ensure the actual model used in the store is the one sent in checked events.
-                        setChecked(treeStore.findModelWithKey(ruleArg.getId()), CheckState.CHECKED);
-                    }
-                }
-
-                callCheckChangedUpdateCommand();
+        for (SelectionItem si : items) {
+            SelectionItem found = getStore().findModelWithKey(si.getId());
+            if (found != null) {
+                setChecked(found, CheckState.CHECKED);
+                setExpanded(found, true);
+            } else {
+                GWT.log("SelectionItemTree.setSelection(List<SelectionItem>) => Given SelectionItem could not be found. SelectionItem = \""
+                        + AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si)).getPayload());
             }
-        } catch (Exception e) {
-            // ignore JSON parse errors
-            GWT.log("Ignore JSON parse errors" + e.getMessage());
         }
     }
 
@@ -341,5 +316,17 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    /**
+     * Sets a variable which controls whether the tree's checked selections will be restored from a given
+     * tree in {@link #setItems(SelectionItemGroup)}.
+     * 
+     * @param restoreCheckedSelectionFromTree if true, the tree's selections will be set from the items
+     *            marked as "isDefault" true in the given tree passed into
+     *            {@link #setItems(SelectionItemGroup)}
+     */
+    public void setRestoreCheckedSelectionFromTree(boolean restoreCheckedSelectionFromTree) {
+        this.restoreCheckedSelectionFromTree = restoreCheckedSelectionFromTree;
     }
 }

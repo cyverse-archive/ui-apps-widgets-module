@@ -5,28 +5,48 @@ import java.util.List;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSource;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperties;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
-import org.iplantc.core.uiapps.widgets.client.view.editors.validation.ArgumentValidatorEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.data.shared.event.StoreAddEvent;
+import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 /**
@@ -45,6 +65,10 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     @UiField
     CheckBox requiredEditor, omitIfBlank, visible;
+
+    @Ignore
+    @UiField
+    CheckBox isImplicit;
 
     @UiField
     TextField label;
@@ -68,7 +92,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     AppWizardComboBox selectionItemDefaultValue;
 
     @UiField
-    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel;
+    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel, fileInfoTypeLabel, dataSourceLabel;
 
     @Path("")
     @UiField(provided = true)
@@ -78,17 +102,35 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     @UiField(provided = true)
     SelectionItemTreePropertyEditor selectionItemTreeEditor;
 
+    @Ignore
+    @UiField(provided = true)
+    ComboBox<FileInfoType> fileInfoTypeComboBox;
+
+    @Ignore
+    @UiField(provided = true)
+    ComboBox<DataSource> dataSourceComboBox;
+
     private final AppTemplateWizardPresenter presenter;
 
     private Argument model;
 
-    public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+
+    private HandlerRegistration fileInfoTypeStoreAddHandlerReg;
+
+    private HandlerRegistration dataSourceStoreAddHandlerReg;
+
+    private EditorDelegate<Argument> delegate;
+
+    public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
-        defaultValue = new DefaultArgumentValueEditor(presenter);
+        defaultValue = new DefaultArgumentValueEditor(appMetadataService);
         validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
         selectionItemDefaultValue = new AppWizardComboBox(presenter);
         selectionItemListEditor = new SelectionItemPropertyEditor(presenter, uuidService);
         selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
+
+        fileInfoTypeComboBox = createFileInfoTypeComboBox(appMetadataService);
+        dataSourceComboBox = createDataSourceComboBox(appMetadataService);
 
         /*
          * Validation control and selection creation control will be created here, bound to argument.
@@ -101,13 +143,125 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         initWidget(BINDER.createAndBindUi(this));
     }
 
+    private ComboBox<FileInfoType> createFileInfoTypeComboBox(AppMetadataServiceFacade appMetadataService) {
+        final FileInfoTypeProperties props = appMetadataService.getFileInfoTypeProperties();
+
+        final ListStore<FileInfoType> store = new ListStore<FileInfoType>(props.id());
+        fileInfoTypeStoreAddHandlerReg = store.addStoreAddHandler(new StoreAddHandler<FileInfoType>() {
+            @Override
+            public void onAdd(StoreAddEvent<FileInfoType> event) {
+                updateFileInfoTypeSelection(model);
+            }
+        });
+        appMetadataService.getFileInfoTypes(new AsyncCallback<List<FileInfoType>>() {
+
+            @Override
+            public void onSuccess(List<FileInfoType> result) {
+                if (store.getAll().isEmpty()) {
+                    store.addAll(result);
+                    store.addSortInfo(new StoreSortInfo<FileInfoType>(props.labelValue(), SortDir.ASC));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(caught);
+            }
+        });
+        ComboBox<FileInfoType> comboBox = new ComboBox<FileInfoType>(store, props.label());
+        comboBox.setTriggerAction(TriggerAction.ALL);
+        // JDS Add valueChangeHandler manually since there are errors if you try to do it with UIBinder
+        comboBox.addValueChangeHandler(new ValueChangeHandler<FileInfoType>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<FileInfoType> event) {
+                presenter.onArgumentPropertyValueChange(event.getSource());
+            }
+        });
+        return comboBox;
+    }
+
+    private ComboBox<DataSource> createDataSourceComboBox(AppMetadataServiceFacade appMetadataService) {
+        final DataSourceProperties props = appMetadataService.getDataSourceProperties();
+        final ListStore<DataSource> store = new ListStore<DataSource>(props.id());
+        dataSourceStoreAddHandlerReg = store.addStoreAddHandler(new StoreAddHandler<DataSource>() {
+            @Override
+            public void onAdd(StoreAddEvent<DataSource> event) {
+                updateDataSourceSelection(model);
+            }
+        });
+        appMetadataService.getDataSources(new AsyncCallback<List<DataSource>>() {
+            @Override
+            public void onSuccess(List<DataSource> result) {
+                if (store.getAll().isEmpty()) {
+                    store.addAll(result);
+                    store.addSortInfo(new StoreSortInfo<DataSource>(props.labelValue(), SortDir.ASC));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(caught);
+            }
+        });
+        ComboBox<DataSource> comboBox = new ComboBox<DataSource>(store, props.label());
+        comboBox.setTriggerAction(TriggerAction.ALL);
+        comboBox.addValueChangeHandler(new ValueChangeHandler<DataSource>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<DataSource> event) {
+                presenter.onArgumentPropertyValueChange(event.getSource());
+            }
+        });
+        return comboBox;
+    }
+
     /*
      * JDS The following UI Handlers are necessary to inform the presenter that values have changed.
      * This has the effect of propagating data back and forth through the editor hierarchy.
      */
-
-    @UiHandler({"requiredEditor", "omitIfBlank", "visible"})
+    @UiHandler({"requiredEditor", "omitIfBlank", "visible", "isImplicit"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
+        if (event.getSource() == requiredEditor) {
+            if (event.getValue()) {
+                omitIfBlank.setValue(false);
+                omitIfBlank.disable();
+            } else {
+                omitIfBlank.enable();
+            }
+        }
+        if (event.getSource() == visible) {
+            // If the "Display in GUI" checkbox is not selected
+            if (!event.getValue()) {
+                // Clear the "require user input" checkbox
+                requiredEditor.setValue(false);
+
+                omitIfBlank.setVisible(false);
+                requiredEditor.setVisible(false);
+                descriptionLabel.setVisible(false);
+                if (validatorsEditor != null) {
+                    validatorsEditor.setVisible(false);
+                }
+                if (selectionItemListEditor != null) {
+                    selectionItemListEditor.setVisible(false);
+                }
+                if (selectionItemTreeEditor != null) {
+                    selectionItemTreeEditor.setVisible(false);
+                }
+            } else {
+                omitIfBlank.setVisible(true);
+                omitIfBlank.enable();
+                requiredEditor.setVisible(true);
+                descriptionLabel.setVisible(true);
+                if (validatorsEditor != null) {
+                    validatorsEditor.setVisible(true);
+                }
+                if (selectionItemListEditor != null) {
+                    selectionItemListEditor.setVisible(true);
+                }
+                if (selectionItemTreeEditor != null) {
+                    selectionItemTreeEditor.setVisible(true);
+                }
+            }
+        }
         presenter.onArgumentPropertyValueChange(event.getSource());
         
     }
@@ -132,16 +286,43 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
+    @UiHandler("validatorsEditor")
+    void onValidatorListChanged(ValueChangeEvent<List<ArgumentValidator>> event) {
+        presenter.onArgumentPropertyValueChange(event.getSource());
+    }
+
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<Argument> delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public void flush() {
         if (defaultValue != null) {
             defaultValue.flush();
+            List<EditorError> errors = defaultValue.getErrors();
+            for (EditorError e : errors) {
+                delegate.recordError(e.getMessage(), e.getValue(), e.getEditor());
+            }
         } else if (selectionItemDefaultValue != null) {
             selectionItemDefaultValue.flush();
         }
+
+        // JDS Manually put FileInfoType into model,
+        if (AppTemplateUtils.isDiskResourceArgumentType(model.getType())) {
+            FileInfoType fit = fileInfoTypeComboBox.getCurrentValue();
+            if (fit != null) {
+                model.getDataObject().setFileInfoType(fit.getType());
+            }
+            if (AppTemplateUtils.isDiskResourceOutputType(model.getType())) {
+                model.getDataObject().setImplicit(isImplicit.getValue());
+                DataSource dataSource = dataSourceComboBox.getCurrentValue();
+                if (dataSource != null) {
+                    model.getDataObject().setDataSource(dataSource.getType());
+                }
+            }
+        }
+
     }
 
     @Override
@@ -156,7 +337,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         boolean isInfoType = value.getType().equals(ArgumentType.Info);
         boolean isMultiSelectorType = value.getType().equals(ArgumentType.MultiFileSelector);
         boolean isTreeSelectionType = value.getType().equals(ArgumentType.TreeSelection);
-        boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value);
+        boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value.getType());
+
+        boolean isDiskResourceOutputType = AppTemplateUtils.isDiskResourceOutputType(value.getType());
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
@@ -169,7 +352,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 selectionItemDefaultValue = null;
                 selectionItemListEditor = null;
                 selectionItemTreeEditor = null;
-                if (isMultiSelectorType || isInfoType || isDiskResourceArgumentType || value.getType().equals(ArgumentType.FileOutput) || value.getType().equals(ArgumentType.FolderOutput)) {
+                if ((isDiskResourceArgumentType && !isDiskResourceOutputType) || isInfoType) {
                     con.remove(defaultValue);
                     defaultValue = null;
                 }
@@ -189,7 +372,22 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 selectionItemTreeEditor = null;
                 defaultValue = null;
             }
-            // JDS Disable any controls which aren't for the current type
+
+            // DISABLE CONTROLS
+            if (!isDiskResourceArgumentType) {
+                // This is only visible to Disk Resource types
+                fileInfoTypeLabel.setVisible(false);
+            }
+            if (!isDiskResourceOutputType) {
+                // This is only visible to Disk Resource output types
+                isImplicit.setVisible(false);
+                dataSourceLabel.setVisible(false);
+            }
+            if (!AppTemplateUtils.typeSupportsValidators(value.getType())) {
+                validatorsEditor.setVisible(false);
+                validatorsEditor.disable();
+                con.remove(validatorsEditor);
+            }
             switch (value.getType()) {
                 case TextSelection:
                 case IntegerSelection:
@@ -197,6 +395,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case Selection:
                 case ValueSelection:
                 case TreeSelection:
+                    visible.setVisible(false);
                     nameLabel.disable();
                     break;
 
@@ -208,6 +407,29 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     nameLabel.setVisible(false);
                     break;
 
+                case Flag:
+                    requiredEditor.setVisible(false);
+                    omitIfBlank.setVisible(false);
+                    break;
+
+                case Input:
+                case FileInput:
+                case FolderInput:
+                case MultiFileSelector:
+                    visible.setVisible(false);
+                    break;
+
+                case Output:
+                case FileOutput:
+                case FolderOutput:
+                case MultiFileOutput:
+                case Double:
+                case EnvironmentVariable:
+                case Group:
+                case Integer:
+                case MultiLineText:
+                case Number:
+                case Text:
                 default:
                     break;
             }
@@ -219,21 +441,41 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     break;
                 case Info:
                     argLabelLabel.setText("Text");
+                    break;
 
                 default:
                     break;
             }
+
+            if (presenter.isOnlyLabelEditMode()) {
+                // Disable all controls, then re-enable valid controls
+                for (int i = 0; i < con.getWidgetCount(); i++) {
+                    Widget w = con.getWidget(i);
+                    if (w instanceof HasEnabled) {
+                        ((HasEnabled)w).setEnabled(false);
+                    }
+                }
+
+                argLabelLabel.enable();
+                descriptionLabel.enable();
+            }
+            con.forceLayout();
         }
 
         this.model = value;
 
-        // FIXME JDS Visibility/Enabled of all property editors should be controlled here. I'm looking at you ArgumentValidatorEditor!!
-
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
             selectionItemDefaultValue.setValue(model);
-        } else if (isMultiSelectorType || isTreeSelectionType || isInfoType || isDiskResourceArgumentType || value.getType().equals(ArgumentType.FileOutput)
-                || value.getType().equals(ArgumentType.FolderOutput)) {
+        } else if (isMultiSelectorType || isTreeSelectionType || isInfoType || isDiskResourceArgumentType) {
+
+            // JDS Manually set the DataObject items
+            updateFileInfoTypeSelection(model);
+            updateIsImplicit(model);
+            updateDataSourceSelection(model);
+            if (isDiskResourceOutputType) {
+                defaultValue.setValue(model);
+            }
         } else {
             // It is not a selection type, nor a MultiFileSelector
             if (defaultValue == null) {
@@ -242,6 +484,51 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             defaultValue.setValue(model);
 
         }
+    }
+
+    private void updateIsImplicit(Argument model) {
+        if ((model != null) && (model.getDataObject() != null)) {
+            isImplicit.setValue(model.getDataObject().isImplicit());
+        }
+    }
+
+    private void updateFileInfoTypeSelection(Argument model) {
+        if ((model != null) && (model.getDataObject() != null) && (model.getDataObject().getFileInfoType() != null)) {
+
+            List<FileInfoType> fileInfoTypeList = fileInfoTypeComboBox.getStore().getAll();
+            if ((fileInfoTypeStoreAddHandlerReg != null) && !fileInfoTypeList.isEmpty()) {
+                fileInfoTypeStoreAddHandlerReg.removeHandler();
+                fileInfoTypeStoreAddHandlerReg = null;
+            }
+            for (final FileInfoType fit : fileInfoTypeList) {
+                if (fit.getType().equals(model.getDataObject().getFileInfoType())) {
+                    fileInfoTypeComboBox.setValue(fit);
+                    break;
+                }
+            }
+        }
+
+    }
+
+    private void updateDataSourceSelection(Argument model) {
+        if ((model != null) && (model.getDataObject() != null) && (model.getDataObject().getDataSource() != null)) {
+            List<DataSource> dataSourceList = dataSourceComboBox.getStore().getAll();
+            if ((dataSourceStoreAddHandlerReg != null) && !dataSourceList.isEmpty()) {
+                dataSourceStoreAddHandlerReg.removeHandler();
+                dataSourceStoreAddHandlerReg = null;
+            }
+            for (DataSource ds : dataSourceList) {
+                if (ds.getType().equals(model.getDataObject().getDataSource())) {
+                    dataSourceComboBox.setValue(ds);
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public boolean hasErrors() {
+        return !FormPanelHelper.isValid(con) || ((defaultValue != null) && (defaultValue.getErrors() != null) && !defaultValue.getErrors().isEmpty());
     }
 
 }

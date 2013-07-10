@@ -27,7 +27,9 @@ import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
 public abstract class SelectionItemValueChangeStoreHandler implements StoreHandlers<SelectionItem> {
 
     public interface HasEventSuppression {
-        boolean suppressEvent();
+        boolean isSuppressEvent();
+
+        void setSuppressEvent(boolean suppressEventFire);
     }
 
     private final HasEventSuppression hasEventSuppression;
@@ -78,7 +80,7 @@ public abstract class SelectionItemValueChangeStoreHandler implements StoreHandl
     }
 
     private void doFire() {
-        if (hasEventSuppression.suppressEvent()) {
+        if (hasEventSuppression.isSuppressEvent()) {
             return;
         }
         ValueChangeEvent.fire(valueChangeTarget, getCurrentValue());

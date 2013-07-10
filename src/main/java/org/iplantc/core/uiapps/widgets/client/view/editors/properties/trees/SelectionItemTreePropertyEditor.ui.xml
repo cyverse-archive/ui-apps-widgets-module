@@ -12,56 +12,65 @@
     <ui:with field="res"
              type="org.iplantc.core.resources.client.IplantResources"/>
     
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 
-             field="tbLayoutData">
-        <ui:attributes width="1" height="-1" />
+    <ui:with field="margins"
+             type="com.sencha.gxt.core.client.util.Margins">
+      <ui:attributes top="10"
+                     right="5"
+                     bottom="10"
+                     left="5" />
     </ui:with>
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 
-             field="gridLayoutData">
-        <ui:attributes width="1" height="1"/>
+    <ui:with field="fieldLayoutData"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" >
+        <ui:attributes width="1" 
+                       height="-1"
+                       margins="{margins}"/>
     </ui:with>
-    
-    <con:VerticalLayoutContainer ui:field="con"
-                                 height="200"
-                                 borders="true">
-        <con:child layoutData="{tbLayoutData}">
-            <form:FieldLabel text="{display.checkCascadeLabel}"
-                             labelAlign="TOP">
-                <form:widget>
-                    <form:SimpleComboBox ui:field="cascadeOptionsCombo"
-                                         toolTip="{display.cascadeOptionsComboToolTip}"
-                                         width="80"
-                                         triggerAction="ALL"
-                                         editable="false"/>
-                </form:widget>
-            </form:FieldLabel>
-        </con:child>
-        <con:child layoutData="{tbLayoutData}">
-            <form:CheckBox ui:field="forceSingleSelectCheckBox"
-                           boxLabel="{display.forceSingleSelectLabel}"
-                           toolTip="{display.forceSingleSelectToolTip}"/>
-        </con:child>
-        <con:child layoutData="{tbLayoutData}">
-            <toolbar:ToolBar horizontalSpacing="4">
-                <toolbar:child>
-                    <button:TextButton ui:field="addGrpBtn"
-                                       icon="{res.folderAdd}"
-                                       toolTip="{display.addGroupToolTip}"/>
-                </toolbar:child>
-                <toolbar:child>
-                    <button:TextButton ui:field="addArgBtn"
-                                       icon="{res.add}"
-                                       toolTip="{display.addArgumentToolTip}"/>
-                </toolbar:child>
-                <toolbar:child>
-                    <button:TextButton ui:field="deleteBtn"
-                                       icon="{res.cancel}"
-                                       toolTip="{display.delete}"/>
-                </toolbar:child>
-            </toolbar:ToolBar>
-        </con:child>
-        <con:child layoutData="{gridLayoutData}">
+    <con:NorthSouthContainer ui:field="con">
+        <con:north>
+            <con:VerticalLayoutContainer>
+                <con:child layoutData="{fieldLayoutData}">
+		            <form:FieldLabel text="{display.checkCascadeLabel}"
+		                             labelAlign="TOP">
+		                <form:widget>
+		                    <form:SimpleComboBox ui:field="cascadeOptionsCombo"
+		                                         toolTip="{display.cascadeOptionsComboToolTip}"
+		                                         triggerAction="ALL"
+		                                         editable="false"/>
+		                </form:widget>
+		            </form:FieldLabel>
+                </con:child>
+        
+                <con:child layoutData="{fieldLayoutData}">
+		            <form:CheckBox ui:field="forceSingleSelectCheckBox"
+		                           boxLabel="{display.forceSingleSelectLabel}"
+		                           toolTip="{display.forceSingleSelectToolTip}"/>
+                </con:child>
+                
+                <con:child layoutData="{fieldLayoutData}">
+		            <toolbar:ToolBar horizontalSpacing="4">
+		                <toolbar:child>
+		                    <button:TextButton ui:field="addGrpBtn"
+		                                       icon="{res.folderAdd}"
+		                                       toolTip="{display.addGroupToolTip}"/>
+		                </toolbar:child>
+		                <toolbar:child>
+		                    <button:TextButton ui:field="addArgBtn"
+		                                       icon="{res.add}"
+		                                       toolTip="{display.addArgumentToolTip}"/>
+		                </toolbar:child>
+		                <toolbar:child>
+		                    <button:TextButton ui:field="deleteBtn"
+		                                       icon="{res.cancel}"
+		                                       toolTip="{display.delete}"/>
+		                </toolbar:child>
+		            </toolbar:ToolBar>
+                </con:child>
+                
+	        </con:VerticalLayoutContainer>
+        </con:north>
+        
+        <con:south>
             <treeGrid:TreeGrid ui:field="treeGrid"/>
-        </con:child>
-    </con:VerticalLayoutContainer>
+        </con:south>
+    </con:NorthSouthContainer>
 </ui:UiBinder>

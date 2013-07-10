@@ -4,16 +4,17 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uiapps.widgets.client.models.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
 import org.iplantc.core.uiapps.widgets.client.view.editors.LaunchAnalysisWidget;
 import org.iplantc.core.uicommons.client.models.UserSettings;
+import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -37,7 +38,7 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     
     private static AppWizardViewUIUiBinder BINDER = GWT.create(AppWizardViewUIUiBinder.class);
 
-    @UiField
+    @UiField(provided = true)
     AppTemplateWizard wizard;
 
     @UiField
@@ -47,19 +48,15 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
 
     private AppWizardView.Presenter presenter;
 
-    public AppWizardViewImpl(final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages) {
+    public AppWizardViewImpl(final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         law = new LaunchAnalysisWidget(userSettings, displayMessages);
+        wizard = new AppTemplateWizard(false, uuidService, appMetadataService);
         initWidget(BINDER.createAndBindUi(this));
     }
 
     @Override
     public void setPresenter(AppWizardView.Presenter presenter) {
         this.presenter = presenter;
-    }
-
-    @UiFactory
-    AppTemplateWizard createAppTemplateWizard() {
-        return new AppTemplateWizard(false);
     }
 
     @UiHandler("launchButton")

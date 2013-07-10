@@ -142,6 +142,9 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
                 }
             });
         }
+        if (presenter.isOnlyLabelEditMode()) {
+            setEnabled(false);
+        }
     }
 
     @Override
