@@ -173,6 +173,9 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
 
     @Override
     public void applyValidators(List<ArgumentValidator> validators) {
+        if (validators == null) {
+            return;
+        }
         if (field instanceof Field<?>) {
             @SuppressWarnings("unchecked")
             Field<U> fieldObj = (Field<U>)field;
