@@ -147,7 +147,7 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
 
     public boolean hasErrors() {
         if (subEditor instanceof ArgumentValueEditor) {
-            if (((ArgumentValueEditor)subEditor).hasErrors() || argPropEditor.hasErrors()) {
+            if (((ArgumentValueEditor)subEditor).hasErrors() || ((argPropEditor != null) && argPropEditor.hasErrors())) {
                 return true;
             }
         }
