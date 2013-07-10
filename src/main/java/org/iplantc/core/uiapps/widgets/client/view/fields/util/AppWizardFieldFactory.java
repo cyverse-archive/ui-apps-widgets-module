@@ -35,11 +35,13 @@ import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -228,6 +230,7 @@ public class AppWizardFieldFactory {
             case Output:
                 ConverterFieldAdapter<String, TextField> outputCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
                 outputCfa.addValidator(nameValidator);
+                tf.addValidator(nameValidator);
                 field = applyStringValidators(argument, outputCfa);
                 break;
 
@@ -251,25 +254,7 @@ public class AppWizardFieldFactory {
         
         setDefaultValue(argument);
 
-        if (editingMode) {
-            // Remove Field errorsupport
-            if ((field != null) && (field.getField() instanceof Field<?>)) {
-                Field<?> field2 = (Field<?>)field.getField();
-
-                field2.setValidateOnBlur(false);
-                field2.setAutoValidate(false);
-                field2.setErrorSupport(null);
-                field2.getValidators().clear();
-
-                if (field2 instanceof ValueBaseField<?>) {
-                    ((ValueBaseField<?>)field2).setAllowBlank(true);
-                }
-            }
-
-        }
-
         if (field != null) {
-
             if ((argument.getDescription() != null) && !argument.getDescription().isEmpty()) {
                 ToolTipConfig ttCon = new ToolTipConfig(argument.getDescription());
                 field.setToolTipConfig(ttCon);
