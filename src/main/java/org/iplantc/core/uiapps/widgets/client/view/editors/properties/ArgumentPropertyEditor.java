@@ -385,6 +385,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
             if (!AppTemplateUtils.typeSupportsValidators(value.getType())) {
                 validatorsEditor.setVisible(false);
+                validatorsEditor.disable();
+                con.remove(validatorsEditor);
             }
             switch (value.getType()) {
                 case TextSelection:
@@ -457,6 +459,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 argLabelLabel.enable();
                 descriptionLabel.enable();
             }
+            con.forceLayout();
         }
 
         this.model = value;

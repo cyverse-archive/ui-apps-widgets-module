@@ -10,26 +10,17 @@
              
     <ui:with field="display"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 
-             field="tbLayoutData">
-        <ui:attributes width="1" height="-1" />
-    </ui:with>  
-    <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 
-             field="gridLayoutData">
-        <ui:attributes width="1" height="1"/>
-    </ui:with>
     <ui:with type="com.sencha.gxt.widget.core.client.grid.ColumnModel" 
              field="cm"/>
     <ui:with type="com.sencha.gxt.data.shared.ListStore" 
              field="selectionArgStore"/>
     <ui:with type="com.sencha.gxt.widget.core.client.grid.GridView" 
              field="view">
-        <ui:attributes stripeRows="true" forceFit="true"/>
+        <ui:attributes stripeRows="true" forceFit="true" autoFill="true"/>
     </ui:with>          
              
-    <con:SimpleContainer ui:field="con">
-        <con:VerticalLayoutContainer>
-            <con:child layoutData="{tbLayoutData}">
+    <con:NorthSouthContainer ui:field="con">
+       <con:north>
                 <toolbar:ToolBar>        
                     <toolbar:child>
                         <button:TextButton ui:field="add" 
@@ -41,13 +32,12 @@
                                            enabled="false"/>
                     </toolbar:child>
                 </toolbar:ToolBar>
-            </con:child>
-            <con:child layoutData="{gridLayoutData}">
+       </con:north>
+       <con:south>
                 <grid:Grid ui:field="grid" 
                            cm="{cm}" 
                            store="{selectionArgStore}" 
                            view="{view}"/>
-            </con:child>
-        </con:VerticalLayoutContainer>
-    </con:SimpleContainer>                             
+       </con:south>
+    </con:NorthSouthContainer>         
 </ui:UiBinder> 

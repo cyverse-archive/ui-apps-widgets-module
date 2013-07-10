@@ -30,7 +30,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -57,7 +57,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
     ListStore<ArgumentValidator> validatorStore;
 
     @UiField
-    SimpleContainer con;
+    NorthSouthContainer con;
 
     @Ignore
     @UiField
@@ -86,7 +86,6 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
     public ArgumentValidatorEditor(ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
         initWidget(BINDER.createAndBindUi(this));
-        grid.setHeight(100);
 
         // Add selection handler to grid to control enabled state of "edit" and "delete" buttons.
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ArgumentValidator>() {

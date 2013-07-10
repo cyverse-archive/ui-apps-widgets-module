@@ -37,7 +37,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -65,7 +65,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     ListStore<SelectionItem> selectionArgStore;
 
     @UiField
-    SimpleContainer con;
+    NorthSouthContainer con;
 
     @Ignore
     @UiField
@@ -100,7 +100,6 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         this.uuidService = uuidService;
         initWidget(BINDER.createAndBindUi(this));
-        grid.setHeight(100);
 
         editing = new GridInlineEditing<SelectionItem>(grid);
         ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);

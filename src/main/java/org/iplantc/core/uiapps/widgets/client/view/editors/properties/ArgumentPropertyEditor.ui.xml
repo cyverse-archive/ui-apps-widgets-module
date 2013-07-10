@@ -17,6 +17,13 @@
                      bottom="10"
                      left="5" />
     </ui:with>
+    <ui:with field="marginsBottom"
+             type="com.sencha.gxt.core.client.util.Margins">
+      <ui:attributes top="0"
+                     right="5"
+                     bottom="0"
+                     left="5" />
+    </ui:with>
     <ui:with field="fieldLayoutData"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" >
         <ui:attributes width="1" 
@@ -26,8 +33,8 @@
     <ui:with field="fieldLayoutData_END"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
         <ui:attributes width="1" 
-                       height="1" 
-                       margins="{margins}"/>
+                       height="1"
+                       margins="{marginsBottom}"/>
     </ui:with>
  
     <gxt:ContentPanel headingText="Properties">
@@ -115,14 +122,11 @@
                     </form:widget>
                 </form:FieldLabel>
 	        </con:child>
-        
-
 
 	        <!-- Argument Validator Editor -->
 	        <con:child layoutData="{fieldLayoutData_END}">
 	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
 	        </con:child>
-	        
 
 	        <con:child layoutData="{fieldLayoutData_END}">
 	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
