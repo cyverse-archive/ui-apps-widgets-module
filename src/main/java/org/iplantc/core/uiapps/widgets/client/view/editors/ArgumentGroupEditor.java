@@ -35,15 +35,8 @@ import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
  */
 class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEditor<ArgumentGroup> {
     interface HeaderTextTemplates extends SafeHtmlTemplates {
-
-        @SafeHtmlTemplates.Template("<span name=\"{3}\" class=\"{0}\" qtip=\"{2}\">{1}</span>")
-        SafeHtml fieldLabel(String textClassName, SafeHtml name, String textToolTip, String elementName);
-
-        @SafeHtmlTemplates.Template("<span style=\"color: red; float: left;\">*&nbsp</span>")
+        @SafeHtmlTemplates.Template("<span style=\"color: red;\">*&nbsp</span>")
         SafeHtml fieldLabelRequired();
-
-        @SafeHtmlTemplates.Template("<span style=\"color: red;\">&nbsp{0}</span>")
-        SafeHtml redText(String text);
     }
 
     private final ContentPanel groupField;

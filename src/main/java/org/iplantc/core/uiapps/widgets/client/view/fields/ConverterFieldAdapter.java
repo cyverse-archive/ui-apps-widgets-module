@@ -139,10 +139,17 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     @SuppressWarnings("unchecked")
     private void transferErrorsToDelegate() {
         errors.clear();
-        if (!(field instanceof Field<?>)) {
+        List<Validator<U>> validators = Lists.newArrayList();
+        if (field instanceof Field<?>) {
+            validators.addAll(((Field<U>)field).getValidators());
+        } else if (field instanceof AppWizardDiskResourceSelector<?>) {
+            for (Validator<String> v : ((AppWizardDiskResourceSelector<?>)field).getValidators()) {
+                validators.add((Validator<U>)v);
+            }
+        } else {
             return;
         }
-        for (Validator<U> v : ((Field<U>)field).getValidators()) {
+        for (Validator<U> v : validators) {
             List<EditorError> errs = v.validate(field, field.getValue());
             if (errs != null) {
                 errors.addAll(errs);
@@ -159,6 +166,8 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     public void addValidator(Validator<U> validator) {
         if(field instanceof Field<?>){
             ((Field<U>)field).addValidator(validator);
+        } else if (field instanceof AppWizardDiskResourceSelector<?>) {
+            ((AppWizardDiskResourceSelector<?>)field).addValidator((Validator<String>)validator);
         }
     }
 

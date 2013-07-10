@@ -528,7 +528,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     }
 
     public boolean hasErrors() {
-        return !FormPanelHelper.isValid(con) || ((defaultValue.getErrors() != null) && !defaultValue.getErrors().isEmpty());
+        return !FormPanelHelper.isValid(con) || ((defaultValue != null) && (defaultValue.getErrors() != null) && !defaultValue.getErrors().isEmpty());
     }
 
 }

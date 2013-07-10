@@ -118,7 +118,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public void edit(AppTemplate apptemplate) {
         editorDriver.edit(apptemplate);
-        onArgumentPropertyValueChange();
         fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
     }
 
@@ -132,6 +131,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
     public AppTemplate flushAppTemplate() {
         AppTemplate flush = editorDriver.flush();
         if (hasErrors()) {
+            editorDriver.accept(new Refresher());
             GWT.log("Editor has errors");
             List<EditorError> errors = Lists.newArrayList();
             errors.addAll(getErrors());

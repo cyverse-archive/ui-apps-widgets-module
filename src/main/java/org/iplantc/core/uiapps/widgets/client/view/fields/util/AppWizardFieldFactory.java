@@ -424,6 +424,17 @@ public class AppWizardFieldFactory {
                     case DoubleRange:
                         field.addValidator(createDoubleValidator(argValidator));
                         break;
+
+                    /*
+                     * JDS Special handling for old Double arguments which may contain Integer
+                     * validators. So, we simply pass these on.
+                     */
+                    case IntAbove:
+                    case IntBelow:
+                    case IntRange:
+                        field.addValidator(createDoubleValidator(argValidator));
+                        break;
+
                     default:
                         GWT.log("AppWizardFieldFactory.applyDoubleValidators", new UnsupportedOperationException("Unsupported Double validator type: " + argValidator.getType().toString()));
                         break;
@@ -511,6 +522,22 @@ public class AppWizardFieldFactory {
                 validator = new MaxNumberValidator<Double>(max2);
                 break;
     
+            /*
+             * JDS Special handling for old Double arguments which may contain Integer validators. So,
+             * let's convert them.
+             */
+            case IntRange:
+                NumberRangeValidator<Integer> intRngValidator = (NumberRangeValidator<Integer>)createIntegerValidator(tv);
+                validator = new NumberRangeValidator<Double>(intRngValidator.getMinNumber().doubleValue(), intRngValidator.getMaxNumber().doubleValue());
+                break;
+            case IntAbove:
+                MinNumberValidator<Integer> intMinValidator = (MinNumberValidator<Integer>)createIntegerValidator(tv);
+                validator = new MinNumberValidator<Double>(intMinValidator.getMinNumber().doubleValue());
+                break;
+            case IntBelow:
+                MaxNumberValidator<Integer> intMaxValidator = (MaxNumberValidator<Integer>)createIntegerValidator(tv);
+                validator = new MaxNumberValidator<Double>(intMaxValidator.getMaxNumber().doubleValue());
+                break;
             default:
                 throw new UnsupportedOperationException("Given validator type is not a Double validator type.");
     

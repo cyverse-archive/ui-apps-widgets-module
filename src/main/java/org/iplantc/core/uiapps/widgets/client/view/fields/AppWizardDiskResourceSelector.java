@@ -254,4 +254,8 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     protected boolean isBrowseButtonEnabled() {
         return browseButtonEnabled;
     }
+
+    public List<Validator<String>> getValidators() {
+        return input.getValidators();
+    }
 }
