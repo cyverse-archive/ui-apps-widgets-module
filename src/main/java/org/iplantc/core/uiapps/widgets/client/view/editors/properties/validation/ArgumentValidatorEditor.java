@@ -128,10 +128,16 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
 
     @UiHandler("add")
     void onAddButtonSelected(SelectEvent event) {
-        AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
+       final  AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
         dlg.addOkButtonSelectHandler(new AddValidatorOkBtnSelectHndlr(dlg));
-        // Position dialog over this widget.
-        dlg.setPagePosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
+        dlg.addCancelButtonSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                //do nothing. just hide
+                dlg.hide();
+            }
+        });
         dlg.show();
     }
 
@@ -149,8 +155,6 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         dlg.addCancelButtonSelectHandler(new AddValidatorCancelBtnSelectHandler(selectedItemIndex, selectedItem));
 
         dlg.setArgumentValidator(selectedItem);
-        // Position dialog over this widget.
-        dlg.setPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
         dlg.show();
     }
 

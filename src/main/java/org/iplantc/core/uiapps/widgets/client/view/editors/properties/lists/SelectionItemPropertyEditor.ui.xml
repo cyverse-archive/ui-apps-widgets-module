@@ -10,8 +10,8 @@
              
     <ui:with field="display"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
-              <ui:with field="res"
-            type="org.iplantc.core.resources.client.IplantResources"/>
+	<ui:with field="res"
+		type="org.iplantc.core.resources.client.IplantResources" />
     <ui:with type="com.sencha.gxt.widget.core.client.grid.ColumnModel" 
              field="cm"/>
     <ui:with type="com.sencha.gxt.data.shared.ListStore" 

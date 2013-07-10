@@ -61,7 +61,8 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
 
     private static AddValidatorDialogUiBinder BINDER = GWT.create(AddValidatorDialogUiBinder.class);
 
-    interface AddValidatorDialogUiBinder extends UiBinder<Widget, AddValidatorDialog> {}
+    interface AddValidatorDialogUiBinder extends UiBinder<Widget, AddValidatorDialog> {
+    }
 
     @UiField(provided = true)
     ComboBox<ArgumentValidatorType> validatorTypeCB;
@@ -101,7 +102,8 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
     /**
      * @param supportedValidatorTypes use these to construct content of the combo box
      */
-    public AddValidatorDialog(Set<ArgumentValidatorType> supportedValidatorTypes, ArgumentValidatorMessages avMessages) {
+    public AddValidatorDialog(Set<ArgumentValidatorType> supportedValidatorTypes,
+            ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
 
         setHeadingText(avMessages.validatorDialogHeading());
@@ -171,7 +173,7 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
         dblBelowField.addInvalidHandler(this);
         dblRangeAboveField.addInvalidHandler(this);
         dblRangeBelowField.addInvalidHandler(this);
-        
+
         dblAboveField.setAllowBlank(false);
         dblBelowField.setAllowBlank(false);
         dblRangeAboveField.setAllowBlank(false);
@@ -193,16 +195,17 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
         dblRangeBelowField.addTriggerClickHandler(dualTriggerClickHandler);
         dblRangeBelowField.addValueChangeHandler(vcHandler);
     }
-    
+
     private void dblRangeFieldChanged(Object eventSource, Double value) {
         // Determine which field was changed
         if (eventSource == dblRangeAboveField) {
             // Check for exit condition
-            if((dblRangeBelowField.getCurrentValue() != null) && (value < dblRangeBelowField.getCurrentValue())){
+            if ((dblRangeBelowField.getCurrentValue() != null)
+                    && (value < dblRangeBelowField.getCurrentValue())) {
                 return;
             }
             // LOWERBOUND Changed
-            if ((dblRangeBelowField.getCurrentValue() == null) 
+            if ((dblRangeBelowField.getCurrentValue() == null)
                     || (value >= dblRangeBelowField.getCurrentValue())) {
                 // If the upper bound value is null, equal to LOWERBOUND, or upper bound is less
                 // than LOWERBOUND, then we increase the upper bound.
@@ -211,11 +214,12 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
 
         } else if (eventSource == dblRangeBelowField) {
             // Check for exit condition
-            if((dblRangeAboveField.getCurrentValue() != null) && (dblRangeAboveField.getCurrentValue() < value) ){
+            if ((dblRangeAboveField.getCurrentValue() != null)
+                    && (dblRangeAboveField.getCurrentValue() < value)) {
                 return;
             }
             // UPPERBOUND Changed
-            if ((dblRangeAboveField.getCurrentValue() == null) 
+            if ((dblRangeAboveField.getCurrentValue() == null)
                     || ((dblRangeAboveField.getCurrentValue() >= value))) {
                 // If the lower bound value is null, equal to UPPERBOUND, or lower bound is
                 // greater than UPPERBOUND, then we decrement the lower bound.
@@ -268,11 +272,12 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
         // Determine which field was changed
         if (eventSource == intRangeAboveField) {
             // Check for exit condition
-            if ((intRangeBelowField.getCurrentValue() != null) && (value < intRangeBelowField.getCurrentValue())) {
+            if ((intRangeBelowField.getCurrentValue() != null)
+                    && (value < intRangeBelowField.getCurrentValue())) {
                 return;
             }
             // LOWERBOUND Changed
-            if ((intRangeBelowField.getCurrentValue() == null) 
+            if ((intRangeBelowField.getCurrentValue() == null)
                     || (value >= intRangeBelowField.getCurrentValue())) {
                 // If the upper bound value is null, equal to LOWERBOUND, or upper bound is less
                 // than LOWERBOUND, then we increase the upper bound.
@@ -280,11 +285,12 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
             }
         } else if (eventSource == intRangeBelowField) {
             // Check for exit condition
-            if((intRangeAboveField.getCurrentValue() != null) && (intRangeAboveField.getCurrentValue() < value) ){
+            if ((intRangeAboveField.getCurrentValue() != null)
+                    && (intRangeAboveField.getCurrentValue() < value)) {
                 return;
             }
             // UPPERBOUND Changed
-            if ((intRangeAboveField.getCurrentValue() == null) 
+            if ((intRangeAboveField.getCurrentValue() == null)
                     || ((intRangeAboveField.getCurrentValue() > value))) {
                 // If the lower bound value is null, equal to UPPERBOUND, or lower bound is
                 // greater than UPPERBOUND, then we decrement the lower bound.
@@ -359,7 +365,6 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
         return avAutobean.as();
     }
 
-
     @Override
     protected void onOkButtonClicked() {
         hide();
@@ -367,10 +372,13 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
 
     @Override
     protected void onButtonPressed(TextButton button) {
-        // Validate current card
-        boolean isValid = FormPanelHelper.isValid((HasWidgets)cardLC.getActiveWidget());
-
-        if (isValid) {
+        if (button.getText().equals(PredefinedButton.OK.toString())) {
+            // Validate current card
+            boolean isValid = FormPanelHelper.isValid((HasWidgets)cardLC.getActiveWidget());
+            if (isValid) {
+                super.onButtonPressed(button);
+            }
+        } else {
             super.onButtonPressed(button);
         }
     }
@@ -453,13 +461,13 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
         public void onTriggerClick(TriggerClickEvent event) {
             handleClick(event.getSource(), false);
         }
-    
+
         @Override
         public void onTwinTriggerClick(TwinTriggerClickEvent event) {
             handleClick(event.getSource(), true);
         }
-    
-        private void handleClick(Object eventSource, boolean decrement){
+
+        private void handleClick(Object eventSource, boolean decrement) {
             if (!(eventSource instanceof SpinnerField<?>)) {
                 return;
             }
@@ -469,32 +477,36 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
                 // If the value is null, we will pass the signed increment of the spinner field to both
                 // rangeFieldChanged methods. Each of those methods will only operate based off their
                 // respective instance checks, so this is safe (even though it is ambibuous).
-                
-                
-                dblRangeFieldChanged(eventSource, sign * ((SpinnerField<?>)eventSource).getIncrement(null).doubleValue());
-                intRangeFieldChanged(eventSource, sign * ((SpinnerField<?>)eventSource).getIncrement(null).intValue());
+
+                dblRangeFieldChanged(eventSource,
+                        sign * ((SpinnerField<?>)eventSource).getIncrement(null).doubleValue());
+                intRangeFieldChanged(eventSource,
+                        sign * ((SpinnerField<?>)eventSource).getIncrement(null).intValue());
             } else if (value instanceof Double) {
                 @SuppressWarnings("unchecked")
                 SpinnerField<Double> dblField = (SpinnerField<Double>)eventSource;
                 if (dblField.getCurrentValue() != null) {
                     double aboveFieldCurVal = dblField.getCurrentValue();
-                    dblRangeFieldChanged(eventSource, aboveFieldCurVal + (sign*dblField.getIncrement(null).doubleValue()));
+                    dblRangeFieldChanged(eventSource,
+                            aboveFieldCurVal + (sign * dblField.getIncrement(null).doubleValue()));
                 }
-                
+
             } else if (value instanceof Integer) {
                 @SuppressWarnings("unchecked")
                 SpinnerField<Integer> intField = (SpinnerField<Integer>)eventSource;
                 if (intField.getCurrentValue() != null) {
                     int aboveFieldCurVal = intField.getCurrentValue();
-                    intRangeFieldChanged(eventSource, aboveFieldCurVal + (sign*intField.getIncrement(null).intValue()));
+                    intRangeFieldChanged(eventSource,
+                            aboveFieldCurVal + (sign * intField.getIncrement(null).intValue()));
                 }
-                
+
             }
-            
+
         }
     }
 
-    private final class AVTLabelKeyProvider implements LabelProvider<ArgumentValidatorType>, ModelKeyProvider<ArgumentValidatorType> {
+    private final class AVTLabelKeyProvider implements LabelProvider<ArgumentValidatorType>,
+            ModelKeyProvider<ArgumentValidatorType> {
         @Override
         public String getLabel(ArgumentValidatorType item) {
             String retVal = "";
