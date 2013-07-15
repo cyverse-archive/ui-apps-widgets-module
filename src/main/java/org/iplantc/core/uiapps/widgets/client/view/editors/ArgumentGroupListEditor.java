@@ -20,9 +20,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
-import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 
 /**
  * An editor class for displaying the argument group list in an {@link AppTemplate#getArgumentGroups()}.
@@ -30,11 +30,9 @@ import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
  * @author jstroot
  * 
  */
-class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>> {
+class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>> {
 
     private final class ArgGrpListEditorDropTarget extends ContainerDropTarget<AccordionLayoutContainer> {
-
-
         private final AppTemplateWizardPresenter presenter;
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
         private int grpCountInt = 2;
@@ -134,7 +132,7 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
 
     ArgumentGroupListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         groupsContainer = new AccordionLayoutContainer();
-        initWidget(groupsContainer);
+        groupsContainer.setExpandMode(ExpandMode.SINGLE);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, presenter, uuidService, appMetadataService));
 
         if (presenter.isEditingMode()) {
@@ -205,5 +203,10 @@ class ArgumentGroupListEditor extends Composite implements IsEditor<ListEditor<A
     void insertFirstInAccordion(IsWidget widget) {
         groupsContainer.insert(widget, 0);
         groupsContainer.setActiveWidget(widget.asWidget());
+    }
+
+    @Override
+    public Widget asWidget() {
+        return groupsContainer;
     }
 }

@@ -21,11 +21,12 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
-import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -37,7 +38,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
  * @author jstroot
  * 
  */
-class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argument, ArgumentEditor>> {
+class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, ArgumentEditor>> {
 
     /**
      * A handler which controls the visibility, placement, and selection of a button over the children of
@@ -115,6 +116,7 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
                     ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
                 } else {
+                    layoutContainer.setHeight(200);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
                 }
             }
@@ -188,12 +190,15 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
         @Override
         public ArgumentEditor create(int index) {
             final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
+
+            con.clearSizeCache();
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
+            con.setHeight("-1");
+
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
                 presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getPropertyEditor()));
             }
-            con.forceLayout();
             return subEditor;
         }
         
@@ -217,7 +222,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
 
     public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         argumentsContainer = new VerticalLayoutContainer();
-        initWidget(argumentsContainer);
+        /*
+         * I need this vlc to have an initial height (or be given an inital height)
+         */
+        argumentsContainer.setHeight("200");
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
@@ -266,5 +274,10 @@ class ArgumentListEditor extends Composite implements IsEditor<ListEditor<Argume
             }
         }
         return false;
+    }
+
+    @Override
+    public Widget asWidget() {
+        return argumentsContainer;
     }
 }

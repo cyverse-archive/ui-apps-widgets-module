@@ -36,11 +36,14 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
@@ -96,7 +99,11 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
                 }
             }
         };
-        con.add(argumentGroups);
+        VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        vlc.setAdjustForScroll(true);
+        vlc.setScrollMode(ScrollMode.AUTOY);
+        vlc.add(argumentGroups, new VerticalLayoutData(1, 1));
+        con.add(vlc);
 
         if (editingMode) {
             con.getHeader().addStyleName(res.selectionCss().selectionTargetBg());
