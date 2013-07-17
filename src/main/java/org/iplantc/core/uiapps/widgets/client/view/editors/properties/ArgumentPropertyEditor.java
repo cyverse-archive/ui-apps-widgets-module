@@ -229,41 +229,45 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         }
         if (event.getSource() == visible) {
-            // If the "Display in GUI" checkbox is not selected
-            if (!event.getValue()) {
-                // Clear the "require user input" checkbox
-                requiredEditor.setValue(false);
-
-                omitIfBlank.setVisible(false);
-                requiredEditor.setVisible(false);
-                descriptionLabel.setVisible(false);
-                if (validatorsEditor != null) {
-                    validatorsEditor.setVisible(false);
-                }
-                if (selectionItemListEditor != null) {
-                    selectionItemListEditor.setVisible(false);
-                }
-                if (selectionItemTreeEditor != null) {
-                    selectionItemTreeEditor.setVisible(false);
-                }
-            } else {
-                omitIfBlank.setVisible(true);
-                omitIfBlank.enable();
-                requiredEditor.setVisible(true);
-                descriptionLabel.setVisible(true);
-                if (validatorsEditor != null) {
-                    validatorsEditor.setVisible(true);
-                }
-                if (selectionItemListEditor != null) {
-                    selectionItemListEditor.setVisible(true);
-                }
-                if (selectionItemTreeEditor != null) {
-                    selectionItemTreeEditor.setVisible(true);
-                }
-            }
+            updateDisplayInGuiVisibilities(event.getValue());
         }
         presenter.onArgumentPropertyValueChange(event.getSource());
         
+    }
+
+    private void updateDisplayInGuiVisibilities(boolean displayInGui) {
+        // If the "Display in GUI" checkbox is not selected
+        if (!displayInGui) {
+            // Clear the "require user input" checkbox
+            requiredEditor.setValue(false);
+
+            omitIfBlank.setVisible(false);
+            requiredEditor.setVisible(false);
+            descriptionLabel.setVisible(false);
+            if (validatorsEditor != null) {
+                validatorsEditor.setVisible(false);
+            }
+            if (selectionItemListEditor != null) {
+                selectionItemListEditor.setVisible(false);
+            }
+            if (selectionItemTreeEditor != null) {
+                selectionItemTreeEditor.setVisible(false);
+            }
+        } else {
+            omitIfBlank.setVisible(true);
+            omitIfBlank.enable();
+            requiredEditor.setVisible(true);
+            descriptionLabel.setVisible(true);
+            if (validatorsEditor != null) {
+                validatorsEditor.setVisible(true);
+            }
+            if (selectionItemListEditor != null) {
+                selectionItemListEditor.setVisible(true);
+            }
+            if (selectionItemTreeEditor != null) {
+                selectionItemTreeEditor.setVisible(true);
+            }
+        }
     }
 
     @UiHandler({"label", "description", "name"})
@@ -463,6 +467,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         }
 
         this.model = value;
+        updateDisplayInGuiVisibilities(model.isVisible());
 
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {

@@ -23,10 +23,16 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.sencha.gxt.core.client.Style;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
+import com.sencha.gxt.dnd.core.client.DndDragCancelEvent;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -35,14 +41,89 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 /**
+ * 
+ * <h1>Editing Mode Drag and Drop</h1>
+ * 
+ * FIXME JDS [DESCRIBE EDITOR MODE DRAG AND DROP RESPONSIBILITIES OF THIS CLASS]
+ * 
  * @author jstroot
  * 
  */
 class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, ArgumentEditor>> {
+    private static final int DEFAULT_ARGUMENT_LIST_CONTAINER_HEIGHT = 200;
+
+    private final VerticalLayoutContainer argumentsContainer;
+
+    private final ListEditor<Argument, ArgumentEditor> editor;
+
+    private boolean fireSelectedOnAdd;
+
+    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement) {
+        argumentsContainer = new VerticalLayoutContainer();
+        // Set initial height to give a reasonable DnD location for dragged Arguments.
+        argumentsContainer.setHeight(DEFAULT_ARGUMENT_LIST_CONTAINER_HEIGHT);
+        argumentsContainer.setAdjustForScroll(true);
+        argumentsContainer.setScrollMode(ScrollMode.AUTOY);
+
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService, appMetadataService));
+
+        if (presenter.isEditingMode()) {
+            // If in editing mode, add drop target and DnD handlers
+            ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer, presenter, editor, scrollElement);
+            dt.setFeedback(Feedback.BOTH);
+            dt.setAllowSelfAsSource(true);
+            new ArgListEditorDragSource(argumentsContainer, editor);
+
+            // JDS Create delete button and add it to argumentsContainer
+            IplantResources res = GWT.create(IplantResources.class);
+            res.argumentListEditorCss().ensureInjected();
+
+            IconButton argDeleteBtn = new IconButton(new IconConfig(res.argumentListEditorCss().delete(), res.argumentListEditorCss().deleteHover()));
+            argDeleteBtn.setVisible(false);
+            argumentsContainer.add(argDeleteBtn);
+
+            // JDS Create the argument delete handler, and add it to the argumentsContainer and the
+            // argument delete button.
+            ArgumentWYSIWYGDeleteHandler deleteButtonHandler = new ArgumentWYSIWYGDeleteHandler(editor, argumentsContainer, argDeleteBtn, presenter);
+            argumentsContainer.addDomHandler(deleteButtonHandler, MouseOverEvent.getType());
+            argumentsContainer.addDomHandler(deleteButtonHandler, MouseOutEvent.getType());
+            argDeleteBtn.addSelectHandler(deleteButtonHandler);
+
+        }
+    }
+
+    @Override
+    public ListEditor<Argument, ArgumentEditor> asEditor() {
+        return editor;
+    }
+
+    @Override
+    public Widget asWidget() {
+        return argumentsContainer;
+    }
+
+    private void setFireSelectedOnAdd(boolean fireSelectedOnAdd) {
+        this.fireSelectedOnAdd = fireSelectedOnAdd;
+    }
+
+    private boolean isFireSelectedOnAdd() {
+        return fireSelectedOnAdd;
+    }
+
+    public boolean hasErrors() {
+        for (ArgumentEditor ae : editor.getEditors()) {
+            if (ae.hasErrors()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
-     * A handler which controls the visibility, placement, and selection of a button over the children of
-     * a vertical layout container.
+     * A handler which controls the visibility, placement, and selection of a delete button over the
+     * children of a <code>VerticalLayoutContainer</code>.
+     * 
+     * TODO JDS Need to disable the Delete hovers when a drag is occuring.
      * 
      * @author jstroot
      * 
@@ -116,7 +197,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                     ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
                 } else {
-                    layoutContainer.setHeight(200);
+                    layoutContainer.setHeight(DEFAULT_ARGUMENT_LIST_CONTAINER_HEIGHT);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
                 }
             }
@@ -135,8 +216,8 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         private final ListEditor<Argument, ArgumentEditor> listEditor;
         private int argCountInt = 1;
 
-        private ArgListEditorDropTarget(VerticalLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<Argument, ArgumentEditor> editor) {
-            super(container);
+        private ArgListEditorDropTarget(VerticalLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<Argument, ArgumentEditor> editor, XElement scrollElement) {
+            super(container, scrollElement);
             this.presenter = presenter;
             this.listEditor = editor;
         }
@@ -152,11 +233,14 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
             List<Argument> list = listEditor.getList();
+            boolean isNewArg = AutoBeanUtils.getAutoBean((Argument)event.getData()).getTag(Argument.IS_NEW) != null;
             Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
 
-            // Update new argument label.
-            String label = newArg.getLabel() + " - " + argCountInt++;
-            newArg.setLabel(label);
+            // Update new argument label if needed.
+            if (isNewArg) {
+                String label = newArg.getLabel() + " - " + argCountInt++;
+                newArg.setLabel(label);
+            }
 
             if (list != null) {
                 // JDS Protect against OBOB issues (caused by argument delete button, which is actually a
@@ -170,6 +254,87 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 presenter.onArgumentPropertyValueChange();
             }
         }
+    }
+
+    private final class ArgListEditorDragSource extends DragSource {
+
+        private final VerticalLayoutContainer container;
+        private final ListEditor<Argument, ArgumentEditor> listEditor;
+        private int dragArgumentIndex = -1;
+        private Argument dragArgument = null;
+
+        ArgListEditorDragSource(VerticalLayoutContainer container, ListEditor<Argument, ArgumentEditor> listEditor) {
+            super(container);
+            this.container = container;
+            this.listEditor = listEditor;
+        }
+
+        /*
+         * -- Find the current drag child, and its index within the list
+         * -- Store references to each.
+         * -- Add the Argument as the drag data.
+         * -- Using the corresponding editor, set the drag shadow
+         * -- Remove the argument from this list.
+         */
+        @Override
+        protected void onDragStart(DndDragStartEvent event) {
+            EventTarget target = event.getDragStartEvent().getNativeEvent().getEventTarget();
+            Element as = Element.as(target);
+
+            // Only want to allow drag start when we are over a child
+            IsWidget findWidget = container.findWidget(as);
+            if ((findWidget != null) && listEditor.getEditors().contains(findWidget)) {
+
+                event.getStatusProxy().update(findWidget.asWidget().getElement().getString());
+                event.setCancelled(false);
+
+                dragArgumentIndex = listEditor.getEditors().indexOf(findWidget);
+                // JDS For now, let's remove on drag start
+                dragArgument = listEditor.getList().remove(dragArgumentIndex);
+                event.setData(dragArgument);
+            } else {
+                dragArgumentIndex = -1;
+                dragArgument = null;
+                event.setCancelled(true);
+                event.getStatusProxy().update("");
+            }
+        }
+
+        /*
+         * -- Clear local references of Argument and index
+         */
+        @Override
+        protected void onDragDrop(DndDropEvent event) {
+            dragArgumentIndex = -1;
+            dragArgument = null;
+        }
+
+        /*
+         * -- Re-insert the Argument back into the list at the stored index.
+         */
+        @Override
+        protected void onDragCancelled(DndDragCancelEvent event) {
+
+            // JDS Put the Argument back
+            listEditor.getList().add(dragArgumentIndex, dragArgument);
+
+            dragArgumentIndex = -1;
+            dragArgument = null;
+        }
+
+        /*
+         * -- Re-insert the Argument back into the list at the stored index.
+         */
+        @Override
+        protected void onDragFail(DndDropEvent event) {
+
+            // JDS Put the Argument back
+            listEditor.getList().add(dragArgumentIndex, dragArgument);
+
+            dragArgumentIndex = -1;
+            dragArgument = null;
+        }
+
     }
 
     private class PropertyListEditorSource extends EditorSource<ArgumentEditor> {
@@ -193,7 +358,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
 
             con.clearSizeCache();
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
-            con.setHeight("-1");
+            con.setHeight(Style.DEFAULT);
 
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
@@ -211,73 +376,5 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         public void setIndex(ArgumentEditor editor, int index) {
             con.insert(editor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
         }
-    }
-
-    private final VerticalLayoutContainer argumentsContainer;
-
-    private final ListEditor<Argument, ArgumentEditor> editor;
-
-    private boolean fireSelectedOnAdd;
-    private IconButton argDeleteBtn;
-
-    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
-        argumentsContainer = new VerticalLayoutContainer();
-        /*
-         * I need this vlc to have an initial height (or be given an inital height)
-         */
-        argumentsContainer.setHeight("200");
-        argumentsContainer.setAdjustForScroll(true);
-        argumentsContainer.setScrollMode(ScrollMode.AUTOY);
-
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService, appMetadataService));
-
-        if (presenter.isEditingMode()) {
-            // If in editing mode, add drop target and DnD handlers
-            ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer, presenter, editor);
-            dt.setFeedback(Feedback.BOTH);
-
-            // JDS Create delete button and add it to argumentsContainer
-            IplantResources res = GWT.create(IplantResources.class);
-            res.argumentListEditorCss().ensureInjected();
-            argDeleteBtn = new IconButton(new IconConfig(res.argumentListEditorCss().delete(), res.argumentListEditorCss().deleteHover()));
-            argDeleteBtn.disable();
-            argDeleteBtn.setVisible(false);
-            argumentsContainer.add(argDeleteBtn);
-
-            // JDS Create the argument delete handler, and add it to the argumentsContainer and the
-            // argument delete button.
-            ArgumentWYSIWYGDeleteHandler deleteButtonHandler = new ArgumentWYSIWYGDeleteHandler(editor, argumentsContainer, argDeleteBtn, presenter);
-            argumentsContainer.addDomHandler(deleteButtonHandler, MouseOverEvent.getType());
-            argumentsContainer.addDomHandler(deleteButtonHandler, MouseOutEvent.getType());
-            argDeleteBtn.addSelectHandler(deleteButtonHandler);
-
-        }
-    }
-
-    @Override
-    public ListEditor<Argument, ArgumentEditor> asEditor() {
-        return editor;
-    }
-
-    private void setFireSelectedOnAdd(boolean fireSelectedOnAdd) {
-        this.fireSelectedOnAdd = fireSelectedOnAdd;
-    }
-
-    private boolean isFireSelectedOnAdd() {
-        return fireSelectedOnAdd;
-    }
-
-    public boolean hasErrors() {
-        for (ArgumentEditor ae : editor.getEditors()) {
-            if (ae.hasErrors()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public Widget asWidget() {
-        return argumentsContainer;
     }
 }

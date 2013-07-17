@@ -23,6 +23,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 
@@ -39,7 +40,8 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
         SafeHtml fieldLabelRequired();
     }
 
-    private final ContentPanel groupField;
+    @Ignore
+    final ContentPanel groupField;
     private final HeaderTextTemplates templates = GWT.create(HeaderTextTemplates.class);
     ArgumentListEditor argumentsEditor;
 
@@ -47,7 +49,7 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
     ArgumentGroupPropertyEditor argGrpPropEditor;
     private final ImageElement headerErrorIcon;
 
-    public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
+    public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement) {
         ContentPanelAppearance cpAppearance;
         if (presenter.isEditingMode()) {
             cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
@@ -69,7 +71,7 @@ class ArgumentGroupEditor implements HasPropertyEditor, IsWidget, ValueAwareEdit
             }
         };
 
-        argumentsEditor = new ArgumentListEditor(presenter, uuidService, appMetadataService);
+        argumentsEditor = new ArgumentListEditor(presenter, uuidService, appMetadataService, scrollElement);
         groupField.add(argumentsEditor);
         if (presenter.isEditingMode()) {
             groupField.getHeader().addStyleName(presenter.getSelectionCss().selectionTargetBg());
