@@ -240,7 +240,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
             }
         }
         if(errors.size() > 0 && !preventMark) {
-            input.markInvalid("This field requires a valid value with permissions.");
+            input.markInvalid(I18N.DISPLAY.permissionSelectErrorMessage());
         }
         return errors.size() > 0;
     }
@@ -291,6 +291,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
         this.validatePermissions = validatePermissions;
     }
 
+    @SuppressWarnings("hiding")
     private final class DiskResourceSelectionValidator<R extends DiskResource> implements Validator<String> {
         
         private R diskResource;
@@ -307,12 +308,12 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
         private List<EditorError> validatePermission(Editor<String> editor, String value) {
             List<EditorError> errors = Lists.newArrayList();
             if(diskResource == null) {
-                errors.add(new DefaultEditorError(editor, "This field is required", value));
+                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionSelectErrorMessage(), value));
                 return errors;
             }
             
             if(!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
-                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionErrorMessage(), value));
+                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionSelectErrorMessage(), value));
             }
             
             return errors;
