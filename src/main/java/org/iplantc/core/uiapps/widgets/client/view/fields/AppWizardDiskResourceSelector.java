@@ -42,14 +42,15 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
 /**
  * Abstract class for single select DiskResource fields.
- *
+ * 
  * TODO JDS All Diskresource selectors (incl multi) need to have a "file_info_type". This will be passed
  * to the DiskResource presenter, which will filter outputs.
- *
+ * 
  * @author jstroot
- *
+ * 
  */
-public abstract class AppWizardDiskResourceSelector<R extends DiskResource> extends Component implements IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId> {
+public abstract class AppWizardDiskResourceSelector<R extends DiskResource> extends Component implements
+        IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -79,10 +80,10 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     private final Element infoText;
     private boolean browseButtonEnabled = true;
 
-    //by default do not validate permissions
+    // by default do not validate permissions
     private boolean validatePermissions = false;
     private DiskResourceSelectionValidator<R> validator;
-    
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
@@ -123,7 +124,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     }
 
     protected void setSelectedResource(R selectedResource) {
-        if(validator != null) {
+        if (validator != null) {
             validator.setDiskResource(selectedResource);
         }
         setValue(selectedResource);
@@ -159,7 +160,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
     /**
      * Convenience method which creates a HasId object from a given string id.
-     *
+     * 
      * @param id
      */
     public void setValueFromStringId(String id) {
@@ -239,8 +240,16 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
                 errors.addAll(errs);
             }
         }
-        if(errors.size() > 0 && !preventMark) {
-            input.markInvalid(I18N.DISPLAY.permissionSelectErrorMessage());
+        if (errors.size() > 0) {
+            if (!preventMark) {
+                if (isValidatePermissions()) {
+                    input.markInvalid(I18N.DISPLAY.permissionSelectErrorMessage());
+                } else {
+                    input.markInvalid(I18N.DISPLAY.fieldRequiredLabel());
+                }
+            }
+        } else {
+            input.clearInvalid();
         }
         return errors.size() > 0;
     }
@@ -276,7 +285,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     public List<Validator<String>> getValidators() {
         return input.getValidators();
     }
-    
+
     /**
      * @return the validatePermissions
      */
@@ -292,32 +301,37 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     }
 
     @SuppressWarnings("hiding")
-    private final class DiskResourceSelectionValidator<R extends DiskResource> implements Validator<String> {
-        
+    private final class DiskResourceSelectionValidator<R extends DiskResource> implements
+            Validator<String> {
+
         private R diskResource;
-        
+
         @Override
         public List<EditorError> validate(Editor<String> editor, String value) {
             List<EditorError> errors = Lists.newArrayList();
-            if(isValidatePermissions()) {
+            if (isValidatePermissions()) {
                 errors.addAll(validatePermission(editor, value));
+            } else {
+                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.fieldRequiredLabel(), value));
             }
             return errors;
         }
-        
+
         private List<EditorError> validatePermission(Editor<String> editor, String value) {
             List<EditorError> errors = Lists.newArrayList();
-            if(diskResource == null) {
-                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionSelectErrorMessage(), value));
+            if (diskResource == null && isValidatePermissions()) {
+                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionSelectErrorMessage(),
+                        value));
                 return errors;
             }
-            
-            if(!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
-                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionSelectErrorMessage(), value));
+
+            if (!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
+                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionSelectErrorMessage(),
+                        value));
             }
-            
+
             return errors;
-            
+
         }
 
         /**
