@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
@@ -9,6 +10,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelecto
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 
 import com.google.gwt.core.client.GWT;
@@ -95,6 +97,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
                 return CommonModelUtils.createHasIdFromString(object);
             }
         });
+        awFolderSel.setValidatePermissions(true);
         awFolderSel.setInfoTextClassName(res.css().warning());
         awFolderSel.addValidator(new AnalysisOutputValidator());
         editorDriver.initialize(this);
@@ -105,7 +108,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
         if ((event.getValue() != null) && !event.getValue().getId().equals(userSettings.getDefaultOutputFolder())) {
             awFolderSel.setInfoText(displayMessages.nonDefaultFolderWarning());
         } else {
-            awFolderSel.setInfoText(null);
+             awFolderSel.setInfoText(null);
         }
 
         awFolderSel.validate(false);

@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
@@ -10,6 +11,8 @@ import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
@@ -35,6 +38,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
 /**
  * Abstract class for single select DiskResource fields.
@@ -75,6 +79,11 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     private final Element infoText;
     private boolean browseButtonEnabled = true;
 
+    //by default do not validate permissions
+    private boolean validatePermissions = false;
+    private DiskResourceSelectionValidator<R> validator;
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected AppWizardDiskResourceSelector() {
         res.style().ensureInjected();
 
@@ -101,6 +110,8 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
             }
         });
 
+        validator = new DiskResourceSelectionValidator();
+        input.addValidator(validator);
         infoText = DOM.createDiv();
         infoText.getStyle().setDisplay(Display.NONE);
         getElement().appendChild(infoText);
@@ -112,6 +123,9 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
     }
 
     protected void setSelectedResource(R selectedResource) {
+        if(validator != null) {
+            validator.setDiskResource(selectedResource);
+        }
         setValue(selectedResource);
     }
 
@@ -136,6 +150,7 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
             return;
         }
         // Enable the div
+        infoText.getStyle().setWidth(100, Unit.PCT);
         infoText.getStyle().setDisplay(Display.BLOCK);
         // JDS Escape the text as a precaution.
         SafeHtml safeText = SafeHtmlUtils.fromString(text);
@@ -224,7 +239,10 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
                 errors.addAll(errs);
             }
         }
-        return input.validate(preventMark);
+        if(errors.size() > 0 && !preventMark) {
+            input.markInvalid("This field requires a valid value with permissions.");
+        }
+        return errors.size() > 0;
     }
 
     @Override
@@ -257,5 +275,55 @@ public abstract class AppWizardDiskResourceSelector<R extends DiskResource> exte
 
     public List<Validator<String>> getValidators() {
         return input.getValidators();
+    }
+    
+    /**
+     * @return the validatePermissions
+     */
+    public boolean isValidatePermissions() {
+        return validatePermissions;
+    }
+
+    /**
+     * @param validatePermissions the validatePermissions to set
+     */
+    public void setValidatePermissions(boolean validatePermissions) {
+        this.validatePermissions = validatePermissions;
+    }
+
+    private final class DiskResourceSelectionValidator<R extends DiskResource> implements Validator<String> {
+        
+        private R diskResource;
+        
+        @Override
+        public List<EditorError> validate(Editor<String> editor, String value) {
+            List<EditorError> errors = Lists.newArrayList();
+            if(isValidatePermissions()) {
+                errors.addAll(validatePermission(editor, value));
+            }
+            return errors;
+        }
+        
+        private List<EditorError> validatePermission(Editor<String> editor, String value) {
+            List<EditorError> errors = Lists.newArrayList();
+            if(diskResource == null) {
+                errors.add(new DefaultEditorError(editor, "This field is required", value));
+                return errors;
+            }
+            
+            if(!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
+                errors.add(new DefaultEditorError(editor, I18N.DISPLAY.permissionErrorMessage(), value));
+            }
+            
+            return errors;
+            
+        }
+
+        /**
+         * @param diskResource the diskResource to set
+         */
+        public void setDiskResource(R diskResource) {
+            this.diskResource = diskResource;
+        }
     }
 }
