@@ -12,8 +12,10 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.IsEditor;
@@ -22,15 +24,20 @@ import com.google.gwt.editor.client.adapters.ListEditor;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.sencha.gxt.core.client.dom.DefaultScrollSupport;
 import com.sencha.gxt.core.client.dom.ScrollSupport;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
+import com.sencha.gxt.dnd.core.client.DndDragCancelEvent;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
@@ -64,6 +71,8 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
+            dt.setAllowSelfAsSource(true);
+            new ArgGrpListDragSource(groupsContainer, editor);
 
         }
     }
@@ -241,9 +250,13 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
             List<ArgumentGroup> list = listEditor.getList();
+            boolean isNewArgGrp = AutoBeanUtils.getAutoBean((ArgumentGroup)event.getData()).getTag(ArgumentGroup.IS_NEW) != null;
             ArgumentGroup newArgGrp = AppTemplateUtils.copyArgumentGroup((ArgumentGroup)event.getData());
-            // Update new group label
-            newArgGrp.setLabel("Group " + grpCountInt++);
+
+            // Update new group label, if needed
+            if (isNewArgGrp) {
+                newArgGrp.setLabel("Group " + grpCountInt++);
+            }
 
             if (list != null) {
                 setFireSelectedOnAdd(true);
@@ -254,6 +267,83 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
             // TODO JDS Handle DnD Argument additions when drop occurs on a ContentPanel header.
             // Not sure if that should occur here, or elsewhere.
         }
+    }
+
+    private final class ArgGrpListDragSource extends DragSource {
+
+        private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
+        private final AccordionLayoutContainer container;
+        private int dragArgGrpIndex = -1;
+        private ArgumentGroup dragArgGrp = null;
+
+        private ArgGrpListDragSource(AccordionLayoutContainer container, ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor) {
+            super(container);
+            this.container = container;
+            this.listEditor = listEditor;
+        }
+
+        @Override
+        protected void onDragStart(DndDragStartEvent event) {
+            EventTarget target = event.getDragStartEvent().getNativeEvent().getEventTarget();
+            Element as = Element.as(target);
+
+            // Only want to allow drag start when we are over a child
+            IsWidget findWidget = container.findWidget(as);
+            List<ArgumentGroupEditor> editors = listEditor.getEditors();
+            boolean contains = editors.contains(findWidget);
+            if ((findWidget != null) && contains && ((ContentPanel)findWidget.asWidget()).getHeader().getElement().isOrHasChild(as)) {
+                event.getStatusProxy().update(((ContentPanel)findWidget.asWidget()).getHeader().getElement().getString());
+                event.setCancelled(false);
+
+                dragArgGrpIndex = editors.indexOf(findWidget);
+                // JDS For now, let's remove on drag start
+                dragArgGrp = listEditor.getList().remove(dragArgGrpIndex);
+                event.setData(dragArgGrp);
+
+            } else {
+
+                dragArgGrpIndex = -1;
+                dragArgGrp = null;
+                event.setCancelled(true);
+                event.getStatusProxy().update("");
+            }
+        }
+
+        /*
+         * -- Clear local references of Argument and index
+         */
+        @Override
+        protected void onDragDrop(DndDropEvent event) {
+            dragArgGrpIndex = -1;
+            dragArgGrp = null;
+        }
+
+        /*
+         * -- Re-insert the ArgumentGroup back into the list at the stored index.
+         */
+        @Override
+        protected void onDragCancelled(DndDragCancelEvent event) {
+
+            // JDS Put the ArgumentGroup back
+            listEditor.getList().add(dragArgGrpIndex, dragArgGrp);
+
+            dragArgGrpIndex = -1;
+            dragArgGrp = null;
+        }
+
+        /*
+         * -- Re-insert the ArgumentGroup back into the list at the stored index.
+         */
+        @Override
+        protected void onDragFail(DndDropEvent event) {
+
+            // JDS Put the ArgumentGroup back
+            listEditor.getList().add(dragArgGrpIndex, dragArgGrp);
+
+            dragArgGrpIndex = -1;
+            dragArgGrp = null;
+        }
+
     }
 
     /**
@@ -286,8 +376,14 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
         @Override
         public ArgumentGroupEditor create(int index) {
-            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(presenter, uuidService, appMetadataService, con.getElement());
-            ((ContentPanel)subEditor.asWidget()).setCollapsible(true);
+            ContentPanelAppearance cpAppearance;
+            if (presenter.isEditingMode()) {
+                cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
+            } else {
+                cpAppearance = GWT.create(ContentPanelAppearance.class);
+            }
+            final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(presenter, uuidService, appMetadataService, con.getElement(), cpAppearance);
+            subEditor.setCollapsible(true);
             con.insert(subEditor, index);
 
             if (index == 0) {
