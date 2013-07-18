@@ -62,7 +62,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
     ArgumentGroupListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         groupsContainer = new AppWizardALC();
         ScrollSupport scrollSupport = new DefaultScrollSupport(groupsContainer.getElement());
-        scrollSupport.setScrollMode(ScrollMode.ALWAYS);
+        scrollSupport.setScrollMode(ScrollMode.AUTOY);
         groupsContainer.setExpandMode(ExpandMode.SINGLE);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, presenter, uuidService, appMetadataService));
 
