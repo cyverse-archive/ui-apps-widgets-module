@@ -17,6 +17,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPres
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -29,6 +30,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -42,6 +44,7 @@ import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.event.StoreAddEvent;
 import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -141,6 +144,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
          * together.
          */
         initWidget(BINDER.createAndBindUi(this));
+    }
+
+    @UiFactory
+    ContentPanel createContentPanel() {
+        return new ContentPanel(new AppTemplateWizardPropertyContentPanelAppearance());
     }
 
     private ComboBox<FileInfoType> createFileInfoTypeComboBox(AppMetadataServiceFacade appMetadataService) {
@@ -446,7 +454,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case Info:
                     argLabelLabel.setText("Text");
                     break;
-
+                case MultiFileSelector:
+                    fileInfoTypeLabel.setText("Type of information in these files");
+                    break;
                 default:
                     break;
             }

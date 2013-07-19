@@ -1,6 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
@@ -10,13 +9,10 @@ import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentGroupPropertyEditor;
 import org.iplantc.de.client.UUIDServiceAsync;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
@@ -32,12 +28,6 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
  * 
  */
 class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, ValueAwareEditor<ArgumentGroup> {
-    interface HeaderTextTemplates extends SafeHtmlTemplates {
-        @SafeHtmlTemplates.Template("<span style=\"color: red;\">*&nbsp</span>")
-        SafeHtml fieldLabelRequired();
-    }
-
-    private final HeaderTextTemplates templates = GWT.create(HeaderTextTemplates.class);
     ArgumentListEditor argumentsEditor;
 
     @Path("")
@@ -53,12 +43,10 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
         argumentsEditor = new ArgumentListEditor(presenter, uuidService, appMetadataService, scrollElement);
         add(argumentsEditor);
         if (presenter.isEditingMode()) {
-            getHeader().addStyleName(presenter.getSelectionCss().selectionTargetBg());
             argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
             sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         }
-        headerErrorIcon = Document.get().createImageElement();
-        headerErrorIcon.setSrc(IplantResources.RESOURCES.exclamation().getSafeUri().asString());
+        headerErrorIcon = presenter.getAppearance().getErrorIconImg();
 
     }
     
@@ -73,7 +61,9 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
     protected void onClick(Event ce) {
         super.onClick(ce);
         if (presenter.isEditingMode() && header.getElement().isOrHasChild(ce.getEventTarget().<Element> cast())) {
-            presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(argGrpPropEditor));
+            ArgumentGroupSelectedEvent argGrpSelectedEvent = new ArgumentGroupSelectedEvent(argGrpPropEditor);
+            presenter.asWidget().fireEvent(argGrpSelectedEvent);
+            getHeader().addStyleName(presenter.getAppearance().getStyle().appHeaderSelect());
         }
     }
 
@@ -85,8 +75,10 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
         }
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {
-                // If any field is required, it needs to be marked as such.
-                labelText.append(templates.fieldLabelRequired());
+                // If any field is required, mark header as required.
+                SafeHtml redText = presenter.getAppearance().getTemplates().redText("*");
+                labelText.append(redText);
+                labelText.appendHtmlConstant("&nbsp;");
                 break;
             }
         }

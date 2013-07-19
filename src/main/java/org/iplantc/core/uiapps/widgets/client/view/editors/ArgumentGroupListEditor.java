@@ -4,6 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent;
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
@@ -12,7 +15,8 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardSelectableHeaderContentPanelAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -65,8 +69,11 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         scrollSupport.setScrollMode(ScrollMode.AUTOY);
         groupsContainer.setExpandMode(ExpandMode.SINGLE);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, presenter, uuidService, appMetadataService));
+        ArgGrpSelectedHandler appWizardSelectionHandler = new ArgGrpSelectedHandler(editor, presenter.getAppearance().getStyle());
 
         if (presenter.isEditingMode()) {
+            presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentSelectedEvent.TYPE);
+            presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentGroupSelectedEvent.TYPE);
             groupsContainer.setTitleCollapse(false);
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
@@ -117,6 +124,39 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
     void insertFirstInAccordion(IsWidget widget) {
         groupsContainer.insert(widget, 0);
         groupsContainer.setActiveWidget(widget.asWidget());
+    }
+
+    private final class ArgGrpSelectedHandler implements ArgumentGroupSelectedEventHandler, ArgumentSelectedEventHandler {
+        private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
+        private final AppTemplateWizardAppearance.Style style;
+
+        public ArgGrpSelectedHandler(ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor, AppTemplateWizardAppearance.Style style) {
+            this.listEditor = listEditor;
+            this.style = style;
+        }
+
+        @Override
+        public void onArgumentGroupSelected(ArgumentGroupSelectedEvent event) {
+            clearSelectionStyles();
+        }
+
+        @Override
+        public void onArgumentSelected(ArgumentSelectedEvent event) {
+            clearSelectionStyles();
+
+        }
+
+        public void clearSelectionStyles() {
+            if (listEditor == null) {
+                return;
+            }
+
+            for (ArgumentGroupEditor age : listEditor.getEditors()) {
+                age.getHeader().removeStyleName(style.appHeaderSelect());
+            }
+        }
+
+
     }
 
     private final class RequestDeleteHandler implements RequestArgumentGroupDeleteEventHandler {
@@ -233,7 +273,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                                     }
                                 }
                             };
-                            t.schedule(400);
+                            t.schedule(presenter.getAppearance().getAutoExpandOnHoverDelay());
                         } else {
                             header = null;
                         }
@@ -255,7 +295,8 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
             // Update new group label, if needed
             if (isNewArgGrp) {
-                newArgGrp.setLabel("Group " + grpCountInt++);
+                String defaultGroupLabel = presenter.getAppearance().getMessages().defaultGroupLabel(grpCountInt++);
+                newArgGrp.setLabel(defaultGroupLabel);
             }
 
             if (list != null) {
@@ -378,7 +419,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         public ArgumentGroupEditor create(int index) {
             ContentPanelAppearance cpAppearance;
             if (presenter.isEditingMode()) {
-                cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
+                cpAppearance = new AppTemplateWizardSelectableHeaderContentPanelAppearance();
             } else {
                 cpAppearance = GWT.create(ContentPanelAppearance.class);
             }

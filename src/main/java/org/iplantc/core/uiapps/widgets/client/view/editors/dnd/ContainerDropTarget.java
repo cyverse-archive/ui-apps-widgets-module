@@ -13,6 +13,7 @@ import com.sencha.gxt.dnd.core.client.DndDragMoveEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.dnd.core.client.Insert;
+import com.sencha.gxt.widget.core.client.container.Container;
 import com.sencha.gxt.widget.core.client.container.InsertResizeContainer;
 
 /**
@@ -23,7 +24,7 @@ import com.sencha.gxt.widget.core.client.container.InsertResizeContainer;
  * 
  * @param <W>
  */
-public class ContainerDropTarget<W extends InsertResizeContainer> extends DropTarget {
+public class ContainerDropTarget<W extends Container> extends DropTarget {
 
     protected final W container;
     protected int insertIndex;
@@ -40,8 +41,19 @@ public class ContainerDropTarget<W extends InsertResizeContainer> extends DropTa
         this(container);
         if (scrollElement != null) {
             scrollSupport = new AutoScrollSupport(scrollElement);
-            scrollSupport.setScrollDelay(200);
         }
+    }
+
+    public void setScrollDelay(int scrollDelay) {
+        scrollSupport.setScrollDelay(scrollDelay);
+    }
+
+    public void setScrollRegionHeight(int scrollRegionHeight) {
+        scrollSupport.setScrollRegionHeight(scrollRegionHeight);
+    }
+
+    public void setScrollRepeatDelay(int scrollRepeatDelay) {
+        scrollSupport.setScrollRepeatDelay(scrollRepeatDelay);
     }
 
     /**

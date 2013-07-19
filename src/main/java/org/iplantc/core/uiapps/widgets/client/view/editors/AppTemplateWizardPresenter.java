@@ -1,22 +1,10 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface AppTemplateWizardPresenter extends IsWidget {
-
-    public interface SelectionCss extends CssResource {
-        String selectionTargetBg();
-
-        String selectionTargetMargin();
-    }
-
-    public interface Resources extends ClientBundle {
-        @Source("AppTemplateSelection.css")
-        SelectionCss selectionCss();
-
-    }
 
     void onArgumentPropertyValueChange();
 
@@ -36,10 +24,10 @@ public interface AppTemplateWizardPresenter extends IsWidget {
 
     void onArgumentPropertyValueChange(Object source);
 
-    SelectionCss getSelectionCss();
-
     boolean isOnlyLabelEditMode();
 
     void setOnlyLabelEditMode(boolean onlyLabelEditMode);
+
+    AppTemplateWizardAppearance getAppearance();
 
 }

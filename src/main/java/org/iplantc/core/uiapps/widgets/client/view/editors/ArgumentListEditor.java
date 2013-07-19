@@ -2,16 +2,18 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.IsEditor;
@@ -24,7 +26,6 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.sencha.gxt.core.client.Style;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.util.Margins;
@@ -34,7 +35,6 @@ import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.widget.core.client.button.IconButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -50,35 +50,32 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
  * 
  */
 class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, ArgumentEditor>> {
-    private static final int DEFAULT_ARGUMENT_LIST_CONTAINER_HEIGHT = 200;
-
     private final VerticalLayoutContainer argumentsContainer;
 
     private final ListEditor<Argument, ArgumentEditor> editor;
 
     private boolean fireSelectedOnAdd;
 
-    public ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement) {
+    ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement) {
         argumentsContainer = new VerticalLayoutContainer();
         // Set initial height to give a reasonable DnD location for dragged Arguments.
-        argumentsContainer.setHeight(DEFAULT_ARGUMENT_LIST_CONTAINER_HEIGHT);
+        argumentsContainer.setHeight(presenter.getAppearance().getDefaultArgListHeight());
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
         editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, presenter, uuidService, appMetadataService));
+        ArgSelectedHandler appWizardSelectionHandler = new ArgSelectedHandler(editor, presenter.getAppearance().getStyle());
 
         if (presenter.isEditingMode()) {
+            presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentGroupSelectedEvent.TYPE);
+            presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentSelectedEvent.TYPE);
             // If in editing mode, add drop target and DnD handlers
             ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer, presenter, editor, scrollElement);
             dt.setFeedback(Feedback.BOTH);
             dt.setAllowSelfAsSource(true);
             new ArgListEditorDragSource(argumentsContainer, editor);
 
-            // JDS Create delete button and add it to argumentsContainer
-            IplantResources res = GWT.create(IplantResources.class);
-            res.argumentListEditorCss().ensureInjected();
-
-            IconButton argDeleteBtn = new IconButton(new IconConfig(res.argumentListEditorCss().delete(), res.argumentListEditorCss().deleteHover()));
+            IconButton argDeleteBtn = presenter.getAppearance().getArgListDeleteButton();
             argDeleteBtn.setVisible(false);
             argumentsContainer.add(argDeleteBtn);
 
@@ -119,6 +116,36 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         return false;
     }
 
+    private final class ArgSelectedHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler {
+        private final AppTemplateWizardAppearance.Style style;
+        private final ListEditor<Argument, ArgumentEditor> listEditor;
+
+        public ArgSelectedHandler(ListEditor<Argument, ArgumentEditor> listEditor, AppTemplateWizardAppearance.Style style) {
+            this.listEditor = listEditor;
+            this.style = style;
+        }
+
+        @Override
+        public void onArgumentSelected(ArgumentSelectedEvent event) {
+            clearSelectionStyles();
+
+        }
+
+        @Override
+        public void onArgumentGroupSelected(ArgumentGroupSelectedEvent event) {
+            clearSelectionStyles();
+        }
+
+        public void clearSelectionStyles() {
+            if (listEditor == null) {
+                return;
+            }
+            for (ArgumentEditor ae : listEditor.getEditors()) {
+                ae.removeStyleName(style.argumentSelect());
+            }
+        }
+    }
+
     /**
      * A handler which controls the visibility, placement, and selection of a delete button over the
      * children of a <code>VerticalLayoutContainer</code>.
@@ -156,7 +183,6 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                         break;
                     }
                     currentItemIndex = j;
-                    button.setEnabled(true);
                     button.setVisible(true);
                     button.setPagePosition(child.getAbsoluteRight() - button.getOffsetWidth(), child.getAbsoluteTop());
 
@@ -174,7 +200,6 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 return;
             }
             currentItemIndex = -1;
-            button.disable();
             button.setVisible(false);
         }
 
@@ -197,7 +222,8 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                     ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
                 } else {
-                    layoutContainer.setHeight(DEFAULT_ARGUMENT_LIST_CONTAINER_HEIGHT);
+                    layoutContainer.setHeight(presenter.getAppearance().getDefaultArgListHeight());
+                    layoutContainer.forceLayout();
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
                 }
             }
@@ -220,6 +246,9 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             super(container, scrollElement);
             this.presenter = presenter;
             this.listEditor = editor;
+            setScrollDelay(presenter.getAppearance().getAutoScrollDelay());
+            setScrollRegionHeight(presenter.getAppearance().getAutoScrollRegionHeight());
+            setScrollRepeatDelay(presenter.getAppearance().getAutoScrollRepeatDelay());
         }
 
         @Override
@@ -357,8 +386,8 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
 
             con.clearSizeCache();
+            con.setHeight(-1);
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
-            con.setHeight(Style.DEFAULT);
 
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
