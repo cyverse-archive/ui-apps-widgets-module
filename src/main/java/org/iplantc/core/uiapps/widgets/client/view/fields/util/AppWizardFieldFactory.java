@@ -12,10 +12,6 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardDiskResourceSelector;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFileSelector;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardMultiFileSelector;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
@@ -31,6 +27,10 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
+import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
+import org.iplantc.core.uidiskresource.client.views.widgets.FileSelectorField;
+import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
+import org.iplantc.core.uidiskresource.client.views.widgets.MultiFileSelectorField;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -140,29 +140,29 @@ public class AppWizardFieldFactory {
         NameValidator3 nameValidator = new NameValidator3();
         switch (argument.getType()) {
             case FileInput:
-                AppWizardFileSelector awFileSel = new AppWizardFileSelector();
+                FileSelectorField awFileSel = new FileSelectorField();
                 if (editingMode) {
                     awFileSel.disableBrowseButton();
                 }
-                ConverterFieldAdapter<HasId, AppWizardFileSelector> fileSelCfa = new ConverterFieldAdapter<HasId, AppWizardFileSelector>(awFileSel, new SplittableToHasIdConverter());
+                ConverterFieldAdapter<HasId, FileSelectorField> fileSelCfa = new ConverterFieldAdapter<HasId, FileSelectorField>(awFileSel, new SplittableToHasIdConverter());
                 field = applyDiskResourceValidators(argument, fileSelCfa);
                 break;
 
             case FolderInput:
-                AppWizardFolderSelector awFolderSel = new AppWizardFolderSelector();
+                FolderSelectorField awFolderSel = new FolderSelectorField();
                 if (editingMode) {
                     awFolderSel.disableBrowseButton();
                 }
-                ConverterFieldAdapter<HasId, AppWizardFolderSelector> folderSelCfa = new ConverterFieldAdapter<HasId, AppWizardFolderSelector>(awFolderSel, new SplittableToHasIdConverter());
+                ConverterFieldAdapter<HasId, FolderSelectorField> folderSelCfa = new ConverterFieldAdapter<HasId, FolderSelectorField>(awFolderSel, new SplittableToHasIdConverter());
                 field = applyDiskResourceValidators(argument, folderSelCfa);
                 break;
 
             case MultiFileSelector:
-                AppWizardMultiFileSelector awMultFileSel = new AppWizardMultiFileSelector();
+                MultiFileSelectorField awMultFileSel = new MultiFileSelectorField();
                 if (editingMode) {
                     awMultFileSel.disableAddDeleteButtons();
                 }
-                ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> multFileSelCfa = new ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector>(awMultFileSel,
+                ConverterFieldAdapter<List<HasId>, MultiFileSelectorField> multFileSelCfa = new ConverterFieldAdapter<List<HasId>, MultiFileSelectorField>(awMultFileSel,
                         new SplittableToHasIdListConverter());
                 field = applyDiskResourceListValidators(argument, multFileSelCfa);
                 break;
@@ -296,13 +296,57 @@ public class AppWizardFieldFactory {
             return;
         }
 
-        EmptyValidator<T> emptyValidator = new EmptyValidator<T>();
-        if (field instanceof ValueBaseField<?>) {
-            ((ValueBaseField<T>)field).setAllowBlank(false);
-        } else if (field instanceof Field<?>) {
-            ((Field<T>)field).addValidator(emptyValidator);
-        } else if (field instanceof ConverterFieldAdapter<?, ?>) {
-            ((ConverterFieldAdapter<T, ?>)field).addValidator(emptyValidator);
+
+        if (argument.getRequired()) {
+            EmptyValidator<T> emptyValidator = new EmptyValidator<T>();
+            if (field instanceof ValueBaseField<?>) {
+                ((ValueBaseField<T>)field).setAllowBlank(false);
+            } else if (field instanceof ConverterFieldAdapter<?, ?>) {
+                ConverterFieldAdapter<T, ?> converterFieldAdapter = (ConverterFieldAdapter<T, ?>)field;
+                if (converterFieldAdapter.getField() instanceof AbstractDiskResourceSelector<?>) {
+                    ((AbstractDiskResourceSelector<?>)converterFieldAdapter.getField()).setRequired(true);
+                } else {
+                    converterFieldAdapter.addValidator(emptyValidator);
+                }
+            } else if (field instanceof Field<?>) {
+                Field<T> castField = (Field<T>)field;
+                castField.addValidator(emptyValidator);
+            }
+
+        } else {
+            // JDS Clear required validators
+            if (field instanceof ValueBaseField<?>) {
+                ((ValueBaseField<T>)field).setAllowBlank(true);
+            } else if (field instanceof ConverterFieldAdapter<?, ?>) {
+                ConverterFieldAdapter<T, ?> converterFieldAdapter = (ConverterFieldAdapter<T, ?>)field;
+                if (converterFieldAdapter.getField() instanceof AbstractDiskResourceSelector<?>) {
+                    ((AbstractDiskResourceSelector<?>)converterFieldAdapter.getField()).setRequired(false);
+                } else {
+                    List<Validator<T>> validators = converterFieldAdapter.getValidators();
+                    List<Validator<T>> validatorsToRemove = Lists.newArrayList();
+                    for (Validator<T> v : validators) {
+                        if (v instanceof EmptyValidator<?>) {
+                            validatorsToRemove.add(v);
+                        }
+                    }
+                    for (Validator<?> v : validatorsToRemove) {
+                        converterFieldAdapter.removeValidator((Validator<T>)v);
+                    }
+                }
+            } else if (field instanceof Field<?>) {
+                Field<T> castField = (Field<T>)field;
+                List<Validator<T>> validators = castField.getValidators();
+                List<Validator<?>> validatorsToRemove = Lists.newArrayList();
+                for (Validator<T> v : validators) {
+                    if (v instanceof EmptyValidator<?>) {
+                        validatorsToRemove.add(v);
+                    }
+                }
+                for (Validator<?> v : validatorsToRemove) {
+                    castField.removeValidator((Validator<T>)v);
+                }
+
+            }
         }
 
     }
@@ -446,13 +490,13 @@ public class AppWizardFieldFactory {
         return field;
     }
 
-    static ConverterFieldAdapter<HasId, ? extends AppWizardDiskResourceSelector<?>> applyDiskResourceValidators(Argument argument,
-            ConverterFieldAdapter<HasId, ? extends AppWizardDiskResourceSelector<?>> field) {
+    static ConverterFieldAdapter<HasId, ? extends AbstractDiskResourceSelector<?>> applyDiskResourceValidators(Argument argument,
+            ConverterFieldAdapter<HasId, ? extends AbstractDiskResourceSelector<?>> field) {
         // TBI JDS Feature not yet supported
         return field;
     }
 
-    static ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> applyDiskResourceListValidators(Argument argument, ConverterFieldAdapter<List<HasId>, AppWizardMultiFileSelector> field) {
+    static ConverterFieldAdapter<List<HasId>, MultiFileSelectorField> applyDiskResourceListValidators(Argument argument, ConverterFieldAdapter<List<HasId>, MultiFileSelectorField> field) {
         // TBI JDS Feature not yet supported
         return field;
     }

@@ -5,7 +5,7 @@
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
-             xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields">
+             xmlns:drFields="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
     <ui:with field="strings"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" />         
     <ui:with field="margins"
@@ -48,7 +48,7 @@
 		        <form:FieldLabel text="{strings.selectOutputFolder}"
 		                         labelAlign="TOP">
 		            <form:widget>
-		                <fields:AppWizardFolderSelector ui:field="awFolderSel"/>
+		                <drFields:FolderSelectorField ui:field="awFolderSel"/>
 		            </form:widget>
 		        </form:FieldLabel> 
 		    </con:child>                    
