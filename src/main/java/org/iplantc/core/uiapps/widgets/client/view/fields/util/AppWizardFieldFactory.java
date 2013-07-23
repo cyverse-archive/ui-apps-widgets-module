@@ -292,7 +292,7 @@ public class AppWizardFieldFactory {
     public static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
         // Exit if the argument is not required, or the field is not an instance of something with an
         // "addValidator" method
-        if (!argument.getRequired() || !((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
+        if (!((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
             return;
         }
 
