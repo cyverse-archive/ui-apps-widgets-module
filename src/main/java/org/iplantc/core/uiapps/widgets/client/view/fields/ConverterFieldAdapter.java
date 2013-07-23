@@ -5,6 +5,7 @@ import java.util.List;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.PreventEntryAfterLimitHandler;
+import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
@@ -142,8 +143,8 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
         List<Validator<U>> validators = Lists.newArrayList();
         if (field instanceof Field<?>) {
             validators.addAll(((Field<U>)field).getValidators());
-        } else if (field instanceof AppWizardDiskResourceSelector<?>) {
-            for (Validator<String> v : ((AppWizardDiskResourceSelector<?>)field).getValidators()) {
+        } else if (field instanceof AbstractDiskResourceSelector<?>) {
+            for (Validator<String> v : ((AbstractDiskResourceSelector<?>)field).getValidators()) {
                 validators.add((Validator<U>)v);
             }
         } else {
@@ -166,9 +167,25 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     public void addValidator(Validator<U> validator) {
         if(field instanceof Field<?>){
             ((Field<U>)field).addValidator(validator);
-        } else if (field instanceof AppWizardDiskResourceSelector<?>) {
-            ((AppWizardDiskResourceSelector<?>)field).addValidator((Validator<String>)validator);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void removeValidator(Validator<U> validator) {
+        if (!(field instanceof Field<?>)) {
+            return;
+        }
+
+        ((Field<U>)field).removeValidator(validator);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Validator<U>> getValidators() {
+        if (!(field instanceof Field<?>)) {
+            return null;
+        }
+
+        return ((Field<U>)field).getValidators();
     }
 
     @Override

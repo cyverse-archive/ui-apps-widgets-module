@@ -5,11 +5,11 @@ import java.util.List;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardFolderSelector;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
+import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -69,9 +69,9 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
 
     @Ignore
     @UiField
-    AppWizardFolderSelector awFolderSel;
+    FolderSelectorField awFolderSel;
 
-    ConverterEditorAdapter<String, HasId, AppWizardFolderSelector> outputDirectory;
+    ConverterEditorAdapter<String, HasId, FolderSelectorField> outputDirectory;
     private final UserSettings userSettings;
     private final AppsWidgetsDisplayMessages displayMessages;
     private final Resources res;
@@ -84,7 +84,7 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
         BINDER.createAndBindUi(this);
         name.addValidator(new NameValidator3());
         name.setAllowBlank(false);
-        outputDirectory = new ConverterEditorAdapter<String, HasId, AppWizardFolderSelector>(awFolderSel, new Converter<String, HasId>() {
+        outputDirectory = new ConverterEditorAdapter<String, HasId, FolderSelectorField>(awFolderSel, new Converter<String, HasId>() {
             @Override
             public String convertFieldValue(HasId object) {
                 return object.getId();
