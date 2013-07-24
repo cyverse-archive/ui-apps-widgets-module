@@ -116,7 +116,13 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             } else {
                 ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter, appMetadataService);
                 subEditor = argValueEditor;
-                addClickHandler(argValueEditor);
+                // JDS Special handling for the EmptyGroup argument
+                if (value == AppTemplateUtils.getEmptyGroupArgument()) {
+                    con.removeStyleName(presenter.getAppearance().getStyle().argument());
+                    con.addStyleName(presenter.getAppearance().getStyle().emptyGroupBgText());
+                } else {
+                    addClickHandler(argValueEditor);
+                }
                 con.add(argValueEditor);
             }
             subEditor.setValue(value);
@@ -131,6 +137,9 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             if (!presenter.isEditingMode()) {
                 setVisible(value.isVisible());
             }
+        }
+
+        if (value == AppTemplateUtils.getEmptyGroupArgument()) {
         }
     }
 

@@ -65,10 +65,10 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription {
     void setValidators(List<ArgumentValidator> validators);
 
     @PropertyName("isVisible")
-    Boolean isVisible();
+    boolean isVisible();
 
     @PropertyName("isVisible")
-    void setVisible(Boolean visible);
+    void setVisible(boolean visible);
 
     @PropertyName("arguments")
     List<SelectionItem> getSelectionItems();

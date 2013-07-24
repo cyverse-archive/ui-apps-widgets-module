@@ -48,6 +48,8 @@ public interface AppTemplateWizardAppearance {
 
         String deleteBtn();
 
+        String emptyGroupBgText();
+
     }
 
     interface Resources extends IplantResources {

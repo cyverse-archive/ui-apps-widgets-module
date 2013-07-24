@@ -16,6 +16,7 @@ import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.editor.client.Editor.Ignore;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
@@ -52,14 +53,13 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, ArgumentEditor>> {
     private final VerticalLayoutContainer argumentsContainer;
 
-    private final ListEditor<Argument, ArgumentEditor> editor;
+    @Ignore
+    final ListEditor<Argument, ArgumentEditor> editor;
 
     private boolean fireSelectedOnAdd;
 
     ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement) {
         argumentsContainer = new VerticalLayoutContainer();
-        // Set initial height to give a reasonable DnD location for dragged Arguments.
-        argumentsContainer.setHeight(presenter.getAppearance().getDefaultArgListHeight());
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
@@ -79,8 +79,10 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             argDeleteBtn.setVisible(false);
             argumentsContainer.add(argDeleteBtn);
 
-            // JDS Create the argument delete handler, and add it to the argumentsContainer and the
-            // argument delete button.
+            /*
+             * JDS Create the argument delete handler, and add it to the argumentsContainer and the
+             * argument delete button.
+             */
             ArgumentWYSIWYGDeleteHandler deleteButtonHandler = new ArgumentWYSIWYGDeleteHandler(editor, argumentsContainer, argDeleteBtn, presenter);
             argumentsContainer.addDomHandler(deleteButtonHandler, MouseOverEvent.getType());
             argumentsContainer.addDomHandler(deleteButtonHandler, MouseOutEvent.getType());
@@ -182,6 +184,11 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                     if (presenter.isOnlyLabelEditMode() && !arg.getType().equals(ArgumentType.Info)) {
                         break;
                     }
+                    
+                    // JDS Do not display delete button for EmptyGroup argument.
+                    if (arg == AppTemplateUtils.getEmptyGroupArgument()) {
+                        break;
+                    }
                     currentItemIndex = j;
                     button.setVisible(true);
                     button.setPagePosition(child.getAbsoluteRight() - button.getOffsetWidth(), child.getAbsoluteTop());
@@ -211,21 +218,26 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                     return;
                 }
                 listEditor.getList().remove(currentItemIndex);
-                presenter.onArgumentPropertyValueChange();
 
                 /*
                  * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers that
                  * the selection should be cleared, or the previous argument selected, if possible.
                  */
-                if (listEditor.getList().size() > 0) {
+                if (!listEditor.getList().isEmpty()) {
                     int index = (currentItemIndex > 0) ? currentItemIndex - 1 : 0;
                     ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
                 } else {
-                    layoutContainer.setHeight(presenter.getAppearance().getDefaultArgListHeight());
+                    /*
+                     * JDS If the ArgumentGroup is empty after performing remove, add the empty group
+                     * argument.
+                     */
+                    listEditor.getList().add(AppTemplateUtils.getEmptyGroupArgument());
                     layoutContainer.forceLayout();
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(null));
                 }
+
+                presenter.onArgumentPropertyValueChange();
             }
         }
     }
@@ -280,6 +292,11 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 } else {
                     list.add(insertIndex, newArg);
                 }
+
+                // JDS Remove placeholder, empty group argument on DnD add.
+                if ((list.size() > 1) && list.contains(AppTemplateUtils.getEmptyGroupArgument())) {
+                    list.remove(AppTemplateUtils.getEmptyGroupArgument());
+                }
                 presenter.onArgumentPropertyValueChange();
             }
         }
@@ -314,19 +331,24 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             IsWidget findWidget = container.findWidget(as);
             if ((findWidget != null) && listEditor.getEditors().contains(findWidget)) {
 
-                event.getStatusProxy().update(findWidget.asWidget().getElement().getString());
-                event.setCancelled(false);
-
                 dragArgumentIndex = listEditor.getEditors().indexOf(findWidget);
-                // JDS For now, let's remove on drag start
-                dragArgument = listEditor.getList().remove(dragArgumentIndex);
-                event.setData(dragArgument);
-            } else {
-                dragArgumentIndex = -1;
-                dragArgument = null;
-                event.setCancelled(true);
-                event.getStatusProxy().update("");
+
+                if (listEditor.getList().get(dragArgumentIndex) != AppTemplateUtils.getEmptyGroupArgument()) {
+                    event.getStatusProxy().update(findWidget.asWidget().getElement().getString());
+                    event.setCancelled(false);
+
+                    // JDS For now, let's remove on drag start
+                    dragArgument = listEditor.getList().remove(dragArgumentIndex);
+                    event.setData(dragArgument);
+                    return;
+                }
             }
+
+            // JDS In every other case, clean up and cancel drag.
+            dragArgumentIndex = -1;
+            dragArgument = null;
+            event.setCancelled(true);
+            event.getStatusProxy().update("");
         }
 
         /*
@@ -385,14 +407,14 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         public ArgumentEditor create(int index) {
             final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
 
-            con.clearSizeCache();
-            con.setHeight(-1);
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
 
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
                 presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getPropertyEditor()));
+                subEditor.addStyleName(presenter.getAppearance().getStyle().argumentSelect());
             }
+            con.forceLayout();
             return subEditor;
         }
         

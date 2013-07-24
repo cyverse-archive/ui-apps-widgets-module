@@ -101,11 +101,8 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
         DEServiceFacade.getInstance().getServiceData(wrapper, new AppTemplateCallbackConverter(factory, dcServices, callback));
     }
 
-    @Override
-    public void cmdLinePreview(AppTemplate at, AsyncCallback<String> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl()
-               + "arg-preview"; //$NON-NLS-1$
-        AppTemplate copy = AppTemplateUtils.copyAppTemplate(at);
+    private AppTemplate doCmdLinePreviewCleanup(AppTemplate templateToClean) {
+        AppTemplate copy = AppTemplateUtils.copyAppTemplate(templateToClean);
         // JDS Transform any Argument's value which contains a full SelectionItem obj to the
         // SelectionItem's value
         for (ArgumentGroup ag : copy.getArgumentGroups()) {
@@ -141,18 +138,23 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
                 }
             }
         }
-        Splittable split = appTemplateToSplittable(copy);
+
+        return copy;
+    }
+
+    @Override
+    public void cmdLinePreview(AppTemplate at, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "arg-preview"; //$NON-NLS-1$
+        AppTemplate cleaned = doCmdLinePreviewCleanup(at);
+        Splittable split = appTemplateToSplittable(cleaned);
         String payload = split.getPayload();
         ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.POST, 
                 address, payload);
         DEServiceFacade.getInstance().getServiceData(wrapper, callback);
     }
 
-    @Override
-    public void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback) {
-        String address = DEProperties.getInstance().getMuleServiceBaseUrl() 
-                + "workspaces/" + je.getWorkspaceId() + "/newexperiment"; //$NON-NLS-1$ //$NON-NLS-2$
-        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(je));
+    private Splittable doAssembleLaunchAnalysisPayload(AppTemplate at, JobExecution je) {
+        Splittable assembledPayload = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(je));
         Splittable configSplit = StringQuoter.createSplittable();
         for (ArgumentGroup ag : at.getArgumentGroups()) {
             for (Argument arg : ag.getArguments()) {
@@ -176,10 +178,17 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
 
             }
         }
-        configSplit.assign(split, "config");
-        GWT.log("LaunchAnalysis Json:\n" + JsonUtil.prettyPrint(split));
+        configSplit.assign(assembledPayload, "config");
+        return assembledPayload;
+    }
 
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.PUT, address, split.getPayload());
+    @Override
+    public void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "workspaces/" + je.getWorkspaceId() + "/newexperiment"; //$NON-NLS-1$ //$NON-NLS-2$
+        Splittable assembledPayload = doAssembleLaunchAnalysisPayload(at, je);
+        GWT.log("LaunchAnalysis Json:\n" + JsonUtil.prettyPrint(assembledPayload));
+
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.PUT, address, assembledPayload.getPayload());
         DEServiceFacade.getInstance().getServiceData(wrapper, callback);
     }
 

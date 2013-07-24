@@ -74,7 +74,6 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         if (presenter.isEditingMode()) {
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentSelectedEvent.TYPE);
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentGroupSelectedEvent.TYPE);
-            groupsContainer.setTitleCollapse(false);
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);

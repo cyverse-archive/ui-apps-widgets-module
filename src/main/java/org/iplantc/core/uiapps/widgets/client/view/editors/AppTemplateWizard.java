@@ -14,6 +14,7 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.Argum
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
@@ -132,6 +133,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public AppTemplate flushAppTemplate() {
         AppTemplate flush = editorDriver.flush();
+        AppTemplate cleaned = AppTemplateUtils.removeEmptyGroupArguments(flush);
         if (hasErrors()) {
             editorDriver.accept(new Refresher());
             GWT.log("Editor has errors");
@@ -145,7 +147,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
                 }
             }
         }
-        return flush;
+        return cleaned;
     }
 
     @Override
