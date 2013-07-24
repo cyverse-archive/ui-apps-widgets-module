@@ -87,6 +87,9 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
         outputDirectory = new ConverterEditorAdapter<String, HasId, FolderSelectorField>(awFolderSel, new Converter<String, HasId>() {
             @Override
             public String convertFieldValue(HasId object) {
+                if (object == null) {
+                    return null;
+                }
                 return object.getId();
             }
 

@@ -140,21 +140,17 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     @SuppressWarnings("unchecked")
     private void transferErrorsToDelegate() {
         errors.clear();
-        List<Validator<U>> validators = Lists.newArrayList();
         if (field instanceof Field<?>) {
-            validators.addAll(((Field<U>)field).getValidators());
-        } else if (field instanceof AbstractDiskResourceSelector<?>) {
-            for (Validator<String> v : ((AbstractDiskResourceSelector<?>)field).getValidators()) {
-                validators.add((Validator<U>)v);
+            for (Validator<U> v : ((Field<U>)field).getValidators()) {
+                List<EditorError> errs = v.validate(field, field.getValue());
+                if (errs != null) {
+                    errors.addAll(errs);
+                }
             }
+        } else if (field instanceof AbstractDiskResourceSelector<?>) {
+            errors.addAll(((AbstractDiskResourceSelector<?>)field).getErrors());
         } else {
             return;
-        }
-        for (Validator<U> v : validators) {
-            List<EditorError> errs = v.validate(field, field.getValue());
-            if (errs != null) {
-                errors.addAll(errs);
-            }
         }
     }
 

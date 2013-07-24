@@ -455,6 +455,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     argLabelLabel.setText("Text");
                     break;
                 case MultiFileSelector:
+                case FolderInput:
                     fileInfoTypeLabel.setText("Type of information in these files");
                     break;
                 default:
