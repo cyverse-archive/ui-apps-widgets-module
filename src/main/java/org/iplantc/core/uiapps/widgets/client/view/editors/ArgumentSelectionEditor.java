@@ -94,8 +94,6 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             propertyLabel.setWidget(subEditor);
             subEditor.addValueChangeHandler(this);
 
-            // TODO JDS Determine if any validators are necessary for Selection types
-
             // TODO JDS Determine how "required" field validation must occur.
             subEditor.setValue(model);
             HasEnabled w = ((HasEnabled)subEditor.asWidget());

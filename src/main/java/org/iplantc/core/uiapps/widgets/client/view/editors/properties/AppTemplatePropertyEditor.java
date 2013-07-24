@@ -2,16 +2,19 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -48,6 +51,11 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     public AppTemplatePropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
+    }
+
+    @UiFactory
+    ContentPanel createContentPanel() {
+        return new ContentPanel(new AppTemplateWizardPropertyContentPanelAppearance());
     }
 
     @UiHandler({"name", "description"})

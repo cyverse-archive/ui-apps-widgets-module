@@ -5,6 +5,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.editor.client.EditorDelegate;
@@ -43,6 +44,21 @@ import com.sencha.gxt.widget.core.client.container.SimpleContainer;
  */
 class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareEditor<Argument> {
 
+    private final class ArgumentClickHandler implements ClickHandler {
+        private final AppTemplateWizardAppearance.Style style;
+
+        private ArgumentClickHandler(AppTemplateWizardAppearance.Style style) {
+            this.style = style;
+        }
+
+        @Override
+        public void onClick(ClickEvent event) {
+            ArgumentSelectedEvent argSelectedEvent = new ArgumentSelectedEvent(argPropEditor);
+            presenter.asWidget().fireEvent(argSelectedEvent);
+            ArgumentEditor.this.addStyleName(style.argumentSelect());
+        }
+    }
+
     @Path("")
     ArgumentPropertyEditor argPropEditor = null;
 
@@ -63,14 +79,9 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
         con = new SimpleContainer();
         if (presenter.isEditingMode()) {
             con.sinkEvents(Event.MOUSEEVENTS);
-            con.addStyleName(presenter.getSelectionCss().selectionTargetMargin());
+            con.addStyleName(presenter.getAppearance().getStyle().argument());
             argPropEditor = new ArgumentPropertyEditor(presenter, uuidService, appMetadataService);
-            clickHandler = new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    presenter.asWidget().fireEvent(new ArgumentSelectedEvent(argPropEditor));
-                }
-            };
+            clickHandler = new ArgumentClickHandler(presenter.getAppearance().getStyle());
         }
         initWidget(con);
     }

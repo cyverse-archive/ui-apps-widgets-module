@@ -17,6 +17,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPres
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.SelectionItemPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -29,6 +30,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -42,6 +44,7 @@ import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.event.StoreAddEvent;
 import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -143,6 +146,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         initWidget(BINDER.createAndBindUi(this));
     }
 
+    @UiFactory
+    ContentPanel createContentPanel() {
+        return new ContentPanel(new AppTemplateWizardPropertyContentPanelAppearance());
+    }
+
     private ComboBox<FileInfoType> createFileInfoTypeComboBox(AppMetadataServiceFacade appMetadataService) {
         final FileInfoTypeProperties props = appMetadataService.getFileInfoTypeProperties();
 
@@ -229,41 +237,45 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         }
         if (event.getSource() == visible) {
-            // If the "Display in GUI" checkbox is not selected
-            if (!event.getValue()) {
-                // Clear the "require user input" checkbox
-                requiredEditor.setValue(false);
-
-                omitIfBlank.setVisible(false);
-                requiredEditor.setVisible(false);
-                descriptionLabel.setVisible(false);
-                if (validatorsEditor != null) {
-                    validatorsEditor.setVisible(false);
-                }
-                if (selectionItemListEditor != null) {
-                    selectionItemListEditor.setVisible(false);
-                }
-                if (selectionItemTreeEditor != null) {
-                    selectionItemTreeEditor.setVisible(false);
-                }
-            } else {
-                omitIfBlank.setVisible(true);
-                omitIfBlank.enable();
-                requiredEditor.setVisible(true);
-                descriptionLabel.setVisible(true);
-                if (validatorsEditor != null) {
-                    validatorsEditor.setVisible(true);
-                }
-                if (selectionItemListEditor != null) {
-                    selectionItemListEditor.setVisible(true);
-                }
-                if (selectionItemTreeEditor != null) {
-                    selectionItemTreeEditor.setVisible(true);
-                }
-            }
+            updateDisplayInGuiVisibilities(event.getValue());
         }
         presenter.onArgumentPropertyValueChange(event.getSource());
         
+    }
+
+    private void updateDisplayInGuiVisibilities(boolean displayInGui) {
+        // If the "Display in GUI" checkbox is not selected
+        if (!displayInGui) {
+            // Clear the "require user input" checkbox
+            requiredEditor.setValue(false);
+
+            omitIfBlank.setVisible(false);
+            requiredEditor.setVisible(false);
+            descriptionLabel.setVisible(false);
+            if (validatorsEditor != null) {
+                validatorsEditor.setVisible(false);
+            }
+            if (selectionItemListEditor != null) {
+                selectionItemListEditor.setVisible(false);
+            }
+            if (selectionItemTreeEditor != null) {
+                selectionItemTreeEditor.setVisible(false);
+            }
+        } else {
+            omitIfBlank.setVisible(true);
+            omitIfBlank.enable();
+            requiredEditor.setVisible(true);
+            descriptionLabel.setVisible(true);
+            if (validatorsEditor != null) {
+                validatorsEditor.setVisible(true);
+            }
+            if (selectionItemListEditor != null) {
+                selectionItemListEditor.setVisible(true);
+            }
+            if (selectionItemTreeEditor != null) {
+                selectionItemTreeEditor.setVisible(true);
+            }
+        }
     }
 
     @UiHandler({"label", "description", "name"})
@@ -442,7 +454,10 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case Info:
                     argLabelLabel.setText("Text");
                     break;
-
+                case MultiFileSelector:
+                case FolderInput:
+                    fileInfoTypeLabel.setText("Type of information in these files");
+                    break;
                 default:
                     break;
             }
@@ -463,6 +478,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         }
 
         this.model = value;
+        updateDisplayInGuiVisibilities(model.isVisible());
 
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {

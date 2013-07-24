@@ -189,6 +189,9 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
     }
 
     public boolean hasErrors() {
+        if (subEditor == null) {
+            return false;
+        }
         subEditor.validate(false);
         return (subEditor.getErrors() != null) && !subEditor.getErrors().isEmpty();
     }

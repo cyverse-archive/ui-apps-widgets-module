@@ -17,7 +17,9 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.ContentPanelHoverHeaderSelectionAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearanceImpl;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardSelectableHeaderContentPanelAppearance;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -30,8 +32,6 @@ import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
@@ -63,7 +63,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
     
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
-    private final AppTemplateWizardPresenter.Resources res = GWT.create(AppTemplateWizardPresenter.Resources.class);
     
     private final ContentPanel con;
     ArgumentGroupListEditor argumentGroups;
@@ -76,14 +75,18 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
     private Object valueChangeEventSource;
     
+    private final AppTemplateWizardAppearance appearance;
+
+    private boolean onlyLabelEditMode = false;
+
     public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
-        res.selectionCss().ensureInjected();
+        appearance = new AppTemplateWizardAppearanceImpl();
         this.editingMode = editingMode;
         argumentGroups = new ArgumentGroupListEditor(this, uuidService, appMetadataService);
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
-            cpAppearance = new ContentPanelHoverHeaderSelectionAppearance();
+            cpAppearance = new AppTemplateWizardSelectableHeaderContentPanelAppearance();
         } else {
             cpAppearance = GWT.create(ContentPanelAppearance.class);
         }
@@ -99,7 +102,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         con.add(argumentGroups);
 
         if (editingMode) {
-            con.getHeader().addStyleName(res.selectionCss().selectionTargetBg());
             appTemplatePropEditor = new AppTemplatePropertyEditor(this);
             con.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         } else {
@@ -181,15 +183,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         argumentGroups.collapseAllArgumentGroups();
     }
 
-    interface FieldLabelTextTemplates extends SafeHtmlTemplates {
-
-        @SafeHtmlTemplates.Template("<span style=\"color: red;\">&nbsp[NO TOOL SELECTED]</span>")
-        SafeHtml fieldLabelRequired();
-    }
-
-    private final FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class);
-    private boolean onlyLabelEditMode = false;
-
     @Override
     public void setValue(AppTemplate value) {
         this.appTemplate = value;
@@ -197,7 +190,8 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
             SafeHtmlBuilder labelText = new SafeHtmlBuilder();
             labelText.append(SafeHtmlUtils.fromString(value.getName()));
             if (value.getDeployedComponent() == null) {
-                labelText.append(templates.fieldLabelRequired());
+                labelText.appendHtmlConstant("&nbsp;");
+                labelText.append(appearance.getTemplates().redText(appearance.getMessages().emptyToolText()));
             }
             con.setHeadingHtml(labelText.toSafeHtml());
         }
@@ -246,11 +240,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         return valueChangeEventSource;
     }
 
-    @Override
-    public SelectionCss getSelectionCss() {
-        return res.selectionCss();
-    }
-
     public void addAppTemplateSelectedEventHandler(AppTemplateSelectedEventHandler handler) {
         addHandler(handler, AppTemplateSelectedEvent.TYPE);
     }
@@ -285,5 +274,10 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
     @Override
     public void setOnlyLabelEditMode(boolean onlyLabelEditMode) {
         this.onlyLabelEditMode = onlyLabelEditMode;
+    }
+
+    @Override
+    public AppTemplateWizardAppearance getAppearance() {
+        return appearance;
     }
 }

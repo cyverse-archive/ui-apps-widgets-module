@@ -156,7 +156,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(props.id());
 
         tree = new SelectionItemTree(store, props.display());
-        tree.setHeight(200);
+        tree.setHeight(presenter.getAppearance().getDefaultTreeSelectionHeight());
 
         tree.addValueChangeHandler(new TreeValueChangeHandler());
         selectionItemsEditor = new MyTreeStoreEditor(store, this, presenter);

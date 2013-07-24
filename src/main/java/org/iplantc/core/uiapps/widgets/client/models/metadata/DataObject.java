@@ -25,10 +25,10 @@ public interface DataObject {
     void setFormat(String format);
 
     @PropertyName("is_implicit")
-    Boolean isImplicit();
+    boolean isImplicit();
 
     @PropertyName("is_implicit")
-    void setImplicit(Boolean implicit);
+    void setImplicit(boolean implicit);
 
     void setCmdSwitch(String string);
 

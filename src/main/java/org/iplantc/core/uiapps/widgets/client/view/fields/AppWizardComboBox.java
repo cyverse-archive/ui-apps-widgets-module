@@ -71,6 +71,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
         // JDS Initialize combobox and its editor converter
         selectionItemsEditor = new ComboBox<SelectionItem>(listStore, props.displayLabel());
+        selectionItemsEditor.setEmptyText(presenter.getAppearance().getMessages().emptyListSelectionText());
         selectionItemsEditor.setTriggerAction(TriggerAction.ALL);
         valueEditor = new ConverterFieldAdapter<SelectionItem, ComboBox<SelectionItem>>(selectionItemsEditor, new SplittableToSelectionArgConverter());
         initWidget(selectionItemsEditor);
