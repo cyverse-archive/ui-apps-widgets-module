@@ -102,6 +102,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     public SelectionItemTreePropertyEditor(final AppTemplateWizardPresenter presenter) {
         buildTreeGrid();
         initWidget(BINDER.createAndBindUi(this));
+        treeGrid.getView().setEmptyText(I18N.DISPLAY.labelSelectionCreateWidgetEmptyText());
 
         selectionItemsEditor = new MyTreeStoreEditor(store, this, presenter);
         cascadeOptionsCombo.add(CheckCascade.TRI);
@@ -123,10 +124,10 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
 
         // Build ColumnModel
         RowNumberer<SelectionItem> numberer = new RowNumberer<SelectionItem>(new IdentityValueProvider<SelectionItem>());
-        ColumnConfig<SelectionItem, String> displayConfig = new ColumnConfig<SelectionItem, String>(siProps.display(), 90, "Display");
-        ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 60, "Argument");
-        ColumnConfig<SelectionItem, String> valueConfig = new ColumnConfig<SelectionItem, String>(siProps.value(), 40, "Value");
-        ColumnConfig<SelectionItem, String> descriptionConfig = new ColumnConfig<SelectionItem, String>(siProps.description(), 90, "Tool tip text");
+        ColumnConfig<SelectionItem, String> displayConfig = new ColumnConfig<SelectionItem, String>(siProps.display(), 90, I18N.DISPLAY.labelSingleSelectDisplayColumnHeader());
+        ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 60, I18N.DISPLAY.labelSingleSelectNameColumnHeader());
+        ColumnConfig<SelectionItem, String> valueConfig = new ColumnConfig<SelectionItem, String>(siProps.value(), 40, I18N.DISPLAY.labelSingleSelectValueColumnHeader());
+        ColumnConfig<SelectionItem, String> descriptionConfig = new ColumnConfig<SelectionItem, String>(siProps.description(), 90, I18N.DISPLAY.labelSingleSelectToolTipColumnHeader());
         ColumnConfig<SelectionItem, Boolean> defaultColumn = buildIsDefaultConfig();
 
         defaultColumn.setSortable(false);
@@ -291,7 +292,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     }
 
     private ColumnConfig<SelectionItem, Boolean> buildIsDefaultConfig() {
-        ColumnConfig<SelectionItem, Boolean> defaultConfig = new ColumnConfig<SelectionItem, Boolean>(new IsDefaultColumnValueProvider(), 45, "Default");
+        ColumnConfig<SelectionItem, Boolean> defaultConfig = new ColumnConfig<SelectionItem, Boolean>(new IsDefaultColumnValueProvider(), 45, I18N.DISPLAY.labelSingleSelectIsDefaultColumnHeader());
 
         CheckBoxCell cell = new CheckBoxCell();
         defaultConfig.setCell(cell);

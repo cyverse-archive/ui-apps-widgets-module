@@ -17,12 +17,10 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
 
     private final Resources res;
     private final AppTemplateWizardTemplates templates;
-    private final AppTemplateWizardDisplayStrings displayStrings;
 
     public AppTemplateWizardAppearanceImpl() {
         res = GWT.create(Resources.class);
         templates = GWT.create(AppTemplateWizardTemplates.class);
-        displayStrings = GWT.create(AppTemplateWizardDisplayStrings.class);
     }
 
     @Override
@@ -70,11 +68,6 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     }
 
     @Override
-    public AppTemplateWizardDisplayStrings getMessages() {
-        return displayStrings;
-    }
-
-    @Override
     public Style getStyle() {
         res.css().ensureInjected();
         return res.css();
@@ -97,14 +90,19 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
         if (Strings.isNullOrEmpty(model.getDescription()) || ((model.getId() != null) && model.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
             labelText.append(label);
         } else {
-            labelText.append(templates.fieldLabel(label, res.info().getSafeUri(), model.getDescription()));
+            labelText.append(templates.fieldLabelImgFloatRight(label, res.info().getSafeUri(), model.getDescription()));
         }
         return labelText.toSafeHtml();
     }
 
     @Override
     public SafeHtml createContextualHelpLabel(String labelToolTipText, String propertyToolTip) {
-        return templates.fieldLabel(SafeHtmlUtils.fromString(labelToolTipText), res.help().getSafeUri(), propertyToolTip);
+        return templates.fieldLabelImgFloatRight(SafeHtmlUtils.fromString(labelToolTipText), res.help().getSafeUri(), propertyToolTip);
+    }
+
+    @Override
+    public SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip) {
+        return templates.fieldLabelImg(SafeHtmlUtils.fromString(label), res.help().getSafeUri(), toolTip);
     }
 
 }

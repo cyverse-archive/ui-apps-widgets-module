@@ -42,7 +42,7 @@
                            cm="{cm}" 
                            store="{selectionArgStore}" 
                            view="{view}"
-                           toolTip="Double click to edit"/>
+                           toolTip="{display.labelSingleSelectEditToolTip}"/>
        </con:south>
     </con:NorthSouthContainer>         
 </ui:UiBinder> 

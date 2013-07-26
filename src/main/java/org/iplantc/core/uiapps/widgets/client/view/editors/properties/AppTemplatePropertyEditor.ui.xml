@@ -33,20 +33,20 @@
         <ui:attributes margins="{margins0}" flex="1" />
     </ui:with>
              
-    <gxt:ContentPanel headingText="Properties">
+    <gxt:ContentPanel headingText="{strings.labelDetailsPanelHeader}">
         <gxt:child layoutData="{marginData}">
             <con:VerticalLayoutContainer scrollMode="AUTOY"
                                          adjustForScroll="true">
                 <con:child layoutData="{fieldLayoutData}">
                     <form:FieldLabel ui:field="toolLabel"
-                                     text="Tool Used"
                                      labelAlign="TOP">
                                      
                         <form:widget>
                             <con:HBoxLayoutContainer>
                                 <con:child layoutData="{boxLayoutDataMargins0Flex1}">
 		                            <form:TextField ui:field="tool"
-		                                            readOnly="true"/>
+		                                            readOnly="true"
+		                                            emptyText="{strings.labelToolUsedEmptyText}"/>
 		                        </con:child>
                                 <con:child>
 		                            <button:TextButton ui:field="searchBtn"
@@ -58,18 +58,20 @@
                 </con:child>                                         
                 <con:child layoutData="{fieldLayoutData}">
                     <form:FieldLabel ui:field="appNameLabel"
-                                     text="App name"
+                                     text="{strings.labelAppNameLabel}"
                                      labelAlign="TOP">
                         <form:widget>
-                            <form:TextField ui:field="name"/>
+                            <form:TextField ui:field="name"
+                                            emptyText="{strings.labelAppNameEmptyText}"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    
                 <con:child layoutData="{fieldLayoutData}">
-                    <form:FieldLabel text="App description"
+                    <form:FieldLabel text="{strings.labelAppDescriptionLabel}"
                                      labelAlign="TOP">
                         <form:widget>
-                            <form:TextArea ui:field="description"/>
+                            <form:TextArea ui:field="description"
+                                           emptyText="{strings.labelAppDescriptionEmptyText}"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    

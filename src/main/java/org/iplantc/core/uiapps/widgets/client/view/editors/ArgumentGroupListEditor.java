@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.Iterator;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
@@ -294,7 +295,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
             // Update new group label, if needed
             if (isNewArgGrp) {
-                String defaultGroupLabel = presenter.getAppearance().getMessages().defaultGroupLabel(grpCountInt++);
+                String defaultGroupLabel = I18N.DISPLAY.defaultGroupLabel(grpCountInt++);
                 newArgGrp.setLabel(defaultGroupLabel);
             }
 

@@ -9,7 +9,8 @@
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
 	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees"
 	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields">
-	         
+	<ui:with field="strings"
+             type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" /> 
     <ui:with field="margins"
              type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="10"
@@ -37,13 +38,12 @@
                        margins="{marginsBottom}"/>
     </ui:with>
  
-    <gxt:ContentPanel headingText="Properties">
+    <gxt:ContentPanel headingText="{strings.labelDetailsPanelHeader}">
 	    <con:VerticalLayoutContainer ui:field="con" 
 	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="argLabelLabel" 
-	                             text="Label"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="label"/>
@@ -52,17 +52,16 @@
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="nameLabel"
-	                             text="Command line option"
 	                             labelAlign="TOP">
 	                <form:widget>
-	                    <form:TextField ui:field="name"/>
+	                    <form:TextField ui:field="name"
+	                                    emptyText="{strings.labelArgumentOptionEmptyText}"/>
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>
 	        
 	        <con:child layoutData="{fieldLayoutData}">
-                <form:CheckBox ui:field="isImplicit" 
-                               boxLabel="Do not pass this argument to the command line"/>
+                <fields:CheckBoxAdapter ui:field="isImplicit" />
             </con:child>
 	        
 		    <!-- DefaultValue Editors -->
@@ -70,8 +69,7 @@
 	           <wizEditor:DefaultArgumentValueEditor ui:field="defaultValue"/>
 	        </con:child>
 		    <con:child layoutData="{fieldLayoutData}">
-	           <form:FieldLabel text="Default Value"
-	                            ui:field="selectionItemDefaultValueLabel"
+	           <form:FieldLabel ui:field="selectionItemDefaultValueLabel"
                                 labelAlign="TOP">
                     <form:widget>
 			           <fields:AppWizardComboBox ui:field="selectionItemDefaultValue"/>
@@ -81,31 +79,28 @@
 	        </con:child>                
 
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="visible" 
-	                           boxLabel="Display in GUI"/>
+	            <fields:CheckBoxAdapter ui:field="visible"
+	                                    text="{strings.labelIsVisible}" />
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="requiredEditor" 
-	                           boxLabel="This field is required"/>
+	            <fields:CheckBoxAdapter ui:field="requiredEditor" 
+	                                    text="{strings.labelIsRequired}"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <form:CheckBox ui:field="omitIfBlank" 
-	                           boxLabel="Exclude Argument when empty"/>
+	            <fields:CheckBoxAdapter ui:field="omitIfBlank" />
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="descriptionLabel" 
-	                             text="Tool tip text"
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="description"
-	                                    emptyText="Enter tooltip here"/>
+	                                    emptyText="{strings.labelToolTipEmptyText}"/>
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>
 	        
 	        <con:child layoutData="{fieldLayoutData}">
                 <form:FieldLabel ui:field="dataSourceLabel" 
-                                 text="Source of Output"
                                  labelAlign="TOP">
                     <form:widget>
                         <form:ComboBox ui:field="dataSourceComboBox"/>
@@ -115,7 +110,6 @@
             
 	        <con:child layoutData="{fieldLayoutData}">
 	            <form:FieldLabel ui:field="fileInfoTypeLabel" 
-                                 text="Type of information in this file"
                                  labelAlign="TOP">
                     <form:widget>
                         <form:ComboBox ui:field="fileInfoTypeComboBox"/>

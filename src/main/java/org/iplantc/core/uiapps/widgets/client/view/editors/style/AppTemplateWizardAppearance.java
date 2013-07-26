@@ -30,7 +30,10 @@ public interface AppTemplateWizardAppearance {
         SafeHtml fieldLabel(SafeHtml name, String textToolTip);
 
         @SafeHtmlTemplates.Template("{0}<img style='float: right;' src='{1}' qtip='{2}'></img>")
-        SafeHtml fieldLabel(SafeHtml label, SafeUri img, String toolTip);
+        SafeHtml fieldLabelImgFloatRight(SafeHtml label, SafeUri img, String toolTip);
+
+        @SafeHtmlTemplates.Template("{0}&nbsp;<img src='{1}' qtip='{2}'></img>")
+        SafeHtml fieldLabelImg(SafeHtml label, SafeUri img, String toolTip);
     }
 
     interface Style extends CssResource {
@@ -62,30 +65,6 @@ public interface AppTemplateWizardAppearance {
     interface Resources extends IplantResources {
         @Source("AppTemplateWizard.css")
         Style css();
-    }
-
-    interface EmptyMessages {
-
-        /**
-         * @return the text to be displayed inside an empty selection item.
-         */
-        String emptyListSelectionText();
-
-        /**
-         * 
-         * @return "[NO TOOL SELECTED]"
-         */
-        String emptyToolText();
-
-    }
-
-    interface DefaultLabelMessages {
-
-        /**
-         * @param grpNum
-         * @return "Group {0}"
-         */
-        String defaultGroupLabel(int grpNum);
     }
 
     /**
@@ -123,10 +102,6 @@ public interface AppTemplateWizardAppearance {
 
     AppTemplateWizardTemplates getTemplates();
 
-    AppTemplateWizardDisplayStrings getMessages();
-
-    // ContentPanelHoverHeaderSelectionAppearance getContentPanelEditingAppearance();
-
     Style getStyle();
 
     /**
@@ -136,5 +111,7 @@ public interface AppTemplateWizardAppearance {
 
     SafeHtml createArgumentLabel(Argument model);
 
-    SafeHtml createContextualHelpLabel(String labelToolTipText, String propertyToolTip);
+    SafeHtml createContextualHelpLabel(String label, String toolTip);
+
+    SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip);
 }

@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
@@ -71,7 +72,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
         // JDS Initialize combobox and its editor converter
         selectionItemsEditor = new ComboBox<SelectionItem>(listStore, props.displayLabel());
-        selectionItemsEditor.setEmptyText(presenter.getAppearance().getMessages().emptyListSelectionText());
+        selectionItemsEditor.setEmptyText(I18N.DISPLAY.emptyListSelectionText());
         selectionItemsEditor.setTriggerAction(TriggerAction.ALL);
         valueEditor = new ConverterFieldAdapter<SelectionItem, ComboBox<SelectionItem>>(selectionItemsEditor, new SplittableToSelectionArgConverter());
         initWidget(selectionItemsEditor);

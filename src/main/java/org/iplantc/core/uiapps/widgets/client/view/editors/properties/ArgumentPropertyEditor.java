@@ -21,6 +21,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.Sele
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
+import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -48,7 +49,6 @@ import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
@@ -70,11 +70,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     VerticalLayoutContainer con;
 
     @UiField
-    CheckBox requiredEditor, omitIfBlank, visible;
+    CheckBoxAdapter requiredEditor, omitIfBlank, visible;
 
     @Ignore
     @UiField
-    CheckBox isImplicit;
+    CheckBoxAdapter isImplicit;
 
     @UiField
     TextField label;
@@ -235,9 +235,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         if (event.getSource() == requiredEditor) {
             if (event.getValue()) {
                 omitIfBlank.setValue(false);
-                omitIfBlank.disable();
+                // omitIfBlank.disable();
+                omitIfBlank.setEnabled(false);
             } else {
-                omitIfBlank.enable();
+                omitIfBlank.setEnabled(true);
+                // omitIfBlank.enable();
             }
         }
         if (event.getSource() == visible) {
@@ -267,7 +269,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         } else {
             omitIfBlank.setVisible(true);
-            omitIfBlank.enable();
+            // omitIfBlank.enable();
+            omitIfBlank.setEnabled(true);
+
             requiredEditor.setVisible(true);
             descriptionLabel.setVisible(true);
             if (validatorsEditor != null) {
@@ -516,87 +520,130 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         new QuickTip(listSelectionLabel);
         new QuickTip(selectionItemDefaultValueLabel);
         new QuickTip(dataSourceLabel);
+        new QuickTip(omitIfBlank);
+        new QuickTip(isImplicit);
 
         // JDS Change field labels based on Type
         switch (type) {
             case FileInput:
                 argLabelLabel.setText(labels.labelFileInputLabel());
                 fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileInfoTypeFileLabel(), help.propertyFileInfoType()));
+                label.setEmptyText(labels.labelFileInputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentFile()));
                 break;
             case FolderInput:
                 argLabelLabel.setText(labels.labelFolderInputLabel());
                 fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileInfoTypeFolderLabel(), help.propertyFileInfoType()));
+                label.setEmptyText(labels.labelFolderInputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentFolder()));
                 break;
             case MultiFileSelector:
                 argLabelLabel.setText(labels.labelMultiFileInputLabel());
                 fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileInfoTypeMultiFileLabel(), help.propertyFileInfoType()));
+                label.setEmptyText(labels.labelMultiFileInputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentMulti()));
                 break;
 
             case TextSelection:
                 argLabelLabel.setText(labels.labelTextSelectionLabel());
                 listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelSingleSelectionCreateLabel(), help.propertyCreateList()));
                 selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelSingleSelectionDefaultValue(), help.propertyDefaultItem()));
+                label.setEmptyText(labels.labelTextSelectionEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentList()));
                 break;
             case IntegerSelection:
                 argLabelLabel.setText(labels.labelIntegerSelectionLabel());
                 listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelSingleSelectionCreateLabel(), help.propertyCreateList()));
                 selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelSingleSelectionDefaultValue(), help.propertyDefaultItem()));
+                label.setEmptyText(labels.labelTextSelectionEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentList()));
                 break;
             case DoubleSelection:
                 argLabelLabel.setText(labels.labelDoubleSelectionLabel());
                 listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelSingleSelectionCreateLabel(), help.propertyCreateList()));
                 selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelSingleSelectionDefaultValue(), help.propertyDefaultItem()));
+                label.setEmptyText(labels.labelTextSelectionEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentList()));
                 break;
             case TreeSelection:
                 argLabelLabel.setText(labels.labelTreeSelectionLabel());
+                label.setEmptyText(labels.labelTextSelectionEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentList()));
                 break;
 
             case Info:
                 argLabelLabel.setText(labels.labelInfoLabel());
+                label.setEmptyText(labels.labelInfoEmptyText());
                 break;
             case EnvironmentVariable:
                 argLabelLabel.setText(labels.labelEnvVarLabel());
+                label.setEmptyText(labels.labelEnvVarEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentEnvVar()));
                 break;
             case Text:
                 argLabelLabel.setText(labels.labelTextInputLabel());
+                label.setEmptyText(labels.labelTextInputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentText()));
                 break;
             case MultiLineText:
                 argLabelLabel.setText(labels.labelMultiLineTextLabel());
+                label.setEmptyText(labels.labelTextInputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentText()));
                 break;
             case Flag:
                 argLabelLabel.setText(labels.labelCheckboxLabel());
+                label.setEmptyText(labels.labelCheckboxEmptyText());
                 break;
             case Integer:
                 argLabelLabel.setText(labels.labelIntegerInputLabel());
+                label.setEmptyText(labels.labelEnvVarEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentInteger()));
                 break;
             case Double:
                 argLabelLabel.setText(labels.labelDoubleInputLabel());
+                label.setEmptyText(labels.labelEnvVarEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentInteger()));
                 break;
 
             case FileOutput:
                 argLabelLabel.setText(labels.labelFileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileOutputSourceLabel(), help.propertyOutputSource()));
                 fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileInfoTypeFileLabel(), help.propertyFileInfoType()));
+                label.setEmptyText(labels.labelFileOutputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentOutput()));
+                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelDoNotPass(), help.propertyDoNotPass()));
                 break;
             case FolderOutput:
                 argLabelLabel.setText(labels.labelFolderOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFolderOutputSourceLabel(), help.propertyOutputSource()));
                 fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileInfoTypeFolderLabel(), help.propertyFileInfoType()));
+                label.setEmptyText(labels.labelFolderOutputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentOutput()));
+                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelDoNotPass(), help.propertyDoNotPass()));
                 break;
             case MultiFileOutput:
                 argLabelLabel.setText(labels.labelMultiFileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelMultiFileOutputSourceLabel(), help.propertyOutputSource()));
                 fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.labelFileInfoTypeMultiFileLabel(), help.propertyFileInfoType()));
+                label.setEmptyText(labels.labelMultiFileOutputEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentOutput()));
+                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelDoNotPass(), help.propertyDoNotPass()));
                 break;
 
             case ReferenceGenome:
                 argLabelLabel.setText(labels.labelReferenceGenomeLabel());
+                label.setEmptyText(labels.labelReferenceGenomeEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeReference()));
                 break;
             case ReferenceSequence:
                 argLabelLabel.setText(labels.labelReferenceSequenceLabel());
+                label.setEmptyText(labels.labelReferenceSequenceEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeReference()));
                 break;
             case ReferenceAnnotation:
                 argLabelLabel.setText(labels.labelReferenceAnnotationLabel());
+                label.setEmptyText(labels.labelReferenceAnnotationEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeReference()));
                 break;
 
             default:

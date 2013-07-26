@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
@@ -20,6 +21,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 public class AppTemplatePropertyEditor extends Composite implements ValueAwareEditor<AppTemplate> {
 
@@ -51,6 +53,9 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     public AppTemplatePropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
+
+        toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(I18N.DISPLAY.labelToolUsedLabel(), I18N.DISPLAY.propertyToolUsed()));
+        new QuickTip(toolLabel);
     }
 
     @UiFactory
