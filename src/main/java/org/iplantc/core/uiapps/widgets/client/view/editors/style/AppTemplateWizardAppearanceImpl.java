@@ -1,8 +1,15 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
+import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 
@@ -76,6 +83,28 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     @Override
     public int getDefaultTreeSelectionHeight() {
         return 200;
+    }
+
+    @Override
+    public SafeHtml createArgumentLabel(Argument model) {
+        SafeHtmlBuilder labelText = new SafeHtmlBuilder();
+        if (model.getRequired()) {
+            // If the field is required, it needs to be marked as such.
+            labelText.append(templates.fieldLabelRequired());
+        }
+        // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
+        SafeHtml label = SafeHtmlUtils.fromString(model.getLabel().replaceFirst(":$", ""));
+        if (Strings.isNullOrEmpty(model.getDescription()) || ((model.getId() != null) && model.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
+            labelText.append(label);
+        } else {
+            labelText.append(templates.fieldLabel(label, res.info().getSafeUri(), model.getDescription()));
+        }
+        return labelText.toSafeHtml();
+    }
+
+    @Override
+    public SafeHtml createContextualHelpLabel(String labelToolTipText, String propertyToolTip) {
+        return templates.fieldLabel(SafeHtmlUtils.fromString(labelToolTipText), res.help().getSafeUri(), propertyToolTip);
     }
 
 }

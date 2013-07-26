@@ -47,6 +47,7 @@ import com.sencha.gxt.widget.core.client.event.ExpandItemEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.ViewReadyEvent;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -54,6 +55,7 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.RowNumberer;
 import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
@@ -89,6 +91,9 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
 
     SelectionItemTreeStoreEditor selectionItemsEditor;
 
+    @UiField
+    FieldLabel treeGridLabel;
+
     private int countGroupLabel = 1;
     private int countArgLabel = 1;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
@@ -106,6 +111,8 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         cascadeOptionsCombo.setValue(CheckCascade.TRI);
         cascadeOptionsCombo.addSelectionHandler(new CascadeOptionsComboSelectionHandler());
 
+        new QuickTip(treeGridLabel);
+        treeGridLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(I18N.DISPLAY.labelTreeSelectionCreateLabel(), I18N.DISPLAY.propertyCreateTree()));
         initDragNDrop();
     }
 

@@ -129,11 +129,16 @@
 	        </con:child>
 
 	        <con:child layoutData="{fieldLayoutData_END}">
-	           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
+	           <form:FieldLabel ui:field="listSelectionLabel"
+                                labelAlign="TOP">
+	               <form:widget>
+			           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
+	               </form:widget>
+	           </form:FieldLabel>
 	        </con:child>
 	        
 	        <con:child layoutData="{fieldLayoutData_END}">
-	           <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
+			   <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
 	        </con:child>
             
 	    </con:VerticalLayoutContainer>

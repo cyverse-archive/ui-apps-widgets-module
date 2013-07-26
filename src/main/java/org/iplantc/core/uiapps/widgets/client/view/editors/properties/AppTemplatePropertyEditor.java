@@ -28,7 +28,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     interface AppTemplatePropertyEditorUiBinder extends UiBinder<Widget, AppTemplatePropertyEditor> {}
 
     @UiField
-    FieldLabel toolLabel;
+    FieldLabel toolLabel, appNameLabel;
 
     @Ignore
     @UiField
@@ -79,6 +79,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         }
         if (presenter.isOnlyLabelEditMode()) {
             toolLabel.disable();
+            appNameLabel.disable();
         }
     }
 

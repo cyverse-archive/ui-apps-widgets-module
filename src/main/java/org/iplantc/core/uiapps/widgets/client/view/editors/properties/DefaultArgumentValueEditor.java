@@ -1,9 +1,12 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
@@ -24,6 +27,7 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
  * FIXME JDS This class is no longer part of the AppTemplateWizard editor driver chain. (It is not bound). Evaluate necessity of implemented interfaces. 
@@ -44,12 +48,15 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
      */
     private Argument model;
     private final AppMetadataServiceFacade appMetadataService;
+    private final AppTemplateWizardAppearance appearance;
 
-    DefaultArgumentValueEditor(final AppMetadataServiceFacade appMetadataService) {
+    DefaultArgumentValueEditor(AppTemplateWizardAppearance appearance, final AppMetadataServiceFacade appMetadataService) {
         this.appMetadataService = appMetadataService;
+        this.appearance = appearance;
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
+        new QuickTip(propertyLabel);
     }
 
     @Override
@@ -60,38 +67,41 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         this.model = value;
 
         if (subEditor == null) {
-            SafeHtml fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Value");
+            SafeHtml fieldLabelText = SafeHtmlUtils.fromTrustedString("");
             switch (model.getType()) {
                 case Flag:
                     // Change FieldLabel text for the Flag
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default State");
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultCheckboxLabel());
                     createDefaultValueSubEditor(model);
                     break;
 
-                case Text:
                 case EnvironmentVariable:
+                    fieldLabelText = appearance.createContextualHelpLabel(I18N.DISPLAY.labelDefaultEnvVarLabel(), I18N.DISPLAY.propertyDefaultNameEnvVar());
+                    createDefaultValueSubEditor(model);
+                    break;
+                case Text:
                 case MultiLineText:
+                    fieldLabelText = appearance.createContextualHelpLabel(I18N.DISPLAY.labelDefaultTextLabel(), I18N.DISPLAY.propertyDefaultText());
                     createDefaultValueSubEditor(model);
                     break;
 
-                case Number:
                 case Double:
                 case Integer:
+                    fieldLabelText = appearance.createContextualHelpLabel(I18N.DISPLAY.labelDefaultValueLabel(), I18N.DISPLAY.propertyDefaultValueInteger());
                     createDefaultValueSubEditor(model);
                     break;
 
-                case Output:
                 case FileOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Output file name");
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultFileOutputlabel());
                     createDefaultValueSubEditor(model);
                     break;
 
                 case FolderOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Output folder name");
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultFolderOutputLabel());
                     createDefaultValueSubEditor(model);
                     break;
                 case MultiFileOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString("Default Output file names");
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultMultiFileOutputLabel());
                     createDefaultValueSubEditor(model);
                     break;
 
@@ -105,6 +115,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                 case Selection:
                 case TextSelection:
                 case ValueSelection:
+                case ReferenceAnnotation:
+                case ReferenceGenome:
+                case ReferenceSequence:
                     // These types currently do not support default values
                     propertyLabel.setEnabled(false);
                     propertyLabel.setVisible(false);
@@ -196,6 +209,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     }
 
     public List<EditorError> getErrors() {
+        if (subEditor == null)
+            return Collections.emptyList();
+
         return subEditor.getErrors();
     }
 

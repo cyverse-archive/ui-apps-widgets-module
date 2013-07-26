@@ -2,11 +2,13 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.resources.client.uiapps.widgets.ArgumentListEditorCss;
+import org.iplantc.core.uiapps.widgets.client.models.Argument;
 
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 
 /**
@@ -26,6 +28,9 @@ public interface AppTemplateWizardAppearance {
 
         @SafeHtmlTemplates.Template("<span qtip=\"{1}\">{0}</span>")
         SafeHtml fieldLabel(SafeHtml name, String textToolTip);
+
+        @SafeHtmlTemplates.Template("{0}<img style='float: right;' src='{1}' qtip='{2}'></img>")
+        SafeHtml fieldLabel(SafeHtml label, SafeUri img, String toolTip);
     }
 
     interface Style extends CssResource {
@@ -49,6 +54,8 @@ public interface AppTemplateWizardAppearance {
         String deleteBtn();
 
         String emptyGroupBgText();
+
+        String grab();
 
     }
 
@@ -126,4 +133,8 @@ public interface AppTemplateWizardAppearance {
      * @return 200
      */
     int getDefaultTreeSelectionHeight();
+
+    SafeHtml createArgumentLabel(Argument model);
+
+    SafeHtml createContextualHelpLabel(String labelToolTipText, String propertyToolTip);
 }

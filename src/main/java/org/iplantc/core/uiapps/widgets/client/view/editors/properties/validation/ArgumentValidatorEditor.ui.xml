@@ -18,27 +18,32 @@
 		field="view">
 		<ui:attributes stripeRows="true" forceFit="true" />
 	</ui:with>
-	<con:NorthSouthContainer ui:field="con">
-		<con:north>
-			<toolbar:ToolBar>
-				<toolbar:child>
-					<button:TextButton ui:field="add" text="{display.add}" icon="{res.add}" />
-				</toolbar:child>
-				<toolbar:child>
-					<button:TextButton ui:field="edit" text="{display.edit}"
-						enabled="false"  icon="{res.edit}"/>
-				</toolbar:child>
-				<toolbar:child>
-					<button:TextButton ui:field="delete" text="{display.delete}"
-						enabled="false" icon="{res.delete}"/>
-				</toolbar:child>
-
-			</toolbar:ToolBar>
-		</con:north>
-
-		<con:south>
-			<grid:Grid ui:field="grid" cm="{cm}" store="{validatorStore}"
-				view="{view}" />
-		</con:south>
-	</con:NorthSouthContainer>
+	<form:FieldLabel ui:field="validatorEditorLabel"
+	                 labelAlign="TOP">
+        <form:widget>
+			<con:NorthSouthContainer>
+				<con:north>
+					<toolbar:ToolBar>
+						<toolbar:child>
+							<button:TextButton ui:field="add" text="{display.add}" icon="{res.add}" />
+						</toolbar:child>
+						<toolbar:child>
+							<button:TextButton ui:field="edit" text="{display.edit}"
+								enabled="false"  icon="{res.edit}"/>
+						</toolbar:child>
+						<toolbar:child>
+							<button:TextButton ui:field="delete" text="{display.delete}"
+								enabled="false" icon="{res.delete}"/>
+						</toolbar:child>
+		
+					</toolbar:ToolBar>
+				</con:north>
+		
+				<con:south>
+					<grid:Grid ui:field="grid" cm="{cm}" store="{validatorStore}"
+						view="{view}" />
+				</con:south>
+			</con:NorthSouthContainer>
+        </form:widget>	                 
+	</form:FieldLabel>
 </ui:UiBinder> 

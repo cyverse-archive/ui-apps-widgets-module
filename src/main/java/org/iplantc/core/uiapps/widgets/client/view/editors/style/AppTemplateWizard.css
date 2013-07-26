@@ -44,3 +44,33 @@
 	color: #ccc;
 	text-align: center;
 }
+
+.grab {
+	-moz-user-select: element;
+    -webkit-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
+}
+
+ 
+@if user.agent gecko1_8 {
+	 .grab:hover {
+		cursor: -moz-grab;
+	}
+	
+	.grab:active {
+		cursor: -moz-grabbing !important;
+	}
+	
+} @elif user.agent safari {
+    .grab:hover {
+        cursor: -webkit-grab;
+    }
+    
+    .grab:active {
+        cursor: -webkit-grabbing !important;
+    }
+  
+} 
+
+

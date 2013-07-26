@@ -47,7 +47,7 @@ public class AppTemplateUtils {
         AppTemplate copy = copyAppTemplate(at);
         for (ArgumentGroup ag : copy.getArgumentGroups()) {
             List<Argument> arguments = ag.getArguments();
-            if ((arguments.size() == 1) && (arguments.get(0).getId().equals(EMPTY_GROUP_ARG_ID))) {
+            if ((arguments.size() == 1) && (arguments.get(0).getId() != null) && (arguments.get(0).getId().equals(EMPTY_GROUP_ARG_ID))) {
                 arguments.clear();
             }
         }

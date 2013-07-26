@@ -191,7 +191,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                     }
                     currentItemIndex = j;
                     button.setVisible(true);
-                    button.setPagePosition(child.getAbsoluteRight() - button.getOffsetWidth(), child.getAbsoluteTop());
+                    button.setPagePosition(child.getAbsoluteRight() - (2 * button.getOffsetWidth()), child.getAbsoluteTop());
 
                     break;
                 }
