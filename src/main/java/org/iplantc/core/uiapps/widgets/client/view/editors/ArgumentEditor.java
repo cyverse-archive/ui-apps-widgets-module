@@ -8,6 +8,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPr
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.google.common.base.Strings;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -117,7 +118,7 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
                 ArgumentValueEditor argValueEditor = new ArgumentValueEditor(presenter, appMetadataService);
                 subEditor = argValueEditor;
                 // JDS Special handling for the EmptyGroup argument
-                if (value == AppTemplateUtils.getEmptyGroupArgument()) {
+                if (!Strings.isNullOrEmpty(value.getId()) && value.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID)) {
                     con.removeStyleName(presenter.getAppearance().getStyle().argument());
                     con.addStyleName(presenter.getAppearance().getStyle().emptyGroupBgText());
                 } else {

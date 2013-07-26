@@ -593,6 +593,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case Flag:
                 argLabelLabel.setText(labels.labelCheckboxLabel());
                 label.setEmptyText(labels.labelCheckboxEmptyText());
+                omitIfBlank.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.labelExcludeWhenEmpty(), help.propertyExcludeArgumentFlag()));
                 break;
             case Integer:
                 argLabelLabel.setText(labels.labelIntegerInputLabel());

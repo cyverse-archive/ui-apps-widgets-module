@@ -14,6 +14,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarg
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.google.common.base.Strings;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.Editor.Ignore;
@@ -186,7 +187,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                     }
                     
                     // JDS Do not display delete button for EmptyGroup argument.
-                    if (arg == AppTemplateUtils.getEmptyGroupArgument()) {
+                    if (!Strings.isNullOrEmpty(arg.getId()) && arg.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID)) {
                         break;
                     }
                     currentItemIndex = j;
@@ -294,8 +295,17 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 }
 
                 // JDS Remove placeholder, empty group argument on DnD add.
-                if ((list.size() > 1) && list.contains(AppTemplateUtils.getEmptyGroupArgument())) {
-                    list.remove(AppTemplateUtils.getEmptyGroupArgument());
+                if (list.size() > 1) {
+                    Argument argToRemove = null;
+                    for (Argument arg : list) {
+                        if (!Strings.isNullOrEmpty(arg.getId()) && arg.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID)) {
+                            argToRemove = arg;
+                            break;
+                        }
+                    }
+                    if (argToRemove != null) {
+                        list.remove(argToRemove);
+                    }
                 }
                 presenter.onArgumentPropertyValueChange();
             }
@@ -333,7 +343,9 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
 
                 dragArgumentIndex = listEditor.getEditors().indexOf(findWidget);
 
-                if (listEditor.getList().get(dragArgumentIndex) != AppTemplateUtils.getEmptyGroupArgument()) {
+                Argument argument = listEditor.getList().get(dragArgumentIndex);
+                // Only allow drag if it's not the empty grp argument
+                if (Strings.isNullOrEmpty(argument.getId()) || !argument.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID)) {
                     event.getStatusProxy().update(findWidget.asWidget().getElement().getString());
                     event.setCancelled(false);
 
