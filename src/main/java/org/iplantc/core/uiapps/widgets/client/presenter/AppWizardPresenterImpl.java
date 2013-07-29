@@ -25,9 +25,6 @@ import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
  * 
@@ -68,12 +65,6 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     }
     
     @Override
-    public void goLegacy(final HasOneWidget container, final Splittable legacyJson) {
-        setAppTemplateFromLegacyJson(legacyJson);
-        go(container);
-    }
-
-    @Override
     public void go(HasOneWidget container, AppTemplate appTemplate) {
         this.appTemplate = appTemplate;
         go(container);
@@ -97,18 +88,6 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
         view.edit(appTemplate, je);
         container.setWidget(view);
-    }
-
-    @Override
-    public void setAppTemplateFromLegacyJson(Splittable legacyJson) {
-        // Create AppTemplateSplittable and assign top level values.
-        Splittable appTemplateSplit = AppWizardPresenterJsonAdapter.adaptAppTemplateJsonString(legacyJson);
-        
-        AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-        AutoBean<AppTemplate> appTemplateAb = AutoBeanCodex.decode(factory, AppTemplate.class, appTemplateSplit);
-        
-        this.appTemplate = appTemplateAb.as();
-        
     }
 
     @Override

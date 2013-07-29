@@ -274,4 +274,9 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
         return referenceGenomeProperties;
     }
 
+    @Override
+    public AppTemplateAutoBeanFactory getAppTemplateFactory() {
+        return factory;
+    }
+
 }

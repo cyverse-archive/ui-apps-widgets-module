@@ -11,6 +11,7 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeLis
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemList;
+import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
@@ -46,5 +47,7 @@ public interface AppTemplateAutoBeanFactory extends AutoBeanFactory {
     AutoBean<ReferenceGenome> referenceGenome();
 
     AutoBean<ReferenceGenomeList> referenceGenomeList();
+
+    AutoBean<SimpleServiceError> simpleServiceError();
 
 }
