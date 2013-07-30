@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
@@ -75,6 +77,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         if (presenter.isEditingMode()) {
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentSelectedEvent.TYPE);
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentGroupSelectedEvent.TYPE);
+            presenter.asWidget().addHandler(appWizardSelectionHandler, AppTemplateSelectedEvent.TYPE);
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
@@ -126,7 +129,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         groupsContainer.setActiveWidget(widget.asWidget());
     }
 
-    private final class ArgGrpSelectedHandler implements ArgumentGroupSelectedEventHandler, ArgumentSelectedEventHandler {
+    private final class ArgGrpSelectedHandler implements ArgumentGroupSelectedEventHandler, ArgumentSelectedEventHandler, AppTemplateSelectedEventHandler {
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
         private final AppTemplateWizardAppearance.Style style;
 
@@ -146,6 +149,11 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
         }
 
+        @Override
+        public void onAppTemplateSelected(AppTemplateSelectedEvent appTemplateSelectedEvent) {
+            clearSelectionStyles();
+        }
+
         public void clearSelectionStyles() {
             if (listEditor == null) {
                 return;
@@ -154,8 +162,8 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
             for (ArgumentGroupEditor age : listEditor.getEditors()) {
                 age.getHeader().removeStyleName(style.appHeaderSelect());
             }
-        }
 
+        }
 
     }
 
@@ -437,6 +445,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                 if (isFireSelectedOnAdd()) {
                     presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(subEditor.getPropertyEditor()));
                     con.setActiveWidget(subEditor.asWidget());
+                    subEditor.getHeader().addStyleName(presenter.getAppearance().getStyle().appHeaderSelect());
                     setFireSelectedOnAdd(false);
                 }
                 subEditor.addRequestArgumentGroupDeleteEventHandler(handler);

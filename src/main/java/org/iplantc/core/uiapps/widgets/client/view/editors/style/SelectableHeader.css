@@ -1,3 +1,4 @@
+@def selectionColor #AADDDD;
 .header {
     padding: 4px 3px 2px 5px;
     position: relative;
@@ -29,15 +30,15 @@
 
 .header:hover, .headerSelect {
     background-image: linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -o-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -moz-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -webkit-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -ms-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(220
-        , 220, 220)), color-stop(0.78, rgb(72, 179, 191)));
+        , 220, 220)), color-stop(0.78, selectionColor));
 }

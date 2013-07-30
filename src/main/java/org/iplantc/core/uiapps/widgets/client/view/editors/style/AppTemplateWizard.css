@@ -5,17 +5,17 @@
 
 .appHeaderSelect {
     background-image: linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        selectionColor 78%);
+        selectionColor 78%) !important;
     background-image: -o-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        selectionColor 78%);
+        selectionColor 78%) !important;
     background-image: -moz-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        selectionColor 78%);
+        selectionColor 78%) !important;
     background-image: -webkit-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        selectionColor 78%);
+        selectionColor 78%) !important;
     background-image: -ms-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        selectionColor 78%);
+        selectionColor 78%) !important;
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(220
-        , 220, 220)), color-stop(0.78, selectionColor));
+        , 220, 220)), color-stop(0.78, selectionColor)) !important;
 }
 
 .argument {

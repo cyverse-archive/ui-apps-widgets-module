@@ -2,6 +2,8 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
@@ -70,6 +72,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         if (presenter.isEditingMode()) {
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentGroupSelectedEvent.TYPE);
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentSelectedEvent.TYPE);
+            presenter.asWidget().addHandler(appWizardSelectionHandler, AppTemplateSelectedEvent.TYPE);
             // If in editing mode, add drop target and DnD handlers
             ContainerDropTarget<VerticalLayoutContainer> dt = new ArgListEditorDropTarget(argumentsContainer, presenter, editor, scrollElement);
             dt.setFeedback(Feedback.BOTH);
@@ -119,7 +122,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         return false;
     }
 
-    private final class ArgSelectedHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler {
+    private final class ArgSelectedHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler, AppTemplateSelectedEventHandler {
         private final AppTemplateWizardAppearance.Style style;
         private final ListEditor<Argument, ArgumentEditor> listEditor;
 
@@ -131,11 +134,15 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         @Override
         public void onArgumentSelected(ArgumentSelectedEvent event) {
             clearSelectionStyles();
-
         }
 
         @Override
         public void onArgumentGroupSelected(ArgumentGroupSelectedEvent event) {
+            clearSelectionStyles();
+        }
+
+        @Override
+        public void onAppTemplateSelected(AppTemplateSelectedEvent appTemplateSelectedEvent) {
             clearSelectionStyles();
         }
 
@@ -147,6 +154,7 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 ae.removeStyleName(style.argumentSelect());
             }
         }
+
     }
 
     /**
