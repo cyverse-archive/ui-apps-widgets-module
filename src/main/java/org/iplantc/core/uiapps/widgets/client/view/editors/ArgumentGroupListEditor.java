@@ -16,8 +16,8 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardSelectableHeaderContentPanelAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -419,7 +419,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         public ArgumentGroupEditor create(int index) {
             ContentPanelAppearance cpAppearance;
             if (presenter.isEditingMode()) {
-                cpAppearance = new AppTemplateWizardSelectableHeaderContentPanelAppearance();
+                cpAppearance = new AppGroupContentPanelAppearance();
             } else {
                 cpAppearance = GWT.create(ContentPanelAppearance.class);
             }

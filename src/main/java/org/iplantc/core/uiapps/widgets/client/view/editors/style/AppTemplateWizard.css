@@ -1,16 +1,21 @@
+@def horOffset 40px;
+@def blur 10px;
+@def spread 5px;
+@def selectionColor #AADDDD;
+
 .appHeaderSelect {
     background-image: linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -o-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -moz-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -webkit-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -ms-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%);
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(220
-        , 220, 220)), color-stop(0.78, rgb(72, 179, 191)));
+        , 220, 220)), color-stop(0.78, selectionColor));
 }
 
 .argument {
@@ -21,9 +26,9 @@
 }
 
 .argument:hover, .argumentSelect {
-    -webkit-box-shadow: 30px 0px 20px rgba(72, 179, 191, 0.8);
-    -moz-box-shadow: 30px 0px 20px rgba(72, 179, 191, 0.8);
-    box-shadow: 30px 0px 20px rgba(72, 179, 191, 0.8);
+    -webkit-box-shadow: horOffset 0 blur spread selectionColor;
+    -moz-box-shadow: horOffset 0 blur spread selectionColor;
+    box-shadow: horOffset 0 blur spread selectionColor;
 }
 
 .deleteBtn {

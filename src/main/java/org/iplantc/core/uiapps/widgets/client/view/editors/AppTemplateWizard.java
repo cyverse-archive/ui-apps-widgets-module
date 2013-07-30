@@ -19,9 +19,9 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearanceImpl;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardSelectableHeaderContentPanelAppearance;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -88,7 +88,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
-            cpAppearance = new AppTemplateWizardSelectableHeaderContentPanelAppearance();
+            cpAppearance = new AppGroupContentPanelAppearance();
         } else {
             cpAppearance = GWT.create(ContentPanelAppearance.class);
         }

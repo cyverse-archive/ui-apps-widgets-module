@@ -3,6 +3,7 @@
 }
 
 .body {
-  background-color: rgba(72, 179, 191, 0.3);
+  background-color: #AADDDD;
   border-color: #d0d0d0;
+  border-left: none;
 }
