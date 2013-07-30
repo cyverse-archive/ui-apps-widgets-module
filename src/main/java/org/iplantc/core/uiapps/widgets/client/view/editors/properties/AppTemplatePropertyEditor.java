@@ -1,6 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
-import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
@@ -54,7 +53,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
 
-        toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(I18N.DISPLAY.labelToolUsedLabel(), I18N.DISPLAY.propertyToolUsed()));
+        toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(presenter.getAppearance().getPropertyPanelLabels().toolUsedLabel(),
+                presenter.getAppearance().getContextHelpMessages().appToolUsed()));
         new QuickTip(toolLabel);
     }
 

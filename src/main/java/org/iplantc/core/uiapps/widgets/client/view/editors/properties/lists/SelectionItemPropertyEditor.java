@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
@@ -97,11 +97,13 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     private final UUIDServiceAsync uuidService;
 
     protected int selectionItemCount = 1;
+    private final AppsWidgetsPropertyPanelLabels labels;
 
     public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         this.uuidService = uuidService;
+        this.labels = presenter.getAppearance().getPropertyPanelLabels();
         initWidget(BINDER.createAndBindUi(this));
-        grid.getView().setEmptyText(I18N.DISPLAY.labelSelectionCreateWidgetEmptyText());
+        grid.getView().setEmptyText(labels.selectionCreateWidgetEmptyText());
 
         editing = new GridInlineEditing<SelectionItem>(grid);
         ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);
@@ -133,9 +135,9 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     ColumnModel<SelectionItem> createColumnModel() {
         List<ColumnConfig<SelectionItem, ?>> list = Lists.newArrayList();
         SelectionItemProperties props = GWT.create(SelectionItemProperties.class);
-        displayCol = new ColumnConfig<SelectionItem, String>(props.display(), 90, I18N.DISPLAY.labelSingleSelectDisplayColumnHeader());
-        nameCol = new ColumnConfig<SelectionItem, String>(props.name(), 50, I18N.DISPLAY.labelSingleSelectNameColumnHeader());
-        valueCol = new ColumnConfig<SelectionItem, String>(props.value(), 50, I18N.DISPLAY.labelSingleSelectValueColumnHeader());
+        displayCol = new ColumnConfig<SelectionItem, String>(props.display(), 90, labels.singleSelectDisplayColumnHeader());
+        nameCol = new ColumnConfig<SelectionItem, String>(props.name(), 50, labels.singleSelectNameColumnHeader());
+        valueCol = new ColumnConfig<SelectionItem, String>(props.value(), 50, labels.singleSelectValueColumnHeader());
 
         list.add(displayCol);
         list.add(nameCol);

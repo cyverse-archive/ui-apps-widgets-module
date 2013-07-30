@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.util;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
@@ -66,6 +66,7 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 public class AppWizardFieldFactory {
 
     private static ListStore<ReferenceGenome> refGenStore = null;
+    private static final AppsWidgetsPropertyPanelLabels labels = GWT.create(AppsWidgetsPropertyPanelLabels.class);
 
     /**
      * Returns an {@link Editor} which contains sub-editors which are bound to an {@link Argument}'s
@@ -145,7 +146,7 @@ public class AppWizardFieldFactory {
 
             case MultiFileSelector:
                 MultiFileSelectorField awMultFileSel = new MultiFileSelectorField();
-                awMultFileSel.setEmptyText(I18N.DISPLAY.labelMultiFileWidgetEmptyText());
+                awMultFileSel.setEmptyText(labels.multiFileWidgetEmptyText());
                 if (editingMode) {
                     awMultFileSel.disableAddDeleteButtons();
                 }
@@ -156,14 +157,14 @@ public class AppWizardFieldFactory {
 
             case Text:
                 ConverterFieldAdapter<String, TextField> textCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
-                tf.setEmptyText(I18N.DISPLAY.labelTextInputWidgetEmptyText());
+                tf.setEmptyText(labels.textInputWidgetEmptyText());
                 textCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, textCfa);
                 break;
 
             case EnvironmentVariable:
                 ConverterFieldAdapter<String, TextField> envCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
-                tf.setEmptyText(I18N.DISPLAY.labelEnvVarWidgetEmptyText());
+                tf.setEmptyText(labels.envVarWidgetEmptyText());
                 envCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, envCfa);
                 break;
@@ -171,7 +172,7 @@ public class AppWizardFieldFactory {
             case MultiLineText:
                 TextArea textArea = new TextArea();
                 ConverterFieldAdapter<String, TextArea> mltCfa = new ConverterFieldAdapter<String, TextArea>(textArea, new SplittableToStringConverter());
-                textArea.setEmptyText(I18N.DISPLAY.labelTextInputWidgetEmptyText());
+                textArea.setEmptyText(labels.textInputWidgetEmptyText());
                 mltCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, mltCfa);
                 break;
@@ -182,13 +183,13 @@ public class AppWizardFieldFactory {
 
             case Double:
                 ConverterFieldAdapter<Double, SpinnerField<Double>> dblCfa = new ConverterFieldAdapter<Double, SpinnerField<Double>>(dblSpinnerField, new SplittableToDoubleConverter());
-                dblSpinnerField.setEmptyText(I18N.DISPLAY.labelDoubleInputWidgetEmptyText());
+                dblSpinnerField.setEmptyText(labels.doubleInputWidgetEmptyText());
                 field = applyDoubleValidators(argument, dblCfa);
                 break;
 
             case Integer:
                 ConverterFieldAdapter<Integer, SpinnerField<Integer>> intCfa = new ConverterFieldAdapter<Integer, SpinnerField<Integer>>(intSpinnerField, new SplittableToIntegerConverter());
-                intSpinnerField.setEmptyText(I18N.DISPLAY.labelIntegerInputWidgetEmptyText());
+                intSpinnerField.setEmptyText(labels.integerInputWidgetEmptyText());
                 field = applyIntegerValidators(argument, intCfa);
                 break;
 

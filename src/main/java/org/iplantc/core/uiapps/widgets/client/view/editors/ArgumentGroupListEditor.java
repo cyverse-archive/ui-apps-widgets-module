@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
@@ -236,6 +236,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
         private int grpCountInt = 2;
         private Header header;
+        private final AppsWidgetsPropertyPanelLabels appsWidgetsDisplay = GWT.create(AppsWidgetsPropertyPanelLabels.class);
 
         private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<ArgumentGroup,ArgumentGroupEditor> editor) {
             super(container);
@@ -295,7 +296,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
             // Update new group label, if needed
             if (isNewArgGrp) {
-                String defaultGroupLabel = I18N.DISPLAY.defaultGroupLabel(grpCountInt++);
+                String defaultGroupLabel = appsWidgetsDisplay.groupDefaultLabel(grpCountInt++);
                 newArgGrp.setLabel(defaultGroupLabel);
             }
 

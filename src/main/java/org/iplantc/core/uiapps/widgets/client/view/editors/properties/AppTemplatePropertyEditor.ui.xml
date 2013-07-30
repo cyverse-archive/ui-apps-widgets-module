@@ -7,8 +7,8 @@
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
     <ui:with field="icons"
         type="org.iplantc.core.resources.client.IplantResources" />
-    <ui:with field="strings"
-        type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" />         
+    <ui:with field="labels"
+        type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels" />         
     <ui:with field="margins"
             type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="5"
@@ -33,7 +33,7 @@
         <ui:attributes margins="{margins0}" flex="1" />
     </ui:with>
              
-    <gxt:ContentPanel headingText="{strings.labelDetailsPanelHeader}">
+    <gxt:ContentPanel headingText="{labels.detailsPanelHeader}">
         <gxt:child layoutData="{marginData}">
             <con:VerticalLayoutContainer scrollMode="AUTOY"
                                          adjustForScroll="true">
@@ -46,7 +46,7 @@
                                 <con:child layoutData="{boxLayoutDataMargins0Flex1}">
 		                            <form:TextField ui:field="tool"
 		                                            readOnly="true"
-		                                            emptyText="{strings.labelToolUsedEmptyText}"/>
+		                                            emptyText="{labels.toolUsedEmptyText}"/>
 		                        </con:child>
                                 <con:child>
 		                            <button:TextButton ui:field="searchBtn"
@@ -58,20 +58,20 @@
                 </con:child>                                         
                 <con:child layoutData="{fieldLayoutData}">
                     <form:FieldLabel ui:field="appNameLabel"
-                                     text="{strings.labelAppNameLabel}"
+                                     text="{labels.appNameLabel}"
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextField ui:field="name"
-                                            emptyText="{strings.labelAppNameEmptyText}"/>
+                                            emptyText="{labels.appNameEmptyText}"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    
                 <con:child layoutData="{fieldLayoutData}">
-                    <form:FieldLabel text="{strings.labelAppDescriptionLabel}"
+                    <form:FieldLabel text="{labels.appDescriptionLabel}"
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextArea ui:field="description"
-                                           emptyText="{strings.labelAppDescriptionEmptyText}"/>
+                                           emptyText="{labels.appDescriptionEmptyText}"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    

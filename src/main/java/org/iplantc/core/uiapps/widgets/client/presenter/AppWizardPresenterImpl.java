@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.presenter;
 import java.util.List;
 
 import org.iplantc.core.resources.client.constants.IplantValidationConstants;
-import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
@@ -38,11 +38,11 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     private final AppTemplateServices atServices;
     private final UserSettings userSettings;
     private final UserInfo userInfo;
-    private final IplantDisplayStrings displayMessages;
     private final List<AnalysisLaunchEventHandler> analysisLaunchHandlers = Lists.newArrayList();
     private final IplantValidationConstants valConstants;
     private final AppMetadataServiceFacade appMetadataService;
     private final UUIDServiceAsync uuidService;
+    private final AppsWidgetsDisplayMessages appsWidgetsDisplayMessages;
     
     /**
      * Class constructor.
@@ -60,7 +60,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         this.atServices = GWT.create(AppTemplateServices.class);
         this.userSettings = UserSettings.getInstance();
         this.userInfo = UserInfo.getInstance();
-        this.displayMessages = GWT.create(IplantDisplayStrings.class);
+        this.appsWidgetsDisplayMessages = GWT.create(AppsWidgetsDisplayMessages.class);
         this.valConstants = GWT.create(IplantValidationConstants.class);
     }
     
@@ -72,7 +72,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void go(final HasOneWidget container) {
-        view = new AppWizardViewImpl(userSettings, displayMessages, uuidService, appMetadataService);
+        view = new AppWizardViewImpl(userSettings, appsWidgetsDisplayMessages, uuidService, appMetadataService);
         view.setPresenter(this);
 
         final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
@@ -83,7 +83,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         // JDS Replace all Cmd Line restricted chars with underscores
         String regex = Format.substitute("[{0}]", RegExp.escapeCharacterClassSet(valConstants.restrictedCmdLineChars()));
         String newName = appTemplate.getName().replaceAll(regex, "_");
-        je.setName(newName + "_" + displayMessages.defaultAnalysisName()); //$NON-NLS-1$
+        je.setName(newName + "_" + appsWidgetsDisplayMessages.defaultAnalysisName()); //$NON-NLS-1$
         je.setOutputDirectory(userSettings.getDefaultOutputFolder());
 
         view.edit(appTemplate, je);

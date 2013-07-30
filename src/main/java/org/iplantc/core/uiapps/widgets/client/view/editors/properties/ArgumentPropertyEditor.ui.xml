@@ -9,8 +9,8 @@
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
 	         xmlns:trees="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees"
 	         xmlns:fields="urn:import:org.iplantc.core.uiapps.widgets.client.view.fields">
-	<ui:with field="strings"
-             type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" /> 
+	<ui:with field="labels"
+             type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels" /> 
     <ui:with field="margins"
              type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="10"
@@ -38,7 +38,7 @@
                        margins="{marginsBottom}"/>
     </ui:with>
  
-    <gxt:ContentPanel headingText="{strings.labelDetailsPanelHeader}">
+    <gxt:ContentPanel headingText="{labels.detailsPanelHeader}">
 	    <con:VerticalLayoutContainer ui:field="con" 
 	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
@@ -55,7 +55,7 @@
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="name"
-	                                    emptyText="{strings.labelArgumentOptionEmptyText}"/>
+	                                    emptyText="{labels.argumentOptionEmptyText}"/>
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>
@@ -79,12 +79,10 @@
 	        </con:child>                
 
 	        <con:child layoutData="{fieldLayoutData}">
-	            <fields:CheckBoxAdapter ui:field="visible"
-	                                    text="{strings.labelIsVisible}" />
+	            <fields:CheckBoxAdapter ui:field="visible"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
-	            <fields:CheckBoxAdapter ui:field="requiredEditor" 
-	                                    text="{strings.labelIsRequired}"/>
+	            <fields:CheckBoxAdapter ui:field="requiredEditor"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <fields:CheckBoxAdapter ui:field="omitIfBlank" />
@@ -94,7 +92,7 @@
 	                             labelAlign="TOP">
 	                <form:widget>
 	                    <form:TextField ui:field="description"
-	                                    emptyText="{strings.labelToolTipEmptyText}"/>
+	                                    emptyText="{labels.toolTipEmptyText}"/>
 	                </form:widget>
 	            </form:FieldLabel>
 	        </con:child>

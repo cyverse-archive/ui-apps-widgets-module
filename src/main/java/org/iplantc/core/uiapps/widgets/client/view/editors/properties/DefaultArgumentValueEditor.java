@@ -3,7 +3,8 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import java.util.Collections;
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
@@ -49,10 +50,14 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     private Argument model;
     private final AppMetadataServiceFacade appMetadataService;
     private final AppTemplateWizardAppearance appearance;
+    private final AppsWidgetsPropertyPanelLabels labels;
+    private final AppsWidgetsContextualHelpMessages help;
 
     DefaultArgumentValueEditor(AppTemplateWizardAppearance appearance, final AppMetadataServiceFacade appMetadataService) {
         this.appMetadataService = appMetadataService;
         this.appearance = appearance;
+        this.labels = appearance.getPropertyPanelLabels();
+        this.help = appearance.getContextHelpMessages();
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
@@ -71,37 +76,37 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
             switch (model.getType()) {
                 case Flag:
                     // Change FieldLabel text for the Flag
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultCheckboxLabel());
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(labels.checkboxDefaultLabel());
                     createDefaultValueSubEditor(model);
                     break;
 
                 case EnvironmentVariable:
-                    fieldLabelText = appearance.createContextualHelpLabel(I18N.DISPLAY.labelDefaultEnvVarLabel(), I18N.DISPLAY.propertyDefaultNameEnvVar());
+                    fieldLabelText = appearance.createContextualHelpLabel(labels.envVarDefaultLabel(), help.envVarDefaultName());
                     createDefaultValueSubEditor(model);
                     break;
                 case Text:
                 case MultiLineText:
-                    fieldLabelText = appearance.createContextualHelpLabel(I18N.DISPLAY.labelDefaultTextLabel(), I18N.DISPLAY.propertyDefaultText());
+                    fieldLabelText = appearance.createContextualHelpLabel(labels.textInputDefaultLabel(), help.textInputDefaultText());
                     createDefaultValueSubEditor(model);
                     break;
 
                 case Double:
                 case Integer:
-                    fieldLabelText = appearance.createContextualHelpLabel(I18N.DISPLAY.labelDefaultValueLabel(), I18N.DISPLAY.propertyDefaultValueInteger());
+                    fieldLabelText = appearance.createContextualHelpLabel(labels.integerInputDefaultLabel(), help.integerInputDefaultValue());
                     createDefaultValueSubEditor(model);
                     break;
 
                 case FileOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultFileOutputlabel());
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(labels.fileOutputDefaultLabel());
                     createDefaultValueSubEditor(model);
                     break;
 
                 case FolderOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultFolderOutputLabel());
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(labels.folderOutputDefaultLabel());
                     createDefaultValueSubEditor(model);
                     break;
                 case MultiFileOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString(I18N.DISPLAY.labelDefaultMultiFileOutputLabel());
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(labels.multiFileOutputLabel());
                     createDefaultValueSubEditor(model);
                     break;
 

@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
@@ -80,6 +80,8 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
     private final AppTemplateWizardAppearance appearance;
 
     private boolean onlyLabelEditMode = false;
+
+    private final AppsWidgetsDisplayMessages appsWidgetsMessages = GWT.create(AppsWidgetsDisplayMessages.class);
 
     public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         appearance = new AppTemplateWizardAppearanceImpl();
@@ -194,7 +196,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
             labelText.append(SafeHtmlUtils.fromString(value.getName()));
             if (value.getDeployedComponent() == null) {
                 labelText.appendHtmlConstant("&nbsp;");
-                labelText.append(appearance.getTemplates().redText(I18N.DISPLAY.emptyToolText()));
+                labelText.append(appearance.getTemplates().redText(appsWidgetsMessages.emptyToolText()));
             }
             con.setHeadingHtml(labelText.toSafeHtml());
         }

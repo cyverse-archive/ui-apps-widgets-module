@@ -3,7 +3,6 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties.validatio
 import java.util.List;
 import java.util.Set;
 
-import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.ArgumentValidatorMessages;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
@@ -91,7 +90,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         this.avMessages = avMessages;
         initWidget(BINDER.createAndBindUi(this));
 
-        validatorEditorLabel.setHTML(appearance.createContextualHelpLabel(I18N.DISPLAY.labelValidatorRulesLabel(), I18N.DISPLAY.propertyValidationRules()));
+        validatorEditorLabel.setHTML(appearance.createContextualHelpLabel(appearance.getPropertyPanelLabels().validatorRulesLabel(), appearance.getContextHelpMessages().textInputValidationRules()));
         // Add selection handler to grid to control enabled state of "edit" and "delete" buttons.
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ArgumentValidator>() {
             @Override

@@ -1,6 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
 import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.resources.client.uiapps.widgets.ArgumentListEditorCss;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 
@@ -114,4 +116,8 @@ public interface AppTemplateWizardAppearance {
     SafeHtml createContextualHelpLabel(String label, String toolTip);
 
     SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip);
+
+    AppsWidgetsPropertyPanelLabels getPropertyPanelLabels();
+
+    AppsWidgetsContextualHelpMessages getContextHelpMessages();
 }

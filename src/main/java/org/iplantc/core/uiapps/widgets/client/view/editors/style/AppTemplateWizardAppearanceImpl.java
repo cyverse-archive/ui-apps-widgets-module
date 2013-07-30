@@ -1,5 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 
@@ -17,10 +19,14 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
 
     private final Resources res;
     private final AppTemplateWizardTemplates templates;
+    private final AppsWidgetsPropertyPanelLabels labels;
+    private final AppsWidgetsContextualHelpMessages help;
 
     public AppTemplateWizardAppearanceImpl() {
         res = GWT.create(Resources.class);
         templates = GWT.create(AppTemplateWizardTemplates.class);
+        labels = GWT.create(AppsWidgetsPropertyPanelLabels.class);
+        help = GWT.create(AppsWidgetsContextualHelpMessages.class);
     }
 
     @Override
@@ -103,6 +109,16 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     @Override
     public SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip) {
         return templates.fieldLabelImg(SafeHtmlUtils.fromString(label), res.help().getSafeUri(), toolTip);
+    }
+
+    @Override
+    public AppsWidgetsPropertyPanelLabels getPropertyPanelLabels() {
+        return labels;
+    }
+
+    @Override
+    public AppsWidgetsContextualHelpMessages getContextHelpMessages() {
+        return help;
     }
 
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
@@ -72,7 +74,8 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     private final SelectionItemProperties siProps = GWT.create(SelectionItemProperties.class);
     private static SelectionItemTreePropertyEditorUiBinder BINDER = GWT.create(SelectionItemTreePropertyEditorUiBinder.class);
 
-    interface SelectionItemTreePropertyEditorUiBinder extends UiBinder<Widget, SelectionItemTreePropertyEditor> {}
+    interface SelectionItemTreePropertyEditorUiBinder extends UiBinder<Widget, SelectionItemTreePropertyEditor> {
+    }
 
     @Ignore
     TreeStore<SelectionItem> store;
@@ -98,11 +101,15 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     private int countArgLabel = 1;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private final UUIDServiceAsync uuidService = GWT.create(UUIDService.class);
+    private final AppsWidgetsPropertyPanelLabels labels;
+    private final AppsWidgetsContextualHelpMessages help;
 
     public SelectionItemTreePropertyEditor(final AppTemplateWizardPresenter presenter) {
+        this.labels = presenter.getAppearance().getPropertyPanelLabels();
+        this.help = presenter.getAppearance().getContextHelpMessages();
         buildTreeGrid();
         initWidget(BINDER.createAndBindUi(this));
-        treeGrid.getView().setEmptyText(I18N.DISPLAY.labelSelectionCreateWidgetEmptyText());
+        treeGrid.getView().setEmptyText(labels.selectionCreateWidgetEmptyText());
 
         selectionItemsEditor = new MyTreeStoreEditor(store, this, presenter);
         cascadeOptionsCombo.add(CheckCascade.TRI);
@@ -113,7 +120,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         cascadeOptionsCombo.addSelectionHandler(new CascadeOptionsComboSelectionHandler());
 
         new QuickTip(treeGridLabel);
-        treeGridLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(I18N.DISPLAY.labelTreeSelectionCreateLabel(), I18N.DISPLAY.propertyCreateTree()));
+        treeGridLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.treeSelectionCreateLabel(), help.treeSelectionCreateTree()));
         initDragNDrop();
     }
 
@@ -124,10 +131,10 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
 
         // Build ColumnModel
         RowNumberer<SelectionItem> numberer = new RowNumberer<SelectionItem>(new IdentityValueProvider<SelectionItem>());
-        ColumnConfig<SelectionItem, String> displayConfig = new ColumnConfig<SelectionItem, String>(siProps.display(), 90, I18N.DISPLAY.labelSingleSelectDisplayColumnHeader());
-        ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 60, I18N.DISPLAY.labelSingleSelectNameColumnHeader());
-        ColumnConfig<SelectionItem, String> valueConfig = new ColumnConfig<SelectionItem, String>(siProps.value(), 40, I18N.DISPLAY.labelSingleSelectValueColumnHeader());
-        ColumnConfig<SelectionItem, String> descriptionConfig = new ColumnConfig<SelectionItem, String>(siProps.description(), 90, I18N.DISPLAY.labelSingleSelectToolTipColumnHeader());
+        ColumnConfig<SelectionItem, String> displayConfig = new ColumnConfig<SelectionItem, String>(siProps.display(), 90, labels.singleSelectDisplayColumnHeader());
+        ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 60, labels.singleSelectNameColumnHeader());
+        ColumnConfig<SelectionItem, String> valueConfig = new ColumnConfig<SelectionItem, String>(siProps.value(), 40, labels.singleSelectValueColumnHeader());
+        ColumnConfig<SelectionItem, String> descriptionConfig = new ColumnConfig<SelectionItem, String>(siProps.description(), 90, labels.singleSelectToolTipColumnHeader());
         ColumnConfig<SelectionItem, Boolean> defaultColumn = buildIsDefaultConfig();
 
         defaultColumn.setSortable(false);
@@ -244,13 +251,13 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     void onSingleSelectChanged(ChangeEvent event) {
         if (isSingleSelect()) {
             List<SelectionItem> checked = new ArrayList<SelectionItem>();
-    
+
             for (SelectionItem ruleArg : store.getAll()) {
                 if (ruleArg.isDefault() && !(ruleArg instanceof SelectionItemGroup)) {
                     checked.add(ruleArg);
                 }
             }
-    
+
             if (checked.size() > 1) {
                 for (SelectionItem ruleArg : checked) {
                     setDefaultValue(ruleArg, false);
@@ -263,7 +270,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     @UiHandler("treeGrid")
     void onExpand(ExpandItemEvent<SelectionItem> event) {
         SelectionItemGroup parent = (SelectionItemGroup)event.getItem();
-    
+
         if (parent.getGroups() != null) {
             for (SelectionItemGroup group : parent.getGroups()) {
                 treeGrid.setLeaf(group, false);
@@ -279,20 +286,20 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
             SelectionItem parent = store.getParent(selected);
             if (parent != null) {
                 SelectionItemGroup group = (SelectionItemGroup)parent;
-    
+
                 if (selected instanceof SelectionItemGroup) {
                     group.getGroups().remove(selected);
                 } else {
                     group.getArguments().remove(selected);
                 }
             }
-    
+
             store.remove(selected);
         }
     }
 
     private ColumnConfig<SelectionItem, Boolean> buildIsDefaultConfig() {
-        ColumnConfig<SelectionItem, Boolean> defaultConfig = new ColumnConfig<SelectionItem, Boolean>(new IsDefaultColumnValueProvider(), 45, I18N.DISPLAY.labelSingleSelectIsDefaultColumnHeader());
+        ColumnConfig<SelectionItem, Boolean> defaultConfig = new ColumnConfig<SelectionItem, Boolean>(new IsDefaultColumnValueProvider(), 45, labels.singleSelectIsDefaultColumnHeader());
 
         CheckBoxCell cell = new CheckBoxCell();
         defaultConfig.setCell(cell);
@@ -329,7 +336,6 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         }
     }
 
-
     private void initDragNDrop() {
         TreeGridDragSource<SelectionItem> dragSource = new TreeGridDragSource<SelectionItem>(treeGrid);
         SelectionItemTreePropertyEditorDnDHandler dndHandler = new SelectionItemTreePropertyEditorDnDHandler(this);
@@ -341,12 +347,9 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         target.addDropHandler(dndHandler);
     }
 
-
-
     private boolean isSingleSelect() {
         return forceSingleSelectCheckBox.getValue();
     }
-
 
     private boolean isCascadeToChildren() {
         return cascadeOptionsCombo.getValue() == CheckCascade.TRI || cascadeOptionsCombo.getValue() == CheckCascade.CHILDREN;
@@ -444,13 +447,13 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
             } else {
                 store.add(group);
             }
-    
+
             if (group.getGroups() != null) {
                 for (SelectionItemGroup child : group.getGroups()) {
                     addGroupToStore(group, child);
                 }
             }
-    
+
             if (group.getArguments() != null) {
                 for (SelectionItem child : group.getArguments()) {
                     store.add(group, child);
@@ -534,8 +537,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     }
 
     @Override
-    public void flush() {
-    }
+    public void flush() {}
 
     @Override
     public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
@@ -553,7 +555,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         public Boolean getValue(SelectionItem object) {
             return object.isDefault();
         }
-    
+
         @Override
         public void setValue(SelectionItem object, Boolean value) {
             if (value && isSingleSelect()) {
@@ -562,7 +564,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
                     // selections cascade to children.
                     return;
                 }
-    
+
                 // If the user is checking an argument, uncheck all other arguments.
                 for (SelectionItem ruleArg : store.getAll()) {
                     if (ruleArg.isDefault()) {
@@ -571,10 +573,10 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
                     }
                 }
             }
-    
+
             // Set the default value on this item, cascading to its children if necessary.
             setDefaultValue(object, value);
-    
+
             // Cascade the default value to this item's parents, if necessary.
             if (!value && isCascadeToChildren()) {
                 for (SelectionItem parent = store.getParent(object); parent != null; parent = store.getParent(parent)) {
@@ -583,7 +585,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
                 }
             }
         }
-    
+
         @Override
         public String getPath() {
             return LIST_RULE_ARG_IS_DEFAULT;

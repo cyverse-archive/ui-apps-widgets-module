@@ -8,6 +8,8 @@
              xmlns:drFields="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
     <ui:with field="strings"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" />         
+    <ui:with field="appWidgetStrings"
+             type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages"/>             
     <ui:with field="margins"
              type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="10"
@@ -28,7 +30,7 @@
 		<con:VerticalLayoutContainer scrollMode="AUTOY"
 	                                 adjustForScroll="true">
 		    <con:child layoutData="{fieldLayoutData}">
-		        <form:FieldLabel text="{strings.analysisName}"
+		        <form:FieldLabel text="{appWidgetStrings.analysisName}"
 		                         labelAlign="TOP">
 		            <form:widget>
 		                <form:TextField ui:field="name"
@@ -45,7 +47,7 @@
 		        </form:FieldLabel> 
 		    </con:child>                    
 		    <con:child layoutData="{fieldLayoutData}">
-		        <form:FieldLabel text="{strings.selectOutputFolder}"
+		        <form:FieldLabel text="{appWidgetStrings.selectOutputFolder}"
 		                         labelAlign="TOP">
 		            <form:widget>
 		                <drFields:FolderSelectorField ui:field="awFolderSel"/>
@@ -54,7 +56,7 @@
 		    </con:child>                    
 		    <con:child layoutData="{fieldLayoutData}">
 		        <form:CheckBox ui:field="retainInputs" 
-		                       boxLabel="{strings.retainInputs}"/>
+		                       boxLabel="{appWidgetStrings.retainInputs}"/>
 	        </con:child>                    
 	    </con:VerticalLayoutContainer>
     </gxt:ContentPanel>         

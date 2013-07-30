@@ -9,6 +9,8 @@
              
     <ui:with field="display"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
+    <ui:with field="appWidgetStrings"
+             type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages"/> 
     <ui:with field="res"
              type="org.iplantc.core.resources.client.IplantResources"/>
     
@@ -29,11 +31,11 @@
         <con:north>
             <con:VerticalLayoutContainer>
                 <con:child layoutData="{fieldLayoutData}">
-		            <form:FieldLabel text="{display.checkCascadeLabel}"
+		            <form:FieldLabel text="{appWidgetStrings.checkCascadeLabel}"
 		                             labelAlign="TOP">
 		                <form:widget>
 		                    <form:SimpleComboBox ui:field="cascadeOptionsCombo"
-		                                         toolTip="{display.cascadeOptionsComboToolTip}"
+		                                         toolTip="{appWidgetStrings.cascadeOptionsComboToolTip}"
 		                                         triggerAction="ALL"
 		                                         editable="false"/>
 		                </form:widget>
@@ -42,8 +44,8 @@
         
                 <con:child layoutData="{fieldLayoutData}">
 		            <form:CheckBox ui:field="forceSingleSelectCheckBox"
-		                           boxLabel="{display.forceSingleSelectLabel}"
-		                           toolTip="{display.forceSingleSelectToolTip}"/>
+		                           boxLabel="{appWidgetStrings.forceSingleSelectLabel}"
+		                           toolTip="{appWidgetStrings.forceSingleSelectToolTip}"/>
                 </con:child>
                 
 	        </con:VerticalLayoutContainer>
@@ -59,12 +61,12 @@
 				                <toolbar:child>
 				                    <button:TextButton ui:field="addGrpBtn"
 				                                       icon="{res.folderAdd}"
-				                                       toolTip="{display.addGroupToolTip}"/>
+				                                       toolTip="{appWidgetStrings.addGroupToolTip}"/>
 				                </toolbar:child>
 				                <toolbar:child>
 				                    <button:TextButton ui:field="addArgBtn"
 				                                       icon="{res.add}"
-				                                       toolTip="{display.addArgumentToolTip}"/>
+				                                       toolTip="{appWidgetStrings.addArgumentToolTip}"/>
 				                </toolbar:child>
 				                <toolbar:child>
 				                    <button:TextButton ui:field="deleteBtn"

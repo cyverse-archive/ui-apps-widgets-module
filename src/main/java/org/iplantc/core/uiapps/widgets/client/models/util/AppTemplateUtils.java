@@ -3,7 +3,6 @@ package org.iplantc.core.uiapps.widgets.client.models.util;
 import java.util.Collections;
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
@@ -23,6 +22,7 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateUtils {
     private static final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+    private static final AppsWidgetsDisplayMessages displayMessages = GWT.create(AppsWidgetsDisplayMessages.class);
 
     private static final String SELECTION_ITEM_GROUP_ARGUMENTS = "arguments";
     private static final String SELECTION_ITEM_GROUP_GROUPS = "groups";
@@ -32,7 +32,6 @@ public class AppTemplateUtils {
     private static Argument EMPTY_GROUP_ARG;
 
     public static Argument getEmptyGroupArgument() {
-        AppsWidgetsDisplayMessages displayMessages = I18N.DISPLAY;
         if (EMPTY_GROUP_ARG == null) {
             EMPTY_GROUP_ARG = factory.argument().as();
             EMPTY_GROUP_ARG.setId(EMPTY_GROUP_ARG_ID);
