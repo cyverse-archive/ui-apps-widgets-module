@@ -25,6 +25,10 @@
       <when-type-is class="org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade" />
    </replace-with>
    
+   <replace-with class="org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearanceImpl">
+      <when-type-is class="org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance"/>
+   </replace-with>
+   
    <!-- Specify the paths for translatable code                    -->
    <source path='client' />
 </module>

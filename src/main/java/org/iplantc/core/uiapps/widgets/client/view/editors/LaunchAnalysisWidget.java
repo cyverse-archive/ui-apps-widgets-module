@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -11,14 +12,15 @@ import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
-import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -35,7 +38,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecution> {
+public class LaunchAnalysisWidget implements IsWidget, Editor<JobExecution> {
 
     private static LaunchAnalysisWidgetUiBinder BINDER = GWT.create(LaunchAnalysisWidgetUiBinder.class);
 
@@ -76,7 +79,10 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
     private final AppsWidgetsDisplayMessages displayMessages;
     private final Resources res;
 
-    public LaunchAnalysisWidget(UserSettings userSettings, AppsWidgetsDisplayMessages displayMessages) {
+    private AppTemplateWizardAppearance appearance;
+
+    public LaunchAnalysisWidget(UserSettings userSettings, AppsWidgetsDisplayMessages displayMessages, AppTemplateWizardAppearance appearance) {
+        this.appearance = appearance;
         this.userSettings = userSettings;
         this.displayMessages = displayMessages;
         res = GWT.create(Resources.class);
@@ -99,7 +105,6 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
             }
         });
         awFolderSel.setValidatePermissions(true);
-        awFolderSel.setInfoTextClassName(res.css().warning());
         awFolderSel.addValidator(new AnalysisOutputValidator());
         editorDriver.initialize(this);
     }
@@ -107,17 +112,22 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
     @UiHandler("awFolderSel")
     void onFolderChanged(ValueChangeEvent<HasId> event) {
         if ((event.getValue() != null) && !event.getValue().getId().equals(userSettings.getDefaultOutputFolder())) {
-            awFolderSel.setInfoText(displayMessages.nonDefaultFolderWarning());
+            awFolderSel.setInfoErrorText(displayMessages.nonDefaultFolderWarning());
         } else {
-             awFolderSel.setInfoText(null);
+            awFolderSel.setInfoErrorText(null);
         }
 
-        awFolderSel.validate(false);
+        flushJobExecution();
     }
 
     @UiHandler("name")
     void onNameChange(ValueChangeEvent<String> event) {
-        contentPanel.setHeadingText(displayMessages.launchAnalysisDetailsHeadingPrefix() + name.getCurrentValue());
+        updateHeader(name.getCurrentValue());
+    }
+
+    @UiHandler("awFolderSel")
+    void onInvalid(InvalidEvent event) {
+        updateHeader(name.getCurrentValue());
     }
 
     public void edit(JobExecution je) {
@@ -125,29 +135,28 @@ public class LaunchAnalysisWidget implements IsWidget, ValueAwareEditor<JobExecu
     }
 
     public JobExecution flushJobExecution() {
-        return editorDriver.flush();
+        JobExecution flush = editorDriver.flush();
+        updateHeader(flush.getName());
+        return flush;
     }
 
     public boolean hasErrors() {
-        return editorDriver.hasErrors();
+        return ((editorDriver.getErrors() != null) && editorDriver.hasErrors()) || !awFolderSel.getErrors().isEmpty();
     }
 
     public List<EditorError> getErrors() {
-        return editorDriver.getErrors();
+        List<EditorError> errors = Lists.newArrayList(editorDriver.getErrors());
+        errors.addAll(awFolderSel.getErrors());
+        return errors;
     }
 
-    @Override
-    public void setDelegate(EditorDelegate<JobExecution> delegate) {/* Do Nothing */}
-
-    @Override
-    public void flush() {/* Do Nothing */}
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
-
-    @Override
-    public void setValue(JobExecution value) {
-        contentPanel.setHeadingText(displayMessages.launchAnalysisDetailsHeadingPrefix() + value.getName());
+    private void updateHeader(String appName) {
+        SafeHtmlBuilder headerLabel = new SafeHtmlBuilder();
+        if (hasErrors()) {
+            headerLabel.appendHtmlConstant(appearance.getErrorIconImg().getString());
+        }
+        headerLabel.appendEscaped(displayMessages.launchAnalysisDetailsHeadingPrefix() + appName);
+        contentPanel.setHeadingHtml(headerLabel.toSafeHtml());
     }
 
     @Override

@@ -21,12 +21,10 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplat
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearanceImpl;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -39,7 +37,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.core.client.dom.XElement;
-import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
@@ -104,8 +101,8 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
     private final AppsWidgetsDisplayMessages appsWidgetsMessages = GWT.create(AppsWidgetsDisplayMessages.class);
 
-    public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
-        appearance = new AppTemplateWizardAppearanceImpl();
+    public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, AppTemplateWizardAppearance appearance) {
+        this.appearance = appearance;
         this.editingMode = editingMode;
         argumentGroups = new ArgumentGroupListEditor(this, uuidService, appMetadataService);
 
@@ -143,6 +140,10 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         addArgumentGroupSelectedEventHandler(selectionHandler);
     }
 
+    public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
+        this(editingMode, uuidService, appMetadataService, GWT.<AppTemplateWizardAppearance> create(AppTemplateWizardAppearance.class));
+    }
+
     /**
      * This method binds this component with the given <code>AppTemplate</code> instance.
      * 
@@ -166,16 +167,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         AppTemplate cleaned = AppTemplateUtils.removeEmptyGroupArguments(flush);
         if (hasErrors()) {
             editorDriver.accept(new Refresher());
-            GWT.log("Editor has errors");
-            List<EditorError> errors = Lists.newArrayList();
-            errors.addAll(getErrors());
-            for (EditorError error : errors) {
-                GWT.log("\t-- " + ": " + error.getMessage());
-                if (error.getEditor() instanceof Component) {
-                    ((Component)error.getEditor()).focus();
-                    break;
-                }
-            }
         }
         return cleaned;
     }

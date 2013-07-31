@@ -13,6 +13,7 @@ import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.services.AppTemplateServices;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardView;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardViewImpl;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
@@ -72,7 +73,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
     @Override
     public void go(final HasOneWidget container) {
-        view = new AppWizardViewImpl(userSettings, appsWidgetsDisplayMessages, uuidService, appMetadataService);
+        view = new AppWizardViewImpl(userSettings, appsWidgetsDisplayMessages, uuidService, appMetadataService, GWT.<AppTemplateWizardAppearance> create(AppTemplateWizardAppearance.class));
         view.setPresenter(this);
 
         final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
