@@ -25,10 +25,15 @@
     -o-transition: all 0.25s ease;
 }
 
-.argument:hover, .argumentSelect {
-    -webkit-box-shadow: horOffset 0 blur spread selectionColor;
-    -moz-box-shadow: horOffset 0 blur spread selectionColor;
-    box-shadow: horOffset 0 blur spread selectionColor;
+.argument:hover {
+    -webkit-box-shadow: 0 0 blur spread selectionColor;
+    -moz-box-shadow: 0 0 blur spread selectionColor;
+    box-shadow: 0 0 blur spread selectionColor;
+}
+.argumentSelect {
+    -webkit-box-shadow: horOffset 0 blur spread selectionColor !important;
+    -moz-box-shadow: horOffset 0 blur spread selectionColor !important;
+    box-shadow: horOffset 0 blur spread selectionColor !important;
 }
 
 .deleteBtn {
