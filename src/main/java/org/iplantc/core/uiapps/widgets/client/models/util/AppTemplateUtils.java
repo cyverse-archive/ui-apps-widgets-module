@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.models.util;
 import java.util.Collections;
 import java.util.List;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
@@ -21,11 +22,36 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateUtils {
     private static final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+    private static final AppsWidgetsDisplayMessages displayMessages = GWT.create(AppsWidgetsDisplayMessages.class);
 
     private static final String SELECTION_ITEM_GROUP_ARGUMENTS = "arguments";
     private static final String SELECTION_ITEM_GROUP_GROUPS = "groups";
     private static final String SELECTION_ITEM_GROUP_SINGLE_SELECT = "isSingleSelect";
     private static final String SELECTION_ITEM_GROUP_CASCASE = "selectionCascade";
+    public static final String EMPTY_GROUP_ARG_ID = "emptyArgumentGroupInfoArgumentId";
+    private static Argument EMPTY_GROUP_ARG;
+
+    public static Argument getEmptyGroupArgument() {
+        if (EMPTY_GROUP_ARG == null) {
+            EMPTY_GROUP_ARG = factory.argument().as();
+            EMPTY_GROUP_ARG.setId(EMPTY_GROUP_ARG_ID);
+            EMPTY_GROUP_ARG.setType(ArgumentType.Info);
+            EMPTY_GROUP_ARG.setLabel(displayMessages.emptyArgumentGroupBgText());
+            EMPTY_GROUP_ARG.setDescription(displayMessages.emptyArgumentGroupBgText());
+        }
+        return EMPTY_GROUP_ARG;
+    }
+
+    public static AppTemplate removeEmptyGroupArguments(final AppTemplate at) {
+        AppTemplate copy = copyAppTemplate(at);
+        for (ArgumentGroup ag : copy.getArgumentGroups()) {
+            List<Argument> arguments = ag.getArguments();
+            if ((arguments.size() == 1) && (arguments.get(0).getId() != null) && (arguments.get(0).getId().equals(EMPTY_GROUP_ARG_ID))) {
+                arguments.clear();
+            }
+        }
+        return copy;
+    }
 
     public static AppTemplate copyAppTemplate(AppTemplate value) {
         AutoBean<AppTemplate> argAb = AutoBeanUtils.getAutoBean(value);

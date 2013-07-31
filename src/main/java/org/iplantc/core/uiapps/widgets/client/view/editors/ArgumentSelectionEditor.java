@@ -8,7 +8,6 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
@@ -27,6 +26,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argument>, ValueChangeHandler<List<SelectionItem>>, HasClickHandlers {
 
@@ -48,6 +48,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             label = HasTextEditor.of(propertyLabel);
         }
 
+        new QuickTip(propertyLabel);
     }
 
     @Override
@@ -102,9 +103,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             } else {
                 w.setEnabled(value.isVisible());
             }
-            // TODO JDS Determine if Tool Tips should/can be applied.
         } else {
-            // TODO JDS Determine if Tool Tips should/can be applied.
             subEditor.setValue(model);
             HasEnabled w = ((HasEnabled)subEditor.asWidget());
             if (presenter.isOnlyLabelEditMode()) {
@@ -114,7 +113,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             }
         }
         // Update label
-        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(model);
+        SafeHtml fieldLabelText = presenter.getAppearance().createArgumentLabel(model);
         propertyLabel.setHTML(fieldLabelText);
     }
 

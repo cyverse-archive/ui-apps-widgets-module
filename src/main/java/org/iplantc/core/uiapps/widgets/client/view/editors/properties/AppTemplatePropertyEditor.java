@@ -20,6 +20,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 public class AppTemplatePropertyEditor extends Composite implements ValueAwareEditor<AppTemplate> {
 
@@ -28,7 +29,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     interface AppTemplatePropertyEditorUiBinder extends UiBinder<Widget, AppTemplatePropertyEditor> {}
 
     @UiField
-    FieldLabel toolLabel;
+    FieldLabel toolLabel, appNameLabel;
 
     @Ignore
     @UiField
@@ -51,6 +52,10 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     public AppTemplatePropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
+
+        toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(presenter.getAppearance().getPropertyPanelLabels().toolUsedLabel(),
+                presenter.getAppearance().getContextHelpMessages().appToolUsed()));
+        new QuickTip(toolLabel);
     }
 
     @UiFactory
@@ -79,6 +84,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         }
         if (presenter.isOnlyLabelEditMode()) {
             toolLabel.disable();
+            appNameLabel.disable();
         }
     }
 

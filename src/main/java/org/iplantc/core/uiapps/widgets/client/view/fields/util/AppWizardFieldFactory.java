@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.util;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
@@ -36,10 +37,6 @@ import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -68,18 +65,8 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 public class AppWizardFieldFactory {
 
-    interface FieldLabelTextTemplates extends SafeHtmlTemplates {
-
-        @SafeHtmlTemplates.Template("<span qtip=\"{1}\">{0}</span>")
-        SafeHtml fieldLabel(SafeHtml name, String textToolTip);
-
-        @SafeHtmlTemplates.Template("<span style=\"color: red;\">*&nbsp</span>")
-        SafeHtml fieldLabelRequired();
-    }
-    
-    private static FieldLabelTextTemplates templates = GWT.create(FieldLabelTextTemplates.class); 
-    
     private static ListStore<ReferenceGenome> refGenStore = null;
+    private static final AppsWidgetsPropertyPanelLabels labels = GWT.create(AppsWidgetsPropertyPanelLabels.class);
 
     /**
      * Returns an {@link Editor} which contains sub-editors which are bound to an {@link Argument}'s
@@ -159,6 +146,7 @@ public class AppWizardFieldFactory {
 
             case MultiFileSelector:
                 MultiFileSelectorField awMultFileSel = new MultiFileSelectorField();
+                awMultFileSel.setEmptyText(labels.multiFileWidgetEmptyText());
                 if (editingMode) {
                     awMultFileSel.disableAddDeleteButtons();
                 }
@@ -169,18 +157,22 @@ public class AppWizardFieldFactory {
 
             case Text:
                 ConverterFieldAdapter<String, TextField> textCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
+                tf.setEmptyText(labels.textInputWidgetEmptyText());
                 textCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, textCfa);
                 break;
 
             case EnvironmentVariable:
                 ConverterFieldAdapter<String, TextField> envCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
+                tf.setEmptyText(labels.envVarWidgetEmptyText());
                 envCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, envCfa);
                 break;
 
             case MultiLineText:
-                ConverterFieldAdapter<String, TextArea> mltCfa = new ConverterFieldAdapter<String, TextArea>(new TextArea(), new SplittableToStringConverter());
+                TextArea textArea = new TextArea();
+                ConverterFieldAdapter<String, TextArea> mltCfa = new ConverterFieldAdapter<String, TextArea>(textArea, new SplittableToStringConverter());
+                textArea.setEmptyText(labels.textInputWidgetEmptyText());
                 mltCfa.addValidator(nameValidator);
                 field = applyStringValidators(argument, mltCfa);
                 break;
@@ -191,11 +183,13 @@ public class AppWizardFieldFactory {
 
             case Double:
                 ConverterFieldAdapter<Double, SpinnerField<Double>> dblCfa = new ConverterFieldAdapter<Double, SpinnerField<Double>>(dblSpinnerField, new SplittableToDoubleConverter());
+                dblSpinnerField.setEmptyText(labels.doubleInputWidgetEmptyText());
                 field = applyDoubleValidators(argument, dblCfa);
                 break;
 
             case Integer:
                 ConverterFieldAdapter<Integer, SpinnerField<Integer>> intCfa = new ConverterFieldAdapter<Integer, SpinnerField<Integer>>(intSpinnerField, new SplittableToIntegerConverter());
+                intSpinnerField.setEmptyText(labels.integerInputWidgetEmptyText());
                 field = applyIntegerValidators(argument, intCfa);
                 break;
 
@@ -385,39 +379,6 @@ public class AppWizardFieldFactory {
 
     public static void setDefaultValue(Argument argument) {
         argument.setValue(argument.getDefaultValue());
-    }
-
-    public static SafeHtml createFieldLabelText(Argument argument){
-        SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        if (argument.getRequired()) {
-            // If the field is required, it needs to be marked as such.
-            labelText.append(templates.fieldLabelRequired());
-        }
-        ArgumentType type = argument.getType();
-        // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
-        SafeHtml label = SafeHtmlUtils.fromString(argument.getLabel().replaceFirst(":$", ""));
-
-        switch (type) {
-            case FileInput:
-            case FolderInput:
-            case MultiFileSelector:
-            case Info:
-            case Text:
-            case EnvironmentVariable:
-            case MultiLineText:
-            case Integer:
-            case Double:
-            case Flag:
-            case TextSelection:
-            case IntegerSelection:
-            case DoubleSelection:
-            case TreeSelection:
-            default:
-                labelText.append(templates.fieldLabel(label, argument.getDescription()));
-                break;
-        }
-
-        return labelText.toSafeHtml();
     }
 
     static ConverterFieldAdapter<Integer, ?> applyIntegerValidators(Argument argument, ConverterFieldAdapter<Integer, ?> field) {

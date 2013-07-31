@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.services;
 
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uicommons.client.models.HasId;
 
@@ -75,4 +76,5 @@ public interface AppTemplateServices {
      */
     void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback);
 
+    AppTemplateAutoBeanFactory getAppTemplateFactory();
 }

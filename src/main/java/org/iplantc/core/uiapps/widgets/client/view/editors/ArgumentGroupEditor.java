@@ -5,6 +5,7 @@ import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteE
 import org.iplantc.core.uiapps.widgets.client.events.RequestArgumentGroupDeleteEvent.RequestArgumentGroupDeleteEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentGroupPropertyEditor;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -72,6 +73,12 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         if (argumentsEditor.hasErrors()) {
             labelText.appendHtmlConstant(headerErrorIcon.getString());
+        }
+        if (value.getArguments().isEmpty()) {
+            /* JDS If the argument group has no arguments, add special Empty group argument.
+             * This argument should be removed if it still exists when this app gets saved.
+             */
+            value.getArguments().add(AppTemplateUtils.getEmptyGroupArgument());
         }
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {

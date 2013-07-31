@@ -9,15 +9,17 @@
              
     <ui:with field="display"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
+    <ui:with field="appWidgetStrings"
+             type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages"/> 
     <ui:with field="res"
              type="org.iplantc.core.resources.client.IplantResources"/>
     
     <ui:with field="margins"
              type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="10"
-                     right="5"
+                     right="0"
                      bottom="10"
-                     left="5" />
+                     left="0" />
     </ui:with>
     <ui:with field="fieldLayoutData"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" >
@@ -29,11 +31,11 @@
         <con:north>
             <con:VerticalLayoutContainer>
                 <con:child layoutData="{fieldLayoutData}">
-		            <form:FieldLabel text="{display.checkCascadeLabel}"
+		            <form:FieldLabel text="{appWidgetStrings.checkCascadeLabel}"
 		                             labelAlign="TOP">
 		                <form:widget>
 		                    <form:SimpleComboBox ui:field="cascadeOptionsCombo"
-		                                         toolTip="{display.cascadeOptionsComboToolTip}"
+		                                         toolTip="{appWidgetStrings.cascadeOptionsComboToolTip}"
 		                                         triggerAction="ALL"
 		                                         editable="false"/>
 		                </form:widget>
@@ -42,35 +44,43 @@
         
                 <con:child layoutData="{fieldLayoutData}">
 		            <form:CheckBox ui:field="forceSingleSelectCheckBox"
-		                           boxLabel="{display.forceSingleSelectLabel}"
-		                           toolTip="{display.forceSingleSelectToolTip}"/>
-                </con:child>
-                
-                <con:child layoutData="{fieldLayoutData}">
-		            <toolbar:ToolBar horizontalSpacing="4">
-		                <toolbar:child>
-		                    <button:TextButton ui:field="addGrpBtn"
-		                                       icon="{res.folderAdd}"
-		                                       toolTip="{display.addGroupToolTip}"/>
-		                </toolbar:child>
-		                <toolbar:child>
-		                    <button:TextButton ui:field="addArgBtn"
-		                                       icon="{res.add}"
-		                                       toolTip="{display.addArgumentToolTip}"/>
-		                </toolbar:child>
-		                <toolbar:child>
-		                    <button:TextButton ui:field="deleteBtn"
-		                                       icon="{res.cancel}"
-		                                       toolTip="{display.delete}"/>
-		                </toolbar:child>
-		            </toolbar:ToolBar>
+		                           boxLabel="{appWidgetStrings.forceSingleSelectLabel}"
+		                           toolTip="{appWidgetStrings.forceSingleSelectToolTip}"/>
                 </con:child>
                 
 	        </con:VerticalLayoutContainer>
         </con:north>
         
         <con:south>
-            <treeGrid:TreeGrid ui:field="treeGrid"/>
+            <form:FieldLabel ui:field="treeGridLabel"
+                             labelAlign="TOP">
+                <form:widget>
+		            <con:NorthSouthContainer>
+		                <con:north>
+				            <toolbar:ToolBar horizontalSpacing="4">
+				                <toolbar:child>
+				                    <button:TextButton ui:field="addGrpBtn"
+				                                       icon="{res.folderAdd}"
+				                                       toolTip="{appWidgetStrings.addGroupToolTip}"/>
+				                </toolbar:child>
+				                <toolbar:child>
+				                    <button:TextButton ui:field="addArgBtn"
+				                                       icon="{res.add}"
+				                                       toolTip="{appWidgetStrings.addArgumentToolTip}"/>
+				                </toolbar:child>
+				                <toolbar:child>
+				                    <button:TextButton ui:field="deleteBtn"
+				                                       icon="{res.cancel}"
+				                                       toolTip="{display.delete}"/>
+				                </toolbar:child>
+				            </toolbar:ToolBar>
+		                </con:north>
+		                <con:south>
+				            <treeGrid:TreeGrid ui:field="treeGrid"/>
+		                </con:south>
+		            </con:NorthSouthContainer>
+                </form:widget>
+            </form:FieldLabel>
         </con:south>
     </con:NorthSouthContainer>
 </ui:UiBinder>

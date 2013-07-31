@@ -3,6 +3,9 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.Iterator;
 import java.util.List;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
+import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
@@ -15,8 +18,8 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardSelectableHeaderContentPanelAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -74,7 +77,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         if (presenter.isEditingMode()) {
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentSelectedEvent.TYPE);
             presenter.asWidget().addHandler(appWizardSelectionHandler, ArgumentGroupSelectedEvent.TYPE);
-            groupsContainer.setTitleCollapse(false);
+            presenter.asWidget().addHandler(appWizardSelectionHandler, AppTemplateSelectedEvent.TYPE);
             // If in editing mode, add drop target and DnD handlers.
             ContainerDropTarget<AccordionLayoutContainer> dt = new ArgGrpListEditorDropTarget(groupsContainer, presenter, editor);
             dt.setFeedback(Feedback.BOTH);
@@ -126,7 +129,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         groupsContainer.setActiveWidget(widget.asWidget());
     }
 
-    private final class ArgGrpSelectedHandler implements ArgumentGroupSelectedEventHandler, ArgumentSelectedEventHandler {
+    private final class ArgGrpSelectedHandler implements ArgumentGroupSelectedEventHandler, ArgumentSelectedEventHandler, AppTemplateSelectedEventHandler {
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
         private final AppTemplateWizardAppearance.Style style;
 
@@ -146,6 +149,11 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
         }
 
+        @Override
+        public void onAppTemplateSelected(AppTemplateSelectedEvent appTemplateSelectedEvent) {
+            clearSelectionStyles();
+        }
+
         public void clearSelectionStyles() {
             if (listEditor == null) {
                 return;
@@ -154,8 +162,8 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
             for (ArgumentGroupEditor age : listEditor.getEditors()) {
                 age.getHeader().removeStyleName(style.appHeaderSelect());
             }
-        }
 
+        }
 
     }
 
@@ -236,6 +244,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
         private int grpCountInt = 2;
         private Header header;
+        private final AppsWidgetsPropertyPanelLabels appsWidgetsDisplay = GWT.create(AppsWidgetsPropertyPanelLabels.class);
 
         private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<ArgumentGroup,ArgumentGroupEditor> editor) {
             super(container);
@@ -295,7 +304,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
 
             // Update new group label, if needed
             if (isNewArgGrp) {
-                String defaultGroupLabel = presenter.getAppearance().getMessages().defaultGroupLabel(grpCountInt++);
+                String defaultGroupLabel = appsWidgetsDisplay.groupDefaultLabel(grpCountInt++);
                 newArgGrp.setLabel(defaultGroupLabel);
             }
 
@@ -419,7 +428,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         public ArgumentGroupEditor create(int index) {
             ContentPanelAppearance cpAppearance;
             if (presenter.isEditingMode()) {
-                cpAppearance = new AppTemplateWizardSelectableHeaderContentPanelAppearance();
+                cpAppearance = new AppGroupContentPanelAppearance();
             } else {
                 cpAppearance = GWT.create(ContentPanelAppearance.class);
             }
@@ -436,6 +445,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                 if (isFireSelectedOnAdd()) {
                     presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(subEditor.getPropertyEditor()));
                     con.setActiveWidget(subEditor.asWidget());
+                    subEditor.getHeader().addStyleName(presenter.getAppearance().getStyle().appHeaderSelect());
                     setFireSelectedOnAdd(false);
                 }
                 subEditor.addRequestArgumentGroupDeleteEventHandler(handler);

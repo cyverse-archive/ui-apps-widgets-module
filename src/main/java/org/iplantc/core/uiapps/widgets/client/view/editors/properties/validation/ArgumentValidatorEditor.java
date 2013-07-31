@@ -8,6 +8,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -30,14 +31,15 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
  * 
@@ -54,10 +56,10 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
     private static MyUiBinder BINDER = GWT.create(MyUiBinder.class);
 
     @UiField
-    ListStore<ArgumentValidator> validatorStore;
+    FieldLabel validatorEditorLabel;
 
     @UiField
-    NorthSouthContainer con;
+    ListStore<ArgumentValidator> validatorStore;
 
     @Ignore
     @UiField
@@ -83,10 +85,12 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
 
     private Argument model;
 
-    public ArgumentValidatorEditor(ArgumentValidatorMessages avMessages) {
+
+    public ArgumentValidatorEditor(AppTemplateWizardAppearance appearance, ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
         initWidget(BINDER.createAndBindUi(this));
 
+        validatorEditorLabel.setHTML(appearance.createContextualHelpLabel(appearance.getPropertyPanelLabels().validatorRulesLabel(), appearance.getContextHelpMessages().textInputValidationRules()));
         // Add selection handler to grid to control enabled state of "edit" and "delete" buttons.
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ArgumentValidator>() {
             @Override
@@ -105,6 +109,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         });
         validators = new ListStoreEditor<ArgumentValidator>(validatorStore);
         supportedValidatorTypes = Sets.newHashSet();
+        new QuickTip(validatorEditorLabel);
 
     }
 
@@ -213,8 +218,8 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
                 default:
                     // The current argument is not a valid type for this control.
                     // So, disable and hide ourself so the user doesn't see it.
-                    con.setEnabled(false);
-                    con.setVisible(false);
+                    validatorEditorLabel.disable();
+                    validatorEditorLabel.setVisible(false);
                     break;
             }
         }

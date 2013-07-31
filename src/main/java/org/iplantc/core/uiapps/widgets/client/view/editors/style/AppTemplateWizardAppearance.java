@@ -1,12 +1,16 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
 import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.resources.client.uiapps.widgets.ArgumentListEditorCss;
+import org.iplantc.core.uiapps.widgets.client.models.Argument;
 
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 
 /**
@@ -26,6 +30,12 @@ public interface AppTemplateWizardAppearance {
 
         @SafeHtmlTemplates.Template("<span qtip=\"{1}\">{0}</span>")
         SafeHtml fieldLabel(SafeHtml name, String textToolTip);
+
+        @SafeHtmlTemplates.Template("{0}<img style='float: right;' src='{1}' qtip='{2}'></img>")
+        SafeHtml fieldLabelImgFloatRight(SafeHtml label, SafeUri img, String toolTip);
+
+        @SafeHtmlTemplates.Template("{0}&nbsp;<img src='{1}' qtip='{2}'></img>")
+        SafeHtml fieldLabelImg(SafeHtml label, SafeUri img, String toolTip);
     }
 
     interface Style extends CssResource {
@@ -48,35 +58,15 @@ public interface AppTemplateWizardAppearance {
 
         String deleteBtn();
 
+        String emptyGroupBgText();
+
+        String grab();
+
     }
 
     interface Resources extends IplantResources {
         @Source("AppTemplateWizard.css")
         Style css();
-    }
-
-    interface EmptyMessages {
-
-        /**
-         * @return the text to be displayed inside an empty selection item.
-         */
-        String emptyListSelectionText();
-
-        /**
-         * 
-         * @return "[NO TOOL SELECTED]"
-         */
-        String emptyToolText();
-
-    }
-
-    interface DefaultLabelMessages {
-
-        /**
-         * @param grpNum
-         * @return "Group {0}"
-         */
-        String defaultGroupLabel(int grpNum);
     }
 
     /**
@@ -114,14 +104,20 @@ public interface AppTemplateWizardAppearance {
 
     AppTemplateWizardTemplates getTemplates();
 
-    AppTemplateWizardDisplayStrings getMessages();
-
-    // ContentPanelHoverHeaderSelectionAppearance getContentPanelEditingAppearance();
-
     Style getStyle();
 
     /**
      * @return 200
      */
     int getDefaultTreeSelectionHeight();
+
+    SafeHtml createArgumentLabel(Argument model);
+
+    SafeHtml createContextualHelpLabel(String label, String toolTip);
+
+    SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip);
+
+    AppsWidgetsPropertyPanelLabels getPropertyPanelLabels();
+
+    AppsWidgetsContextualHelpMessages getContextHelpMessages();
 }

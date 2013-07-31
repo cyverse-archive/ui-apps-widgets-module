@@ -1,23 +1,30 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
 import com.google.gwt.core.client.GWT;
+import com.sencha.gxt.theme.base.client.panel.ContentPanelBaseAppearance;
 import com.sencha.gxt.theme.base.client.widget.HeaderDefaultAppearance;
 import com.sencha.gxt.theme.base.client.widget.HeaderDefaultAppearance.HeaderResources;
 import com.sencha.gxt.theme.base.client.widget.HeaderDefaultAppearance.HeaderStyle;
-import com.sencha.gxt.theme.gray.client.panel.GrayContentPanelAppearance;
 
-public class AppTemplateWizardSelectableHeaderContentPanelAppearance extends GrayContentPanelAppearance {
+public class AppGroupContentPanelAppearance extends ContentPanelBaseAppearance {
 
-    private static final SelectableHeaderResources resources = GWT.<SelectableHeaderResources> create(SelectableHeaderResources.class);
-    // public AppTemplateWizardSelectableHeaderContentPanelAppearance() {
-    // super(GWT.<GrayContentPanelResources> create(GrayContentPanelResources.class), GWT
-    // .<ContentPanelTemplate> create(ContentPanelTemplate.class));
-    // }
-    //
-    // public AppTemplateWizardSelectableHeaderContentPanelAppearance(GrayContentPanelResources
-    // resources) {
-    // super(resources, GWT.<ContentPanelTemplate> create(ContentPanelTemplate.class));
-    // }
+    public interface AppGroupContentPanelAppearanceResources extends ContentPanelResources {
+        @Source({"com/sencha/gxt/theme/base/client/panel/ContentPanel.css", "AppGroupContentPanel.css"})
+        @Override
+        AppGroupContentPanelAppearanceStyle style();
+    }
+
+    public interface AppGroupContentPanelAppearanceStyle extends ContentPanelStyle {
+
+    }
+
+    public AppGroupContentPanelAppearance() {
+        super(GWT.<AppGroupContentPanelAppearanceResources> create(AppGroupContentPanelAppearanceResources.class), GWT.<ContentPanelTemplate> create(ContentPanelTemplate.class));
+    }
+
+    public AppGroupContentPanelAppearance(AppGroupContentPanelAppearanceResources resources) {
+        super(resources, GWT.<ContentPanelTemplate> create(ContentPanelTemplate.class));
+    }
 
     public interface SelectableHeaderResources extends HeaderResources {
 
@@ -31,9 +38,9 @@ public class AppTemplateWizardSelectableHeaderContentPanelAppearance extends Gra
         String headerSelect();
     }
 
+    private static final SelectableHeaderResources resources = GWT.<SelectableHeaderResources> create(SelectableHeaderResources.class);
 
     public final class SelectableHeaderAppearance extends HeaderDefaultAppearance {
-
 
         public SelectableHeaderAppearance() {
             super(resources, GWT.<Template> create(Template.class));
@@ -49,5 +56,4 @@ public class AppTemplateWizardSelectableHeaderContentPanelAppearance extends Gra
     public HeaderDefaultAppearance getHeaderAppearance() {
         return new SelectableHeaderAppearance();
     }
-
 }

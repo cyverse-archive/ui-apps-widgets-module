@@ -26,7 +26,7 @@ import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
-import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
  * This <code>Editor</code> is responsible for dynamically binding <code>Splittable</code> sub-editors
@@ -51,6 +51,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
     private final AppMetadataServiceFacade appMetadataService;
     private EditorDelegate<Argument> delegate;
 
+
     ArgumentValueEditor(final AppTemplateWizardPresenter presenter, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
         this.appMetadataService = appMetadataService;
@@ -61,6 +62,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
         if (presenter.isEditingMode()) {
             label = HasTextEditor.of(propertyLabel);
         }
+        new QuickTip(propertyLabel);
     }
 
     @Override
@@ -90,7 +92,6 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             AppWizardFieldFactory.setRequiredValidator(model, subEditor);
             
             subEditor.setValue(model.getValue());
-            subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
             HasEnabled w = (HasEnabled)subEditor.asWidget();
             if (presenter.isOnlyLabelEditMode()) {
                 w.setEnabled(false);
@@ -108,7 +109,6 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
                 w.setEnabled(value.isVisible());
             }
             subEditor.setValue(model.getValue());
-            subEditor.setToolTipConfig(new ToolTipConfig(model.getDescription()));
 
             if (presenter.isEditingMode()) {
                 // JDS Re-apply validators if we are in editing mode.
@@ -118,7 +118,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
         }
 
         // Update label
-        SafeHtml fieldLabelText = AppWizardFieldFactory.createFieldLabelText(model);
+        SafeHtml fieldLabelText = presenter.getAppearance().createArgumentLabel(model);
         if ((subEditor != null) && (subEditor.asWidget() instanceof CheckBox)) {
             propertyLabel.setHTML("");
             propertyLabel.setLabelSeparator("");

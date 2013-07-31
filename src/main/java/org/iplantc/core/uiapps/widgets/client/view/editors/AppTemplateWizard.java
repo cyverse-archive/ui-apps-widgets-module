@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
@@ -14,12 +15,13 @@ import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.Argum
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearanceImpl;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardSelectableHeaderContentPanelAppearance;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -41,6 +43,7 @@ import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
+import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
@@ -61,6 +64,26 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
  */
 public class AppTemplateWizard extends Composite implements HasPropertyEditor, ValueAwareEditor<AppTemplate>, AppTemplateWizardPresenter {
     
+    private final class SelectionHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler {
+        private final Header header;
+        private final AppTemplateWizardAppearance.Style style;
+
+        public SelectionHandler(Header header, AppTemplateWizardAppearance.Style style) {
+            this.header = header;
+            this.style = style;
+        }
+
+        @Override
+        public void onArgumentSelected(ArgumentSelectedEvent event) {
+            header.removeStyleName(style.appHeaderSelect());
+        }
+
+        @Override
+        public void onArgumentGroupSelected(ArgumentGroupSelectedEvent event) {
+            header.removeStyleName(style.appHeaderSelect());
+        }
+    }
+
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
     
@@ -79,6 +102,8 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
     private boolean onlyLabelEditMode = false;
 
+    private final AppsWidgetsDisplayMessages appsWidgetsMessages = GWT.create(AppsWidgetsDisplayMessages.class);
+
     public AppTemplateWizard(boolean editingMode, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         appearance = new AppTemplateWizardAppearanceImpl();
         this.editingMode = editingMode;
@@ -86,7 +111,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
-            cpAppearance = new AppTemplateWizardSelectableHeaderContentPanelAppearance();
+            cpAppearance = new AppGroupContentPanelAppearance();
         } else {
             cpAppearance = GWT.create(ContentPanelAppearance.class);
         }
@@ -96,6 +121,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
                 XElement element = XElement.as(header.getElement());
                 if (element.isOrHasChild(ce.getEventTarget().<Element> cast())) {
                     AppTemplateWizard.this.fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
+                    getHeader().addStyleName(AppTemplateWizard.this.appearance.getStyle().appHeaderSelect());
                 }
             }
         };
@@ -103,6 +129,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
         if (editingMode) {
             appTemplatePropEditor = new AppTemplatePropertyEditor(this);
+            con.getHeader().addStyleName(appearance.getStyle().appHeaderSelect());
             con.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         } else {
             con.setHeaderVisible(false);
@@ -110,6 +137,10 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
 
         initWidget(con);
         editorDriver.initialize(this);
+
+        SelectionHandler selectionHandler = new SelectionHandler(con.getHeader(), appearance.getStyle());
+        addArgumentSelectedEventHandler(selectionHandler);
+        addArgumentGroupSelectedEventHandler(selectionHandler);
     }
 
     /**
@@ -132,6 +163,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public AppTemplate flushAppTemplate() {
         AppTemplate flush = editorDriver.flush();
+        AppTemplate cleaned = AppTemplateUtils.removeEmptyGroupArguments(flush);
         if (hasErrors()) {
             editorDriver.accept(new Refresher());
             GWT.log("Editor has errors");
@@ -145,7 +177,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
                 }
             }
         }
-        return flush;
+        return cleaned;
     }
 
     @Override
@@ -191,7 +223,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
             labelText.append(SafeHtmlUtils.fromString(value.getName()));
             if (value.getDeployedComponent() == null) {
                 labelText.appendHtmlConstant("&nbsp;");
-                labelText.append(appearance.getTemplates().redText(appearance.getMessages().emptyToolText()));
+                labelText.append(appearance.getTemplates().redText(appsWidgetsMessages.emptyToolText()));
             }
             con.setHeadingHtml(labelText.toSafeHtml());
         }

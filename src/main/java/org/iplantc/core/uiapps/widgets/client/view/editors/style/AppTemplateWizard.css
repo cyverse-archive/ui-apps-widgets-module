@@ -1,34 +1,21 @@
-/* .appHeader {
-    cursor: pointer !important;
-    opacity: 0.8;
-    background-image: linear-gradient(bottom, rgb(218, 218, 218) 7%,
-        rgb(250, 250, 250) 78%);
-    background-image: -o-linear-gradient(bottom, rgb(218, 218, 218) 7%,
-        rgb(250, 250, 250) 78%);
-    background-image: -moz-linear-gradient(bottom, rgb(218, 218, 218) 7%,
-        rgb(250, 250, 250) 78%);
-    background-image: -webkit-linear-gradient(bottom, rgb(218, 218, 218) 7%,
-        rgb(250, 250, 250) 78%);
-    background-image: -ms-linear-gradient(bottom, rgb(218, 218, 218) 7%,
-        rgb(250, 250, 250) 78%);
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(218
-        , 218, 218)), color-stop(0.78, rgb(250, 250, 250)));
+@def horOffset 40px;
+@def blur 10px;
+@def spread 5px;
+@def selectionColor #AADDDD;
 
-}
- */
 .appHeaderSelect {
     background-image: linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%) !important;
     background-image: -o-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%) !important;
     background-image: -moz-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%) !important;
     background-image: -webkit-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%) !important;
     background-image: -ms-linear-gradient(bottom, rgb(220, 220, 220) 7%,
-        rgb(72, 179, 191) 78%);
+        selectionColor 78%) !important;
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(220
-        , 220, 220)), color-stop(0.78, rgb(72, 179, 191)));
+        , 220, 220)), color-stop(0.78, selectionColor)) !important;
 }
 
 .argument {
@@ -38,10 +25,15 @@
     -o-transition: all 0.25s ease;
 }
 
-.argument:hover, .argumentSelect {
-    -webkit-box-shadow: 30px 0px 20px rgba(72, 179, 191, 0.8);
-    -moz-box-shadow: 30px 0px 20px rgba(72, 179, 191, 0.8);
-    box-shadow: 30px 0px 20px rgba(72, 179, 191, 0.8);
+.argument:hover {
+    -webkit-box-shadow: 0 0 blur spread selectionColor;
+    -moz-box-shadow: 0 0 blur spread selectionColor;
+    box-shadow: 0 0 blur spread selectionColor;
+}
+.argumentSelect {
+    -webkit-box-shadow: horOffset 0 blur spread selectionColor !important;
+    -moz-box-shadow: horOffset 0 blur spread selectionColor !important;
+    box-shadow: horOffset 0 blur spread selectionColor !important;
 }
 
 .deleteBtn {
@@ -58,16 +50,37 @@
     cursor: pointer;
 }
 
-
-/* .propertyPanel {
-	background-color: rgba(72, 179, 191, 0.3);
+.emptyGroupBgText {
+	color: #ccc;
+	text-align: center;
 }
 
-.propertyPanel textArea {
-	background-color: rgba(72, 179, 191, 0.3) !important;
+.grab {
+	-moz-user-select: element;
+    -webkit-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
 }
 
-.propertyPanel input {
-	background-color: rgba(72, 179, 191, 0.3);
-	background: none;
-} */
+ 
+@if user.agent gecko1_8 {
+	 .grab:hover {
+		cursor: -moz-grab;
+	}
+	
+	.grab:active {
+		cursor: -moz-grabbing !important;
+	}
+	
+} @elif user.agent safari {
+    .grab:hover {
+        cursor: -webkit-grab;
+    }
+    
+    .grab:active {
+        cursor: -webkit-grabbing !important;
+    }
+  
+} 
+
+

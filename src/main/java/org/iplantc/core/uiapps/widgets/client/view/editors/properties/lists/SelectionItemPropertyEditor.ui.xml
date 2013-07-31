@@ -10,6 +10,8 @@
              
     <ui:with field="display"
              type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
+    <ui:with field="labels"
+             type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels"/>
 	<ui:with field="res"
 		type="org.iplantc.core.resources.client.IplantResources" />
     <ui:with type="com.sencha.gxt.widget.core.client.grid.ColumnModel" 
@@ -42,7 +44,7 @@
                            cm="{cm}" 
                            store="{selectionArgStore}" 
                            view="{view}"
-                           toolTip="Double click to edit"/>
+                           toolTip="{labels.singleSelectEditToolTip}"/>
        </con:south>
     </con:NorthSouthContainer>         
 </ui:UiBinder> 

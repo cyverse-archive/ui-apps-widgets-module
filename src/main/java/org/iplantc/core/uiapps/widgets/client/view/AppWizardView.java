@@ -6,7 +6,6 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.web.bindery.autobean.shared.Splittable;
 
 /**
  * The interface definition for the App Wizard view.
@@ -26,16 +25,7 @@ public interface AppWizardView extends IsWidget {
      */
     public interface BasePresenter extends org.iplantc.core.uicommons.client.presenter.Presenter{
     
-        /**
-         * KLUDGE JDS If the server JSON structure can be corrected, this can go away.
-         * 
-         * @param json
-         */
-        void setAppTemplateFromLegacyJson(final Splittable legacyJson);
-    
         AppTemplate getAppTemplate();
-
-        void goLegacy(final HasOneWidget container, final Splittable legacyJson);
 
         void go(final HasOneWidget container, final AppTemplate appTemplate);
 

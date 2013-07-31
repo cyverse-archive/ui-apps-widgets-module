@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
@@ -35,19 +36,13 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
- * 
  * @author jstroot
  *
- * @param <T>
  * @param <U>
  * @param <F>
  */
-// public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U> &
-// HasValueChangeHandlers<U>> extends ConverterEditorAdapter<Splittable, U, F> implements
-// ArgumentValueField,
 public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAwareEditor<U> & HasValueChangeHandlers<U> & TakesValue<U>> extends ConverterEditorAdapter<Splittable, U, F> implements
-        ArgumentValueField,
- HasKeyDownHandlers {
+        ArgumentValueField, HasKeyDownHandlers {
 
     protected final F field;
     private Splittable model;
@@ -178,7 +173,7 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     @SuppressWarnings("unchecked")
     public List<Validator<U>> getValidators() {
         if (!(field instanceof Field<?>)) {
-            return null;
+            return Collections.emptyList();
         }
 
         return ((Field<U>)field).getValidators();

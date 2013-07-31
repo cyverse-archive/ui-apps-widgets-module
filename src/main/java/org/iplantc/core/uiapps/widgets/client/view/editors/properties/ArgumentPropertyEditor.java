@@ -2,7 +2,9 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
+import org.iplantc.core.resources.client.uiapps.widgets.ArgumentValidatorMessages;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
@@ -19,6 +21,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.Sele
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
+import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -29,6 +32,7 @@ import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -46,11 +50,11 @@ import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
  * The <code>Editor</code> provides a means for editing the properties of an <code>Argument</code>.
@@ -67,11 +71,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     VerticalLayoutContainer con;
 
     @UiField
-    CheckBox requiredEditor, omitIfBlank, visible;
+    CheckBoxAdapter requiredEditor, omitIfBlank, visible;
 
     @Ignore
     @UiField
-    CheckBox isImplicit;
+    CheckBoxAdapter isImplicit;
 
     @UiField
     TextField label;
@@ -95,7 +99,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     AppWizardComboBox selectionItemDefaultValue;
 
     @UiField
-    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel, fileInfoTypeLabel, dataSourceLabel;
+    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel, fileInfoTypeLabel, dataSourceLabel, listSelectionLabel;
 
     @Path("")
     @UiField(provided = true)
@@ -124,10 +128,12 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     private EditorDelegate<Argument> delegate;
 
+    private final ArgumentValidatorMessages argValMessages = GWT.create(ArgumentValidatorMessages.class);
+
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
-        defaultValue = new DefaultArgumentValueEditor(appMetadataService);
-        validatorsEditor = new ArgumentValidatorEditor(I18N.DISPLAY);
+        defaultValue = new DefaultArgumentValueEditor(presenter.getAppearance(), appMetadataService);
+        validatorsEditor = new ArgumentValidatorEditor(presenter.getAppearance(), argValMessages);
         selectionItemDefaultValue = new AppWizardComboBox(presenter);
         selectionItemListEditor = new SelectionItemPropertyEditor(presenter, uuidService);
         selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
@@ -144,6 +150,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
          * together.
          */
         initWidget(BINDER.createAndBindUi(this));
+        new QuickTip(this);
     }
 
     @UiFactory
@@ -231,9 +238,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         if (event.getSource() == requiredEditor) {
             if (event.getValue()) {
                 omitIfBlank.setValue(false);
-                omitIfBlank.disable();
+                // omitIfBlank.disable();
+                omitIfBlank.setEnabled(false);
             } else {
-                omitIfBlank.enable();
+                omitIfBlank.setEnabled(true);
+                // omitIfBlank.enable();
             }
         }
         if (event.getSource() == visible) {
@@ -263,7 +272,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         } else {
             omitIfBlank.setVisible(true);
-            omitIfBlank.enable();
+            // omitIfBlank.enable();
+            omitIfBlank.setEnabled(true);
+
             requiredEditor.setVisible(true);
             descriptionLabel.setVisible(true);
             if (validatorsEditor != null) {
@@ -355,8 +366,10 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
+            updateFieldLabels(value.getType());
             if (!AppTemplateUtils.isSelectionArgumentType(value.getType())) {
                 // JDS The ArgumentType is NOT a Selection-based type. Remove all 'list' related controls
+                listSelectionLabel.setVisible(false);
                 con.remove(selectionItemListEditor);
                 con.remove(selectionItemTreeEditor);
                 con.remove(selectionItemDefaultValueLabel);
@@ -370,6 +383,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 }
             } else if (isTreeSelectionType) {
                 // JDS Remove all controls except for those related to TreeSelection
+                listSelectionLabel.setVisible(false);
                 con.remove(selectionItemListEditor);
                 con.remove(selectionItemDefaultValueLabel);
                 con.remove(defaultValue);
@@ -382,6 +396,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 con.remove(selectionItemTreeEditor);
                 con.remove(defaultValue);
                 selectionItemTreeEditor = null;
+                defaultValue = null;
+            }
+
+            if (value.getType().equals(ArgumentType.ReferenceAnnotation) || value.getType().equals(ArgumentType.ReferenceGenome) || value.getType().equals(ArgumentType.ReferenceSequence)) {
+                con.remove(defaultValue);
                 defaultValue = null;
             }
 
@@ -446,21 +465,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                     break;
             }
 
-            // JDS Change field labels based on Type
-            switch (value.getType()) {
-                case EnvironmentVariable:
-                    nameLabel.setText("Environment Variable name");
-                    break;
-                case Info:
-                    argLabelLabel.setText("Text");
-                    break;
-                case MultiFileSelector:
-                case FolderInput:
-                    fileInfoTypeLabel.setText("Type of information in these files");
-                    break;
-                default:
-                    break;
-            }
+
 
             if (presenter.isOnlyLabelEditMode()) {
                 // Disable all controls, then re-enable valid controls
@@ -478,7 +483,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         }
 
         this.model = value;
-        updateDisplayInGuiVisibilities(model.isVisible());
+        if (!isInfoType) {
+            updateDisplayInGuiVisibilities(model.isVisible());
+        }
 
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
@@ -492,13 +499,181 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             if (isDiskResourceOutputType) {
                 defaultValue.setValue(model);
             }
-        } else {
+        } else if (!model.getType().equals(ArgumentType.ReferenceAnnotation) && !model.getType().equals(ArgumentType.ReferenceGenome) && !model.getType().equals(ArgumentType.ReferenceSequence)) {
             // It is not a selection type, nor a MultiFileSelector
             if (defaultValue == null) {
                 GWT.log("This is a problem!");
             }
             defaultValue.setValue(model);
 
+        }
+    }
+
+    private void updateFieldLabels(ArgumentType type) {
+        AppsWidgetsPropertyPanelLabels labels = presenter.getAppearance().getPropertyPanelLabels();
+        AppsWidgetsContextualHelpMessages help = presenter.getAppearance().getContextHelpMessages();
+
+        descriptionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.toolTipText(), help.toolTip()));
+        nameLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.argumentOption(), help.argumentOption()));
+        visible.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isVisible()).toSafeHtml());
+        requiredEditor.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isRequired()).toSafeHtml());
+
+        new QuickTip(descriptionLabel);
+        new QuickTip(nameLabel);
+        new QuickTip(fileInfoTypeLabel);
+        new QuickTip(argLabelLabel);
+        new QuickTip(listSelectionLabel);
+        new QuickTip(selectionItemDefaultValueLabel);
+        new QuickTip(dataSourceLabel);
+        new QuickTip(omitIfBlank);
+        new QuickTip(isImplicit);
+
+        // JDS Change field labels based on Type
+        switch (type) {
+            case FileInput:
+                argLabelLabel.setText(labels.fileInputLabel());
+                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileInputFileInfoType(), help.fileInfoType()));
+                label.setEmptyText(labels.fileInputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileInputExcludeArgument())).toSafeHtml());
+                break;
+            case FolderInput:
+                argLabelLabel.setText(labels.folderInputLabel());
+                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                label.setEmptyText(labels.folderInputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.folderInputExcludeArgument())).toSafeHtml());
+                break;
+            case MultiFileSelector:
+                argLabelLabel.setText(labels.multiFileInputLabel());
+                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileInputFileInfoType(), help.fileInfoType()));
+                label.setEmptyText(labels.multiFileInputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.multiFileInputExcludeArgument())).toSafeHtml());
+                break;
+
+            case TextSelection:
+                argLabelLabel.setText(labels.textSelectionLabel());
+                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
+                selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionDefaultValue(), help.singleSelectDefaultItem()));
+                label.setEmptyText(labels.textSelectionEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.singleSelectExcludeArgument())).toSafeHtml());
+                break;
+            case IntegerSelection:
+                argLabelLabel.setText(labels.integerSelectionLabel());
+                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
+                selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionDefaultValue(), help.singleSelectDefaultItem()));
+                label.setEmptyText(labels.textSelectionEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.singleSelectExcludeArgument())).toSafeHtml());
+                break;
+            case DoubleSelection:
+                argLabelLabel.setText(labels.doubleSelectionLabel());
+                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
+                selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionDefaultValue(), help.singleSelectDefaultItem()));
+                label.setEmptyText(labels.textSelectionEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.singleSelectExcludeArgument())).toSafeHtml());
+                break;
+            case TreeSelection:
+                argLabelLabel.setText(labels.treeSelectionLabel());
+                label.setEmptyText(labels.textSelectionEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.singleSelectExcludeArgument())).toSafeHtml());
+                break;
+
+            case Info:
+                argLabelLabel.setText(labels.infoLabel());
+                label.setEmptyText(labels.infoEmptyText());
+                break;
+            case EnvironmentVariable:
+                argLabelLabel.setText(labels.envVarLabel());
+                label.setEmptyText(labels.envVarEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.envVarExcludeArgument())).toSafeHtml());
+                break;
+            case Text:
+                argLabelLabel.setText(labels.textInputLabel());
+                label.setEmptyText(labels.textInputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.textInputExcludeArgument())).toSafeHtml());
+                break;
+            case MultiLineText:
+                argLabelLabel.setText(labels.multiLineTextLabel());
+                label.setEmptyText(labels.textInputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.textInputExcludeArgument())).toSafeHtml());
+                break;
+            case Flag:
+                argLabelLabel.setText(labels.checkboxLabel());
+                label.setEmptyText(labels.checkboxEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.checkboxInputExcludeArgument())).toSafeHtml());
+                break;
+            case Integer:
+                argLabelLabel.setText(labels.integerInputLabel());
+                label.setEmptyText(labels.envVarEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.integerInputExcludeArgument())).toSafeHtml());
+                break;
+            case Double:
+                argLabelLabel.setText(labels.doubleInputLabel());
+                label.setEmptyText(labels.envVarEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.integerInputExcludeArgument())).toSafeHtml());
+                break;
+
+            case FileOutput:
+                argLabelLabel.setText(labels.fileOutputLabel());
+                dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileOutputSourceLabel(), help.fileOutputOutputSource()));
+                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                label.setEmptyText(labels.fileOutputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
+                isImplicit.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()))
+                        .toSafeHtml());
+                break;
+            case FolderOutput:
+                argLabelLabel.setText(labels.folderOutputLabel());
+                dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderOutputSourceLabel(), help.fileOutputOutputSource()));
+                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                label.setEmptyText(labels.folderOutputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
+                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()));
+                break;
+            case MultiFileOutput:
+                argLabelLabel.setText(labels.multiFileOutputLabel());
+                dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileOutputSourceLabel(), help.fileOutputOutputSource()));
+                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileInputFileInfoType(), help.fileInfoType()));
+                label.setEmptyText(labels.multiFileOutputEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
+                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()));
+                break;
+
+            case ReferenceGenome:
+                argLabelLabel.setText(labels.referenceGenomeLabel());
+                label.setEmptyText(labels.referenceGenomeEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.excludeReference())).toSafeHtml());
+                break;
+            case ReferenceSequence:
+                argLabelLabel.setText(labels.referenceSequenceLabel());
+                label.setEmptyText(labels.referenceSequenceEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.excludeReference())).toSafeHtml());
+                break;
+            case ReferenceAnnotation:
+                argLabelLabel.setText(labels.referenceAnnotationLabel());
+                label.setEmptyText(labels.referenceAnnotationEmptyText());
+                omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
+                        .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.excludeReference())).toSafeHtml());
+                break;
+
+            default:
+                break;
         }
     }
 
