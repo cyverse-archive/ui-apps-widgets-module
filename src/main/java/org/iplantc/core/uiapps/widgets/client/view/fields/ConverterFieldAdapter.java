@@ -6,7 +6,7 @@ import java.util.List;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.PreventEntryAfterLimitHandler;
-import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
@@ -142,8 +142,10 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
                     errors.addAll(errs);
                 }
             }
-        } else if (field instanceof AbstractDiskResourceSelector<?>) {
-            errors.addAll(((AbstractDiskResourceSelector<?>)field).getErrors());
+        } else if (field instanceof DiskResourceSelector) {
+            errors.addAll(((DiskResourceSelector)field).getErrors());
+            // } else if (field instanceof AbstractDiskResourceSelector<?>) {
+            // errors.addAll(((AbstractDiskResourceSelector<?>)field).getErrors());
         } else {
             return;
         }

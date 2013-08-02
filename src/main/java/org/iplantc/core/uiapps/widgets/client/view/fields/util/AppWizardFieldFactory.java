@@ -29,6 +29,7 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
 import org.iplantc.core.uidiskresource.client.views.widgets.FileSelectorField;
 import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
 import org.iplantc.core.uidiskresource.client.views.widgets.MultiFileSelectorField;
@@ -297,8 +298,8 @@ public class AppWizardFieldFactory {
                 ((ValueBaseField<T>)field).setAllowBlank(false);
             } else if (field instanceof ConverterFieldAdapter<?, ?>) {
                 ConverterFieldAdapter<T, ?> converterFieldAdapter = (ConverterFieldAdapter<T, ?>)field;
-                if (converterFieldAdapter.getField() instanceof AbstractDiskResourceSelector<?>) {
-                    ((AbstractDiskResourceSelector<?>)converterFieldAdapter.getField()).setRequired(true);
+                if (converterFieldAdapter.getField() instanceof DiskResourceSelector) {
+                    ((DiskResourceSelector)converterFieldAdapter.getField()).setRequired(true);
                 } else {
                     converterFieldAdapter.addValidator(emptyValidator);
                 }
@@ -313,8 +314,8 @@ public class AppWizardFieldFactory {
                 ((ValueBaseField<T>)field).setAllowBlank(true);
             } else if (field instanceof ConverterFieldAdapter<?, ?>) {
                 ConverterFieldAdapter<T, ?> converterFieldAdapter = (ConverterFieldAdapter<T, ?>)field;
-                if (converterFieldAdapter.getField() instanceof AbstractDiskResourceSelector<?>) {
-                    ((AbstractDiskResourceSelector<?>)converterFieldAdapter.getField()).setRequired(false);
+                if (converterFieldAdapter.getField() instanceof DiskResourceSelector) {
+                    ((DiskResourceSelector)converterFieldAdapter.getField()).setRequired(false);
                 } else {
                     List<Validator<T>> validators = converterFieldAdapter.getValidators();
                     List<Validator<T>> validatorsToRemove = Lists.newArrayList();
