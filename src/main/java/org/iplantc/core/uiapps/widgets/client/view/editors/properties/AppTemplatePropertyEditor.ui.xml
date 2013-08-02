@@ -62,7 +62,8 @@
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextField ui:field="name"
-                                            emptyText="{labels.appNameEmptyText}"/>
+                                            emptyText="{labels.appNameEmptyText}"
+                                            allowBlank="false"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    

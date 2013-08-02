@@ -31,7 +31,8 @@
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextField ui:field="label"
-                                            emptyText="{labels.groupNameEmptyText}"/>
+                                            emptyText="{labels.groupNameEmptyText}"
+                                            allowBlank="false"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    

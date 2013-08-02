@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
@@ -14,12 +15,15 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.ArgumentEditorError;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.Editor.Ignore;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
@@ -120,6 +124,16 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             }
         }
         return false;
+    }
+
+    public List<EditorError> getErrors() {
+        ArrayList<EditorError> errors = Lists.newArrayList();
+        for (ArgumentEditor ae : editor.getEditors()) {
+            for (EditorError err : ae.getErrors()) {
+                errors.add(new ArgumentEditorError(ae.getLabel(), err));
+            }
+        }
+        return errors;
     }
 
     private final class ArgSelectedHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler, AppTemplateSelectedEventHandler {

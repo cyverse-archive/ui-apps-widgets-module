@@ -6,13 +6,11 @@ import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanel
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
-import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
-import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
@@ -26,8 +24,10 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.Splitt
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.validators.NameValidator3;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
 import org.iplantc.core.uidiskresource.client.views.widgets.FileSelectorField;
@@ -50,7 +50,6 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
-import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -92,14 +91,6 @@ public class AppWizardFieldFactory {
             case DoubleSelection:
                 // TBI JDS Currently returning the textual combobox until an appropriate one is developed
 
-                // Legacy Types
-            case Selection:
-
-            case ValueSelection:
-                // TODO JDS Map this to either IntegerSelection or DoubleSelection
-                field = new AppWizardComboBox(presenter);
-                break;
-
             case TreeSelection:
                 field = new SelectionItemTreePanel(presenter);
                 break;
@@ -107,6 +98,23 @@ public class AppWizardFieldFactory {
                 break;
         }
         return field;
+    }
+
+    public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode, final AppMetadataServiceFacade appMetadataService) {
+        return createArgumentValueField(argument, editingMode, appMetadataService, false);
+    }
+
+    /**
+     * Creates an ArgumentValueField for use in the default argument editors. These default fields are
+     * special cases where all specified validators are applied to the field except the required
+     * validator.
+     * 
+     * @param argument
+     * @param appMetadataService
+     * @return
+     */
+    public static <T extends ArgumentValueField> T createDefaultArgumentValueField(Argument argument, final AppMetadataServiceFacade appMetadataService) {
+        return createArgumentValueField(argument, false, appMetadataService, true);
     }
     
     /**
@@ -118,14 +126,13 @@ public class AppWizardFieldFactory {
      *            App editor, or not.
      * @return an {@link ArgumentValueField}-derived class which can be bound with a {@link Splittable}.
      */
-    public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode, final AppMetadataServiceFacade appMetadataService) {
+    protected static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode, final AppMetadataServiceFacade appMetadataService, boolean isDefault) {
         ConverterFieldAdapter<?, ?> field = null;
         TextField tf = new TextField();
         SpinnerField<Double> dblSpinnerField = new SpinnerField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
         SpinnerField<Integer> intSpinnerField = new SpinnerField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
         dblSpinnerField.setMinValue(-Double.MAX_VALUE);
         intSpinnerField.setMinValue(Integer.MIN_VALUE);
-        NameValidator3 nameValidator = new NameValidator3();
         switch (argument.getType()) {
             case FileInput:
                 FileSelectorField awFileSel = new FileSelectorField();
@@ -133,7 +140,10 @@ public class AppWizardFieldFactory {
                     awFileSel.disableBrowseButton();
                 }
                 ConverterFieldAdapter<HasId, FileSelectorField> fileSelCfa = new ConverterFieldAdapter<HasId, FileSelectorField>(awFileSel, new SplittableToHasIdConverter());
-                field = applyDiskResourceValidators(argument, fileSelCfa);
+                field = fileSelCfa;
+                if (!editingMode || isDefault) {
+                    applyDiskResourceValidators(argument, fileSelCfa);
+                }
                 break;
 
             case FolderInput:
@@ -142,7 +152,10 @@ public class AppWizardFieldFactory {
                     awFolderSel.disableBrowseButton();
                 }
                 ConverterFieldAdapter<HasId, FolderSelectorField> folderSelCfa = new ConverterFieldAdapter<HasId, FolderSelectorField>(awFolderSel, new SplittableToHasIdConverter());
-                field = applyDiskResourceValidators(argument, folderSelCfa);
+                field = folderSelCfa;
+                if (!editingMode || isDefault) {
+                    applyDiskResourceValidators(argument, folderSelCfa);
+                }
                 break;
 
             case MultiFileSelector:
@@ -153,45 +166,57 @@ public class AppWizardFieldFactory {
                 }
                 ConverterFieldAdapter<List<HasId>, MultiFileSelectorField> multFileSelCfa = new ConverterFieldAdapter<List<HasId>, MultiFileSelectorField>(awMultFileSel,
                         new SplittableToHasIdListConverter());
-                field = applyDiskResourceListValidators(argument, multFileSelCfa);
+                field = multFileSelCfa;
+                if (!editingMode || isDefault) {
+                    applyDiskResourceListValidators(argument, multFileSelCfa);
+                }
                 break;
 
             case Text:
                 ConverterFieldAdapter<String, TextField> textCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
                 tf.setEmptyText(labels.textInputWidgetEmptyText());
-                textCfa.addValidator(nameValidator);
-                field = applyStringValidators(argument, textCfa);
+                field = textCfa;
+                if (!editingMode || isDefault) {
+                    applyStringValidators(argument, textCfa);
+                }
                 break;
 
             case EnvironmentVariable:
                 ConverterFieldAdapter<String, TextField> envCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
                 tf.setEmptyText(labels.envVarWidgetEmptyText());
-                envCfa.addValidator(nameValidator);
-                field = applyStringValidators(argument, envCfa);
+                envCfa.addValidator(new CmdLineArgCharacterValidator());
+                field = envCfa;
+                if (!editingMode || isDefault) {
+                    applyStringValidators(argument, envCfa);
+                }
                 break;
 
             case MultiLineText:
                 TextArea textArea = new TextArea();
                 ConverterFieldAdapter<String, TextArea> mltCfa = new ConverterFieldAdapter<String, TextArea>(textArea, new SplittableToStringConverter());
                 textArea.setEmptyText(labels.textInputWidgetEmptyText());
-                mltCfa.addValidator(nameValidator);
-                field = applyStringValidators(argument, mltCfa);
-                break;
-
-            case Number:
-                field = getNumberField(argument);
+                field = mltCfa;
+                if (!editingMode || isDefault) {
+                    applyStringValidators(argument, mltCfa);
+                }
                 break;
 
             case Double:
                 ConverterFieldAdapter<Double, SpinnerField<Double>> dblCfa = new ConverterFieldAdapter<Double, SpinnerField<Double>>(dblSpinnerField, new SplittableToDoubleConverter());
                 dblSpinnerField.setEmptyText(labels.doubleInputWidgetEmptyText());
-                field = applyDoubleValidators(argument, dblCfa);
+                field = dblCfa;
+                if (!editingMode || isDefault) {
+                    applyDoubleValidators(argument, dblCfa);
+                }
                 break;
 
             case Integer:
                 ConverterFieldAdapter<Integer, SpinnerField<Integer>> intCfa = new ConverterFieldAdapter<Integer, SpinnerField<Integer>>(intSpinnerField, new SplittableToIntegerConverter());
                 intSpinnerField.setEmptyText(labels.integerInputWidgetEmptyText());
-                field = applyIntegerValidators(argument, intCfa);
+                field = intCfa;
+                if (!editingMode || isDefault) {
+                    applyIntegerValidators(argument, intCfa);
+                }
                 break;
 
             case Flag:
@@ -222,9 +247,12 @@ public class AppWizardFieldFactory {
             case MultiFileOutput:
             case Output:
                 ConverterFieldAdapter<String, TextField> outputCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
-                outputCfa.addValidator(nameValidator);
-                tf.addValidator(nameValidator);
-                field = applyStringValidators(argument, outputCfa);
+                outputCfa.addValidator(new CmdLineArgCharacterValidator());
+                tf.addValidator(new CmdLineArgCharacterValidator());
+                field = outputCfa;
+                if (!editingMode || isDefault) {
+                    applyStringValidators(argument, outputCfa);
+                }
                 break;
 
             case ReferenceAnnotation:
@@ -246,7 +274,13 @@ public class AppWizardFieldFactory {
         }
         
         setDefaultValue(argument);
+        if ((argument.getValidators() != null)) {
+            field.applyValidators(argument.getValidators());
+        }
 
+        if (!editingMode && !isDefault) {
+            setRequiredValidator(argument, field);
+        }
         if (field != null) {
             if ((argument.getDescription() != null) && !argument.getDescription().isEmpty()) {
                 ToolTipConfig ttCon = new ToolTipConfig(argument.getDescription());
@@ -284,7 +318,7 @@ public class AppWizardFieldFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
+    static <T> void setRequiredValidator(Argument argument, IsField<T> field) {
         // Exit if the argument is not required, or the field is not an instance of something with an
         // "addValidator" method
         if (!((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
@@ -344,38 +378,6 @@ public class AppWizardFieldFactory {
             }
         }
 
-    }
-
-    /**
-     * Returns a NumberField based on any applicable validators. If the property contains Integer
-     * validators, then an Integer number field will be returned. Otherwise, a Double number field will
-     * be returned.
-     * 
-     * @param argument
-     * @return
-     */
-    private static ConverterFieldAdapter<?, ?> getNumberField(Argument argument) {
-
-        NumberField<Double> dblNumField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-        NumberField<Integer> intNumField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-
-        ConverterFieldAdapter<?, ?> field = null;
-        List<ArgumentValidator> validators = argument.getValidators();
-        if (validators != null) {
-            for (ArgumentValidator validator : validators) {
-                if (validator.getType().equals(ArgumentValidatorType.IntAbove) || validator.getType().equals(ArgumentValidatorType.IntBelow) || validator.getType().equals(ArgumentValidatorType.IntRange)) {
-                    ConverterFieldAdapter<Integer, NumberField<Integer>> cfa = new ConverterFieldAdapter<Integer, NumberField<Integer>>(intNumField, new SplittableToIntegerConverter());
-                    field = applyIntegerValidators(argument, cfa);
-                    break;
-                }
-            }
-        }
-        if (field == null) {
-            ConverterFieldAdapter<Double, NumberField<Double>> cfa = new ConverterFieldAdapter<Double, NumberField<Double>>(dblNumField, new SplittableToDoubleConverter());
-            field = applyDoubleValidators(argument, cfa);
-        }
-
-        return field;
     }
 
     public static void setDefaultValue(Argument argument) {
@@ -555,12 +557,20 @@ public class AppWizardFieldFactory {
                 ab.setTag(ArgumentValidator.VALIDATOR, validator);
                 break;
             case Regex:
+                // FIXME CORE-4632
+                Splittable regexSplittable = tv.getParams().get(0);
+                String regex;
+                if (regexSplittable.isNumber()) {
+                    Double asNumber = regexSplittable.asNumber();
+                    regex = String.valueOf(asNumber.intValue());
+                } else {
+                    regex = regexSplittable.asString();
+                }
                 // Array containing one string
-                String regex = tv.getParams().get(0).asString();
                 validator = new RegExValidator(regex, "Input must match the Regular Expression: " + regex);
                 break;
             case FileName:
-                validator = new NameValidator3();
+                validator = new DiskResourceNameValidator();
                 break;
             default:
                 throw new UnsupportedOperationException("Given validator type is not a String validator type.");
@@ -618,7 +628,7 @@ public class AppWizardFieldFactory {
                 validator = new RegExValidator(regex, "Input must match the Regular Expression: " + regex);
                 break;
             case FileName:
-                validator = new NameValidator3();
+                validator = new DiskResourceNameValidator();
                 break;
             default:
                 throw new UnsupportedOperationException("Given validator type is not a String validator type.");

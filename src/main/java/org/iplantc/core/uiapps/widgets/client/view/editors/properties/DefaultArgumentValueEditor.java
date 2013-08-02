@@ -149,9 +149,9 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
     }
 
     private void createDefaultValueSubEditor(Argument argument) {
-        subEditor = AppWizardFieldFactory.createArgumentValueField(argument, false, appMetadataService);
+        subEditor = AppWizardFieldFactory.createDefaultArgumentValueField(argument, appMetadataService);
         if (subEditor != null) {
-            // Apply any validators which may have been set at init-time
+            // Apply any handlers which may have been set at init-time
             if ((subEditor.getField() instanceof HasValueChangeHandlers) && !valueChangeHandlers.isEmpty()) {
                 for (ValueChangeHandler<Splittable> valueChangeHandler : valueChangeHandlers) {
                     subEditor.addValueChangeHandler(valueChangeHandler);

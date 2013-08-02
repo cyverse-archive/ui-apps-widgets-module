@@ -8,14 +8,15 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentGroupPropertyEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppWizardQuickTip;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -33,7 +34,6 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
 
     @Path("")
     ArgumentGroupPropertyEditor argGrpPropEditor;
-    private final ImageElement headerErrorIcon;
     private final AppTemplateWizardPresenter presenter;
 
     public ArgumentGroupEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement,
@@ -47,8 +47,7 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
             argGrpPropEditor = new ArgumentGroupPropertyEditor(presenter);
             sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         }
-        headerErrorIcon = presenter.getAppearance().getErrorIconImg();
-
+        new AppWizardQuickTip(header);
     }
     
     @Override
@@ -72,7 +71,8 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
     public void setValue(ArgumentGroup value) {
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
         if (argumentsEditor.hasErrors()) {
-            labelText.appendHtmlConstant(headerErrorIcon.getString());
+            ImageElement errImg = presenter.getAppearance().getErrorIconImgWithErrQTip(argumentsEditor.getErrors());
+            labelText.appendHtmlConstant(errImg.getString());
         }
         if (value.getArguments().isEmpty()) {
             /* JDS If the argument group has no arguments, add special Empty group argument.
@@ -80,17 +80,16 @@ class ArgumentGroupEditor extends ContentPanel implements HasPropertyEditor, Val
              */
             value.getArguments().add(AppTemplateUtils.getEmptyGroupArgument());
         }
+        boolean isRequired = false;
         for (Argument property : value.getArguments()) {
             if (property.getRequired()) {
                 // If any field is required, mark header as required.
-                SafeHtml redText = presenter.getAppearance().getTemplates().redText("*");
-                labelText.append(redText);
-                labelText.appendHtmlConstant("&nbsp;");
+                isRequired = true;
                 break;
             }
         }
         // When the value is set, update the FieldSet header text
-        labelText.appendEscaped(value.getLabel());
+        labelText.append(presenter.getAppearance().createContentPanelHeaderLabel(SafeHtmlUtils.fromString(value.getLabel()), isRequired));
         setHeadingHtml(labelText.toSafeHtml());
     }
 

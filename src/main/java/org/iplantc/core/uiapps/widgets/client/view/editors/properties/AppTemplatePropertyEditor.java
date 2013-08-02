@@ -3,6 +3,8 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -20,6 +22,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 public class AppTemplatePropertyEditor extends Composite implements ValueAwareEditor<AppTemplate> {
@@ -56,6 +59,9 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(presenter.getAppearance().getPropertyPanelLabels().toolUsedLabel(),
                 presenter.getAppearance().getContextHelpMessages().appToolUsed()));
         new QuickTip(toolLabel);
+        name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
+        name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
+        name.addValidator(new CmdLineArgCharacterValidator());
     }
 
     @UiFactory

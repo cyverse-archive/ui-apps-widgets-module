@@ -9,7 +9,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOu
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
-import org.iplantc.core.uicommons.client.validators.NameValidator3;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
 
 import com.google.common.collect.Lists;
@@ -88,7 +88,7 @@ public class LaunchAnalysisWidget implements IsWidget, Editor<JobExecution> {
         res = GWT.create(Resources.class);
         res.css().ensureInjected();
         BINDER.createAndBindUi(this);
-        name.addValidator(new NameValidator3());
+        name.addValidator(new DiskResourceNameValidator());
         name.setAllowBlank(false);
         outputDirectory = new ConverterEditorAdapter<String, HasId, FolderSelectorField>(awFolderSel, new Converter<String, HasId>() {
             @Override

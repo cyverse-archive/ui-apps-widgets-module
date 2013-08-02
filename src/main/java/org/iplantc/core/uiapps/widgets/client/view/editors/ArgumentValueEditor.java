@@ -1,5 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
@@ -89,8 +92,6 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
                 }
             }
 
-            AppWizardFieldFactory.setRequiredValidator(model, subEditor);
-            
             subEditor.setValue(model.getValue());
             HasEnabled w = (HasEnabled)subEditor.asWidget();
             if (presenter.isOnlyLabelEditMode()) {
@@ -109,12 +110,6 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
                 w.setEnabled(value.isVisible());
             }
             subEditor.setValue(model.getValue());
-
-            if (presenter.isEditingMode()) {
-                // JDS Re-apply validators if we are in editing mode.
-                subEditor.applyValidators(model.getValidators());
-                AppWizardFieldFactory.setRequiredValidator(model, subEditor);
-            }
         }
 
         // Update label
@@ -194,6 +189,14 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
         }
         subEditor.validate(false);
         return (subEditor.getErrors() != null) && !subEditor.getErrors().isEmpty();
+    }
+
+    public List<EditorError> getErrors() {
+        if (subEditor.getErrors() == null) {
+            return Collections.emptyList();
+        }
+
+        return subEditor.getErrors();
     }
 
 }
