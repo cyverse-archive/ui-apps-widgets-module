@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.presenter;
 import java.util.List;
 
 import org.iplantc.core.resources.client.constants.IplantValidationConstants;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
@@ -108,7 +109,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
             @Override
             public void onFailure(Throwable caught) {
-                ErrorHandler.post(caught);
+                ErrorHandler.post(I18N.ERROR.analysisFailedToLaunch(at.getName()), caught);
             }
         });
     }
