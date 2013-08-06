@@ -8,6 +8,7 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 
@@ -22,6 +23,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -114,10 +116,10 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
 
         // Update label
         SafeHtml fieldLabelText = presenter.getAppearance().createArgumentLabel(model);
-        if ((subEditor != null) && (subEditor.asWidget() instanceof CheckBox)) {
+        if ((subEditor != null) && subEditor.asWidget() instanceof CheckBoxAdapter) {
             propertyLabel.setHTML("");
             propertyLabel.setLabelSeparator("");
-            ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
+            ((CheckBoxAdapter)subEditor.asWidget()).setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(fieldLabelText).toSafeHtml());
         } else {
             propertyLabel.setHTML(fieldLabelText);
             if (model.getType().equals(ArgumentType.Info)) {
@@ -129,20 +131,17 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
 
     @Override
     public void flush() {
-        if (subEditor == null) {
+        if ((subEditor == null) || (presenter.isEditingMode() && (presenter.getValueChangeEventSource() != this))) {
             return;
         }
-        subEditor.validate(false);
+
+        // TODO JDS Investigate getting rid of ArgumentValueField definition.
+        ((ConverterFieldAdapter<?, ?>)subEditor).flush();
+        Splittable split = subEditor.getValue();
         // JDS Transfer errors to delegate
         for (EditorError err : subEditor.getErrors()) {
             delegate.recordError(err.getMessage(), err.getValue(), err.getEditor());
         }
-        if (presenter.getValueChangeEventSource() != this) {
-            return;
-        }
-        // TODO JDS Investigate getting rid of ArgumentValueField definition.
-        ((ConverterFieldAdapter<?, ?>)subEditor).flush();
-        Splittable split = subEditor.getValue();
 
         // Manually put the value into the argument
         if (split != null) {
@@ -183,7 +182,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
         return reg;
     }
 
-    public boolean hasErrors() {
+    boolean hasErrors() {
         if (subEditor == null) {
             return false;
         }
@@ -191,7 +190,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
         return (subEditor.getErrors() != null) && !subEditor.getErrors().isEmpty();
     }
 
-    public List<EditorError> getErrors() {
+    List<EditorError> getErrors() {
         if (subEditor.getErrors() == null) {
             return Collections.emptyList();
         }

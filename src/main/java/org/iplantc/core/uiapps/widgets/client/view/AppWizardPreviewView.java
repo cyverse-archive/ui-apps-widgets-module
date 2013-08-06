@@ -10,7 +10,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Window;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 public class AppWizardPreviewView extends Window {
@@ -23,9 +22,6 @@ public class AppWizardPreviewView extends Window {
 
     @UiField(provided = true)
     AppTemplateWizard wizard;
-
-    @UiField
-    TextButton launchButton;
 
     public AppWizardPreviewView(AppTemplate appTemplate) {
         wizard = new AppTemplateWizard(false, null, null);

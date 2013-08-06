@@ -21,7 +21,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 /**
@@ -41,9 +40,6 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
 
     @UiField(provided = true)
     AppTemplateWizard wizard;
-
-    @UiField
-    TextButton launchButton;
 
     LaunchAnalysisWidget law;
 

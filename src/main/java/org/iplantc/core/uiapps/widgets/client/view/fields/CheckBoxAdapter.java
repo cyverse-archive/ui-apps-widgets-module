@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields;
 
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -7,7 +8,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.sencha.gxt.widget.core.client.form.AdapterField;
 
-public class CheckBoxAdapter extends AdapterField<Boolean> implements HasValueChangeHandlers<Boolean> {
+public class CheckBoxAdapter extends AdapterField<Boolean> implements ValueAwareEditor<Boolean>, HasValueChangeHandlers<Boolean> {
 
     private final CheckBox cb;
 
@@ -42,5 +43,11 @@ public class CheckBoxAdapter extends AdapterField<Boolean> implements HasValueCh
     public void setHTML(SafeHtml html) {
         cb.setHTML(html);
     }
+
+    @Override
+    public void flush() {/* Do Nothing */}
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
 
 }

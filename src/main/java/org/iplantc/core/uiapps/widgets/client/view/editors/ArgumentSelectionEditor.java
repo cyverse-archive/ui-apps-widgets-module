@@ -119,7 +119,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
 
     @Override
     public void flush() {
-        if (presenter.getValueChangeEventSource() != this) {
+        if (presenter.isEditingMode() && (presenter.getValueChangeEventSource() != this)) {
             return;
         }
         subEditor.flush();

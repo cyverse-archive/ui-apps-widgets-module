@@ -321,6 +321,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     @Override
     public void flush() {
+        // JDS Manually flush default value editor
         if (defaultValue != null) {
             defaultValue.flush();
             List<EditorError> errors = defaultValue.getErrors();
@@ -501,9 +502,6 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         } else if (!model.getType().equals(ArgumentType.ReferenceAnnotation) && !model.getType().equals(ArgumentType.ReferenceGenome) && !model.getType().equals(ArgumentType.ReferenceSequence)) {
             // It is not a selection type, nor a MultiFileSelector
-            if (defaultValue == null) {
-                GWT.log("This is a problem!");
-            }
             defaultValue.setValue(model);
 
         }
@@ -641,7 +639,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 label.setEmptyText(labels.folderOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
-                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()));
+                isImplicit.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()))
+                        .toSafeHtml());
                 break;
             case MultiFileOutput:
                 argLabelLabel.setText(labels.multiFileOutputLabel());
@@ -650,7 +649,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 label.setEmptyText(labels.multiFileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
-                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()));
+                isImplicit.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()))
+                        .toSafeHtml());
                 break;
 
             case ReferenceGenome:

@@ -9,6 +9,7 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToStringConverter;
@@ -21,10 +22,10 @@ import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.widget.core.client.Composite;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -134,16 +135,18 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
 
             // Set the FieldLabel text
             propertyLabel.setHTML(fieldLabelText);
-            if ((subEditor != null) && (subEditor.asWidget() instanceof CheckBox)) {
-                propertyLabel.setHTML("");
-                propertyLabel.setLabelSeparator("");
-                ((CheckBox)subEditor.asWidget()).setBoxLabel(fieldLabelText.asString());
+            if (subEditor != null) {
+                if (subEditor.asWidget() instanceof CheckBoxAdapter) {
+                    propertyLabel.setHTML("");
+                    propertyLabel.setLabelSeparator("");
+                    ((CheckBoxAdapter)subEditor.asWidget()).setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(fieldLabelText).toSafeHtml());
+
+                }
+                subEditor.setValue(model.getDefaultValue());
+
             }
-            Splittable defaultValue = model.getDefaultValue();
-            subEditor.setValue(defaultValue);
         } else {
-            Splittable defaultValue = model.getDefaultValue();
-            subEditor.setValue(defaultValue);
+            subEditor.setValue(model.getDefaultValue());
             subEditor.applyValidators(model.getValidators());
         }
     }

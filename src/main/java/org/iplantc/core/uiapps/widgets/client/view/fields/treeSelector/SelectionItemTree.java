@@ -13,7 +13,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -32,13 +31,12 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  * @author psarando, jstroot
  * 
  */
-public class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueChangeHandlers<List<SelectionItem>> {
+class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueChangeHandlers<List<SelectionItem>> {
     private SelectionItemGroup root;
-    private Command updateCmd;
     private boolean forceSingleSelection = false;
     private boolean restoreCheckedSelectionFromTree;
 
-    public SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
+    SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
         super(store, valueProvider);
 
         setBorders(true);
@@ -137,8 +135,6 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         // args to be submitted to the job, even when filtered out.
         SelectionItem ruleArg = node.getModel();
         ruleArg.setDefault(getChecked(ruleArg) != CheckState.UNCHECKED);
-
-        callCheckChangedUpdateCommand();
     }
 
     /**
@@ -146,7 +142,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
      * 
      * @param root A SelectionItemGroup containing the items to populate in this tree.
      */
-    public void setItems(SelectionItemGroup root) {
+    void setItems(SelectionItemGroup root) {
         store.clear();
         this.root = root;
 
@@ -284,7 +280,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         }
     }
 
-    public void setSelection(List<SelectionItem> items) {
+    void setSelection(List<SelectionItem> items) {
 
         for (SelectionItem si : items) {
             SelectionItem found = getStore().findModelWithKey(si.getId());
@@ -295,21 +291,6 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
                 GWT.log("SelectionItemTree.setSelection(List<SelectionItem>) => Given SelectionItem could not be found. SelectionItem = \""
                         + AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si)).getPayload());
             }
-        }
-    }
-
-    /**
-     * Sets the Command to execute after the tree's checked selection changes.
-     * 
-     * @param updateCmd The component value table update Command to execute after selection changes.
-     */
-    public void setCheckChangedUpdateCommand(Command updateCmd) {
-        this.updateCmd = updateCmd;
-    }
-
-    private void callCheckChangedUpdateCommand() {
-        if (updateCmd != null) {
-            updateCmd.execute();
         }
     }
 
@@ -326,7 +307,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
      *            marked as "isDefault" true in the given tree passed into
      *            {@link #setItems(SelectionItemGroup)}
      */
-    public void setRestoreCheckedSelectionFromTree(boolean restoreCheckedSelectionFromTree) {
+    void setRestoreCheckedSelectionFromTree(boolean restoreCheckedSelectionFromTree) {
         this.restoreCheckedSelectionFromTree = restoreCheckedSelectionFromTree;
     }
 }

@@ -18,7 +18,7 @@ public class SplittableToBooleanConverter implements Converter<Splittable, Boole
     @Override
     public Boolean convertModelValue(Splittable object) {
         if (object == null) {
-            return null;
+            return Boolean.FALSE;
         }
         Boolean b = null;
         if (object.isBoolean()) {

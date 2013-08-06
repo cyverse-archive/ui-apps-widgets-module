@@ -13,6 +13,7 @@ import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
+import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToBooleanConverter;
@@ -46,7 +47,6 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
@@ -61,7 +61,6 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
-import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 public class AppWizardFieldFactory {
 
@@ -222,8 +221,8 @@ public class AppWizardFieldFactory {
                 break;
 
             case Flag:
-                CheckBox cb = new CheckBox();
-                field = new ConverterFieldAdapter<Boolean, CheckBox>(cb, new SplittableToBooleanConverter());
+                CheckBoxAdapter cbAdapter = new CheckBoxAdapter();
+                field = new ConverterFieldAdapter<Boolean, CheckBoxAdapter>(cbAdapter, new SplittableToBooleanConverter());
                 break;
 
             /*
@@ -281,12 +280,6 @@ public class AppWizardFieldFactory {
 
         if (!editingMode && !isDefault) {
             setRequiredValidator(argument, field);
-        }
-        if (field != null) {
-            if ((argument.getDescription() != null) && !argument.getDescription().isEmpty()) {
-                ToolTipConfig ttCon = new ToolTipConfig(argument.getDescription());
-                field.setToolTipConfig(ttCon);
-            }
         }
 
         @SuppressWarnings("unchecked")

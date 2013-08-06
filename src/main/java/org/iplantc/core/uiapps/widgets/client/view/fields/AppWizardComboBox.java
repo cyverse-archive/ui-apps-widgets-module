@@ -115,8 +115,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
     @Override
     public void setValue(final Argument value) {
-        ArgumentType type = value.getType();
-        if ((value == null) || !AppTemplateUtils.isSelectionArgumentType(value.getType()) || type.equals(ArgumentType.TreeSelection)) {
+        if ((value == null) || !AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)) {
             return;
         }
         this.model = value;
