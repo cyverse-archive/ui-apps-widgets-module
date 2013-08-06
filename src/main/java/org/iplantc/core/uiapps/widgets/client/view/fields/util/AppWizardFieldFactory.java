@@ -177,6 +177,7 @@ public class AppWizardFieldFactory {
                 tf.setEmptyText(labels.textInputWidgetEmptyText());
                 field = textCfa;
                 if (!editingMode || isDefault) {
+                    tf.addValidator(new CmdLineArgCharacterValidator());
                     applyStringValidators(argument, textCfa);
                 }
                 break;
@@ -184,9 +185,9 @@ public class AppWizardFieldFactory {
             case EnvironmentVariable:
                 ConverterFieldAdapter<String, TextField> envCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
                 tf.setEmptyText(labels.envVarWidgetEmptyText());
-                envCfa.addValidator(new CmdLineArgCharacterValidator());
                 field = envCfa;
                 if (!editingMode || isDefault) {
+                    envCfa.addValidator(new CmdLineArgCharacterValidator());
                     applyStringValidators(argument, envCfa);
                 }
                 break;
@@ -197,6 +198,7 @@ public class AppWizardFieldFactory {
                 textArea.setEmptyText(labels.textInputWidgetEmptyText());
                 field = mltCfa;
                 if (!editingMode || isDefault) {
+                    textArea.addValidator(new CmdLineArgCharacterValidator(true));
                     applyStringValidators(argument, mltCfa);
                 }
                 break;
@@ -247,10 +249,9 @@ public class AppWizardFieldFactory {
             case MultiFileOutput:
             case Output:
                 ConverterFieldAdapter<String, TextField> outputCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
-                outputCfa.addValidator(new CmdLineArgCharacterValidator());
-                tf.addValidator(new CmdLineArgCharacterValidator());
                 field = outputCfa;
                 if (!editingMode || isDefault) {
+                    tf.addValidator(new DiskResourceNameValidator());
                     applyStringValidators(argument, outputCfa);
                 }
                 break;

@@ -155,6 +155,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         // JDS Remove
         final int selectedItemIndex = validators.getStore().indexOf(selectedItem);
         validators.getStore().remove(selectedItem);
+        ValueChangeEvent.fire(this, Lists.newArrayList(selectedItem));
         AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
         dlg.addOkButtonSelectHandler(new AddValidatorOkBtnSelectHndlr(dlg));
         dlg.addCancelButtonSelectHandler(new AddValidatorCancelBtnSelectHandler(selectedItemIndex, selectedItem));

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
 
@@ -191,6 +193,9 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
                 Field<U> tmpField = (Field<U>)field;
                 List<Validator<U>> validatorsToRemove = Lists.newArrayList(tmpField.getValidators());
                 for (Validator<U> v : validatorsToRemove) {
+                    if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                        continue;
+                    }
                     tmpField.removeValidator(v);
                     if ((v instanceof MaxLengthValidator)) {
                         for (HandlerRegistration hr : preventEntryKeyDownHandlers) {
@@ -199,7 +204,6 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
                         preventEntryKeyDownHandlers.clear();
                     }
                 }
-                tmpField.getValidators().clear();
             }
         }
         if (field instanceof Field<?>) {
@@ -207,7 +211,13 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
             Field<U> fieldObj = (Field<U>)field;
 
             // JDS Clear all existing validators
-            fieldObj.getValidators().clear();
+            List<Validator<U>> validatorsToRemove = Lists.newArrayList(fieldObj.getValidators());
+            for (Validator<U> v : validatorsToRemove) {
+                if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                    continue;
+                }
+                fieldObj.removeValidator(v);
+            }
 
             for (ArgumentValidator av : validators) {
                 AutoBean<ArgumentValidator> autoBean = AutoBeanUtils.getAutoBean(av);

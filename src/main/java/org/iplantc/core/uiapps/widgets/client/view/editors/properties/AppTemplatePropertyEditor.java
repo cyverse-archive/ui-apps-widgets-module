@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
-import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 
 import com.google.gwt.core.client.GWT;
@@ -61,7 +61,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         new QuickTip(toolLabel);
         name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
         name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
-        name.addValidator(new CmdLineArgCharacterValidator());
+        name.addValidator(new DiskResourceNameValidator());
     }
 
     @UiFactory
