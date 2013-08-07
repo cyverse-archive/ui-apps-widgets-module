@@ -12,6 +12,7 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.collect.Lists;
@@ -88,7 +89,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private ColumnConfig<SelectionItem, String> valueCol;
 
-    private final GridInlineEditing<SelectionItem> editing;
+     private final GridInlineEditing<SelectionItem> editing;
 
     private boolean suppressEvent = false;
 
@@ -107,10 +108,14 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
         editing = new GridInlineEditing<SelectionItem>(grid);
         ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);
-        TextField field = new TextField();
-        field.setSelectOnFocus(true);
-        editing.addEditor(valueCol, field);
-        editing.addEditor(nameCol, field);
+        TextField field1 = new TextField();
+        field1.addValidator(new CmdLineArgCharacterValidator());
+        field1.setSelectOnFocus(true);
+        TextField field2 = new TextField();
+        field2.addValidator(new CmdLineArgCharacterValidator());
+        field2.setSelectOnFocus(true);
+        editing.addEditor(valueCol, field1);
+        editing.addEditor(nameCol, field2);
         
 
         // Add selection handler to grid to control enabled state of "delete" button
@@ -199,8 +204,11 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             return;
         }
         for (SelectionItem sa : selection) {
+            setSuppressEvent(true);
             selectionItems.getStore().remove(sa);
+            setSuppressEvent(false);
         }
+        ValueChangeEvent.fire(SelectionItemPropertyEditor.this, selectionArgStore.getAll());
     }
 
     @Override

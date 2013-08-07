@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
@@ -13,8 +14,6 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.Splitt
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -64,6 +63,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     private Argument model;
 
     private final AppsWidgetsDisplayMessages appsWidgetsMessages = GWT.create(AppsWidgetsDisplayMessages.class);
+    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
 
     @UiConstructor
     public AppWizardComboBox(AppTemplateWizardPresenter presenter) {
@@ -90,8 +90,6 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
     @Override
     public void flush() {
-        // JDS This may cause a flush to occur twice if this object is actually bound
-        // selectionItemsStoreBinder.flush();
         SelectionItem currSi = selectionItemsEditor.getCurrentValue();
         if (currSi == null) {
             return;
@@ -124,30 +122,32 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
             selectionItemsStoreBinder.setValue(model.getSelectionItems());
         }
         selectionItemsEditor.clear();
-        selectionItemsEditor.setText("");
         if (model.getValue() != null) {
-            // JDS Defer updating of combo box to avoid "race condition" with bound liststore
-            Scheduler.get().scheduleFinally(new ScheduledCommand() {
-
-                @Override
-                public void execute() {
-                    if ((model.getValue() != null) && model.getValue().isKeyed() && !model.getValue().isUndefined("id")) {
-                        String id = model.getValue().get("id").asString();
-                        SelectionItem si = listStore.findModelWithKey(id);
-                        if (si != null) {
-                            // KLUDGE JDS Call setValue twice in order to get the view to refresh with updated
-                            // values.
-                            selectionItemsEditor.setValue(si);
-                            selectionItemsEditor.setValue(si);
-                            return;
+            if (!model.getValue().isUndefined("id")) {
+                SelectionItem modelValue = AutoBeanCodex.decode(factory, SelectionItem.class, model.getValue()).as();
+                String id = model.getValue().get("id").asString();
+                SelectionItem si = listStore.findModelWithKey(id);
+                if (si != null) {
+                    doSetAndSelect(si);
+                } else {
+                    for (final SelectionItem item : listStore.getAll()) {
+                        boolean valuesEqual = modelValue.getValue().equals(item.getValue());
+                        boolean namesEqual = modelValue.getName().equals(item.getName());
+                        if (namesEqual && valuesEqual) {
+                            doSetAndSelect(item);
                         }
                     }
                 }
-            });
+            }
+
         }
         if (presenter.isOnlyLabelEditMode()) {
             setEnabled(false);
         }
+    }
+
+    private void doSetAndSelect(final SelectionItem item) {
+        selectionItemsEditor.setValue(item);
     }
 
     @Override
