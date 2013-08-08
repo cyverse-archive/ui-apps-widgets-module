@@ -55,20 +55,19 @@
 	text-align: center;
 }
 
-.grab {
-	-moz-user-select: element;
-    -webkit-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
-}
+.grab {}
+.grabbing{}
 
- 
 @if user.agent gecko1_8 {
 	 .grab:hover {
 		cursor: -moz-grab;
 	}
 	
-	.grab:active {
+    .grab:active {
+		cursor: -moz-grabbing !important;
+	}
+	
+	.grabbing {
 		cursor: -moz-grabbing !important;
 	}
 	
@@ -78,9 +77,18 @@
     }
     
     .grab:active {
-        cursor: -webkit-grabbing !important;
+        cursor: -webkit-grabbing;
     }
   
-} 
+} @else {
+    .grab:hover {
+        cursor: url(images/openhand.cur), move;
+    }
+    
+    .grab:active {
+        cursor: url(images/closedhand.cur), move;
+    }
+	
+}
 
 

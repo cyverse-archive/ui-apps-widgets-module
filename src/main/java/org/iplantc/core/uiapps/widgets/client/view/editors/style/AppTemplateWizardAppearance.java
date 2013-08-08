@@ -52,12 +52,6 @@ public interface AppTemplateWizardAppearance {
     }
 
     interface Style extends CssResource {
-        /**
-         * FIXME JDS This style should be applied in the
-         * 
-         * @return
-         */
-        // String appHeader();
 
         String appHeaderSelect();
 
@@ -74,6 +68,8 @@ public interface AppTemplateWizardAppearance {
         String emptyGroupBgText();
 
         String grab();
+
+        String grabbing();
 
     }
 
