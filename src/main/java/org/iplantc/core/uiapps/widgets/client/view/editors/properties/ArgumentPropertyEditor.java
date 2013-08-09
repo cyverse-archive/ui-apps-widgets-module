@@ -530,21 +530,21 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         switch (type) {
             case FileInput:
                 argLabelLabel.setText(labels.fileInputLabel());
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.fileInputFileInfoType());
                 label.setEmptyText(labels.fileInputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileInputExcludeArgument())).toSafeHtml());
                 break;
             case FolderInput:
                 argLabelLabel.setText(labels.folderInputLabel());
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
                 label.setEmptyText(labels.folderInputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.folderInputExcludeArgument())).toSafeHtml());
                 break;
             case MultiFileSelector:
                 argLabelLabel.setText(labels.multiFileInputLabel());
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.multiFileInputFileInfoType());
                 label.setEmptyText(labels.multiFileInputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.multiFileInputExcludeArgument())).toSafeHtml());
@@ -625,7 +625,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case FileOutput:
                 argLabelLabel.setText(labels.fileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
                 label.setEmptyText(labels.fileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
@@ -635,7 +635,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case FolderOutput:
                 argLabelLabel.setText(labels.folderOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
                 label.setEmptyText(labels.folderOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
@@ -645,7 +645,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case MultiFileOutput:
                 argLabelLabel.setText(labels.multiFileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.multiFileInputFileInfoType());
                 label.setEmptyText(labels.multiFileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
