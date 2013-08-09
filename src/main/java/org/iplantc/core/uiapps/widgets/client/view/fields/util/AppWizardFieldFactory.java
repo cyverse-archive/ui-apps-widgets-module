@@ -159,7 +159,11 @@ public class AppWizardFieldFactory {
 
             case MultiFileSelector:
                 MultiFileSelectorField awMultFileSel = new MultiFileSelectorField();
-                awMultFileSel.setEmptyText(labels.multiFileWidgetEmptyText());
+                if (editingMode) {
+                    awMultFileSel.setEmptyText(labels.multiFileWidgetEmptyEditText());
+                } else {
+                    awMultFileSel.setEmptyText(labels.multiFileWidgetEmptyText());
+                }
                 if (editingMode) {
                     awMultFileSel.disableAddDeleteButtons();
                 }
@@ -173,7 +177,11 @@ public class AppWizardFieldFactory {
 
             case Text:
                 ConverterFieldAdapter<String, TextField> textCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
-                tf.setEmptyText(labels.textInputWidgetEmptyText());
+                if (editingMode) {
+                    tf.setEmptyText(labels.textInputWidgetEmptyEditText());
+                } else {
+                    tf.setEmptyText(labels.textInputWidgetEmptyText());
+                }
                 field = textCfa;
                 if (!editingMode || isDefault) {
                     tf.addValidator(new CmdLineArgCharacterValidator());
@@ -183,7 +191,11 @@ public class AppWizardFieldFactory {
 
             case EnvironmentVariable:
                 ConverterFieldAdapter<String, TextField> envCfa = new ConverterFieldAdapter<String, TextField>(tf, new SplittableToStringConverter());
-                tf.setEmptyText(labels.envVarWidgetEmptyText());
+                if (editingMode) {
+                    tf.setEmptyText(labels.envVarWidgetEmptyEditText());
+                } else {
+                    tf.setEmptyText(labels.envVarWidgetEmptyText());
+                }
                 field = envCfa;
                 if (!editingMode || isDefault) {
                     envCfa.addValidator(new CmdLineArgCharacterValidator());
@@ -194,7 +206,11 @@ public class AppWizardFieldFactory {
             case MultiLineText:
                 TextArea textArea = new TextArea();
                 ConverterFieldAdapter<String, TextArea> mltCfa = new ConverterFieldAdapter<String, TextArea>(textArea, new SplittableToStringConverter());
-                textArea.setEmptyText(labels.textInputWidgetEmptyText());
+                if (editingMode) {
+                    textArea.setEmptyText(labels.textInputWidgetEmptyEditText());
+                } else {
+                    textArea.setEmptyText(labels.textInputWidgetEmptyText());
+                }
                 field = mltCfa;
                 if (!editingMode || isDefault) {
                     textArea.addValidator(new CmdLineArgCharacterValidator(true));
@@ -204,7 +220,11 @@ public class AppWizardFieldFactory {
 
             case Double:
                 ConverterFieldAdapter<Double, SpinnerField<Double>> dblCfa = new ConverterFieldAdapter<Double, SpinnerField<Double>>(dblSpinnerField, new SplittableToDoubleConverter());
-                dblSpinnerField.setEmptyText(labels.doubleInputWidgetEmptyText());
+                if (editingMode) {
+                    dblSpinnerField.setEmptyText(labels.doubleInputWidgetEmptyEditText());
+                } else {
+                    dblSpinnerField.setEmptyText(labels.doubleInputWidgetEmptyText());
+                }
                 field = dblCfa;
                 if (!editingMode || isDefault) {
                     applyDoubleValidators(argument, dblCfa);
@@ -213,7 +233,11 @@ public class AppWizardFieldFactory {
 
             case Integer:
                 ConverterFieldAdapter<Integer, SpinnerField<Integer>> intCfa = new ConverterFieldAdapter<Integer, SpinnerField<Integer>>(intSpinnerField, new SplittableToIntegerConverter());
-                intSpinnerField.setEmptyText(labels.integerInputWidgetEmptyText());
+                if (editingMode) {
+                    intSpinnerField.setEmptyText(labels.integerInputWidgetEmptyEditText());
+                } else {
+                    intSpinnerField.setEmptyText(labels.integerInputWidgetEmptyText());
+                }
                 field = intCfa;
                 if (!editingMode || isDefault) {
                     applyIntegerValidators(argument, intCfa);

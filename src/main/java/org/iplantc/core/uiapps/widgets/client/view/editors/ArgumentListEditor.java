@@ -242,17 +242,18 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 }
                 listEditor.getList().remove(currentItemIndex);
 
-                /*
-                 * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers that
-                 * the selection should be cleared, or the previous argument selected, if possible.
-                 */
                 if (!listEditor.getList().isEmpty()) {
                     int index = (currentItemIndex > 0) ? currentItemIndex - 1 : 0;
                     ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
+                    toBeSelected.addStyleName(presenter.getAppearance().getStyle().argumentSelect());
                 } else {
                     /*
                      * JDS If the ArgumentGroup is empty after performing remove, add the empty group
+                     * 
+                     * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers
+                     * that
+                     * the selection should be cleared, or the previous argument selected, if possible. *
                      * argument.
                      */
                     listEditor.getList().add(AppTemplateUtils.getEmptyGroupArgument());

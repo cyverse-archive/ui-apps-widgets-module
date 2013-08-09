@@ -194,6 +194,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                     int index = (indexRemoved > 0) ? indexRemoved - 1 : 0;
                     ArgumentGroupEditor toBeSelected = editor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(toBeSelected.getPropertyEditor()));
+                    toBeSelected.addStyleName(presenter.getAppearance().getStyle().appHeaderSelect());
                 } else {
                     presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(null));
 

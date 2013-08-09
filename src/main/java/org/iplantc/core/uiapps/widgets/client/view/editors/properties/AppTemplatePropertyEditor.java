@@ -58,10 +58,13 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
         toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(presenter.getAppearance().getPropertyPanelLabels().toolUsedLabel(),
                 presenter.getAppearance().getContextHelpMessages().appToolUsed()));
-        new QuickTip(toolLabel);
+        QuickTip quickTip = new QuickTip(toolLabel);
+        quickTip.getToolTipConfig().setDismissDelay(0);
         name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
         name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         name.addValidator(new DiskResourceNameValidator());
+        description.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
+        description.addKeyDownHandler(new PreventEntryAfterLimitHandler(description));
     }
 
     @UiFactory

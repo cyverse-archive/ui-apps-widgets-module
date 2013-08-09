@@ -150,7 +150,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
          * together.
          */
         initWidget(BINDER.createAndBindUi(this));
-        new QuickTip(this);
+        QuickTip quickTip = new QuickTip(this);
+        quickTip.getToolTipConfig().setDismissDelay(0);
     }
 
     @UiFactory
@@ -516,15 +517,22 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         visible.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isVisible()).toSafeHtml());
         requiredEditor.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isRequired()).toSafeHtml());
 
-        new QuickTip(descriptionLabel);
-        new QuickTip(nameLabel);
-        new QuickTip(fileInfoTypeLabel);
-        new QuickTip(argLabelLabel);
-        new QuickTip(listSelectionLabel);
-        new QuickTip(selectionItemDefaultValueLabel);
-        new QuickTip(dataSourceLabel);
-        new QuickTip(omitIfBlank);
-        new QuickTip(isImplicit);
+        QuickTip descQt = new QuickTip(descriptionLabel);
+        QuickTip nameQt = new QuickTip(nameLabel);
+        QuickTip argLabelQt = new QuickTip(argLabelLabel);
+        QuickTip listSelectionQt = new QuickTip(listSelectionLabel);
+        QuickTip selectionItemDefQt = new QuickTip(selectionItemDefaultValueLabel);
+        QuickTip dataSourceQt = new QuickTip(dataSourceLabel);
+        QuickTip omitQT = new QuickTip(omitIfBlank);
+        QuickTip isImplicitQt = new QuickTip(isImplicit);
+        descQt.getToolTipConfig().setDismissDelay(0);
+        nameQt.getToolTipConfig().setDismissDelay(0);
+        argLabelQt.getToolTipConfig().setDismissDelay(0);
+        listSelectionQt.getToolTipConfig().setDismissDelay(0);
+        selectionItemDefQt.getToolTipConfig().setDismissDelay(0);
+        dataSourceQt.getToolTipConfig().setDismissDelay(0);
+        omitQT.getToolTipConfig().setDismissDelay(0);
+        isImplicitQt.getToolTipConfig().setDismissDelay(0);
 
         // JDS Change field labels based on Type
         switch (type) {

@@ -10,6 +10,7 @@ import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
 
 import com.google.common.collect.Lists;
@@ -33,6 +34,7 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 
 /**
  * @author jstroot
@@ -89,7 +91,11 @@ public class LaunchAnalysisWidget implements IsWidget, Editor<JobExecution> {
         res.css().ensureInjected();
         BINDER.createAndBindUi(this);
         name.addValidator(new DiskResourceNameValidator());
+        name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
+        name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         name.setAllowBlank(false);
+        description.addKeyDownHandler(new PreventEntryAfterLimitHandler(description));
+        description.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         outputDirectory = new ConverterEditorAdapter<String, HasId, FolderSelectorField>(awFolderSel, new Converter<String, HasId>() {
             @Override
             public String convertFieldValue(HasId object) {

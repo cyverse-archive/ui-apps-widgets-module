@@ -119,7 +119,8 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         cascadeOptionsCombo.setValue(CheckCascade.TRI);
         cascadeOptionsCombo.addSelectionHandler(new CascadeOptionsComboSelectionHandler());
 
-        new QuickTip(treeGridLabel);
+        QuickTip quickTip = new QuickTip(treeGridLabel);
+        quickTip.getToolTipConfig().setDismissDelay(0);
         treeGridLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.treeSelectionCreateLabel(), help.treeSelectionCreateTree()));
         initDragNDrop();
     }

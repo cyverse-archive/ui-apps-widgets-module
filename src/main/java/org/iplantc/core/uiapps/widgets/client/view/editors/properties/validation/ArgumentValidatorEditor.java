@@ -109,7 +109,8 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         });
         validators = new ListStoreEditor<ArgumentValidator>(validatorStore);
         supportedValidatorTypes = Sets.newHashSet();
-        new QuickTip(validatorEditorLabel);
+        QuickTip quickTip = new QuickTip(validatorEditorLabel);
+        quickTip.getToolTipConfig().setDismissDelay(0);
 
     }
 

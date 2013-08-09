@@ -62,7 +62,8 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
         propertyLabel = new FieldLabel();
         propertyLabel.setLabelAlign(LabelAlign.TOP);
         initWidget(propertyLabel);
-        new QuickTip(propertyLabel);
+        QuickTip quickTip = new QuickTip(propertyLabel);
+        quickTip.getToolTipConfig().setDismissDelay(0);
     }
 
     @Override
