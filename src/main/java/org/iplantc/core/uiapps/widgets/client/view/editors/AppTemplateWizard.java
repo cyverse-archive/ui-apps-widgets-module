@@ -168,6 +168,10 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         return cleaned;
     }
 
+    public AppTemplate flushAppTemplateRaw() {
+        return editorDriver.flush();
+    }
+
     @Override
     public void onArgumentPropertyValueChange() {
         AppTemplate atTmp = flushAppTemplate();
