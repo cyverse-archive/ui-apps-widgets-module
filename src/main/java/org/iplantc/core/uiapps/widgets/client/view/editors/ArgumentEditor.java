@@ -148,9 +148,6 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             }
         }
 
-        if (value == AppTemplateUtils.getEmptyGroupArgument()) {
-        }
-
         this.model = value;
     }
 

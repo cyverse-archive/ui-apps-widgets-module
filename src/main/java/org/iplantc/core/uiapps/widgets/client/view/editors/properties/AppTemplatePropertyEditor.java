@@ -32,6 +32,9 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     interface AppTemplatePropertyEditorUiBinder extends UiBinder<Widget, AppTemplatePropertyEditor> {}
 
     @UiField
+    ContentPanel cp; 
+    
+    @UiField
     FieldLabel toolLabel, appNameLabel;
 
     @Ignore
@@ -95,6 +98,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
             toolLabel.disable();
             appNameLabel.disable();
         }
+        
+        cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(value.getName()));
     }
 
     @Override

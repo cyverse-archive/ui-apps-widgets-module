@@ -273,17 +273,20 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                         boolean isCp = findWidget instanceof ContentPanel;
                         if (isCp && ((ContentPanel)findWidget).getHeader().getElement().isOrHasChild(as)) {
                             final ContentPanel cp = (ContentPanel)findWidget;
-                            header = cp.getHeader();
-                            // JDS Kick off timer for autoExpand of
-                            Timer t = new Timer() {
-                                @Override
-                                public void run() {
-                                    if (cp.getHeader() == header) {
-                                        container.setActiveWidget(cp);
-                                    }
-                                }
-                            };
-                            t.schedule(presenter.getAppearance().getAutoExpandOnHoverDelay());
+                            if(cp.isCollapsed()){
+                            	header = cp.getHeader();
+                            	// JDS Kick off timer for autoExpand of ArgumentGroup content panel
+                            	Timer t = new Timer() {
+                            		@Override
+                            		public void run() {
+                            			if ((cp.getHeader() == header) && cp.isCollapsed()) {
+                            				container.setActiveWidget(cp);
+                            			}
+                            		}
+                            	};
+                            	t.schedule(presenter.getAppearance().getAutoExpandOnHoverDelay());
+                            	
+                            }
                         } else {
                             header = null;
                         }

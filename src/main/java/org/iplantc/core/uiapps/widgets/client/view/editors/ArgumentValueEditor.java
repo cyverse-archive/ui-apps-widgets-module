@@ -12,6 +12,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.AppWizardFieldFactory;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
@@ -120,11 +121,15 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             propertyLabel.setHTML("");
             propertyLabel.setLabelSeparator("");
             ((CheckBoxAdapter)subEditor.asWidget()).setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(fieldLabelText).toSafeHtml());
-        } else {
-            propertyLabel.setHTML(fieldLabelText);
-            if (model.getType().equals(ArgumentType.Info)) {
-                propertyLabel.setLabelSeparator("");
-            }
+        } else if(model.getType().equals(ArgumentType.Info)){
+        	propertyLabel.setHTML(fieldLabelText);
+        	propertyLabel.setLabelSeparator("");
+        	if(model.getId().equals(AppTemplateUtils.EMPTY_GROUP_ARG_ID)){
+        		propertyLabel.getElement().getStyle().setMarginTop(100, Unit.PX);
+        		propertyLabel.getElement().getStyle().setMarginBottom(100, Unit.PX);
+        	}
+        }else {
+        	propertyLabel.setHTML(fieldLabelText);
         }
 
     }

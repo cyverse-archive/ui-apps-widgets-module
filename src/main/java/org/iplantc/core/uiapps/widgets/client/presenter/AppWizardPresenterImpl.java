@@ -5,6 +5,7 @@ import java.util.List;
 import org.iplantc.core.resources.client.constants.IplantValidationConstants;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsErrorMessages;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
@@ -16,6 +17,9 @@ import org.iplantc.core.uiapps.widgets.client.view.AppWizardView;
 import org.iplantc.core.uiapps.widgets.client.view.AppWizardViewImpl;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.presenter.Presenter;
@@ -45,6 +49,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
     private final AppMetadataServiceFacade appMetadataService;
     private final UUIDServiceAsync uuidService;
     private final AppsWidgetsDisplayMessages appsWidgetsDisplayMessages;
+    private final AppsWidgetsErrorMessages appsWidgetsErrMessages;
     
     /**
      * Class constructor.
@@ -63,6 +68,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         this.userSettings = UserSettings.getInstance();
         this.userInfo = UserInfo.getInstance();
         this.appsWidgetsDisplayMessages = GWT.create(AppsWidgetsDisplayMessages.class);
+        this.appsWidgetsErrMessages = GWT.create(AppsWidgetsErrorMessages.class);
         this.valConstants = GWT.create(IplantValidationConstants.class);
     }
     
@@ -102,6 +108,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
             @Override
             public void onSuccess(String result) {
+                IplantAnnouncer.getInstance().schedule(new SuccessAnnouncementConfig(appsWidgetsDisplayMessages.launchAnalysisSuccess(je.getName())));
                 for (AnalysisLaunchEventHandler handler : analysisLaunchHandlers) {
                     handler.onAnalysisLaunch(new AnalysisLaunchEvent(at));
                 }
@@ -109,6 +116,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
 
             @Override
             public void onFailure(Throwable caught) {
+                IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig(appsWidgetsErrMessages.launchAnalysisFailure(je.getName())));
                 ErrorHandler.post(I18N.ERROR.analysisFailedToLaunch(at.getName()), caught);
             }
         });

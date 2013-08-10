@@ -11,6 +11,7 @@ import com.sencha.gxt.widget.core.client.form.AdapterField;
 public class CheckBoxAdapter extends AdapterField<Boolean> implements ValueAwareEditor<Boolean>, HasValueChangeHandlers<Boolean> {
 
     private final CheckBox cb;
+    private boolean negated = false;
 
     public CheckBoxAdapter() {
         this(new CheckBox());
@@ -21,14 +22,28 @@ public class CheckBoxAdapter extends AdapterField<Boolean> implements ValueAware
         this.cb = cb;
     }
 
+    public boolean isNegated() {
+        return negated;
+    }
+
+    public void setNegated(boolean negated) {
+        this.negated = negated;
+    }
+
     @Override
     public void setValue(Boolean value) {
-        cb.setValue(value);
+        if (value == null) {
+            cb.setValue(Boolean.FALSE);
+        } else {
+            boolean toSet = negated != value;
+            cb.setValue(toSet);
+        }
     }
 
     @Override
     public Boolean getValue() {
-        return cb.getValue();
+        boolean toGet = negated != cb.getValue();
+        return toGet;
     }
 
     public void setText(String text) {

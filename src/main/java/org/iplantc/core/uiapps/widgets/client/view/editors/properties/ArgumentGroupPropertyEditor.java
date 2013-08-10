@@ -27,6 +27,9 @@ public class ArgumentGroupPropertyEditor extends Composite implements ValueAware
 
     interface ArgumentGroupPropertyEditorUiBinder extends UiBinder<Widget, ArgumentGroupPropertyEditor> {}
 
+    @UiField 
+    ContentPanel cp;
+    
     @UiField
     TextField label;
 
@@ -60,10 +63,15 @@ public class ArgumentGroupPropertyEditor extends Composite implements ValueAware
 
     @Override
     public void setValue(ArgumentGroup value) {
+    	if(value == null){
+    		return;
+    	}
+    	
         this.model = value;
         if (presenter.isOnlyLabelEditMode()) {
             deleteButton.disable();
         }
+        cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(value.getLabel()));
     }
 
     @Override

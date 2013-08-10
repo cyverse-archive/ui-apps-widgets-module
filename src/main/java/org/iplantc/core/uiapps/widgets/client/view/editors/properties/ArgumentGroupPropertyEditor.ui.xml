@@ -22,7 +22,7 @@
         <ui:attributes width="1" height="-1" />
     </ui:with>
              
-    <gxt:ContentPanel headingText="{labels.detailsPanelHeader}">
+    <gxt:ContentPanel ui:field="cp">
         <gxt:child layoutData="{marginData}">
             <con:VerticalLayoutContainer scrollMode="AUTOY"
                                          adjustForScroll="true">

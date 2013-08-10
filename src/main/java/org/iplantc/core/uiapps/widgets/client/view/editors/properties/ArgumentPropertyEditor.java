@@ -68,10 +68,17 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     private static ArgumentPropertyBaseUiBinder BINDER = GWT.create(ArgumentPropertyBaseUiBinder.class);
 
     @UiField
+    ContentPanel cp;
+    
+    @UiField
     VerticalLayoutContainer con;
 
     @UiField
-    CheckBoxAdapter requiredEditor, omitIfBlank, visible;
+    CheckBoxAdapter requiredEditor, omitIfBlank;
+
+    @Path("visible")
+    @UiField
+    CheckBoxAdapter doNotDisplay;
 
     @Ignore
     @UiField
@@ -234,28 +241,26 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
      * JDS The following UI Handlers are necessary to inform the presenter that values have changed.
      * This has the effect of propagating data back and forth through the editor hierarchy.
      */
-    @UiHandler({"requiredEditor", "omitIfBlank", "visible", "isImplicit"})
+    @UiHandler({"requiredEditor", "omitIfBlank", "doNotDisplay", "isImplicit"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
         if (event.getSource() == requiredEditor) {
             if (event.getValue()) {
                 omitIfBlank.setValue(false);
-                // omitIfBlank.disable();
                 omitIfBlank.setEnabled(false);
             } else {
                 omitIfBlank.setEnabled(true);
-                // omitIfBlank.enable();
             }
         }
-        if (event.getSource() == visible) {
+        if (event.getSource() == doNotDisplay) {
             updateDisplayInGuiVisibilities(event.getValue());
         }
         presenter.onArgumentPropertyValueChange(event.getSource());
         
     }
 
-    private void updateDisplayInGuiVisibilities(boolean displayInGui) {
-        // If the "Display in GUI" checkbox is not selected
-        if (!displayInGui) {
+    private void updateDisplayInGuiVisibilities(boolean doNotDisplayInGui) {
+        // If the "Do not display in GUI" checkbox is selected
+        if (doNotDisplayInGui) {
             // Clear the "require user input" checkbox
             requiredEditor.setValue(false);
 
@@ -272,9 +277,10 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 selectionItemTreeEditor.setVisible(false);
             }
         } else {
-            omitIfBlank.setVisible(true);
-            // omitIfBlank.enable();
-            omitIfBlank.setEnabled(true);
+            if ((model != null) && !model.getType().equals(ArgumentType.EnvironmentVariable)) {
+                omitIfBlank.setVisible(true);
+                omitIfBlank.setEnabled(true);
+            }
 
             requiredEditor.setVisible(true);
             descriptionLabel.setVisible(true);
@@ -428,14 +434,14 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case Selection:
                 case ValueSelection:
                 case TreeSelection:
-                    visible.setVisible(false);
-                    nameLabel.disable();
+                    doNotDisplay.setVisible(false);
+                    nameLabel.setVisible(false);
                     break;
 
                 case Info:
                     requiredEditor.setVisible(false);
                     omitIfBlank.setVisible(false);
-                    visible.setVisible(false);
+                    doNotDisplay.setVisible(false);
                     descriptionLabel.setVisible(false);
                     nameLabel.setVisible(false);
                     break;
@@ -449,15 +455,21 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case FileInput:
                 case FolderInput:
                 case MultiFileSelector:
-                    visible.setVisible(false);
+                    doNotDisplay.setVisible(false);
+                    break;
+
+                case FolderOutput:
+                case MultiFileOutput:
+                    dataSourceLabel.setVisible(false);
+                    break;
+
+                case EnvironmentVariable:
+                    omitIfBlank.setVisible(false);
                     break;
 
                 case Output:
                 case FileOutput:
-                case FolderOutput:
-                case MultiFileOutput:
                 case Double:
-                case EnvironmentVariable:
                 case Group:
                 case Integer:
                 case MultiLineText:
@@ -466,8 +478,6 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 default:
                     break;
             }
-
-
 
             if (presenter.isOnlyLabelEditMode()) {
                 // Disable all controls, then re-enable valid controls
@@ -486,9 +496,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
         this.model = value;
         if (!isInfoType) {
-            updateDisplayInGuiVisibilities(model.isVisible());
+            updateDisplayInGuiVisibilities(!model.isVisible());
         }
-
+        cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(model.getLabel()));
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
             selectionItemDefaultValue.setValue(model);
@@ -512,9 +522,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         AppsWidgetsPropertyPanelLabels labels = presenter.getAppearance().getPropertyPanelLabels();
         AppsWidgetsContextualHelpMessages help = presenter.getAppearance().getContextHelpMessages();
 
+        
         descriptionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.toolTipText(), help.toolTip()));
         nameLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.argumentOption(), help.argumentOption()));
-        visible.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isVisible()).toSafeHtml());
+        doNotDisplay.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.doNotDisplay()).toSafeHtml());
+
         requiredEditor.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isRequired()).toSafeHtml());
 
         QuickTip descQt = new QuickTip(descriptionLabel);

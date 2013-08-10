@@ -78,9 +78,6 @@ public interface AppTemplateWizardAppearance {
         Style css();
     }
 
-    /**
-     * @return 400
-     */
     int getAutoExpandOnHoverDelay();
 
     int getAutoScrollDelay();
@@ -89,24 +86,11 @@ public interface AppTemplateWizardAppearance {
 
     int getAutoScrollRepeatDelay();
 
-    /**
-     * @return 200
-     */
     int getDefaultArgListHeight();
 
-    /**
-     * IconButton argDeleteBtn = new IconButton(new IconConfig(res.argumentListEditorCss().delete(),
-     * res.argumentListEditorCss().deleteHover()));
-     * 
-     * @return
-     */
     IconButton getArgListDeleteButton();
 
     /**
-     * headerErrorIcon = Document.get().createImageElement();
-     * 
-     * headerErrorIcon.setSrc(IplantResources.RESOURCES.exclamation().getSafeUri().asString());
-     * 
      * @return returns a freshly constructed Error ImageElement.
      */
     ImageElement getErrorIconImg();

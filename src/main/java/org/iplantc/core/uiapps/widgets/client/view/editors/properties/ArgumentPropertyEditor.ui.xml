@@ -38,7 +38,7 @@
                        margins="{marginsBottom}"/>
     </ui:with>
  
-    <gxt:ContentPanel headingText="{labels.detailsPanelHeader}">
+    <gxt:ContentPanel ui:field="cp">
 	    <con:VerticalLayoutContainer ui:field="con" 
 	                                 scrollMode="AUTOY"
 	                                 adjustForScroll="true">
@@ -79,7 +79,8 @@
 	        </con:child>                
 
 	        <con:child layoutData="{fieldLayoutData}">
-	            <fields:CheckBoxAdapter ui:field="visible"/>
+	            <fields:CheckBoxAdapter ui:field="doNotDisplay"
+	                                    negated="true"/>
 	        </con:child>
 	        <con:child layoutData="{fieldLayoutData}">
 	            <fields:CheckBoxAdapter ui:field="requiredEditor"/>
