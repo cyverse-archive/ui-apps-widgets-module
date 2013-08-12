@@ -42,6 +42,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
@@ -217,7 +218,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             public void onSuccess(List<DataSource> result) {
                 if (store.getAll().isEmpty()) {
                     store.addAll(result);
-                    store.addSortInfo(new StoreSortInfo<DataSource>(props.labelValue(), SortDir.ASC));
+                    store.addSortInfo(new StoreSortInfo<DataSource>(props.type(), SortDir.ASC));
                 }
             }
 
@@ -226,7 +227,13 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 ErrorHandler.post(caught);
             }
         });
-        ComboBox<DataSource> comboBox = new ComboBox<DataSource>(store, props.label());
+        ComboBox<DataSource> comboBox = new ComboBox<DataSource>(store, new LabelProvider<DataSource>() {
+
+            @Override
+            public String getLabel(DataSource src) {
+                return src.getType().getLabel();
+            }
+        });
         comboBox.setTriggerAction(TriggerAction.ALL);
         comboBox.addValueChangeHandler(new ValueChangeHandler<DataSource>() {
             @Override
