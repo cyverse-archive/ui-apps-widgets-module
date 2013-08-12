@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
@@ -62,7 +63,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
     private Argument model;
 
-    private final AppsWidgetsDisplayMessages appsWidgetsMessages = GWT.create(AppsWidgetsDisplayMessages.class);
+    private final AppsWidgetsDisplayMessages appsWidgetsMessages = I18N.APPS_MESSAGES;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
 
     @UiConstructor

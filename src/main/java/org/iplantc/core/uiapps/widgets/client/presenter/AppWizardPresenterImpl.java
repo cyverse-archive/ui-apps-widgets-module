@@ -67,7 +67,7 @@ public class AppWizardPresenterImpl implements AppWizardView.Presenter {
         this.atServices = GWT.create(AppTemplateServices.class);
         this.userSettings = UserSettings.getInstance();
         this.userInfo = UserInfo.getInstance();
-        this.appsWidgetsDisplayMessages = GWT.create(AppsWidgetsDisplayMessages.class);
+        this.appsWidgetsDisplayMessages = I18N.APPS_MESSAGES;
         this.appsWidgetsErrMessages = GWT.create(AppsWidgetsErrorMessages.class);
         this.valConstants = GWT.create(IplantValidationConstants.class);
     }

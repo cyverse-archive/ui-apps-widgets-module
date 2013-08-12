@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.util;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
@@ -65,7 +66,7 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 public class AppWizardFieldFactory {
 
     private static ListStore<ReferenceGenome> refGenStore = null;
-    private static final AppsWidgetsPropertyPanelLabels labels = GWT.create(AppsWidgetsPropertyPanelLabels.class);
+    private static final AppsWidgetsPropertyPanelLabels labels = I18N.APPS_LABELS;
 
     /**
      * Returns an {@link Editor} which contains sub-editors which are bound to an {@link Argument}'s

@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
@@ -38,9 +39,9 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     public AppTemplateWizardAppearanceImpl() {
         res = GWT.create(Resources.class);
         templates = GWT.create(AppTemplateWizardTemplates.class);
-        labels = GWT.create(AppsWidgetsPropertyPanelLabels.class);
-        help = GWT.create(AppsWidgetsContextualHelpMessages.class);
-        appsWidgetsMessages = GWT.create(AppsWidgetsDisplayMessages.class);
+        labels = I18N.APPS_LABELS;
+        help = I18N.APPS_HELP;
+        appsWidgetsMessages = I18N.APPS_MESSAGES;
     }
 
     @Override
