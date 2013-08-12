@@ -59,6 +59,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
 
+        cp.setHeaderVisible(false);
         toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(presenter.getAppearance().getPropertyPanelLabels().toolUsedLabel(),
                 presenter.getAppearance().getContextHelpMessages().appToolUsed()));
         QuickTip quickTip = new QuickTip(toolLabel);

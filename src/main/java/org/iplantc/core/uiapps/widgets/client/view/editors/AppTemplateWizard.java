@@ -25,6 +25,8 @@ import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
@@ -35,11 +37,19 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.Header;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.AddEvent;
+import com.sencha.gxt.widget.core.client.event.AddEvent.AddHandler;
+import com.sencha.gxt.widget.core.client.event.CollapseEvent;
+import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
@@ -58,28 +68,8 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
  * @author jstroot
  * 
  */
-public class AppTemplateWizard extends Composite implements HasPropertyEditor, ValueAwareEditor<AppTemplate>, AppTemplateWizardPresenter {
+public class AppTemplateWizard extends Composite implements ValueAwareEditor<AppTemplate>, AppTemplateWizardPresenter {
     
-    private final class SelectionHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler {
-        private final Header header;
-        private final AppTemplateWizardAppearance.Style style;
-
-        public SelectionHandler(Header header, AppTemplateWizardAppearance.Style style) {
-            this.header = header;
-            this.style = style;
-        }
-
-        @Override
-        public void onArgumentSelected(ArgumentSelectedEvent event) {
-            header.removeStyleName(style.appHeaderSelect());
-        }
-
-        @Override
-        public void onArgumentGroupSelected(ArgumentGroupSelectedEvent event) {
-            header.removeStyleName(style.appHeaderSelect());
-        }
-    }
-
     interface EditorDriver extends SimpleBeanEditorDriver<AppTemplate, AppTemplateWizard> {}
     private final EditorDriver editorDriver = GWT.create(EditorDriver.class);
     
@@ -103,33 +93,39 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
         this.editingMode = editingMode;
         argumentGroups = new ArgumentGroupListEditor(this, uuidService, appMetadataService);
 
+        final VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        vlc.setScrollMode(ScrollMode.AUTOY);
+        vlc.setAdjustForScroll(true);
         ContentPanelAppearance cpAppearance;
         if (editingMode) {
             cpAppearance = new AppGroupContentPanelAppearance();
         } else {
             cpAppearance = GWT.create(ContentPanelAppearance.class);
         }
-        con = new ContentPanel(cpAppearance) {
-            @Override
-            protected void onClick(Event ce) {
-                XElement element = XElement.as(header.getElement());
-                if (element.isOrHasChild(ce.getEventTarget().<Element> cast())) {
-                    AppTemplateWizard.this.fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
-                    getHeader().addStyleName(AppTemplateWizard.this.appearance.getStyle().appHeaderSelect());
-                }
-            }
-        };
-        con.add(argumentGroups);
+        con = new AppTemplateContentPanel(cpAppearance);
+        ExpandCollapseHander expandCollapseHandler = new ExpandCollapseHander(vlc);
+        con.addExpandHandler(expandCollapseHandler);
+        con.addCollapseHandler(expandCollapseHandler);
+        argumentGroups.addCollapseHandler(expandCollapseHandler);
+        argumentGroups.addExpandHandler(expandCollapseHandler);
+        argumentGroups.addAddHandler(expandCollapseHandler);
+
+        vlc.add(argumentGroups);
 
         if (editingMode) {
             appTemplatePropEditor = new AppTemplatePropertyEditor(this);
+            con.add(appTemplatePropEditor);
+            vlc.insert(con, 0);
+            con.setCollapsible(true);
+            con.setAnimCollapse(false);
+            con.setTitleCollapse(true);
             con.getHeader().addStyleName(appearance.getStyle().appHeaderSelect());
             con.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS);
         } else {
             con.setHeaderVisible(false);
         }
 
-        initWidget(con);
+        initWidget(vlc);
         editorDriver.initialize(this);
 
         SelectionHandler selectionHandler = new SelectionHandler(con.getHeader(), appearance.getStyle());
@@ -149,7 +145,7 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
      */
     public void edit(AppTemplate apptemplate) {
         editorDriver.edit(apptemplate);
-        fireEvent(new AppTemplateSelectedEvent(appTemplatePropEditor));
+        fireEvent(new AppTemplateSelectedEvent(null));
     }
 
     /**
@@ -218,11 +214,6 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
             labelText.append(appearance.createContentPanelHeaderLabel(SafeHtmlUtils.fromString(value.getName()), false));
             con.setHeadingHtml(labelText.toSafeHtml());
         }
-    }
-
-    @Override
-    public IsWidget getPropertyEditor() {
-        return appTemplatePropEditor;
     }
 
     @Override
@@ -302,5 +293,75 @@ public class AppTemplateWizard extends Composite implements HasPropertyEditor, V
     @Override
     public AppTemplateWizardAppearance getAppearance() {
         return appearance;
+    }
+
+    
+    private final class AppTemplateContentPanel extends ContentPanel {
+        private AppTemplateContentPanel(ContentPanelAppearance appearance) {
+            super(appearance);
+        }
+
+        @Override
+        protected void onClick(Event ce) {
+            XElement element = XElement.as(header.getElement());
+            if (element.isOrHasChild(ce.getEventTarget().<Element> cast())) {
+                AppTemplateWizard.this.fireEvent(new AppTemplateSelectedEvent(null));
+                getHeader().addStyleName(AppTemplateWizard.this.appearance.getStyle().appHeaderSelect());
+            }
+            super.onClick(ce);
+        }
+    }
+
+    private final class ExpandCollapseHander implements ExpandHandler, CollapseHandler, AddHandler {
+        private final VerticalLayoutContainer vlc;
+    
+        private ExpandCollapseHander(VerticalLayoutContainer vlc) {
+            this.vlc = vlc;
+        }
+    
+        @Override
+        public void onExpand(ExpandEvent event) {
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    vlc.forceLayout();
+                }
+            });
+        }
+    
+        @Override
+        public void onCollapse(CollapseEvent event) {
+            vlc.forceLayout();
+        }
+    
+        @Override
+        public void onAdd(AddEvent event) {
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    vlc.forceLayout();
+                }
+            });
+        }
+    }
+
+    private final class SelectionHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler {
+        private final Header header;
+        private final AppTemplateWizardAppearance.Style style;
+    
+        public SelectionHandler(Header header, AppTemplateWizardAppearance.Style style) {
+            this.header = header;
+            this.style = style;
+        }
+    
+        @Override
+        public void onArgumentSelected(ArgumentSelectedEvent event) {
+            header.removeStyleName(style.appHeaderSelect());
+        }
+    
+        @Override
+        public void onArgumentGroupSelected(ArgumentGroupSelectedEvent event) {
+            header.removeStyleName(style.appHeaderSelect());
+        }
     }
 }

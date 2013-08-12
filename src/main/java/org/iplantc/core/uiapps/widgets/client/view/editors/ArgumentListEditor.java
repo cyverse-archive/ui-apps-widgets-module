@@ -20,8 +20,6 @@ import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.Editor.Ignore;
@@ -47,9 +45,7 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.AddEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.AddEvent.AddHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 /**
@@ -61,7 +57,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
  * @author jstroot
  * 
  */
-class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, ArgumentEditor>>, AddHandler {
+class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, ArgumentEditor>> {
     private final VerticalLayoutContainer argumentsContainer;
 
     @Ignore
@@ -71,7 +67,6 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
 
     ArgumentListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService, final XElement scrollElement) {
         argumentsContainer = new VerticalLayoutContainer();
-        argumentsContainer.addAddHandler(this);
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(ScrollMode.AUTOY);
 
@@ -448,13 +443,14 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
 
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
+            con.forceLayout();
 
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
                 presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getPropertyEditor()));
                 subEditor.addStyleName(presenter.getAppearance().getStyle().argumentSelect());
             }
-            con.forceLayout();
+
             return subEditor;
         }
         
@@ -468,15 +464,4 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             con.insert(editor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
         }
     }
-
-	@Override
-	public void onAdd(final AddEvent event) {
-		Scheduler.get().scheduleFinally(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				event.getWidget().getElement().scrollIntoView();
-			}
-		});
-		
-	}
 }
