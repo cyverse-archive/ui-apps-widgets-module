@@ -57,7 +57,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * @author jstroot
  * 
  */
-public class AddValidatorDialog extends IPlantDialog implements ValidHandler, InvalidHandler {
+class AddValidatorDialog extends IPlantDialog implements ValidHandler, InvalidHandler {
 
     private static AddValidatorDialogUiBinder BINDER = GWT.create(AddValidatorDialogUiBinder.class);
 
@@ -102,7 +102,7 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
     /**
      * @param supportedValidatorTypes use these to construct content of the combo box
      */
-    public AddValidatorDialog(Set<ArgumentValidatorType> supportedValidatorTypes,
+    AddValidatorDialog(Set<ArgumentValidatorType> supportedValidatorTypes,
             ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
 
@@ -304,7 +304,7 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
      * 
      * @return
      */
-    public ArgumentValidator getArgumentValidator() {
+    ArgumentValidator getArgumentValidator() {
         Splittable params = StringQuoter.createIndexed();
 
         switch (validatorTypeCB.getCurrentValue()) {
@@ -394,7 +394,7 @@ public class AddValidatorDialog extends IPlantDialog implements ValidHandler, In
      * 
      * @param selectedItem
      */
-    public void setArgumentValidator(final ArgumentValidator av) {
+    void setArgumentValidator(final ArgumentValidator av) {
         // Set the combobox item and corresponding card.
         validatorTypeCB.setValue(av.getType(), true);
         cardLC.setActiveWidget(validatorTypeToCardMap.get(av.getType()));

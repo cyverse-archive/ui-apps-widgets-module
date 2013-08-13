@@ -46,10 +46,6 @@ public class AppGroupContentPanelAppearance extends ContentPanelBaseAppearance {
             super(resources, GWT.<Template> create(Template.class));
         }
 
-        public SelectableHeaderResources getResources() {
-            return resources;
-        }
-
     }
 
     @Override

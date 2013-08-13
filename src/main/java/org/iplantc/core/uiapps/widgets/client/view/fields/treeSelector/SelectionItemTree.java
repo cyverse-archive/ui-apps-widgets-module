@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
@@ -13,7 +14,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -23,6 +23,8 @@ import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
@@ -32,14 +34,15 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
  * @author psarando, jstroot
  * 
  */
-public class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueChangeHandlers<List<SelectionItem>> {
+class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueChangeHandlers<List<SelectionItem>> {
     private SelectionItemGroup root;
-    private Command updateCmd;
     private boolean forceSingleSelection = false;
     private boolean restoreCheckedSelectionFromTree;
+    private ToolTip CORE_4653 = null;
 
-    public SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
+    SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
         super(store, valueProvider);
+
 
         setBorders(true);
         setAutoLoad(true);
@@ -50,27 +53,29 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         addBeforeCheckChangeHandler(new BeforeCheckChangeHandler<SelectionItem>() {
             @Override
             public void onBeforeCheckChange(BeforeCheckChangeEvent<SelectionItem> event) {
-                if (forceSingleSelection) {
-                    if (event.getChecked() == CheckState.UNCHECKED) {
-                        boolean isGroup = event.getItem() instanceof SelectionItemGroup;
-                        boolean cascadeToChildren = getCheckStyle() == CheckCascade.TRI
-                                || getCheckStyle() == CheckCascade.CHILDREN;
+                if (!forceSingleSelection) {
+                    return;
+                }
 
-                        if (isGroup && cascadeToChildren) {
-                            // Do not allow groups to be checked if SingleSelection is enabled and
-                            // selections cascade to children.
-                            event.setCancelled(true);
-                            return;
-                        }
+                if (event.getChecked() == CheckState.UNCHECKED) {
+                    boolean isGroup = event.getItem() instanceof SelectionItemGroup;
+                    boolean cascadeToChildren = getCheckStyle() == CheckCascade.TRI || getCheckStyle() == CheckCascade.CHILDREN;
 
-                        List<SelectionItem> checked = getCheckedSelection();
+                    if (isGroup && cascadeToChildren) {
+                        // Do not allow groups to be checked if SingleSelection is enabled and
+                        // selections cascade to children.
+                        event.setCancelled(true);
+                        return;
+                    }
 
-                        if (checked != null && !checked.isEmpty()) {
-                            // uncheck all other selections first.
-                            setCheckedSelection(null);
-                        }
+                    List<SelectionItem> checked = getCheckedSelection();
+
+                    if (checked != null && !checked.isEmpty()) {
+                        // uncheck all other selections first.
+                        setCheckedSelection(null);
                     }
                 }
+
             }
         });
 
@@ -89,7 +94,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
                     ruleArg.setDefault(checked);
                 }
 
-                ValueChangeEvent.fire(SelectionItemTree.this, getStore().getAll());
+                // ValueChangeEvent.fire(SelectionItemTree.this, getStore().getAll());
             }
         });
     }
@@ -128,6 +133,9 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
     @Override
     protected void onCheckClick(Event event, TreeNode<SelectionItem> node) {
         if (getSelectionModel().isLocked()) {
+            if (CORE_4653 != null) {
+                CORE_4653.showAt(event.getClientX(), event.getClientY());
+            }
             return;
         }
         super.onCheckClick(event, node);
@@ -137,8 +145,6 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         // args to be submitted to the job, even when filtered out.
         SelectionItem ruleArg = node.getModel();
         ruleArg.setDefault(getChecked(ruleArg) != CheckState.UNCHECKED);
-
-        callCheckChangedUpdateCommand();
     }
 
     /**
@@ -146,8 +152,8 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
      * 
      * @param root A SelectionItemGroup containing the items to populate in this tree.
      */
-    public void setItems(SelectionItemGroup root) {
-        store.clear();
+    void setItems(SelectionItemGroup root) {
+        // store.clear();
         this.root = root;
 
         if (root == null) {
@@ -170,7 +176,8 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
 
         if (root.getArguments() != null) {
             for (SelectionItem ruleArg : root.getArguments()) {
-                store.add(ruleArg);
+                // store.add(ruleArg);
+                updateOrAdd(ruleArg);
 
                 if (restoreCheckedSelectionFromTree && ruleArg.isDefault()) {
                     defaultSelection.add(ruleArg);
@@ -197,6 +204,24 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         }
     }
 
+    private void updateOrAdd(SelectionItem item) {
+        SelectionItem findModelWithKey = store.findModelWithKey(item.getId());
+        if (findModelWithKey != null) {
+            store.update(item);
+        } else {
+            store.add(item);
+        }
+    }
+
+    private void updateOrAdd(SelectionItemGroup parent, SelectionItem child) {
+        SelectionItem findModelWithKey = store.findModelWithKey(child.getId());
+        if ((findModelWithKey != null) && (store.getParent(child) == parent)) {
+            store.update(child);
+        } else {
+            store.add(parent, child);
+        }
+    }
+
     /**
      * Adds the group to the parent, or as a root if parent is null, then adds group's children to the
      * store. Returns a list of any items that should be selected by default.
@@ -210,15 +235,18 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
 
         if (group != null) {
             if (parent != null) {
-                store.add(parent, group);
+                // store.add(parent, group);
+                updateOrAdd(parent, group);
             } else {
-                store.add(group);
+                // store.add(group);
+                updateOrAdd(group);
             }
 
             setLeaf(group, false);
-            store.update(group);
+            // store.update(group);
 
             if (group.getGroups() != null) {
+
                 for (SelectionItemGroup child : group.getGroups()) {
                     List<SelectionItem> addGroupToStore = addGroupToStore(group, child);
                     if (restoreCheckedSelectionFromTree) {
@@ -229,7 +257,8 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
 
             if (group.getArguments() != null) {
                 for (SelectionItem child : group.getArguments()) {
-                    store.add(group, child);
+                    // store.add(group, child);
+                    updateOrAdd(group, child);
 
                     if (restoreCheckedSelectionFromTree && child.isDefault()) {
                         defaultSelection.add(child);
@@ -284,7 +313,7 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
         }
     }
 
-    public void setSelection(List<SelectionItem> items) {
+    void setSelection(List<SelectionItem> items) {
 
         for (SelectionItem si : items) {
             SelectionItem found = getStore().findModelWithKey(si.getId());
@@ -295,21 +324,6 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
                 GWT.log("SelectionItemTree.setSelection(List<SelectionItem>) => Given SelectionItem could not be found. SelectionItem = \""
                         + AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si)).getPayload());
             }
-        }
-    }
-
-    /**
-     * Sets the Command to execute after the tree's checked selection changes.
-     * 
-     * @param updateCmd The component value table update Command to execute after selection changes.
-     */
-    public void setCheckChangedUpdateCommand(Command updateCmd) {
-        this.updateCmd = updateCmd;
-    }
-
-    private void callCheckChangedUpdateCommand() {
-        if (updateCmd != null) {
-            updateCmd.execute();
         }
     }
 
@@ -326,7 +340,13 @@ public class SelectionItemTree extends Tree<SelectionItem, String> implements Ha
      *            marked as "isDefault" true in the given tree passed into
      *            {@link #setItems(SelectionItemGroup)}
      */
-    public void setRestoreCheckedSelectionFromTree(boolean restoreCheckedSelectionFromTree) {
+    void setRestoreCheckedSelectionFromTree(boolean restoreCheckedSelectionFromTree) {
         this.restoreCheckedSelectionFromTree = restoreCheckedSelectionFromTree;
+    }
+
+    void setCore4653Kludge() {
+        ToolTipConfig ttc = new ToolTipConfig("To make default selections, use the \"" + I18N.APPS_LABELS.treeSelectionCreateLabel() + "\" button located in the details panel.");
+        ttc.setShowDelay(10000);
+        CORE_4653 = new ToolTip(this, ttc);
     }
 }

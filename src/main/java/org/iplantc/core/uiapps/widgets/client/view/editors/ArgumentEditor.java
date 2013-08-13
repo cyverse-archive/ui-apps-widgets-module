@@ -1,15 +1,21 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uicommons.client.models.HasLabel;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -43,7 +49,7 @@ import com.sencha.gxt.widget.core.client.container.SimpleContainer;
  * @author jstroot
  * 
  */
-class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareEditor<Argument> {
+class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareEditor<Argument>, HasLabel {
 
     private final class ArgumentClickHandler implements ClickHandler {
         private final AppTemplateWizardAppearance.Style style;
@@ -73,6 +79,8 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
     private final AppMetadataServiceFacade appMetadataService;
 
     private EditorDelegate<Argument> delegate;
+
+    private Argument model;
 
     ArgumentEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
@@ -140,9 +148,20 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             }
         }
 
-        if (value == AppTemplateUtils.getEmptyGroupArgument()) {
-        }
+        this.model = value;
     }
+
+    @Override
+    public String getLabel() {
+        if (model == null) {
+            return null;
+        }
+
+        return Strings.nullToEmpty(model.getLabel());
+    }
+
+    @Override
+    public void setLabel(String label) {/* Do Nothing */}
 
     private void addClickHandler(HasClickHandlers subEditor) {
         if (presenter.isEditingMode()) {
@@ -173,6 +192,17 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             }
         }
         return false;
+    }
+
+    public List<? extends EditorError> getErrors() {
+        List<EditorError> errors = Lists.newArrayList();
+        if (subEditor instanceof ArgumentValueEditor) {
+            if (errors == null) {
+                return Collections.emptyList();
+            }
+            errors.addAll(((ArgumentValueEditor)subEditor).getErrors());
+        }
+        return errors;
     }
 
 }

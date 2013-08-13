@@ -24,6 +24,7 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription {
      * {@link AutoBean#setTag(String, Object)}.
      */
     String IS_NEW = "new argument";
+    String TREE_STORE = "tree store thing";
 
     ArgumentType getType();
 
@@ -65,10 +66,10 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription {
     void setValidators(List<ArgumentValidator> validators);
 
     @PropertyName("isVisible")
-    boolean isVisible();
+    Boolean isVisible();
 
     @PropertyName("isVisible")
-    void setVisible(boolean visible);
+    void setVisible(Boolean visible);
 
     @PropertyName("arguments")
     List<SelectionItem> getSelectionItems();

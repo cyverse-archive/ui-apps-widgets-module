@@ -24,6 +24,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.shared.Store;
@@ -156,6 +157,14 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(props.id());
 
         tree = new SelectionItemTree(store, props.display());
+        if (presenter.isEditingMode()) {
+            /*
+             * KLUDGE CORE-4653 JDS Set selection model to locked. This is to prevent the user from
+             * making any selections due to the issue described in CORE-4653.
+             */
+            tree.getSelectionModel().setLocked(true);
+            tree.setCore4653Kludge();
+        }
         tree.setHeight(presenter.getAppearance().getDefaultTreeSelectionHeight());
 
         tree.addValueChangeHandler(new TreeValueChangeHandler());
@@ -207,7 +216,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         tree.setEnabled(enabled);
-        tree.getSelectionModel().setLocked(!enabled);
+        // tree.getSelectionModel().setLocked(!enabled);
     }
 
     /**
@@ -239,6 +248,15 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         if ((value == null) || !value.getType().equals(ArgumentType.TreeSelection)) {
             return;
         }
+        List<SelectionItem> toBeRemoved = AutoBeanUtils.getAutoBean(value).getTag(SelectionItem.TO_BE_REMOVED);
+        if (toBeRemoved != null) {
+            selectionItemsEditor.setSuppressEvent(true);
+            for (SelectionItem si : toBeRemoved) {
+                tree.getStore().remove(si);
+            }
+            selectionItemsEditor.setSuppressEvent(false);
+        }
+        AutoBeanUtils.getAutoBean(value).setTag(SelectionItem.TO_BE_REMOVED, null);
         this.model = value;
         boolean restoreSelectionsFromDefaultValue = !presenter.isEditingMode() && (value.getDefaultValue() != null) && (value.getDefaultValue().isIndexed()) && (value.getDefaultValue().size() > 0);
         tree.setRestoreCheckedSelectionFromTree(!restoreSelectionsFromDefaultValue);
@@ -267,5 +285,9 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     @Override
     public Argument getValue() {
         return model;
+    }
+
+    public TreeStore<SelectionItem> getTreeStore() {
+        return tree.getStore();
     }
 }

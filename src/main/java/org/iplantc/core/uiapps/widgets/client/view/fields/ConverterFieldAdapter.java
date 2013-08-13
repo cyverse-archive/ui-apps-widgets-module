@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
-import org.iplantc.core.uiapps.widgets.client.view.fields.util.PreventEntryAfterLimitHandler;
-import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
@@ -33,6 +34,7 @@ import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
@@ -49,6 +51,7 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     private final List<EditorError> errors;
     private EditorDelegate<Splittable> delegate;
     private final HandlerManager handlerManager;
+    private final List<HandlerRegistration> preventEntryKeyDownHandlers = Lists.newArrayList();
 
     public ConverterFieldAdapter(F field, Converter<Splittable, U> converter) {
         super(field, converter);
@@ -68,11 +71,8 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
     public void flush() {
         field.flush();
         model = getConverter().convertFieldValue(field.getValue());
-        boolean isValid = validate(false);
+        validate(false);
 
-        if (!isValid) {
-            GWT.log("Not valid");
-        }
         if ((errors != null) && (delegate != null)) {
             for (EditorError e : errors) {
                 String message = e.getMessage();
@@ -142,8 +142,10 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
                     errors.addAll(errs);
                 }
             }
-        } else if (field instanceof AbstractDiskResourceSelector<?>) {
-            errors.addAll(((AbstractDiskResourceSelector<?>)field).getErrors());
+        } else if (field instanceof DiskResourceSelector) {
+            errors.addAll(((DiskResourceSelector)field).getErrors());
+            // } else if (field instanceof AbstractDiskResourceSelector<?>) {
+            // errors.addAll(((AbstractDiskResourceSelector<?>)field).getErrors());
         } else {
             return;
         }
@@ -184,12 +186,38 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
         if (validators == null) {
             return;
         }
+        if (validators.isEmpty()) {
+            // JDS If validators are empty, we need to cleanup.
+            if ((field instanceof Field<?>)) {
+                @SuppressWarnings("unchecked")
+                Field<U> tmpField = (Field<U>)field;
+                List<Validator<U>> validatorsToRemove = Lists.newArrayList(tmpField.getValidators());
+                for (Validator<U> v : validatorsToRemove) {
+                    if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                        continue;
+                    }
+                    tmpField.removeValidator(v);
+                    if ((v instanceof MaxLengthValidator)) {
+                        for (HandlerRegistration hr : preventEntryKeyDownHandlers) {
+                            hr.removeHandler();
+                        }
+                        preventEntryKeyDownHandlers.clear();
+                    }
+                }
+            }
+        }
         if (field instanceof Field<?>) {
             @SuppressWarnings("unchecked")
             Field<U> fieldObj = (Field<U>)field;
 
             // JDS Clear all existing validators
-            fieldObj.getValidators().clear();
+            List<Validator<U>> validatorsToRemove = Lists.newArrayList(fieldObj.getValidators());
+            for (Validator<U> v : validatorsToRemove) {
+                if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                    continue;
+                }
+                fieldObj.removeValidator(v);
+            }
 
             for (ArgumentValidator av : validators) {
                 AutoBean<ArgumentValidator> autoBean = AutoBeanUtils.getAutoBean(av);
@@ -199,6 +227,7 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
                     Object hndlrReg = autoBean.getTag(ArgumentValidator.KEY_DOWN_HANDLER_REG);
                     if ((hndlrReg != null)) {
                         ((HandlerRegistration)hndlrReg).removeHandler();
+                        preventEntryKeyDownHandlers.remove(hndlrReg);
                     }
 
                     // Re-apply the keyDown handler (if it exists)
@@ -206,6 +235,7 @@ public class ConverterFieldAdapter<U, F extends Component & IsField<U> & ValueAw
                     if (keyDownHndlr != null) {
                         HandlerRegistration newHndlrReg = addKeyDownHandler((KeyDownHandler)keyDownHndlr);
                         autoBean.setTag(ArgumentValidator.KEY_DOWN_HANDLER_REG, newHndlrReg);
+                        preventEntryKeyDownHandlers.add(newHndlrReg);
                     } else {
                         int maxCharLimit = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
                         @SuppressWarnings("unchecked")

@@ -1,23 +1,22 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
-import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
-import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.editor.client.Editor.Ignore;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -28,9 +27,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.ListStore;
@@ -57,7 +53,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * @author jstroot
  * 
  */
-public class SelectionItemPropertyEditor extends Composite implements ValueAwareEditor<Argument>, HasValueChangeHandlers<List<SelectionItem>>, HasEventSuppression {
+public class SelectionItemPropertyEditor extends Composite implements HasValueChangeHandlers<List<SelectionItem>>, HasEventSuppression {
 
     private static SelectionListEditorUiBinder BINDER = GWT.create(SelectionListEditorUiBinder.class);
     interface SelectionListEditorUiBinder extends UiBinder<Widget, SelectionItemPropertyEditor> {}
@@ -80,7 +76,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     Grid<SelectionItem> grid;
 
     // The Editor for Argument.getSelectionItems()
-    ListStoreEditor<SelectionItem> selectionItems;
+    ListStoreEditor<SelectionItem> selectionItemsEditor;
 
     private ColumnConfig<SelectionItem, String> displayCol;
 
@@ -88,18 +84,16 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
     private ColumnConfig<SelectionItem, String> valueCol;
 
-    private final GridInlineEditing<SelectionItem> editing;
+     private final GridInlineEditing<SelectionItem> editing;
 
     private boolean suppressEvent = false;
-
-    private Argument model;
 
     private final UUIDServiceAsync uuidService;
 
     protected int selectionItemCount = 1;
     private final AppsWidgetsPropertyPanelLabels labels;
 
-    public SelectionItemPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
+    public SelectionItemPropertyEditor(final List<SelectionItem> selectionItems, final ArgumentType type, final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService) {
         this.uuidService = uuidService;
         this.labels = presenter.getAppearance().getPropertyPanelLabels();
         initWidget(BINDER.createAndBindUi(this));
@@ -107,15 +101,22 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
 
         editing = new GridInlineEditing<SelectionItem>(grid);
         ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);
-        TextField field = new TextField();
-        field.setSelectOnFocus(true);
-        editing.addEditor(valueCol, field);
-        editing.addEditor(nameCol, field);
+        TextField field1 = new TextField();
+        field1.addValidator(new CmdLineArgCharacterValidator());
+        field1.setSelectOnFocus(true);
+        TextField field2 = new TextField();
+        field2.addValidator(new CmdLineArgCharacterValidator());
+        field2.setSelectOnFocus(true);
+        editing.addEditor(valueCol, field1);
+        editing.addEditor(nameCol, field2);
         
 
         // Add selection handler to grid to control enabled state of "delete" button
         grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionChangedHandler());
-        selectionItems = new MyListStoreEditor(selectionArgStore, presenter);
+        selectionItemsEditor = new MyListStoreEditor(selectionArgStore, presenter);
+
+        initColumns(type);
+        selectionItemsEditor.setValue(selectionItems);
     }
 
 
@@ -158,8 +159,9 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                 // JDS Set up a default id to satisfy ListStore's ModelKeyProvider
                 sa.setId(result.get(0));
                 sa.setDefault(false);
-                sa.setDescription("Default Description");
                 sa.setValue("Value " + selectionItemCount++);
+                sa.setDisplay("" + selectionItemCount);
+                sa.setName("Default" + selectionItemCount);
 
                 /*
                  * JDS Suppress ValueChange event, then manually fire afterward.
@@ -178,7 +180,7 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
                  * ValueChange event in order to propagate these changes throughout the editor hierarchy.
                  */
                 setSuppressEvent(true);
-                selectionItems.getStore().add(sa);
+                selectionItemsEditor.getStore().add(sa);
                 setSuppressEvent(false);
                 ValueChangeEvent.fire(SelectionItemPropertyEditor.this, selectionArgStore.getAll());
             }
@@ -199,23 +201,18 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             return;
         }
         for (SelectionItem sa : selection) {
-            selectionItems.getStore().remove(sa);
+            setSuppressEvent(true);
+            selectionItemsEditor.getStore().remove(sa);
+            setSuppressEvent(false);
         }
+        ValueChangeEvent.fire(SelectionItemPropertyEditor.this, selectionArgStore.getAll());
     }
 
-    @Override
-    public void setValue(Argument value) {
-        if((value == null) 
-                || ((value != null) 
-                && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) || value.getType().equals(ArgumentType.TreeSelection)))) {
-            return;
-        }
-        this.model = value;
-
+    private void initColumns(ArgumentType type) {
         // May be able to set the proper editor by adding it at this time. The column model will use the
         // value as a String, but I can adjust the editing to be string, integer, double.
         if (editing.getEditor(displayCol) == null) {
-            switch (model.getType()) {
+            switch (type) {
                 case Selection:
                 case TextSelection:
                     TextField textField = new TextField();
@@ -245,14 +242,50 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
         }
     }
 
-    @Override
-    public void flush() {/* Do Nothing */}
-
-    @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
+    // @Override
+    // public void setValue(Argument value) {
+    // if((value == null)
+    // || ((value != null)
+    // && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) ||
+    // value.getType().equals(ArgumentType.TreeSelection)))) {
+    // return;
+    // }
+    // this.model = value;
+    //
+    // // May be able to set the proper editor by adding it at this time. The column model will use the
+    // // value as a String, but I can adjust the editing to be string, integer, double.
+    // if (editing.getEditor(displayCol) == null) {
+    // switch (model.getType()) {
+    // case Selection:
+    // case TextSelection:
+    // TextField textField = new TextField();
+    // textField.setSelectOnFocus(true);
+    // editing.addEditor(displayCol, textField);
+    // break;
+    //
+    // case DoubleSelection:
+    // NumberField<Double> dblField = new NumberField<Double>(new
+    // NumberPropertyEditor.DoublePropertyEditor());
+    // dblField.setSelectOnFocus(true);
+    // editing.addEditor(displayCol, new StringToDoubleConverter(), dblField);
+    // break;
+    //
+    // case IntegerSelection:
+    // NumberField<Integer> intField = new NumberField<Integer>(new
+    // NumberPropertyEditor.IntegerPropertyEditor());
+    // intField.setSelectOnFocus(true);
+    // editing.addEditor(displayCol, new StringToIntegerConverter(), intField);
+    // break;
+    //
+    // default:
+    // // The current argument is not a valid type for this control.
+    // // So, disable and hide ourself so the user doesn't see it.
+    // con.setEnabled(false);
+    // con.setVisible(false);
+    // break;
+    // }
+    // }
+    // }
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
@@ -282,12 +315,12 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
     
         @Override
         public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
-            SelectionItem si = event.getRecord().getModel();
-            if (si.isDefault() && (model != null)) {
-                Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
-                model.setDefaultValue(encode);
-                model.setValue(encode);
-            }
+            // SelectionItem si = event.getRecord().getModel();
+            // if (si.isDefault() && (model != null)) {
+            // Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
+            // model.setDefaultValue(encode);
+            // model.setValue(encode);
+            // }
             super.onRecordChange(event);
         }
     }
@@ -367,6 +400,11 @@ public class SelectionItemPropertyEditor extends Composite implements ValueAware
             }
             return Double.parseDouble(object);
         }
+    }
+
+    public Collection<? extends SelectionItem> getValues() {
+        selectionArgStore.commitChanges();
+        return selectionItemsEditor.getStore().getAll();
     }
 
 }

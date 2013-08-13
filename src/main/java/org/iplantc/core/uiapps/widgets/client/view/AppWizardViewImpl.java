@@ -8,6 +8,7 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
 import org.iplantc.core.uiapps.widgets.client.view.editors.LaunchAnalysisWidget;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -20,7 +21,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 /**
@@ -41,16 +41,14 @@ public class AppWizardViewImpl extends Composite implements AppWizardView {
     @UiField(provided = true)
     AppTemplateWizard wizard;
 
-    @UiField
-    TextButton launchButton;
-
     LaunchAnalysisWidget law;
 
     private AppWizardView.Presenter presenter;
 
-    public AppWizardViewImpl(final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
-        law = new LaunchAnalysisWidget(userSettings, displayMessages);
-        wizard = new AppTemplateWizard(false, uuidService, appMetadataService);
+    public AppWizardViewImpl(final UserSettings userSettings, final AppsWidgetsDisplayMessages displayMessages, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService,
+            AppTemplateWizardAppearance appearance) {
+        law = new LaunchAnalysisWidget(userSettings, displayMessages, appearance);
+        wizard = new AppTemplateWizard(false, uuidService, appMetadataService, appearance);
         initWidget(BINDER.createAndBindUi(this));
     }
 

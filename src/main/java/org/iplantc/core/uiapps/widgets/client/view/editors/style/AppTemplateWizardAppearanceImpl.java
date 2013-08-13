@@ -1,32 +1,47 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
+import java.util.List;
+
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style.Float;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 
+/**
+ * FIXME JDS Extract hardcoded values to a Constants interface.
+ * 
+ * @author jstroot
+ * 
+ */
 public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppearance {
 
     private final Resources res;
     private final AppTemplateWizardTemplates templates;
     private final AppsWidgetsPropertyPanelLabels labels;
     private final AppsWidgetsContextualHelpMessages help;
+    private final AppsWidgetsDisplayMessages appsWidgetsMessages;
 
     public AppTemplateWizardAppearanceImpl() {
         res = GWT.create(Resources.class);
         templates = GWT.create(AppTemplateWizardTemplates.class);
-        labels = GWT.create(AppsWidgetsPropertyPanelLabels.class);
-        help = GWT.create(AppsWidgetsContextualHelpMessages.class);
+        labels = I18N.APPS_LABELS;
+        help = I18N.APPS_HELP;
+        appsWidgetsMessages = I18N.APPS_MESSAGES;
     }
 
     @Override
@@ -65,6 +80,24 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     public ImageElement getErrorIconImg() {
         ImageElement errIconImg = Document.get().createImageElement();
         errIconImg.setSrc(res.exclamation().getSafeUri().asString());
+        errIconImg.getStyle().setFloat(Float.LEFT);
+        return errIconImg;
+    }
+
+    @Override
+    public ImageElement getErrorIconImgWithErrQTip(List<EditorError> errors) {
+        ImageElement errIconImg = getErrorIconImg();
+        String errorString = "";
+        for (EditorError err : errors) {
+            if (err instanceof HasLabel) {
+                errorString += ((HasLabel)err).getLabel() + ": ";
+            }
+            errorString += err.getMessage();
+            if (errors.indexOf(err) != errors.size() - 1) {
+                errorString += "<br>";
+            }
+        }
+        errIconImg.setAttribute("qtip", errorString);
         return errIconImg;
     }
 
@@ -119,6 +152,24 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     @Override
     public AppsWidgetsContextualHelpMessages getContextHelpMessages() {
         return help;
+    }
+
+    @Override
+    public SafeHtml createContentPanelHeaderLabel(SafeHtml label, boolean required) {
+        if (required) {
+            return templates.contentPanelHeaderRequired(label);
+        }
+        return templates.contentPanelHeader(label);
+    }
+
+    @Override
+    public SafeHtml createEmptyToolText() {
+        return templates.redTextFloatRight(appsWidgetsMessages.emptyToolText());
+    }
+
+    @Override
+    public int getAppNameCharLimit() {
+        return 255;
     }
 
 }

@@ -62,7 +62,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
         // JDS Set default value to value
         if ((model.getDefaultValue() != null) && model.getDefaultValue().isKeyed()) {
             model.setValue(model.getDefaultValue());
-        } else if (model.getSelectionItems() != null) {
+        } else if ((model.getSelectionItems() != null) && AppTemplateUtils.isSimpleSelectionArgumentType(model.getType())) {
             for (SelectionItem si : model.getSelectionItems()) {
                 if (si.isDefault()) {
                     Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
@@ -86,7 +86,8 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
                     subEditor = new AppWizardComboBox(presenter);
                     break;
                 case TreeSelection:
-                    subEditor = new SelectionItemTreePanel(presenter);
+                    SelectionItemTreePanel treePanel = new SelectionItemTreePanel(presenter);
+                    subEditor = treePanel;
                 default:
 
                     break;
@@ -119,7 +120,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
 
     @Override
     public void flush() {
-        if (presenter.getValueChangeEventSource() != this) {
+        if (presenter.isEditingMode() && (presenter.getValueChangeEventSource() != this)) {
             return;
         }
         subEditor.flush();

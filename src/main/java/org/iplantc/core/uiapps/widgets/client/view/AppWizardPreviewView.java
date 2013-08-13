@@ -6,9 +6,11 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Window;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 public class AppWizardPreviewView extends Window {
 
@@ -28,6 +30,13 @@ public class AppWizardPreviewView extends Window {
         setSize("640", "375");
         setBorders(false);
         wizard.edit(appTemplate);
+    }
+
+    @UiHandler("launchButton")
+    void onLaunchButtonClicked(SelectEvent event) {
+
+        // Flush the editor driver to perform validations.
+        wizard.flushAppTemplate();
     }
 
 }

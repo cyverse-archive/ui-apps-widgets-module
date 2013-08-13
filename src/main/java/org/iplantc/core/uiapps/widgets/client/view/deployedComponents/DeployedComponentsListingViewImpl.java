@@ -10,8 +10,8 @@ import java.util.List;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
@@ -31,7 +31,6 @@ import com.sencha.gxt.core.client.util.KeyNav;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.Dialog;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.AbstractHtmlLayoutContainer.HtmlData;
 import com.sencha.gxt.widget.core.client.container.HtmlLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -57,30 +56,20 @@ public class DeployedComponentsListingViewImpl extends Composite implements
     interface MyUiBinder extends UiBinder<Widget, DeployedComponentsListingViewImpl> {
     }
 
-    public interface DCDetailsRenderer extends XTemplates {
+    interface DCDetailsRenderer extends XTemplates {
         @XTemplate(source = "DCDetails.html")
-        public SafeHtml render();
+        SafeHtml render();
     }
-
 
     @UiField(provided = true)
     ListStore<DeployedComponent> store;
-    @UiField
-    ColumnModel<DeployedComponent> cm;
 
     private final Widget widget;
-
 
     private DeployedComponentsListingView.Presenter presenter;
 
     @UiField
     TextField searchField;
-
-    @UiField
-    TextButton searchBtn;
-
-    @UiField
-    TextButton newToolBtn;
 
     @UiField
     Grid<DeployedComponent> grid;
@@ -199,7 +188,7 @@ public class DeployedComponentsListingViewImpl extends Composite implements
     }
 
     @UiHandler({"searchBtn"})
-    public void onSearchBtnClick(SelectEvent event) {
+    void onSearchBtnClick(SelectEvent event) {
         String currentValue = searchField.getCurrentValue();
         if (currentValue == null || currentValue.isEmpty()) {
             presenter.loadDeployedComponents();
@@ -213,7 +202,7 @@ public class DeployedComponentsListingViewImpl extends Composite implements
     }
 
     @UiHandler({"newToolBtn"})
-    public void onNewToolRequestBtnClick(SelectEvent event) {
+    void onNewToolRequestBtnClick(SelectEvent event) {
         NewToolRequestDialog dialog = new NewToolRequestDialog();
         dialog.show();
     }

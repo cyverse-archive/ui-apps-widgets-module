@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 import java.util.Iterator;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
@@ -22,54 +23,53 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContent
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.sencha.gxt.core.client.dom.DefaultScrollSupport;
-import com.sencha.gxt.core.client.dom.ScrollSupport;
-import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.dnd.core.client.DndDragCancelEvent;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
-import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
+import com.sencha.gxt.widget.core.client.event.AddEvent.AddHandler;
+import com.sencha.gxt.widget.core.client.event.AddEvent.HasAddHandlers;
+import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
+import com.sencha.gxt.widget.core.client.event.CollapseEvent.HasCollapseHandlers;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent.HasExpandHandlers;
 
 /**
  * An editor class for displaying the argument group list in an {@link AppTemplate#getArgumentGroups()}.
  * 
  * 
- * <h1>Editing Mode Drag and Drop</h1>
- * 
- * FIXME JDS [DESCRIBE EDITOR MODE DRAG AND DROP RESPONSIBILITIES OF THIS CLASS]
- * 
  * @author jstroot
  * 
  */
-class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>> {
+class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentGroup, ArgumentGroupEditor>>, HasAddHandlers, HasExpandHandlers, HasCollapseHandlers {
 
     private final AccordionLayoutContainer groupsContainer;
     private final ListEditor<ArgumentGroup, ArgumentGroupEditor> editor;
     private boolean fireSelectedOnAdd;
+    private final List<CollapseHandler> collapseHandlers = Lists.newArrayList();
+    private final List<ExpandHandler> expandHandlers = Lists.newArrayList();
 
     ArgumentGroupListEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
-        groupsContainer = new AppWizardALC();
-        ScrollSupport scrollSupport = new DefaultScrollSupport(groupsContainer.getElement());
-        scrollSupport.setScrollMode(ScrollMode.AUTOY);
+        groupsContainer = new AccordionLayoutContainer();
         groupsContainer.setExpandMode(ExpandMode.SINGLE);
         editor = ListEditor.of(new ArgumentGroupEditorSource(groupsContainer, presenter, uuidService, appMetadataService));
         ArgGrpSelectedHandler appWizardSelectionHandler = new ArgGrpSelectedHandler(editor, presenter.getAppearance().getStyle());
@@ -194,38 +194,11 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                     int index = (indexRemoved > 0) ? indexRemoved - 1 : 0;
                     ArgumentGroupEditor toBeSelected = editor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(toBeSelected.getPropertyEditor()));
+                    toBeSelected.addStyleName(presenter.getAppearance().getStyle().appHeaderSelect());
                 } else {
                     presenter.asWidget().fireEvent(new ArgumentGroupSelectedEvent(null));
 
                 }
-            }
-        }
-    }
-
-    /**
-     * This class overrides the {@link #applyLayout(Widget, int, int)} method of the
-     * {@link AccordionLayoutContainer} in order to manually adjust for scroll support.
-     * 
-     * Currently, the addition of {@link ScrollSupport} does not automatically give the ability to adjust
-     * any child elements to allow room for the scroll bar. Without this override, the scrollbar will be
-     * rendered on top of the child <code>ContentPanel</code>s.
-     * 
-     * @author jstroot
-     * 
-     */
-    private final class AppWizardALC extends AccordionLayoutContainer {
-        @Override
-        protected void applyLayout(final Widget widget, int width, int height) {
-            /*
-             * JDS Manually apply 'adjustForScroll'.
-             * This doesn't happen automatically when you add ScrollSupport
-             */
-            if (widget instanceof Component) {
-                int ww = width == -1 ? Integer.MIN_VALUE : width - XDOM.getScrollBarWidth();
-                int hh = height == -1 ? Integer.MIN_VALUE : height;
-                ((Component)widget).setPixelSize(ww, hh);
-            } else {
-                super.applyLayout(widget, width, height);
             }
         }
     }
@@ -244,7 +217,7 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
         private final ListEditor<ArgumentGroup, ArgumentGroupEditor> listEditor;
         private int grpCountInt = 2;
         private Header header;
-        private final AppsWidgetsPropertyPanelLabels appsWidgetsDisplay = GWT.create(AppsWidgetsPropertyPanelLabels.class);
+        private final AppsWidgetsPropertyPanelLabels appsWidgetsDisplay = I18N.APPS_LABELS;
 
         private ArgGrpListEditorDropTarget(AccordionLayoutContainer container, AppTemplateWizardPresenter presenter, ListEditor<ArgumentGroup,ArgumentGroupEditor> editor) {
             super(container);
@@ -272,17 +245,20 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                         boolean isCp = findWidget instanceof ContentPanel;
                         if (isCp && ((ContentPanel)findWidget).getHeader().getElement().isOrHasChild(as)) {
                             final ContentPanel cp = (ContentPanel)findWidget;
-                            header = cp.getHeader();
-                            // JDS Kick off timer for autoExpand of
-                            Timer t = new Timer() {
-                                @Override
-                                public void run() {
-                                    if (cp.getHeader() == header) {
-                                        container.setActiveWidget(cp);
-                                    }
-                                }
-                            };
-                            t.schedule(presenter.getAppearance().getAutoExpandOnHoverDelay());
+                            if(cp.isCollapsed()){
+                            	header = cp.getHeader();
+                            	// JDS Kick off timer for autoExpand of ArgumentGroup content panel
+                            	Timer t = new Timer() {
+                            		@Override
+                            		public void run() {
+                            			if ((cp.getHeader() == header) && cp.isCollapsed()) {
+                            				container.setActiveWidget(cp);
+                            			}
+                            		}
+                            	};
+                            	t.schedule(presenter.getAppearance().getAutoExpandOnHoverDelay());
+                            	
+                            }
                         } else {
                             header = null;
                         }
@@ -434,6 +410,12 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
             }
             final ArgumentGroupEditor subEditor = new ArgumentGroupEditor(presenter, uuidService, appMetadataService, con.getElement(), cpAppearance);
             subEditor.setCollapsible(true);
+            for (CollapseHandler h : collapseHandlers) {
+                subEditor.addCollapseHandler(h);
+            }
+            for (ExpandHandler h : expandHandlers) {
+                subEditor.addExpandHandler(h);
+            }
             con.insert(subEditor, index);
 
             if (index == 0) {
@@ -451,7 +433,6 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
                 subEditor.addRequestArgumentGroupDeleteEventHandler(handler);
             }
 
-            con.forceLayout();
             return subEditor;
         }
         
@@ -465,5 +446,22 @@ class ArgumentGroupListEditor implements IsWidget, IsEditor<ListEditor<ArgumentG
             // con.insert(editor, index);
         }
     
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return groupsContainer.addAddHandler(handler);
+    }
+
+    @Override
+    public HandlerRegistration addCollapseHandler(CollapseHandler handler) {
+        collapseHandlers.add(handler);
+        return null;
+    }
+
+    @Override
+    public HandlerRegistration addExpandHandler(ExpandHandler handler) {
+        expandHandlers.add(handler);
+        return null;
     }
 }

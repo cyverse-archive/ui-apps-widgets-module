@@ -25,6 +25,7 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.ListStore;
@@ -43,7 +44,6 @@ import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
  * 
- * Stuff:
  * FIXME JDS Need to create simple test to validate Number-based validators with simplified range
  * testing. Should inform user that the newest validator conflicts with existing validators.
  * 
@@ -89,6 +89,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
     public ArgumentValidatorEditor(AppTemplateWizardAppearance appearance, ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
         initWidget(BINDER.createAndBindUi(this));
+        grid.setHeight(300);
 
         validatorEditorLabel.setHTML(appearance.createContextualHelpLabel(appearance.getPropertyPanelLabels().validatorRulesLabel(), appearance.getContextHelpMessages().textInputValidationRules()));
         // Add selection handler to grid to control enabled state of "edit" and "delete" buttons.
@@ -109,7 +110,8 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         });
         validators = new ListStoreEditor<ArgumentValidator>(validatorStore);
         supportedValidatorTypes = Sets.newHashSet();
-        new QuickTip(validatorEditorLabel);
+        QuickTip quickTip = new QuickTip(validatorEditorLabel);
+        quickTip.getToolTipConfig().setDismissDelay(0);
 
     }
 
@@ -155,6 +157,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         // JDS Remove
         final int selectedItemIndex = validators.getStore().indexOf(selectedItem);
         validators.getStore().remove(selectedItem);
+        ValueChangeEvent.fire(this, Lists.newArrayList(selectedItem));
         AddValidatorDialog dlg = new AddValidatorDialog(supportedValidatorTypes, avMessages);
         dlg.addOkButtonSelectHandler(new AddValidatorOkBtnSelectHndlr(dlg));
         dlg.addCancelButtonSelectHandler(new AddValidatorCancelBtnSelectHandler(selectedItemIndex, selectedItem));
@@ -172,6 +175,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
         for (ArgumentValidator av : selection) {
             validatorStore.remove(av);
         }
+        ValueChangeEvent.fire(this, selection);
     }
 
     /*
@@ -249,7 +253,15 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
             String retVal = "";
             switch (object.getType()) {
                 case Regex:
-                    String regex = object.getParams().get(0).asString();
+                    // FIXME: CORE-4632
+                    Splittable regexSplittable = object.getParams().get(0);
+                    String regex;
+                    if (regexSplittable.isNumber()) {
+                        Double asNumber = regexSplittable.asNumber();
+                        regex = String.valueOf(asNumber.intValue());
+                    } else {
+                        regex = regexSplittable.asString();
+                    }
                     retVal = avMessages.regex(SafeHtmlUtils.fromString(regex).asString());
                     break;
                 case CharacterLimit:

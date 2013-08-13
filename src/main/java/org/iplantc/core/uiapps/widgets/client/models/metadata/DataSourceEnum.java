@@ -1,6 +1,19 @@
 package org.iplantc.core.uiapps.widgets.client.models.metadata;
 
-public enum DataSourceEnum {
-    file, stdout, stderr
+import org.iplantc.core.resources.client.messages.I18N;
 
+public enum DataSourceEnum {
+    file(I18N.APPS_LABELS.fileOutputSrcFileLabel()),
+    stdout(I18N.APPS_LABELS.fileOutputSrcStdoutLabel()),
+    stderr(I18N.APPS_LABELS.fileOutputSrcStderrLabel());
+
+    private String label;
+
+    DataSourceEnum(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

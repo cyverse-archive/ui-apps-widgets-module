@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
@@ -14,12 +15,15 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.dnd.ContainerDropTarget;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.ArgumentEditorError;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.editor.client.Editor.Ignore;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
@@ -120,6 +124,16 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             }
         }
         return false;
+    }
+
+    public List<EditorError> getErrors() {
+        ArrayList<EditorError> errors = Lists.newArrayList();
+        for (ArgumentEditor ae : editor.getEditors()) {
+            for (EditorError err : ae.getErrors()) {
+                errors.add(new ArgumentEditorError(ae.getLabel(), err));
+            }
+        }
+        return errors;
     }
 
     private final class ArgSelectedHandler implements ArgumentSelectedEventHandler, ArgumentGroupSelectedEventHandler, AppTemplateSelectedEventHandler {
@@ -228,17 +242,18 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 }
                 listEditor.getList().remove(currentItemIndex);
 
-                /*
-                 * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers that
-                 * the selection should be cleared, or the previous argument selected, if possible.
-                 */
                 if (!listEditor.getList().isEmpty()) {
                     int index = (currentItemIndex > 0) ? currentItemIndex - 1 : 0;
                     ArgumentEditor toBeSelected = listEditor.getEditors().get(index);
                     presenter.asWidget().fireEvent(new ArgumentSelectedEvent(toBeSelected.getPropertyEditor()));
+                    toBeSelected.addStyleName(presenter.getAppearance().getStyle().argumentSelect());
                 } else {
                     /*
                      * JDS If the ArgumentGroup is empty after performing remove, add the empty group
+                     * 
+                     * JDS Fire ArgumentSelectedEvent with null parameter. This is to inform handlers
+                     * that
+                     * the selection should be cleared, or the previous argument selected, if possible. *
                      * argument.
                      */
                     listEditor.getList().add(AppTemplateUtils.getEmptyGroupArgument());
@@ -428,13 +443,14 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
             final ArgumentEditor subEditor = new ArgumentEditor(presenter, uuidService, appMetadataService);
 
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
+            con.forceLayout();
 
             if (isFireSelectedOnAdd()) {
                 setFireSelectedOnAdd(false);
                 presenter.asWidget().fireEvent(new ArgumentSelectedEvent(subEditor.getPropertyEditor()));
                 subEditor.addStyleName(presenter.getAppearance().getStyle().argumentSelect());
             }
-            con.forceLayout();
+
             return subEditor;
         }
         

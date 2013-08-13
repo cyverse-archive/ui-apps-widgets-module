@@ -2,6 +2,9 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.IplantContextualHelpAccessStyle;
+import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.resources.client.uiapps.widgets.ArgumentValidatorMessages;
@@ -13,6 +16,7 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperti
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
@@ -23,6 +27,8 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWiza
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -38,10 +44,14 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
@@ -49,7 +59,12 @@ import com.sencha.gxt.data.shared.event.StoreAddEvent;
 import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
@@ -68,10 +83,17 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     private static ArgumentPropertyBaseUiBinder BINDER = GWT.create(ArgumentPropertyBaseUiBinder.class);
 
     @UiField
+    ContentPanel cp;
+    
+    @UiField
     VerticalLayoutContainer con;
 
     @UiField
-    CheckBoxAdapter requiredEditor, omitIfBlank, visible;
+    CheckBoxAdapter requiredEditor, omitIfBlank;
+
+    @Path("visible")
+    @UiField
+    CheckBoxAdapter doNotDisplay;
 
     @Ignore
     @UiField
@@ -99,15 +121,24 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     AppWizardComboBox selectionItemDefaultValue;
 
     @UiField
-    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel, fileInfoTypeLabel, dataSourceLabel, listSelectionLabel;
+    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel, fileInfoTypeLabel, dataSourceLabel;
+//    FieldLabel selectionItemDefaultValueLabel, nameLabel, argLabelLabel, descriptionLabel, fileInfoTypeLabel, dataSourceLabel, listSelectionLabel;
 
-    @Path("")
-    @UiField(provided = true)
-    SelectionItemPropertyEditor selectionItemListEditor;
+    // @Path("")
+    // @UiField(provided = true)
+    // SelectionItemPropertyEditor selectionItemListEditor;
 
-    @Path("")
-    @UiField(provided = true)
-    SelectionItemTreePropertyEditor selectionItemTreeEditor;
+    @UiField
+    @Ignore
+    TextButton editSimpleListBtn;
+
+    // @Path("")
+    // @UiField(provided = true)
+    // SelectionItemTreePropertyEditor selectionItemTreeEditor;
+
+    @UiField
+    @Ignore
+    TextButton editTreeListBtn;
 
     @Ignore
     @UiField(provided = true)
@@ -130,13 +161,17 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     private final ArgumentValidatorMessages argValMessages = GWT.create(ArgumentValidatorMessages.class);
 
+    private final UUIDServiceAsync uuidService;
+    private final IplantContextualHelpAccessStyle style = IplantResources.RESOURCES.getContxtualHelpStyle();
+
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
+        this.uuidService = uuidService;
         defaultValue = new DefaultArgumentValueEditor(presenter.getAppearance(), appMetadataService);
         validatorsEditor = new ArgumentValidatorEditor(presenter.getAppearance(), argValMessages);
         selectionItemDefaultValue = new AppWizardComboBox(presenter);
-        selectionItemListEditor = new SelectionItemPropertyEditor(presenter, uuidService);
-        selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
+//         selectionItemListEditor = new SelectionItemPropertyEditor(presenter, uuidService);
+//         selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter);
 
         fileInfoTypeComboBox = createFileInfoTypeComboBox(appMetadataService);
         dataSourceComboBox = createDataSourceComboBox(appMetadataService);
@@ -150,7 +185,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
          * together.
          */
         initWidget(BINDER.createAndBindUi(this));
-        new QuickTip(this);
+        QuickTip quickTip = new QuickTip(this);
+        quickTip.getToolTipConfig().setDismissDelay(0);
     }
 
     @UiFactory
@@ -209,7 +245,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             public void onSuccess(List<DataSource> result) {
                 if (store.getAll().isEmpty()) {
                     store.addAll(result);
-                    store.addSortInfo(new StoreSortInfo<DataSource>(props.labelValue(), SortDir.ASC));
+                    store.addSortInfo(new StoreSortInfo<DataSource>(props.type(), SortDir.ASC));
                 }
             }
 
@@ -218,7 +254,13 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 ErrorHandler.post(caught);
             }
         });
-        ComboBox<DataSource> comboBox = new ComboBox<DataSource>(store, props.label());
+        ComboBox<DataSource> comboBox = new ComboBox<DataSource>(store, new LabelProvider<DataSource>() {
+
+            @Override
+            public String getLabel(DataSource src) {
+                return src.getType().getLabel();
+            }
+        });
         comboBox.setTriggerAction(TriggerAction.ALL);
         comboBox.addValueChangeHandler(new ValueChangeHandler<DataSource>() {
             @Override
@@ -233,28 +275,26 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
      * JDS The following UI Handlers are necessary to inform the presenter that values have changed.
      * This has the effect of propagating data back and forth through the editor hierarchy.
      */
-    @UiHandler({"requiredEditor", "omitIfBlank", "visible", "isImplicit"})
+    @UiHandler({"requiredEditor", "omitIfBlank", "doNotDisplay", "isImplicit"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
         if (event.getSource() == requiredEditor) {
             if (event.getValue()) {
                 omitIfBlank.setValue(false);
-                // omitIfBlank.disable();
                 omitIfBlank.setEnabled(false);
             } else {
                 omitIfBlank.setEnabled(true);
-                // omitIfBlank.enable();
             }
         }
-        if (event.getSource() == visible) {
+        if (event.getSource() == doNotDisplay) {
             updateDisplayInGuiVisibilities(event.getValue());
         }
         presenter.onArgumentPropertyValueChange(event.getSource());
         
     }
 
-    private void updateDisplayInGuiVisibilities(boolean displayInGui) {
-        // If the "Display in GUI" checkbox is not selected
-        if (!displayInGui) {
+    private void updateDisplayInGuiVisibilities(boolean doNotDisplayInGui) {
+        // If the "Do not display in GUI" checkbox is selected
+        if (doNotDisplayInGui) {
             // Clear the "require user input" checkbox
             requiredEditor.setValue(false);
 
@@ -264,28 +304,42 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             if (validatorsEditor != null) {
                 validatorsEditor.setVisible(false);
             }
-            if (selectionItemListEditor != null) {
-                selectionItemListEditor.setVisible(false);
+            if ((model != null) && AppTemplateUtils.isSimpleSelectionArgumentType(model.getType())) {
+                editSimpleListBtn.setVisible(false);
             }
-            if (selectionItemTreeEditor != null) {
-                selectionItemTreeEditor.setVisible(false);
+            if ((model != null) && model.getType().equals(ArgumentType.TreeSelection)) {
+                editTreeListBtn.setVisible(false);
             }
+//            if (selectionItemListEditor != null) {
+//                selectionItemListEditor.setVisible(false);
+//            }
+//            if (selectionItemTreeEditor != null) {
+//                selectionItemTreeEditor.setVisible(false);
+//            }
         } else {
-            omitIfBlank.setVisible(true);
-            // omitIfBlank.enable();
-            omitIfBlank.setEnabled(true);
+            if ((model != null) && !model.getType().equals(ArgumentType.EnvironmentVariable)) {
+                omitIfBlank.setVisible(true);
+                omitIfBlank.setEnabled(true);
+            }
 
             requiredEditor.setVisible(true);
             descriptionLabel.setVisible(true);
             if (validatorsEditor != null) {
                 validatorsEditor.setVisible(true);
             }
-            if (selectionItemListEditor != null) {
-                selectionItemListEditor.setVisible(true);
+
+            if ((model != null) && AppTemplateUtils.isSimpleSelectionArgumentType(model.getType())) {
+                editSimpleListBtn.setVisible(true);
             }
-            if (selectionItemTreeEditor != null) {
-                selectionItemTreeEditor.setVisible(true);
+            if ((model != null) && model.getType().equals(ArgumentType.TreeSelection)) {
+                editTreeListBtn.setVisible(true);
             }
+//            if (selectionItemListEditor != null) {
+//                selectionItemListEditor.setVisible(true);
+//            }
+//            if (selectionItemTreeEditor != null) {
+//                selectionItemTreeEditor.setVisible(true);
+//            }
         }
     }
 
@@ -299,11 +353,90 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         presenter.onArgumentPropertyValueChange(event.getSource());
     }
 
-    @UiHandler({"selectionItemTreeEditor", "selectionItemListEditor"})
-    void onSelectionItemListChanged(ValueChangeEvent<List<SelectionItem>> event) {
-        presenter.onArgumentPropertyValueChange(event.getSource());
-    }
+    @UiHandler("editSimpleListBtn")
+    void onSimpleListBtnClicked(SelectEvent event) {
+        IPlantDialog dlg = new IPlantDialog();
+        dlg.setPredefinedButtons(PredefinedButton.OK, PredefinedButton.CANCEL);
+        dlg.setHeadingText(presenter.getAppearance().getPropertyPanelLabels().singleSelectionCreateLabel());
+        dlg.setModal(true);
+        dlg.setOkButtonText(I18N.DISPLAY.done());
+        dlg.setAutoHide(false);
+        final SelectionItemPropertyEditor selectionItemListEditor = new SelectionItemPropertyEditor(model.getSelectionItems(), model.getType(), presenter, uuidService);
+        selectionItemListEditor.setSize("640", "480");
+        dlg.add(selectionItemListEditor);
+        dlg.addOkButtonSelectHandler(new SelectHandler() {
 
+            @Override
+            public void onSelect(SelectEvent event) {
+                model.getSelectionItems().clear();
+                model.getSelectionItems().addAll(selectionItemListEditor.getValues());
+                presenter.onArgumentPropertyValueChange(ArgumentPropertyEditor.this);
+            }
+        });
+        final ToolButton toolBtn = new ToolButton(style.contextualHelp());
+        toolBtn.addSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                ContextualHelpPopup popup = new ContextualHelpPopup();
+                popup.setWidth(450);
+                popup.add(new HTML(presenter.getAppearance().getContextHelpMessages().singleSelectionCreateList()));
+                popup.showAt(toolBtn.getAbsoluteLeft(), toolBtn.getAbsoluteTop() + 15);
+            }
+        });
+        dlg.addTool(toolBtn);
+
+        dlg.show();
+    }
+    
+    @UiHandler("editTreeListBtn")
+    void onTreeListBtnClicked(SelectEvent event) {
+        IPlantDialog dlg = new IPlantDialog();
+        dlg.setPredefinedButtons(PredefinedButton.OK, PredefinedButton.CANCEL);
+        dlg.setHeadingText(presenter.getAppearance().getPropertyPanelLabels().singleSelectionCreateLabel());
+        dlg.setModal(true);
+        dlg.setOkButtonText(I18N.DISPLAY.done());
+        dlg.setAutoHide(false);
+        final SelectionItemTreePropertyEditor selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter, model.getSelectionItems());
+        selectionItemTreeEditor.setSize("640", "480");
+        dlg.add(selectionItemTreeEditor);
+        dlg.addOkButtonSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                // Manually grab values
+                model.getSelectionItems().clear();
+
+                /*
+                 * JDS Grab the AutoBean tag for items which should be removed. This is to communicate to
+                 * the center tree store that some items should be removed from the store.
+                 */
+                final AutoBean<SelectionItemGroup> values = selectionItemTreeEditor.getValues();
+                AutoBeanUtils.getAutoBean(model).setTag(SelectionItem.TO_BE_REMOVED, values.getTag(SelectionItem.TO_BE_REMOVED));
+                values.setTag(SelectionItem.TO_BE_REMOVED, null);
+                model.getSelectionItems().add(values.as());
+                presenter.onArgumentPropertyValueChange(ArgumentPropertyEditor.this);
+
+            }
+        });
+
+        final ToolButton toolBtn = new ToolButton(style.contextualHelp());
+        toolBtn.addSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                ContextualHelpPopup popup = new ContextualHelpPopup();
+                popup.setWidth(450);
+                popup.add(new HTML(presenter.getAppearance().getContextHelpMessages().treeSelectionCreateTree()));
+                popup.showAt(toolBtn.getAbsoluteLeft(), toolBtn.getAbsoluteTop() + 15);
+            }
+        });
+        dlg.addTool(toolBtn);
+
+        dlg.show();
+        
+    }
+    
     @UiHandler("selectionItemDefaultValue")
     void onSelectionItemDefaultValueChanged(ValueChangeEvent<List<SelectionItem>> event) {
         presenter.onArgumentPropertyValueChange(event.getSource());
@@ -321,6 +454,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     @Override
     public void flush() {
+        // JDS Manually flush default value editor
         if (defaultValue != null) {
             defaultValue.flush();
             List<EditorError> errors = defaultValue.getErrors();
@@ -369,33 +503,37 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             updateFieldLabels(value.getType());
             if (!AppTemplateUtils.isSelectionArgumentType(value.getType())) {
                 // JDS The ArgumentType is NOT a Selection-based type. Remove all 'list' related controls
-                listSelectionLabel.setVisible(false);
-                con.remove(selectionItemListEditor);
-                con.remove(selectionItemTreeEditor);
+//                listSelectionLabel.setVisible(false);
+//                con.remove(selectionItemListEditor);
+//                con.remove(selectionItemTreeEditor);
+                editSimpleListBtn.setVisible(false);
+                editTreeListBtn.setVisible(false);
                 con.remove(selectionItemDefaultValueLabel);
                 selectionItemDefaultValueLabel = null;
                 selectionItemDefaultValue = null;
-                selectionItemListEditor = null;
-                selectionItemTreeEditor = null;
+//                selectionItemListEditor = null;
+//                selectionItemTreeEditor = null;
                 if ((isDiskResourceArgumentType && !isDiskResourceOutputType) || isInfoType) {
                     con.remove(defaultValue);
                     defaultValue = null;
                 }
             } else if (isTreeSelectionType) {
                 // JDS Remove all controls except for those related to TreeSelection
-                listSelectionLabel.setVisible(false);
-                con.remove(selectionItemListEditor);
+//                listSelectionLabel.setVisible(false);
+//                con.remove(selectionItemListEditor);
+                editSimpleListBtn.setVisible(false);
                 con.remove(selectionItemDefaultValueLabel);
                 con.remove(defaultValue);
                 selectionItemDefaultValueLabel = null;
                 selectionItemDefaultValue = null;
-                selectionItemListEditor = null;
+//                selectionItemListEditor = null;
                 defaultValue = null;
             } else if (!isTreeSelectionType) {
                 // JDS Remove all controls except for those related to Simple selections (i.e. non-tree)
-                con.remove(selectionItemTreeEditor);
+//                con.remove(selectionItemTreeEditor);
+                editTreeListBtn.setVisible(false);
                 con.remove(defaultValue);
-                selectionItemTreeEditor = null;
+//                selectionItemTreeEditor = null;
                 defaultValue = null;
             }
 
@@ -426,14 +564,14 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case Selection:
                 case ValueSelection:
                 case TreeSelection:
-                    visible.setVisible(false);
-                    nameLabel.disable();
+                    doNotDisplay.setVisible(false);
+                    nameLabel.setVisible(false);
                     break;
 
                 case Info:
                     requiredEditor.setVisible(false);
                     omitIfBlank.setVisible(false);
-                    visible.setVisible(false);
+                    doNotDisplay.setVisible(false);
                     descriptionLabel.setVisible(false);
                     nameLabel.setVisible(false);
                     break;
@@ -447,15 +585,21 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 case FileInput:
                 case FolderInput:
                 case MultiFileSelector:
-                    visible.setVisible(false);
+                    doNotDisplay.setVisible(false);
+                    break;
+
+                case FolderOutput:
+                case MultiFileOutput:
+                    dataSourceLabel.setVisible(false);
+                    break;
+
+                case EnvironmentVariable:
+                    omitIfBlank.setVisible(false);
                     break;
 
                 case Output:
                 case FileOutput:
-                case FolderOutput:
-                case MultiFileOutput:
                 case Double:
-                case EnvironmentVariable:
                 case Group:
                 case Integer:
                 case MultiLineText:
@@ -464,8 +608,6 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 default:
                     break;
             }
-
-
 
             if (presenter.isOnlyLabelEditMode()) {
                 // Disable all controls, then re-enable valid controls
@@ -484,9 +626,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
         this.model = value;
         if (!isInfoType) {
-            updateDisplayInGuiVisibilities(model.isVisible());
+            updateDisplayInGuiVisibilities(!model.isVisible());
         }
-
+        cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(model.getLabel()));
         // JDS Manually forward the value to the non-bound controls
         if (AppTemplateUtils.isSimpleSelectionArgumentType(value.getType())) {
             selectionItemDefaultValue.setValue(model);
@@ -501,9 +643,6 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             }
         } else if (!model.getType().equals(ArgumentType.ReferenceAnnotation) && !model.getType().equals(ArgumentType.ReferenceGenome) && !model.getType().equals(ArgumentType.ReferenceSequence)) {
             // It is not a selection type, nor a MultiFileSelector
-            if (defaultValue == null) {
-                GWT.log("This is a problem!");
-            }
             defaultValue.setValue(model);
 
         }
@@ -513,40 +652,49 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         AppsWidgetsPropertyPanelLabels labels = presenter.getAppearance().getPropertyPanelLabels();
         AppsWidgetsContextualHelpMessages help = presenter.getAppearance().getContextHelpMessages();
 
+        
         descriptionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.toolTipText(), help.toolTip()));
         nameLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.argumentOption(), help.argumentOption()));
-        visible.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isVisible()).toSafeHtml());
+        doNotDisplay.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.doNotDisplay()).toSafeHtml());
+
         requiredEditor.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(labels.isRequired()).toSafeHtml());
 
-        new QuickTip(descriptionLabel);
-        new QuickTip(nameLabel);
-        new QuickTip(fileInfoTypeLabel);
-        new QuickTip(argLabelLabel);
-        new QuickTip(listSelectionLabel);
-        new QuickTip(selectionItemDefaultValueLabel);
-        new QuickTip(dataSourceLabel);
-        new QuickTip(omitIfBlank);
-        new QuickTip(isImplicit);
+        QuickTip descQt = new QuickTip(descriptionLabel);
+        QuickTip nameQt = new QuickTip(nameLabel);
+        QuickTip argLabelQt = new QuickTip(argLabelLabel);
+//        QuickTip listSelectionQt = new QuickTip(listSelectionLabel);
+        QuickTip selectionItemDefQt = new QuickTip(selectionItemDefaultValueLabel);
+        QuickTip dataSourceQt = new QuickTip(dataSourceLabel);
+        QuickTip omitQT = new QuickTip(omitIfBlank);
+        QuickTip isImplicitQt = new QuickTip(isImplicit);
+        descQt.getToolTipConfig().setDismissDelay(0);
+        nameQt.getToolTipConfig().setDismissDelay(0);
+        argLabelQt.getToolTipConfig().setDismissDelay(0);
+//        listSelectionQt.getToolTipConfig().setDismissDelay(0);
+        selectionItemDefQt.getToolTipConfig().setDismissDelay(0);
+        dataSourceQt.getToolTipConfig().setDismissDelay(0);
+        omitQT.getToolTipConfig().setDismissDelay(0);
+        isImplicitQt.getToolTipConfig().setDismissDelay(0);
 
         // JDS Change field labels based on Type
         switch (type) {
             case FileInput:
                 argLabelLabel.setText(labels.fileInputLabel());
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.fileInputFileInfoType());
                 label.setEmptyText(labels.fileInputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileInputExcludeArgument())).toSafeHtml());
                 break;
             case FolderInput:
                 argLabelLabel.setText(labels.folderInputLabel());
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
                 label.setEmptyText(labels.folderInputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.folderInputExcludeArgument())).toSafeHtml());
                 break;
             case MultiFileSelector:
                 argLabelLabel.setText(labels.multiFileInputLabel());
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.multiFileInputFileInfoType());
                 label.setEmptyText(labels.multiFileInputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.multiFileInputExcludeArgument())).toSafeHtml());
@@ -554,7 +702,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
             case TextSelection:
                 argLabelLabel.setText(labels.textSelectionLabel());
-                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
+//                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
                 selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionDefaultValue(), help.singleSelectDefaultItem()));
                 label.setEmptyText(labels.textSelectionEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
@@ -562,7 +710,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 break;
             case IntegerSelection:
                 argLabelLabel.setText(labels.integerSelectionLabel());
-                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
+//                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
                 selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionDefaultValue(), help.singleSelectDefaultItem()));
                 label.setEmptyText(labels.textSelectionEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
@@ -570,7 +718,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 break;
             case DoubleSelection:
                 argLabelLabel.setText(labels.doubleSelectionLabel());
-                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
+//                listSelectionLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionCreateLabel(), help.singleSelectionCreateList()));
                 selectionItemDefaultValueLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.singleSelectionDefaultValue(), help.singleSelectDefaultItem()));
                 label.setEmptyText(labels.textSelectionEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
@@ -627,7 +775,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case FileOutput:
                 argLabelLabel.setText(labels.fileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
                 label.setEmptyText(labels.fileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
@@ -637,20 +785,22 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case FolderOutput:
                 argLabelLabel.setText(labels.folderOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.folderInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
                 label.setEmptyText(labels.folderOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
-                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()));
+                isImplicit.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()))
+                        .toSafeHtml());
                 break;
             case MultiFileOutput:
                 argLabelLabel.setText(labels.multiFileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.multiFileInputFileInfoType(), help.fileInfoType()));
+                fileInfoTypeLabel.setHTML(labels.multiFileInputFileInfoType());
                 label.setEmptyText(labels.multiFileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
-                isImplicit.setHTML(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()));
+                isImplicit.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.doNotPass(), help.doNotPass()))
+                        .toSafeHtml());
                 break;
 
             case ReferenceGenome:

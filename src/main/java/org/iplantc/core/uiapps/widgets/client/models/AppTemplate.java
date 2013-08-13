@@ -39,5 +39,12 @@ public interface AppTemplate extends HasId, HasLabel, HasName, HasDescription {
     void setPublishedDate(Date publishedDate);
 
     void setId(String id);
+    
+    @PropertyName("disabled")
+    public boolean isAppDisabled();
+
+    @PropertyName("disabled")
+    public void setAppDisabled(boolean disabled);
+    
 
 }
