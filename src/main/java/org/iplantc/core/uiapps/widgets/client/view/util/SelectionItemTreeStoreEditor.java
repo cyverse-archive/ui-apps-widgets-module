@@ -127,7 +127,7 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
             GWT.log("SelectionItemTreeStoreEditor" + ".setValue(List<SelectionItem>) given list which is not equal to 1.");
             return;
         }
-        store.clear();
+        // store.clear();
         // JDS Populate TreeStore.
         setItems(newRoot);
 

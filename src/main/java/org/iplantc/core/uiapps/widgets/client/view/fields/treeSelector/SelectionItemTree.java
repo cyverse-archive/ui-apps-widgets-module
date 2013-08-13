@@ -22,6 +22,8 @@ import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
@@ -35,9 +37,11 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
     private SelectionItemGroup root;
     private boolean forceSingleSelection = false;
     private boolean restoreCheckedSelectionFromTree;
+    private ToolTip CORE_4653 = null;
 
     SelectionItemTree(TreeStore<SelectionItem> store, ValueProvider<SelectionItem, String> valueProvider) {
         super(store, valueProvider);
+
 
         setBorders(true);
         setAutoLoad(true);
@@ -48,27 +52,29 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
         addBeforeCheckChangeHandler(new BeforeCheckChangeHandler<SelectionItem>() {
             @Override
             public void onBeforeCheckChange(BeforeCheckChangeEvent<SelectionItem> event) {
-                if (forceSingleSelection) {
-                    if (event.getChecked() == CheckState.UNCHECKED) {
-                        boolean isGroup = event.getItem() instanceof SelectionItemGroup;
-                        boolean cascadeToChildren = getCheckStyle() == CheckCascade.TRI
-                                || getCheckStyle() == CheckCascade.CHILDREN;
+                if (!forceSingleSelection) {
+                    return;
+                }
 
-                        if (isGroup && cascadeToChildren) {
-                            // Do not allow groups to be checked if SingleSelection is enabled and
-                            // selections cascade to children.
-                            event.setCancelled(true);
-                            return;
-                        }
+                if (event.getChecked() == CheckState.UNCHECKED) {
+                    boolean isGroup = event.getItem() instanceof SelectionItemGroup;
+                    boolean cascadeToChildren = getCheckStyle() == CheckCascade.TRI || getCheckStyle() == CheckCascade.CHILDREN;
 
-                        List<SelectionItem> checked = getCheckedSelection();
+                    if (isGroup && cascadeToChildren) {
+                        // Do not allow groups to be checked if SingleSelection is enabled and
+                        // selections cascade to children.
+                        event.setCancelled(true);
+                        return;
+                    }
 
-                        if (checked != null && !checked.isEmpty()) {
-                            // uncheck all other selections first.
-                            setCheckedSelection(null);
-                        }
+                    List<SelectionItem> checked = getCheckedSelection();
+
+                    if (checked != null && !checked.isEmpty()) {
+                        // uncheck all other selections first.
+                        setCheckedSelection(null);
                     }
                 }
+
             }
         });
 
@@ -87,7 +93,7 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
                     ruleArg.setDefault(checked);
                 }
 
-                ValueChangeEvent.fire(SelectionItemTree.this, getStore().getAll());
+                // ValueChangeEvent.fire(SelectionItemTree.this, getStore().getAll());
             }
         });
     }
@@ -126,6 +132,9 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
     @Override
     protected void onCheckClick(Event event, TreeNode<SelectionItem> node) {
         if (getSelectionModel().isLocked()) {
+            if (CORE_4653 != null) {
+                CORE_4653.showAt(event.getClientX(), event.getClientY());
+            }
             return;
         }
         super.onCheckClick(event, node);
@@ -143,7 +152,7 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
      * @param root A SelectionItemGroup containing the items to populate in this tree.
      */
     void setItems(SelectionItemGroup root) {
-        store.clear();
+        // store.clear();
         this.root = root;
 
         if (root == null) {
@@ -166,7 +175,8 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
 
         if (root.getArguments() != null) {
             for (SelectionItem ruleArg : root.getArguments()) {
-                store.add(ruleArg);
+                // store.add(ruleArg);
+                updateOrAdd(ruleArg);
 
                 if (restoreCheckedSelectionFromTree && ruleArg.isDefault()) {
                     defaultSelection.add(ruleArg);
@@ -181,6 +191,15 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
         }
     }
 
+    private void updateOrAdd(SelectionItem item) {
+        SelectionItem findModelWithKey = store.findModelWithKey(item.getId());
+        if (findModelWithKey != null) {
+            store.update(item);
+        } else {
+            store.add(item);
+        }
+    }
+
     private void setCheckCascade(SelectionItemGroup root) {
         CheckCascade cascade = null;
 
@@ -190,6 +209,15 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
 
         if (cascade != null) {
             setCheckStyle(cascade);
+        }
+    }
+
+    private void updateOrAdd(SelectionItemGroup parent, SelectionItem child) {
+        SelectionItem findModelWithKey = store.findModelWithKey(child.getId());
+        if ((findModelWithKey != null) && (store.getParent(child) == parent)) {
+            store.update(child);
+        } else {
+            store.add(parent, child);
         }
     }
 
@@ -206,15 +234,18 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
 
         if (group != null) {
             if (parent != null) {
-                store.add(parent, group);
+                // store.add(parent, group);
+                updateOrAdd(parent, group);
             } else {
-                store.add(group);
+                // store.add(group);
+                updateOrAdd(group);
             }
 
             setLeaf(group, false);
-            store.update(group);
+            // store.update(group);
 
             if (group.getGroups() != null) {
+
                 for (SelectionItemGroup child : group.getGroups()) {
                     List<SelectionItem> addGroupToStore = addGroupToStore(group, child);
                     if (restoreCheckedSelectionFromTree) {
@@ -225,7 +256,8 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
 
             if (group.getArguments() != null) {
                 for (SelectionItem child : group.getArguments()) {
-                    store.add(group, child);
+                    // store.add(group, child);
+                    updateOrAdd(group, child);
 
                     if (restoreCheckedSelectionFromTree && child.isDefault()) {
                         defaultSelection.add(child);
@@ -309,5 +341,10 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
      */
     void setRestoreCheckedSelectionFromTree(boolean restoreCheckedSelectionFromTree) {
         this.restoreCheckedSelectionFromTree = restoreCheckedSelectionFromTree;
+    }
+
+    void setCore4653Kludge() {
+        ToolTipConfig ttc = new ToolTipConfig("To make default");
+        CORE_4653 = new ToolTip(this);
     }
 }

@@ -24,6 +24,7 @@ public interface Argument extends HasId, HasName, HasLabel, HasDescription {
      * {@link AutoBean#setTag(String, Object)}.
      */
     String IS_NEW = "new argument";
+    String TREE_STORE = "tree store thing";
 
     ArgumentType getType();
 

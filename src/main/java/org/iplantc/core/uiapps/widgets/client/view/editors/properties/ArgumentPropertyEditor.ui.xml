@@ -4,6 +4,7 @@
 	         xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
 	         xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
 	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+	         xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
 	         xmlns:wizEditor="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties"
 	         xmlns:validation="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation"
 	         xmlns:lists="urn:import:org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists"
@@ -122,17 +123,25 @@
 	        </con:child>
 
 	        <con:child layoutData="{fieldLayoutData_END}">
+	           <button:TextButton ui:field="editSimpleListBtn"
+	           					  text="{labels.singleSelectionCreateLabel}"/>
+	        </con:child>
+<!-- 	        <con:child layoutData="{fieldLayoutData_END}">
 	           <form:FieldLabel ui:field="listSelectionLabel"
                                 labelAlign="TOP">
 	               <form:widget>
 			           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
 	               </form:widget>
 	           </form:FieldLabel>
-	        </con:child>
+	        </con:child> -->
 	        
 	        <con:child layoutData="{fieldLayoutData_END}">
-			   <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
+			 	<button:TextButton ui:field="editTreeListBtn"
+			 				       text="{labels.treeSelectionCreateLabel}"/> 
 	        </con:child>
+<!-- 	        <con:child layoutData="{fieldLayoutData_END}">
+			   <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
+	        </con:child> -->
             
 	    </con:VerticalLayoutContainer>
 	 </gxt:ContentPanel>

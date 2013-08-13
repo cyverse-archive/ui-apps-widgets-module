@@ -156,6 +156,13 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(props.id());
 
         tree = new SelectionItemTree(store, props.display());
+        if (presenter.isEditingMode()) {
+            /*
+             * KLUDGE CORE-4653 JDS Set selection model to locked. This is to prevent the user from
+             * making any selections due to the issue described in CORE-4653.
+             */
+            tree.getSelectionModel().setLocked(true);
+        }
         tree.setHeight(presenter.getAppearance().getDefaultTreeSelectionHeight());
 
         tree.addValueChangeHandler(new TreeValueChangeHandler());
@@ -207,7 +214,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         tree.setEnabled(enabled);
-        tree.getSelectionModel().setLocked(!enabled);
+        // tree.getSelectionModel().setLocked(!enabled);
     }
 
     /**
@@ -267,5 +274,9 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     @Override
     public Argument getValue() {
         return model;
+    }
+
+    public TreeStore<SelectionItem> getTreeStore() {
+        return tree.getStore();
     }
 }

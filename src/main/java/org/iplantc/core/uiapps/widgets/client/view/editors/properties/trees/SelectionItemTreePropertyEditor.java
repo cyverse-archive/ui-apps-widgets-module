@@ -7,8 +7,6 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
-import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
@@ -20,8 +18,6 @@ import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -67,7 +63,7 @@ import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
  * @author psarando, jstroot
  * 
  */
-public class SelectionItemTreePropertyEditor extends Composite implements ValueAwareEditor<Argument>, HasValueChangeHandlers<List<SelectionItem>> {
+public class SelectionItemTreePropertyEditor extends Composite implements HasValueChangeHandlers<List<SelectionItem>> {
 
     private static final String LIST_RULE_ARG_IS_DEFAULT = "isDefault"; //$NON-NLS-1$
 
@@ -77,19 +73,15 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     interface SelectionItemTreePropertyEditorUiBinder extends UiBinder<Widget, SelectionItemTreePropertyEditor> {
     }
 
-    @Ignore
     TreeStore<SelectionItem> store;
 
     @UiField(provided = true)
-    @Ignore
     TreeGrid<SelectionItem> treeGrid;
 
     @UiField
-    @Ignore
     CheckBox forceSingleSelectCheckBox;
 
     @UiField
-    @Ignore
     SimpleComboBox<CheckCascade> cascadeOptionsCombo;
 
     SelectionItemTreeStoreEditor selectionItemsEditor;
@@ -104,7 +96,8 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
     private final AppsWidgetsPropertyPanelLabels labels;
     private final AppsWidgetsContextualHelpMessages help;
 
-    public SelectionItemTreePropertyEditor(final AppTemplateWizardPresenter presenter) {
+
+    public SelectionItemTreePropertyEditor(final AppTemplateWizardPresenter presenter, List<SelectionItem> selectionItems) {
         this.labels = presenter.getAppearance().getPropertyPanelLabels();
         this.help = presenter.getAppearance().getContextHelpMessages();
         buildTreeGrid();
@@ -123,6 +116,8 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         quickTip.getToolTipConfig().setDismissDelay(0);
         treeGridLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.treeSelectionCreateLabel(), help.treeSelectionCreateTree()));
         initDragNDrop();
+
+        selectionItemsEditor.setValue(selectionItems);
     }
 
     private void buildTreeGrid() {
@@ -172,7 +167,6 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
         treeGrid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
-    @Ignore
     @UiFactory
     SimpleComboBox<CheckCascade> buildCascadeComboBoxLabelProvider() {
         return new SimpleComboBox<CheckCascade>(new LabelProvider<CheckCascade>() {
@@ -523,28 +517,6 @@ public class SelectionItemTreePropertyEditor extends Composite implements ValueA
 
         return root;
     }
-
-    @Override
-    public void setValue(Argument value) {
-        if (value == null) {
-            return;
-        }
-
-        if (!value.getType().equals(ArgumentType.TreeSelection)) {
-            setEnabled(false);
-            setVisible(false);
-            return;
-        }
-    }
-
-    @Override
-    public void flush() {}
-
-    @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {

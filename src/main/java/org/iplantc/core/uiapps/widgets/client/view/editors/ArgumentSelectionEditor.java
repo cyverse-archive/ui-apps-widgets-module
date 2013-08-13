@@ -86,7 +86,8 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
                     subEditor = new AppWizardComboBox(presenter);
                     break;
                 case TreeSelection:
-                    subEditor = new SelectionItemTreePanel(presenter);
+                    SelectionItemTreePanel treePanel = new SelectionItemTreePanel(presenter);
+                    subEditor = treePanel;
                 default:
 
                     break;
