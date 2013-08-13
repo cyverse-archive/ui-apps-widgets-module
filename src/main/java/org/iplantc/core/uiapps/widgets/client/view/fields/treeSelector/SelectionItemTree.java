@@ -3,6 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 
@@ -191,15 +192,6 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
         }
     }
 
-    private void updateOrAdd(SelectionItem item) {
-        SelectionItem findModelWithKey = store.findModelWithKey(item.getId());
-        if (findModelWithKey != null) {
-            store.update(item);
-        } else {
-            store.add(item);
-        }
-    }
-
     private void setCheckCascade(SelectionItemGroup root) {
         CheckCascade cascade = null;
 
@@ -209,6 +201,15 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
 
         if (cascade != null) {
             setCheckStyle(cascade);
+        }
+    }
+
+    private void updateOrAdd(SelectionItem item) {
+        SelectionItem findModelWithKey = store.findModelWithKey(item.getId());
+        if (findModelWithKey != null) {
+            store.update(item);
+        } else {
+            store.add(item);
         }
     }
 
@@ -344,7 +345,8 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
     }
 
     void setCore4653Kludge() {
-        ToolTipConfig ttc = new ToolTipConfig("To make default");
-        CORE_4653 = new ToolTip(this);
+        ToolTipConfig ttc = new ToolTipConfig("To make default selections, use the \"" + I18N.APPS_LABELS.treeSelectionCreateLabel() + "\" button located in the details panel.");
+        ttc.setShowDelay(10000);
+        CORE_4653 = new ToolTip(this, ttc);
     }
 }

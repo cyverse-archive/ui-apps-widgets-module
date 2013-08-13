@@ -2,6 +2,8 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.IplantContextualHelpAccessStyle;
+import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
@@ -14,6 +16,7 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperti
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
@@ -25,6 +28,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -40,8 +44,11 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -54,6 +61,7 @@ import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -154,6 +162,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
     private final ArgumentValidatorMessages argValMessages = GWT.create(ArgumentValidatorMessages.class);
 
     private final UUIDServiceAsync uuidService;
+    private final IplantContextualHelpAccessStyle style = IplantResources.RESOURCES.getContxtualHelpStyle();
 
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
@@ -364,6 +373,19 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 presenter.onArgumentPropertyValueChange(ArgumentPropertyEditor.this);
             }
         });
+        final ToolButton toolBtn = new ToolButton(style.contextualHelp());
+        toolBtn.addSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                ContextualHelpPopup popup = new ContextualHelpPopup();
+                popup.setWidth(450);
+                popup.add(new HTML(presenter.getAppearance().getContextHelpMessages().singleSelectionCreateList()));
+                popup.showAt(toolBtn.getAbsoluteLeft(), toolBtn.getAbsoluteTop() + 15);
+            }
+        });
+        dlg.addTool(toolBtn);
+
         dlg.show();
     }
     
@@ -384,11 +406,33 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             public void onSelect(SelectEvent event) {
                 // Manually grab values
                 model.getSelectionItems().clear();
-                model.getSelectionItems().add(selectionItemTreeEditor.getValues());
+
+                /*
+                 * JDS Grab the AutoBean tag for items which should be removed. This is to communicate to
+                 * the center tree store that some items should be removed from the store.
+                 */
+                final AutoBean<SelectionItemGroup> values = selectionItemTreeEditor.getValues();
+                AutoBeanUtils.getAutoBean(model).setTag(SelectionItem.TO_BE_REMOVED, values.getTag(SelectionItem.TO_BE_REMOVED));
+                values.setTag(SelectionItem.TO_BE_REMOVED, null);
+                model.getSelectionItems().add(values.as());
                 presenter.onArgumentPropertyValueChange(ArgumentPropertyEditor.this);
 
             }
         });
+
+        final ToolButton toolBtn = new ToolButton(style.contextualHelp());
+        toolBtn.addSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                ContextualHelpPopup popup = new ContextualHelpPopup();
+                popup.setWidth(450);
+                popup.add(new HTML(presenter.getAppearance().getContextHelpMessages().treeSelectionCreateTree()));
+                popup.showAt(toolBtn.getAbsoluteLeft(), toolBtn.getAbsoluteTop() + 15);
+            }
+        });
+        dlg.addTool(toolBtn);
+
         dlg.show();
         
     }

@@ -52,35 +52,30 @@
         </con:north>
         
         <con:south>
-            <form:FieldLabel ui:field="treeGridLabel"
-                             labelAlign="TOP">
-                <form:widget>
-		            <con:NorthSouthContainer>
-		                <con:north>
-				            <toolbar:ToolBar horizontalSpacing="4">
-				                <toolbar:child>
-				                    <button:TextButton ui:field="addGrpBtn"
-				                                       icon="{res.folderAdd}"
-				                                       toolTip="{appWidgetStrings.addGroupToolTip}"/>
-				                </toolbar:child>
-				                <toolbar:child>
-				                    <button:TextButton ui:field="addArgBtn"
-				                                       icon="{res.add}"
-				                                       toolTip="{appWidgetStrings.addArgumentToolTip}"/>
-				                </toolbar:child>
-				                <toolbar:child>
-				                    <button:TextButton ui:field="deleteBtn"
-				                                       icon="{res.cancel}"
-				                                       toolTip="{display.delete}"/>
-				                </toolbar:child>
-				            </toolbar:ToolBar>
-		                </con:north>
-		                <con:south>
-				            <treeGrid:TreeGrid ui:field="treeGrid"/>
-		                </con:south>
-		            </con:NorthSouthContainer>
-                </form:widget>
-            </form:FieldLabel>
+            <con:NorthSouthContainer>
+                <con:north>
+		            <toolbar:ToolBar horizontalSpacing="4">
+		                <toolbar:child>
+		                    <button:TextButton ui:field="addGrpBtn"
+		                                       icon="{res.folderAdd}"
+		                                       text="{appWidgetStrings.addGroupToolTip}"/>
+		                </toolbar:child>
+		                <toolbar:child>
+		                    <button:TextButton ui:field="addArgBtn"
+		                                       icon="{res.add}"
+		                                       text="{appWidgetStrings.addArgumentToolTip}"/>
+		                </toolbar:child>
+		                <toolbar:child>
+		                    <button:TextButton ui:field="deleteBtn"
+		                    				   text="{display.delete}"
+		                                       icon="{res.cancel}"/>
+		                </toolbar:child>
+		            </toolbar:ToolBar>
+                </con:north>
+                <con:south>
+		            <treeGrid:TreeGrid ui:field="treeGrid"/>
+                </con:south>
+            </con:NorthSouthContainer>
         </con:south>
     </con:NorthSouthContainer>
 </ui:UiBinder>

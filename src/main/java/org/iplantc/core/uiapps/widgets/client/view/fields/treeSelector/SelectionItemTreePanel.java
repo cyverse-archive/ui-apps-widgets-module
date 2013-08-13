@@ -24,6 +24,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.shared.Store;
@@ -162,6 +163,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
              * making any selections due to the issue described in CORE-4653.
              */
             tree.getSelectionModel().setLocked(true);
+            tree.setCore4653Kludge();
         }
         tree.setHeight(presenter.getAppearance().getDefaultTreeSelectionHeight());
 
@@ -246,6 +248,15 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
         if ((value == null) || !value.getType().equals(ArgumentType.TreeSelection)) {
             return;
         }
+        List<SelectionItem> toBeRemoved = AutoBeanUtils.getAutoBean(value).getTag(SelectionItem.TO_BE_REMOVED);
+        if (toBeRemoved != null) {
+            selectionItemsEditor.setSuppressEvent(true);
+            for (SelectionItem si : toBeRemoved) {
+                tree.getStore().remove(si);
+            }
+            selectionItemsEditor.setSuppressEvent(false);
+        }
+        AutoBeanUtils.getAutoBean(value).setTag(SelectionItem.TO_BE_REMOVED, null);
         this.model = value;
         boolean restoreSelectionsFromDefaultValue = !presenter.isEditingMode() && (value.getDefaultValue() != null) && (value.getDefaultValue().isIndexed()) && (value.getDefaultValue().size() > 0);
         tree.setRestoreCheckedSelectionFromTree(!restoreSelectionsFromDefaultValue);

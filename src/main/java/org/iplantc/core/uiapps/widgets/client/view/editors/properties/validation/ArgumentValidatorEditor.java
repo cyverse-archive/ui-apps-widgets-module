@@ -89,6 +89,7 @@ public class ArgumentValidatorEditor extends Composite implements ValueAwareEdit
     public ArgumentValidatorEditor(AppTemplateWizardAppearance appearance, ArgumentValidatorMessages avMessages) {
         this.avMessages = avMessages;
         initWidget(BINDER.createAndBindUi(this));
+        grid.setHeight(300);
 
         validatorEditorLabel.setHTML(appearance.createContextualHelpLabel(appearance.getPropertyPanelLabels().validatorRulesLabel(), appearance.getContextHelpMessages().textInputValidationRules()));
         // Add selection handler to grid to control enabled state of "edit" and "delete" buttons.

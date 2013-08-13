@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
@@ -31,6 +30,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
@@ -45,7 +45,6 @@ import com.sencha.gxt.widget.core.client.event.ExpandItemEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.ViewReadyEvent;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -53,7 +52,6 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.RowNumberer;
 import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
-import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
@@ -86,20 +84,16 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
 
     SelectionItemTreeStoreEditor selectionItemsEditor;
 
-    @UiField
-    FieldLabel treeGridLabel;
-
     private int countGroupLabel = 1;
     private int countArgLabel = 1;
     private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private final UUIDServiceAsync uuidService = GWT.create(UUIDService.class);
     private final AppsWidgetsPropertyPanelLabels labels;
-    private final AppsWidgetsContextualHelpMessages help;
 
+    private final List<SelectionItem> toBeRemoved = Lists.newArrayList();
 
     public SelectionItemTreePropertyEditor(final AppTemplateWizardPresenter presenter, List<SelectionItem> selectionItems) {
         this.labels = presenter.getAppearance().getPropertyPanelLabels();
-        this.help = presenter.getAppearance().getContextHelpMessages();
         buildTreeGrid();
         initWidget(BINDER.createAndBindUi(this));
         treeGrid.getView().setEmptyText(labels.selectionCreateWidgetEmptyText());
@@ -112,9 +106,6 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
         cascadeOptionsCombo.setValue(CheckCascade.TRI);
         cascadeOptionsCombo.addSelectionHandler(new CascadeOptionsComboSelectionHandler());
 
-        QuickTip quickTip = new QuickTip(treeGridLabel);
-        quickTip.getToolTipConfig().setDismissDelay(0);
-        treeGridLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.treeSelectionCreateLabel(), help.treeSelectionCreateTree()));
         initDragNDrop();
 
         selectionItemsEditor.setValue(selectionItems);
@@ -289,6 +280,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
                 }
             }
 
+            toBeRemoved.add(selected);
             store.remove(selected);
         }
     }
@@ -497,7 +489,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
      * 
      * @return A root group containing the groups and args added by the editor.
      */
-    public SelectionItemGroup getValues() {
+    public AutoBean<SelectionItemGroup> getValues() {
         List<SelectionItemGroup> groups = new ArrayList<SelectionItemGroup>();
         List<SelectionItem> arguments = new ArrayList<SelectionItem>();
 
@@ -509,13 +501,16 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
             }
         }
 
-        SelectionItemGroup root = factory.selectionItemGroup().as();
-        root.setGroups(groups);
-        root.setArguments(arguments);
-        root.setSingleSelect(isSingleSelect());
-        root.setSelectionCascade(cascadeOptionsCombo.getValue());
+        AutoBean<SelectionItemGroup> rootAb = factory.selectionItemGroup();
+        rootAb.as().setGroups(groups);
+        rootAb.as().setArguments(arguments);
+        rootAb.as().setSingleSelect(isSingleSelect());
+        rootAb.as().setSelectionCascade(cascadeOptionsCombo.getValue());
 
-        return root;
+        rootAb.setTag(SelectionItem.TO_BE_REMOVED, Lists.<SelectionItem> newArrayList(toBeRemoved));
+        toBeRemoved.clear();
+
+        return rootAb;
     }
 
     @Override

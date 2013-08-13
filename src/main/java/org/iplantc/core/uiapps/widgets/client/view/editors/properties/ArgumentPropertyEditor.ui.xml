@@ -122,26 +122,15 @@
 	           <validation:ArgumentValidatorEditor ui:field="validatorsEditor"/>
 	        </con:child>
 
-	        <con:child layoutData="{fieldLayoutData_END}">
+	        <con:child layoutData="{fieldLayoutData}">
 	           <button:TextButton ui:field="editSimpleListBtn"
 	           					  text="{labels.singleSelectionCreateLabel}"/>
 	        </con:child>
-<!-- 	        <con:child layoutData="{fieldLayoutData_END}">
-	           <form:FieldLabel ui:field="listSelectionLabel"
-                                labelAlign="TOP">
-	               <form:widget>
-			           <lists:SelectionItemPropertyEditor ui:field="selectionItemListEditor"/>
-	               </form:widget>
-	           </form:FieldLabel>
-	        </con:child> -->
 	        
-	        <con:child layoutData="{fieldLayoutData_END}">
+	        <con:child layoutData="{fieldLayoutData}">
 			 	<button:TextButton ui:field="editTreeListBtn"
 			 				       text="{labels.treeSelectionCreateLabel}"/> 
 	        </con:child>
-<!-- 	        <con:child layoutData="{fieldLayoutData_END}">
-			   <trees:SelectionItemTreePropertyEditor ui:field="selectionItemTreeEditor"/>
-	        </con:child> -->
             
 	    </con:VerticalLayoutContainer>
 	 </gxt:ContentPanel>
