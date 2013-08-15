@@ -33,7 +33,7 @@ import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -207,12 +207,9 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
     public void setValue(AppTemplate value) {
         this.appTemplate = value;
         if (isEditingMode()) {
-            SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-            if (value.getDeployedComponent() == null) {
-                labelText.append(appearance.createEmptyToolText());
-            }
-            labelText.append(appearance.createContentPanelHeaderLabel(SafeHtmlUtils.fromString(value.getName()), false));
-            con.setHeadingHtml(labelText.toSafeHtml());
+            SafeHtml appName = SafeHtmlUtils.fromString(value.getName());
+            SafeHtml labelText = appearance.createContentPanelHeaderLabel(appName, false);
+            con.setHeadingHtml(labelText);
         }
     }
 
