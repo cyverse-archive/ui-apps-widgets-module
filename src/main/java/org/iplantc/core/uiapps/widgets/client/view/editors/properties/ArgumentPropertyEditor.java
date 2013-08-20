@@ -738,6 +738,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case EnvironmentVariable:
                 argLabelLabel.setText(labels.envVarLabel());
                 label.setEmptyText(labels.envVarEmptyText());
+                nameLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(
+                        labels.envVarNameLabel(), help.envVarDefaultName()));
+                name.setEmptyText(labels.envVarNameEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.envVarExcludeArgument())).toSafeHtml());
                 break;
