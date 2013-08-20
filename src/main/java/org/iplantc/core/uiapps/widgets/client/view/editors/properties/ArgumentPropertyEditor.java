@@ -24,6 +24,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists.Sele
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.trees.SelectionItemTreePropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.validation.ArgumentValidatorEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.validation.EnvironmentVariableNameValidator;
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
@@ -595,6 +596,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
                 case EnvironmentVariable:
                     omitIfBlank.setVisible(false);
+                    name.addValidator(new EnvironmentVariableNameValidator());
                     break;
 
                 case Output:
