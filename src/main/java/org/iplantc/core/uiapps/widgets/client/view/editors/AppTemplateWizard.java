@@ -44,6 +44,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.AddEvent;
 import com.sencha.gxt.widget.core.client.event.AddEvent.AddHandler;
 import com.sencha.gxt.widget.core.client.event.CollapseEvent;
@@ -110,12 +111,11 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
         argumentGroups.addExpandHandler(expandCollapseHandler);
         argumentGroups.addAddHandler(expandCollapseHandler);
 
-        vlc.add(argumentGroups);
 
         if (editingMode) {
             appTemplatePropEditor = new AppTemplatePropertyEditor(this);
             con.add(appTemplatePropEditor);
-            vlc.insert(con, 0);
+            vlc.add(con, new VerticalLayoutData(1.0, -1.0));
             con.setCollapsible(true);
             con.setAnimCollapse(false);
             con.setTitleCollapse(true);
@@ -125,6 +125,7 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
             con.setHeaderVisible(false);
         }
 
+        vlc.add(argumentGroups, new VerticalLayoutData(1.0, -1.0));
         initWidget(vlc);
         editorDriver.initialize(this);
 

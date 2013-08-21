@@ -29,6 +29,7 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
+import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.AbstractDiskResourceSelector;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
@@ -131,6 +132,9 @@ public class AppWizardFieldFactory {
         TextField tf = new TextField();
         SpinnerField<Double> dblSpinnerField = new SpinnerField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
         SpinnerField<Integer> intSpinnerField = new SpinnerField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+        tf.setErrorSupport(new IPlantSideErrorHandler(tf));
+        dblSpinnerField.setErrorSupport(new IPlantSideErrorHandler(dblSpinnerField));
+        intSpinnerField.setErrorSupport(new IPlantSideErrorHandler(intSpinnerField));
         dblSpinnerField.setMinValue(-Double.MAX_VALUE);
         intSpinnerField.setMinValue(Integer.MIN_VALUE);
         switch (argument.getType()) {
