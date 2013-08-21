@@ -596,6 +596,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
                 case EnvironmentVariable:
                     omitIfBlank.setVisible(false);
+                    name.setAllowBlank(false);
                     name.addValidator(new EnvironmentVariableNameValidator());
                     break;
 
