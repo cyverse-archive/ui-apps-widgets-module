@@ -163,8 +163,9 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     }
 
     @Override
-    public SafeHtml createEmptyToolText() {
-        return templates.redTextFloatRight(appsWidgetsMessages.emptyToolText());
+    public SafeHtml createEditPublicAppWarning() {
+        SafeHtml label = templates.redText(appsWidgetsMessages.editPublicAppWarning());
+        return templates.fieldLabelImgFloatRight(label, res.help().getSafeUri(), help.editPublicAppHelp());
     }
 
     @Override

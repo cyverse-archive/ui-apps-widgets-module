@@ -50,5 +50,9 @@ public interface AppTemplate extends HasId, HasLabel, HasName, HasDescription {
     @PropertyName("disabled")
     public void setAppDisabled(boolean disabled);
     
+    @PropertyName("is_public")
+    public boolean isPublic();
 
+    @PropertyName("is_public")
+    public void setPublic(boolean is_public);
 }

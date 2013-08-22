@@ -130,9 +130,9 @@ public interface AppTemplateWizardAppearance {
     SafeHtml createContentPanelHeaderLabel(SafeHtml label, boolean required);
 
     /**
-     * @return the text used to indicate that an app template has no tool during edit mode.
+     * @return the text used to warn the user they are editing a public app.
      */
-    SafeHtml createEmptyToolText();
+    SafeHtml createEditPublicAppWarning();
 
     /**
      * @return the character limit which is applied to the <code>AppTemplate</code> <i>name</i> field in
