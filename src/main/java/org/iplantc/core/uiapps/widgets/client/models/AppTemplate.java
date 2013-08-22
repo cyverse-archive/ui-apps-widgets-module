@@ -30,13 +30,17 @@ public interface AppTemplate extends HasId, HasLabel, HasName, HasDescription {
 
     void setDeployedComponent(DeployedComponent deployedComponent);
 
+    @PropertyName("edited_date")
     Date getEditedDate();
 
-    void setEditedDate(Date editedDate);
+    @PropertyName("edited_date")
+    void setEditedDate(Date edited_date);
 
+    @PropertyName("published_date")
     Date getPublishedDate();
 
-    void setPublishedDate(Date publishedDate);
+    @PropertyName("published_date")
+    void setPublishedDate(Date published_date);
 
     void setId(String id);
     
