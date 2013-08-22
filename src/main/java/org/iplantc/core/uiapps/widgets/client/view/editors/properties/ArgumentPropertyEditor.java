@@ -32,6 +32,7 @@ import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.de.client.UUIDServiceAsync;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
@@ -563,6 +564,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
                 case EnvironmentVariable:
                     omitIfBlank.setVisible(false);
+                    if (Strings.isNullOrEmpty(value.getName())) {
+                        value.setName(AppTemplateUtils.NEW_ENV_VAR_NAME);
+                    }
                     name.setAllowBlank(false);
                     name.addValidator(new EnvironmentVariableNameValidator());
                     break;
