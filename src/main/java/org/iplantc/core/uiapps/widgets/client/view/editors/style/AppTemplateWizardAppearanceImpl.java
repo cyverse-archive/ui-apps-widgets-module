@@ -163,12 +163,6 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     }
 
     @Override
-    public SafeHtml createEditPublicAppWarning() {
-        SafeHtml label = templates.redText(appsWidgetsMessages.editPublicAppWarning());
-        return templates.fieldLabelImgFloatRight(label, res.help().getSafeUri(), help.editPublicAppHelp());
-    }
-
-    @Override
     public int getAppNameCharLimit() {
         return 255;
     }

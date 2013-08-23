@@ -34,7 +34,6 @@ import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -54,7 +53,6 @@ import com.sencha.gxt.widget.core.client.event.ExpandEvent;
 import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
-import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
  * A wizard for editing <code>AppTemplate</code>s.
@@ -210,15 +208,9 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
     public void setValue(AppTemplate value) {
         this.appTemplate = value;
         if (isEditingMode()) {
-            SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-            if (appTemplate.isPublic()) {
-                labelText.append(appearance.createEditPublicAppWarning());
-                QuickTip quickTip = new QuickTip(con);
-                quickTip.getToolTipConfig().setDismissDelay(0);
-            }
             SafeHtml appName = SafeHtmlUtils.fromString(value.getName());
-            labelText.append(appearance.createContentPanelHeaderLabel(appName, false));
-            con.setHeadingHtml(labelText.toSafeHtml());
+            SafeHtml labelText = appearance.createContentPanelHeaderLabel(appName, false);
+            con.setHeadingHtml(labelText);
         }
     }
 
