@@ -198,7 +198,7 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
     }
 
     List<EditorError> getErrors() {
-        if (subEditor.getErrors() == null) {
+        if ((subEditor == null) || (subEditor.getErrors() == null)) {
             return Collections.emptyList();
         }
 

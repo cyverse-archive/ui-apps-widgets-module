@@ -4,6 +4,7 @@ import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.Analysi
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -16,6 +17,10 @@ import com.google.gwt.user.client.ui.IsWidget;
  * 
  */
 public interface AppWizardView extends IsWidget {
+
+    public interface RenameWindowHeaderCommand extends Command {
+        void setAppTemplate(AppTemplate appTemplate);
+    }
 
     /**
      * FIXME JDS Add explanation for why the presenter is broken into two interface definitions.

@@ -268,19 +268,26 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
      */
     @UiHandler({"requiredEditor", "omitIfBlank", "doNotDisplay", "isImplicit"})
     void onBooleanValueChanged(ValueChangeEvent<Boolean> event) {
-        if (event.getSource() == requiredEditor) {
+        Object src = null;
+        if (event.getSource() == requiredEditor.getCheckBox()) {
+            src = requiredEditor;
             if (event.getValue()) {
                 omitIfBlank.setValue(false);
                 omitIfBlank.setEnabled(false);
             } else {
                 omitIfBlank.setEnabled(true);
             }
-        }
-        if (event.getSource() == doNotDisplay) {
+        } else if (event.getSource() == doNotDisplay.getCheckBox()) {
+            src = doNotDisplay;
             updateDisplayInGuiVisibilities(event.getValue());
+        } else if (event.getSource() == omitIfBlank.getCheckBox()) {
+            src = omitIfBlank;
+        } else if (event.getSource() == isImplicit.getCheckBox()) {
+            src = isImplicit;
         }
-        presenter.onArgumentPropertyValueChange(event.getSource());
         
+        presenter.onArgumentPropertyValueChange(src);
+
     }
 
     private void updateDisplayInGuiVisibilities(boolean doNotDisplayInGui) {
@@ -302,9 +309,14 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 editTreeListBtn.setVisible(false);
             }
         } else {
-            if ((model != null) && !model.getType().equals(ArgumentType.EnvironmentVariable)) {
+            if ((model != null) && !presenter.isOnlyLabelEditMode() && !model.getType().equals(ArgumentType.EnvironmentVariable)) {
                 omitIfBlank.setVisible(true);
                 omitIfBlank.setEnabled(true);
+            }
+
+            if ((model != null) && model.getType().equals(ArgumentType.Flag)) {
+                requiredEditor.setVisible(false);
+                omitIfBlank.setVisible(false);
             }
 
             requiredEditor.setVisible(true);
@@ -601,6 +613,9 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         this.model = value;
         if (!isInfoType) {
             updateDisplayInGuiVisibilities(!model.isVisible());
+        }
+        if (model.getRequired()) {
+            omitIfBlank.setEnabled(false);
         }
         cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(model.getLabel()));
         // JDS Manually forward the value to the non-bound controls

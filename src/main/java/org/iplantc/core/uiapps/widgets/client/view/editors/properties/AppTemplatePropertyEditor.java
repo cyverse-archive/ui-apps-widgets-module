@@ -109,11 +109,11 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
         if (value.getDeployedComponent() != null) {
             tool.setValue(value.getDeployedComponent().getName());
+        } else {
+            tool.clear();
         }
-        if (presenter.isOnlyLabelEditMode()) {
-            toolLabel.disable();
-            appNameLabel.disable();
-        }
+        toolLabel.setEnabled(!presenter.isOnlyLabelEditMode());
+        appNameLabel.setEnabled(!presenter.isOnlyLabelEditMode());
         
         cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(value.getName()));
     }
