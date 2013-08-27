@@ -28,6 +28,10 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
+import org.iplantc.core.uicommons.client.validators.DoubleAboveValidator;
+import org.iplantc.core.uicommons.client.validators.DoubleBelowValidator;
+import org.iplantc.core.uicommons.client.validators.IntAboveValidator;
+import org.iplantc.core.uicommons.client.validators.IntBelowValidator;
 import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
@@ -60,8 +64,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 public class AppWizardFieldFactory {
@@ -501,12 +503,12 @@ public class AppWizardFieldFactory {
             case IntAbove:
                 // array of one integer
                 int min2 = Double.valueOf(tv.getParams().get(0).asNumber()).intValue();
-                validator = new MinNumberValidator<Integer>(min2);
+                validator = new IntAboveValidator(min2);
                 break;
             case IntBelow:
                 // array of one integer
                 int max2 = Double.valueOf(tv.getParams().get(0).asNumber()).intValue();
-                validator = new MaxNumberValidator<Integer>(max2);
+                validator = new IntBelowValidator(max2);
                 break;
             default:
                 throw new UnsupportedOperationException("Given validator type is not an Integer validator type.");
@@ -528,12 +530,12 @@ public class AppWizardFieldFactory {
             case DoubleAbove:
                 // Array of one double
                 double min2 = Double.valueOf(tv.getParams().get(0).asNumber());
-                validator = new MinNumberValidator<Double>(min2);
+                validator = new DoubleAboveValidator(min2);
                 break;
             case DoubleBelow:
                 // Array of one double
                 double max2 = Double.valueOf(tv.getParams().get(0).asNumber());
-                validator = new MaxNumberValidator<Double>(max2);
+                validator = new DoubleBelowValidator(max2);
                 break;
     
             /*
@@ -545,12 +547,12 @@ public class AppWizardFieldFactory {
                 validator = new NumberRangeValidator<Double>(intRngValidator.getMinNumber().doubleValue(), intRngValidator.getMaxNumber().doubleValue());
                 break;
             case IntAbove:
-                MinNumberValidator<Integer> intMinValidator = (MinNumberValidator<Integer>)createIntegerValidator(tv);
-                validator = new MinNumberValidator<Double>(intMinValidator.getMinNumber().doubleValue());
+                IntAboveValidator intMinValidator = (IntAboveValidator)createIntegerValidator(tv);
+                validator = new DoubleAboveValidator(intMinValidator.getMinNumber().doubleValue());
                 break;
             case IntBelow:
-                MaxNumberValidator<Integer> intMaxValidator = (MaxNumberValidator<Integer>)createIntegerValidator(tv);
-                validator = new MaxNumberValidator<Double>(intMaxValidator.getMaxNumber().doubleValue());
+                IntBelowValidator intMaxValidator = (IntBelowValidator)createIntegerValidator(tv);
+                validator = new DoubleBelowValidator(intMaxValidator.getMaxNumber().doubleValue());
                 break;
             default:
                 throw new UnsupportedOperationException("Given validator type is not a Double validator type.");
@@ -616,12 +618,12 @@ public class AppWizardFieldFactory {
             case IntAbove:
                 // array of one integer
                 int min2 = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
-                validator = new MinNumberValidator<Integer>(min2);
+                validator = new IntAboveValidator(min2);
                 break;
             case IntBelow:
                 // array of one integer
                 int max2 = Double.valueOf(av.getParams().get(0).asNumber()).intValue();
-                validator = new MaxNumberValidator<Integer>(max2);
+                validator = new IntBelowValidator(max2);
                 break;
             case DoubleRange:
                 // Array of two doubles
@@ -632,12 +634,12 @@ public class AppWizardFieldFactory {
             case DoubleAbove:
                 // Array of one double
                 double minDbl2 = Double.valueOf(av.getParams().get(0).asNumber());
-                validator = new MinNumberValidator<Double>(minDbl2);
+                validator = new DoubleAboveValidator(minDbl2);
                 break;
             case DoubleBelow:
                 // Array of one double
                 double maxDbl2 = Double.valueOf(av.getParams().get(0).asNumber());
-                validator = new MaxNumberValidator<Double>(maxDbl2);
+                validator = new DoubleBelowValidator(maxDbl2);
                 break;
             case CharacterLimit:
                 // Array containing single integer

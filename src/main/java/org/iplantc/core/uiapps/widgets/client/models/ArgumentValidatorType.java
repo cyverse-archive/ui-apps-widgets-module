@@ -1,7 +1,10 @@
 package org.iplantc.core.uiapps.widgets.client.models;
 
-import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import org.iplantc.core.uicommons.client.validators.DoubleAboveValidator;
+import org.iplantc.core.uicommons.client.validators.DoubleBelowValidator;
+import org.iplantc.core.uicommons.client.validators.IntAboveValidator;
+import org.iplantc.core.uicommons.client.validators.IntBelowValidator;
+import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
 
 /**
  * FIXME JDS This needs to have a corresponding Label for each validator.
@@ -10,12 +13,12 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
  * 
  */
 public enum ArgumentValidatorType {
-    IntRange, /** {@link MinNumberValidator} and {@link MaxNumberValidator} */
-    IntAbove, /** {@link MinNumberValidator} */
-    IntBelow, /** {@link MaxNumberValidator} */
-    DoubleRange, /** {@link MinNumberValidator} and {@link MaxNumberValidator} */
-    DoubleAbove, /** {@link MinNumberValidator} */
-    DoubleBelow, /** {@link MaxNumberValidator} */
+    IntRange, /** {@link NumberRangeValidator} */
+    IntAbove, /** {@link IntAboveValidator} */
+    IntBelow, /** {@link IntBelowValidator} */
+    DoubleRange, /** {@link NumberRangeValidator} */
+    DoubleAbove, /** {@link DoubleAboveValidator} */
+    DoubleBelow, /** {@link DoubleBelowValidator} */
     NonEmptyClass,
     GenotypeName,
     FileName,
