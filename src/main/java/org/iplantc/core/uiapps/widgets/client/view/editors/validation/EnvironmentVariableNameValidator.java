@@ -21,7 +21,7 @@ public class EnvironmentVariableNameValidator extends AbstractValidator<String> 
     @Override
     public List<EditorError> validate(Editor<String> editor, String value) {
         if (Strings.isNullOrEmpty(value) || !value.matches("[\\w]+")) { //$NON-NLS-1$
-            String errorMsg = I18N.RULES.environmentVariableNameValidationMsg();
+            String errorMsg = I18N.VALIDATION.environmentVariableNameValidationMsg();
 
             return createError(new DefaultEditorError(editor, errorMsg, value));
         }
