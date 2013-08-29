@@ -109,7 +109,7 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                     createDefaultValueSubEditor(model);
                     break;
                 case MultiFileOutput:
-                    fieldLabelText = SafeHtmlUtils.fromTrustedString(labels.multiFileOutputLabel());
+                    fieldLabelText = SafeHtmlUtils.fromTrustedString(labels.multiFileOutputDefaultLabel());
                     createDefaultValueSubEditor(model);
                     break;
 
