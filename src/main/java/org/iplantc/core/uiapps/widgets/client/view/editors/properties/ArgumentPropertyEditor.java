@@ -762,7 +762,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case FileOutput:
                 argLabelLabel.setText(labels.fileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
+                fileInfoTypeLabel.setHTML(labels.fileInputFileInfoType());
                 label.setEmptyText(labels.fileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());
