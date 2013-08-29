@@ -118,7 +118,7 @@ public class DeployedComponentsListingViewImpl extends Composite implements
     @UiFactory
     ColumnModel<DeployedComponent> createColumnModel() {
         DeployedComponentProperties properties = GWT.create(DeployedComponentProperties.class);
-        IdentityValueProvider<DeployedComponent> provider = new IdentityValueProvider<DeployedComponent>();
+        IdentityValueProvider<DeployedComponent> provider = new IdentityValueProvider<DeployedComponent>("name");
         List<ColumnConfig<DeployedComponent, ?>> configs = new LinkedList<ColumnConfig<DeployedComponent, ?>>();
 
         ColumnConfig<DeployedComponent, DeployedComponent> name = new ColumnConfig<DeployedComponent, DeployedComponent>(provider, 100);

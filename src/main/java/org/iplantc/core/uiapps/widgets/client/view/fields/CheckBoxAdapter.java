@@ -50,6 +50,10 @@ public class CheckBoxAdapter extends AdapterField<Boolean> implements ValueAware
         cb.setText(text);
     }
 
+    public CheckBox getCheckBox() {
+        return cb;
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Boolean> handler) {
         return cb.addValueChangeHandler(handler);

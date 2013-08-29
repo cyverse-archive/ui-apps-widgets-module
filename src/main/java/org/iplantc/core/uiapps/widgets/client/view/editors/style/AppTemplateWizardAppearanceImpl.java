@@ -163,11 +163,6 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     }
 
     @Override
-    public SafeHtml createEmptyToolText() {
-        return templates.redTextFloatRight(appsWidgetsMessages.emptyToolText());
-    }
-
-    @Override
     public int getAppNameCharLimit() {
         return 255;
     }

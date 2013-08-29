@@ -1,7 +1,9 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
@@ -10,6 +12,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -35,7 +38,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     ContentPanel cp; 
     
     @UiField
-    FieldLabel toolLabel, appNameLabel;
+    FieldLabel toolLabel, appNameLabel, appDescriptionLabel;
 
     @Ignore
     @UiField
@@ -60,15 +63,27 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         initWidget(BINDER.createAndBindUi(this));
 
         cp.setHeaderVisible(false);
-        toolLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(presenter.getAppearance().getPropertyPanelLabels().toolUsedLabel(),
-                presenter.getAppearance().getContextHelpMessages().appToolUsed()));
-        QuickTip quickTip = new QuickTip(toolLabel);
-        quickTip.getToolTipConfig().setDismissDelay(0);
         name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
         name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         name.addValidator(new DiskResourceNameValidator());
         description.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         description.addKeyDownHandler(new PreventEntryAfterLimitHandler(description));
+
+        initLabels();
+    }
+
+    private void initLabels() {
+        AppTemplateWizardAppearance appearance = presenter.getAppearance();
+        AppsWidgetsPropertyPanelLabels labels = appearance.getPropertyPanelLabels();
+        String requiredHtml = appearance.getTemplates().fieldLabelRequired().asString();
+
+        String toolHelp = appearance.getContextHelpMessages().appToolUsed();
+        SafeHtml toolLabelHtml = appearance.createContextualHelpLabel(labels.toolUsedLabel(), toolHelp);
+        toolLabel.setHTML(requiredHtml + toolLabelHtml.asString());
+        new QuickTip(toolLabel).getToolTipConfig().setDismissDelay(0);
+
+        appNameLabel.setHTML(requiredHtml + labels.appNameLabel());
+        appDescriptionLabel.setHTML(requiredHtml + labels.appDescriptionLabel());
     }
 
     @UiFactory
@@ -94,11 +109,11 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
         if (value.getDeployedComponent() != null) {
             tool.setValue(value.getDeployedComponent().getName());
+        } else {
+            tool.clear();
         }
-        if (presenter.isOnlyLabelEditMode()) {
-            toolLabel.disable();
-            appNameLabel.disable();
-        }
+        toolLabel.setEnabled(!presenter.isOnlyLabelEditMode());
+        appNameLabel.setEnabled(!presenter.isOnlyLabelEditMode());
         
         cp.setHeadingHtml(presenter.getAppearance().getPropertyPanelLabels().detailsPanelHeader(value.getName()));
     }

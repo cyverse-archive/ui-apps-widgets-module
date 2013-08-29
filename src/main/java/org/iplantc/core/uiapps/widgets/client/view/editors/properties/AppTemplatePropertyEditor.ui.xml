@@ -58,7 +58,6 @@
                 </con:child>                                         
                 <con:child layoutData="{fieldLayoutData}">
                     <form:FieldLabel ui:field="appNameLabel"
-                                     text="{labels.appNameLabel}"
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextField ui:field="name"
@@ -68,7 +67,7 @@
                     </form:FieldLabel> 
                 </con:child>                    
                 <con:child layoutData="{fieldLayoutData}">
-                    <form:FieldLabel text="{labels.appDescriptionLabel}"
+                    <form:FieldLabel ui:field="appDescriptionLabel"
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextArea ui:field="description"

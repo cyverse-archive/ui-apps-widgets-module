@@ -19,7 +19,6 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -54,11 +53,6 @@ public class LaunchAnalysisWidget implements IsWidget, Editor<JobExecution> {
         String warning();
     }
 
-    interface Resources extends ClientBundle {
-        @Source("LaunchAnalysisStyle.css")
-        Style css();
-    }
-
     @Ignore
     @UiField
     ContentPanel contentPanel;
@@ -79,7 +73,6 @@ public class LaunchAnalysisWidget implements IsWidget, Editor<JobExecution> {
     ConverterEditorAdapter<String, HasId, FolderSelectorField> outputDirectory;
     private final UserSettings userSettings;
     private final AppsWidgetsDisplayMessages displayMessages;
-    private final Resources res;
 
     private AppTemplateWizardAppearance appearance;
 
@@ -87,8 +80,6 @@ public class LaunchAnalysisWidget implements IsWidget, Editor<JobExecution> {
         this.appearance = appearance;
         this.userSettings = userSettings;
         this.displayMessages = displayMessages;
-        res = GWT.create(Resources.class);
-        res.css().ensureInjected();
         BINDER.createAndBindUi(this);
         name.addValidator(new DiskResourceNameValidator());
         name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));

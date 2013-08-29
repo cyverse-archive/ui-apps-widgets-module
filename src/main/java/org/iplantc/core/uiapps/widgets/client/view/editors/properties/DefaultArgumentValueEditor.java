@@ -83,7 +83,8 @@ class DefaultArgumentValueEditor extends Composite implements CompositeEditor<Ar
                     break;
 
                 case EnvironmentVariable:
-                    fieldLabelText = appearance.createContextualHelpLabel(labels.envVarDefaultLabel(), help.envVarDefaultName());
+                    fieldLabelText = appearance.createContextualHelpLabel(labels.envVarDefaultLabel(),
+                            help.envVarDefaultValue());
                     createDefaultValueSubEditor(model);
                     break;
                 case Text:

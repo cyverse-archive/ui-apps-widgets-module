@@ -33,6 +33,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -297,14 +298,17 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
         @Override
         protected void onDragDrop(DndDropEvent event) {
             super.onDragDrop(event);
+
             List<Argument> list = listEditor.getList();
-            boolean isNewArg = AutoBeanUtils.getAutoBean((Argument)event.getData()).getTag(Argument.IS_NEW) != null;
-            Argument newArg = AppTemplateUtils.copyArgument((Argument)event.getData());
+            Argument data = (Argument)event.getData();
+            AutoBean<Argument> argumentBean = AutoBeanUtils.getAutoBean(data);
+            boolean isNewArg = argumentBean.getTag(Argument.IS_NEW) != null;
 
             // Update new argument label if needed.
             if (isNewArg) {
-                String label = newArg.getLabel() + " - " + argCountInt++;
-                newArg.setLabel(label);
+                String label = data.getLabel() + " - " + argCountInt++; //$NON-NLS-1$
+                data.setLabel(label);
+                argumentBean.setTag(Argument.IS_NEW, null);
             }
 
             if (list != null) {
@@ -312,9 +316,9 @@ class ArgumentListEditor implements IsWidget, IsEditor<ListEditor<Argument, Argu
                 // child of the argumentsContainer
                 setFireSelectedOnAdd(true);
                 if (insertIndex >= list.size()) {
-                    list.add(newArg);
+                    list.add(data);
                 } else {
-                    list.add(insertIndex, newArg);
+                    list.add(insertIndex, data);
                 }
 
                 // JDS Remove placeholder, empty group argument on DnD add.

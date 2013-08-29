@@ -33,7 +33,7 @@ import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.impl.Refresher;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -44,6 +44,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.AddEvent;
 import com.sencha.gxt.widget.core.client.event.AddEvent.AddHandler;
 import com.sencha.gxt.widget.core.client.event.CollapseEvent;
@@ -110,12 +111,11 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
         argumentGroups.addExpandHandler(expandCollapseHandler);
         argumentGroups.addAddHandler(expandCollapseHandler);
 
-        vlc.add(argumentGroups);
 
         if (editingMode) {
             appTemplatePropEditor = new AppTemplatePropertyEditor(this);
             con.add(appTemplatePropEditor);
-            vlc.insert(con, 0);
+            vlc.add(con, new VerticalLayoutData(1.0, -1.0));
             con.setCollapsible(true);
             con.setAnimCollapse(false);
             con.setTitleCollapse(true);
@@ -125,6 +125,7 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
             con.setHeaderVisible(false);
         }
 
+        vlc.add(argumentGroups, new VerticalLayoutData(1.0, -1.0));
         initWidget(vlc);
         editorDriver.initialize(this);
 
@@ -207,12 +208,9 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
     public void setValue(AppTemplate value) {
         this.appTemplate = value;
         if (isEditingMode()) {
-            SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-            if (value.getDeployedComponent() == null) {
-                labelText.append(appearance.createEmptyToolText());
-            }
-            labelText.append(appearance.createContentPanelHeaderLabel(SafeHtmlUtils.fromString(value.getName()), false));
-            con.setHeadingHtml(labelText.toSafeHtml());
+            SafeHtml appName = SafeHtmlUtils.fromString(value.getName());
+            SafeHtml labelText = appearance.createContentPanelHeaderLabel(appName, false);
+            con.setHeadingHtml(labelText);
         }
     }
 

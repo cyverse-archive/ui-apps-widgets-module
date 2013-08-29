@@ -29,8 +29,10 @@ public class AppTemplateUtils {
     private static final String SELECTION_ITEM_GROUP_GROUPS = "groups";
     private static final String SELECTION_ITEM_GROUP_SINGLE_SELECT = "isSingleSelect";
     private static final String SELECTION_ITEM_GROUP_CASCASE = "selectionCascade";
-    public static final String EMPTY_GROUP_ARG_ID = "emptyArgumentGroupInfoArgumentId";
     private static Argument EMPTY_GROUP_ARG;
+
+    public static final String EMPTY_GROUP_ARG_ID = "emptyArgumentGroupInfoArgumentId"; //$NON-NLS-1$
+    public static final String NEW_ENV_VAR_NAME = "NEW_ENV_VAR"; //$NON-NLS-1$
 
     public static Argument getEmptyGroupArgument() {
         if (EMPTY_GROUP_ARG == null) {
