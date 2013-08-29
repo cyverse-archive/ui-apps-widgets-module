@@ -716,7 +716,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 break;
 
             case Info:
-                argLabelLabel.setText(labels.infoLabel());
+                argLabelLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.infoLabel(), help.infoLabelHelp()));
                 label.setEmptyText(labels.infoEmptyText());
                 break;
             case EnvironmentVariable:

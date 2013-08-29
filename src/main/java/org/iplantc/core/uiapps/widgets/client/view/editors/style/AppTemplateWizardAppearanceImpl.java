@@ -8,6 +8,7 @@ import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanel
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.common.base.Strings;
@@ -125,8 +126,7 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
         // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
         SafeHtml label = SafeHtmlUtils.fromString(model.getLabel().replaceFirst(":$", ""));
         if (model.getType().equals(ArgumentType.Info)) {
-            // KLUDGE: See CORE-4663
-            labelText.append(SafeHtmlUtils.fromTrustedString(model.getLabel()));
+            labelText.append(IPlantSimpleHtmlSanitizer.sanitizeHtml(model.getLabel()));
         } else if (Strings.isNullOrEmpty(model.getDescription()) || ((model.getId() != null) && model.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
             labelText.append(label);
         } else {
