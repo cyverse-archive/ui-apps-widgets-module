@@ -716,7 +716,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                 break;
 
             case Info:
-                argLabelLabel.setText(labels.infoLabel());
+                argLabelLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.infoLabel(), help.infoLabelHelp()));
                 label.setEmptyText(labels.infoEmptyText());
                 break;
             case EnvironmentVariable:
@@ -762,7 +762,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
             case FileOutput:
                 argLabelLabel.setText(labels.fileOutputLabel());
                 dataSourceLabel.setHTML(presenter.getAppearance().createContextualHelpLabel(labels.fileOutputSourceLabel(), help.fileOutputOutputSource()));
-                fileInfoTypeLabel.setHTML(labels.folderInputFileInfoType());
+                fileInfoTypeLabel.setHTML(labels.fileInputFileInfoType());
                 label.setEmptyText(labels.fileOutputEmptyText());
                 omitIfBlank.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;")
                         .append(presenter.getAppearance().createContextualHelpLabelNoFloat(labels.excludeWhenEmpty(), help.fileOutputExcludeArgument())).toSafeHtml());

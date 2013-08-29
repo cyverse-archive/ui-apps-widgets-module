@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
 import org.iplantc.core.uicommons.client.models.HasLabel;
 
 import com.google.common.base.Strings;
@@ -34,14 +35,12 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     private final AppTemplateWizardTemplates templates;
     private final AppsWidgetsPropertyPanelLabels labels;
     private final AppsWidgetsContextualHelpMessages help;
-    private final AppsWidgetsDisplayMessages appsWidgetsMessages;
 
     public AppTemplateWizardAppearanceImpl() {
         res = GWT.create(Resources.class);
         templates = GWT.create(AppTemplateWizardTemplates.class);
         labels = I18N.APPS_LABELS;
         help = I18N.APPS_HELP;
-        appsWidgetsMessages = I18N.APPS_MESSAGES;
     }
 
     @Override
@@ -126,7 +125,9 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
         }
         // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
         SafeHtml label = SafeHtmlUtils.fromString(model.getLabel().replaceFirst(":$", ""));
-        if (Strings.isNullOrEmpty(model.getDescription()) || ((model.getId() != null) && model.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
+        if (model.getType().equals(ArgumentType.Info)) {
+            labelText.append(IPlantSimpleHtmlSanitizer.sanitizeHtml(model.getLabel()));
+        } else if (Strings.isNullOrEmpty(model.getDescription()) || ((model.getId() != null) && model.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
             labelText.append(label);
         } else {
             labelText.append(templates.fieldLabelImgFloatRight(label, res.info().getSafeUri(), model.getDescription()));
