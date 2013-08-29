@@ -83,7 +83,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         new QuickTip(toolLabel).getToolTipConfig().setDismissDelay(0);
 
         appNameLabel.setHTML(requiredHtml + labels.appNameLabel());
-        appDescriptionLabel.setHTML(requiredHtml + labels.appNameLabel());
+        appDescriptionLabel.setHTML(requiredHtml + labels.appDescriptionLabel());
     }
 
     @UiFactory
