@@ -16,7 +16,7 @@
     
     <ui:with field="margins"
              type="com.sencha.gxt.core.client.util.Margins">
-      <ui:attributes top="10"
+      <ui:attributes top="0"
                      right="0"
                      bottom="10"
                      left="0" />
@@ -73,7 +73,7 @@
 		            </toolbar:ToolBar>
                 </con:north>
                 <con:south>
-		            <treeGrid:TreeGrid ui:field="treeGrid"/>
+				    <treeGrid:TreeGrid ui:field="treeGrid" />
                 </con:south>
             </con:NorthSouthContainer>
         </con:south>
