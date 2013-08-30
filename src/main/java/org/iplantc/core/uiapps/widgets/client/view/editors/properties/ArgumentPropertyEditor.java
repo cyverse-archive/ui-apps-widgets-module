@@ -53,6 +53,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortDir;
@@ -65,6 +66,7 @@ import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -389,8 +391,11 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         dlg.setOkButtonText(I18N.DISPLAY.done());
         dlg.setAutoHide(false);
         final SelectionItemTreePropertyEditor selectionItemTreeEditor = new SelectionItemTreePropertyEditor(presenter, model.getSelectionItems());
-        selectionItemTreeEditor.setSize("640", "480");
-        dlg.add(selectionItemTreeEditor);
+        dlg.setSize("640", "480");
+        VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        vlc.setScrollMode(ScrollMode.AUTOY);
+        vlc.add(selectionItemTreeEditor, new VerticalLayoutData(1.0, 1.0));
+        dlg.add(vlc);
         dlg.addOkButtonSelectHandler(new SelectHandler() {
 
             @Override
