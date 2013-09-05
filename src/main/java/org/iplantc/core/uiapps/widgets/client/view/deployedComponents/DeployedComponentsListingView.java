@@ -17,11 +17,6 @@ public interface DeployedComponentsListingView extends IsWidget {
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter {
 
         DeployedComponent getSelectedDC();
-
-        void searchDC(String searchTerm);
-
-        void loadDeployedComponents();
-
     }
 
     public void setPresenter(final Presenter presenter);

@@ -4,7 +4,8 @@
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
-             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
+             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
+             xmlns:srh="urn:import:org.iplantc.core.uiapps.widgets.client.view.deployedComponents">
     <ui:with field="icons"
         type="org.iplantc.core.resources.client.IplantResources" />
     <ui:with field="labels"
@@ -44,9 +45,7 @@
                         <form:widget>
                             <con:HBoxLayoutContainer>
                                 <con:child layoutData="{boxLayoutDataMargins0Flex1}">
-		                            <form:TextField ui:field="tool"
-		                                            readOnly="true"
-		                                            emptyText="{labels.toolUsedEmptyText}"/>
+		                            <srh:DCSearchField ui:field="tool"/>
 		                        </con:child>
                                 <con:child>
 		                            <button:TextButton ui:field="searchBtn"

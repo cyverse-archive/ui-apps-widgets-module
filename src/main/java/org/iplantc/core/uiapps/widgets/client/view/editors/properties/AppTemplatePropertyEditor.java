@@ -2,6 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
+import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DCSearchField;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
@@ -42,7 +43,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
     @Ignore
     @UiField
-    TextField tool;
+    DCSearchField tool;
 
     @Ignore
     @UiField
@@ -108,7 +109,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         }
 
         if (value.getDeployedComponent() != null) {
-            tool.setValue(value.getDeployedComponent().getName());
+            tool.setValue(value.getDeployedComponent());
         } else {
             tool.clear();
         }
