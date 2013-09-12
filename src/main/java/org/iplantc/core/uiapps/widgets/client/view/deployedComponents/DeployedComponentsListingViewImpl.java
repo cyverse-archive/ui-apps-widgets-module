@@ -9,14 +9,13 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
+import org.iplantc.core.uiapps.widgets.client.services.DCSearchRPCProxy;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
+import org.iplantc.core.uicommons.client.widgets.SearchField;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -27,15 +26,18 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.KeyNav;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfig;
+import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
+import com.sencha.gxt.data.shared.loader.LoadResultListStoreBinding;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.container.AbstractHtmlLayoutContainer.HtmlData;
 import com.sencha.gxt.widget.core.client.container.HtmlLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -69,20 +71,35 @@ public class DeployedComponentsListingViewImpl extends Composite implements
     private DeployedComponentsListingView.Presenter presenter;
 
     @UiField
-    TextField searchField;
+    SearchField<DeployedComponent> searchField;
 
     @UiField
     Grid<DeployedComponent> grid;
 
     @UiField
     VerticalLayoutContainer container;
+    
+    DCSearchRPCProxy searchProxy;
+    
+    PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader;
+
+    
+    
+    @UiFactory
+    SearchField<DeployedComponent> createAppSearchField() {
+        return new SearchField<DeployedComponent>(loader);
+    }
 
     public DeployedComponentsListingViewImpl(ListStore<DeployedComponent> listStore,
             SelectionChangedHandler<DeployedComponent> handler) {
         this.store = listStore;
+        searchProxy = new DCSearchRPCProxy();
+        loader = buildLoader();
         widget = uiBinder.createAndBindUi(this);
+        grid.setLoader(loader);
         grid.getSelectionModel().addSelectionChangedHandler(handler);
-        initSearchField();
+        loader.addLoadHandler(new LoadResultListStoreBinding<FilterPagingLoadConfig, DeployedComponent, PagingLoadResult<DeployedComponent>>(store));
+        loader.load(new FilterPagingLoadConfigBean());
     }
 
     @Override
@@ -90,29 +107,17 @@ public class DeployedComponentsListingViewImpl extends Composite implements
         return widget;
     }
 
-    private void initSearchField() {
-        searchField.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                String currentValue = searchField.getCurrentValue();
-                if(currentValue == null || currentValue.isEmpty()) {
-                    presenter.loadDeployedComponents();
-                }
-            }
-        });
-        new KeyNav(searchField) {
-            @Override
-            public void onEnter(NativeEvent evt) {
-                onSearchBtnClick(null);
-            }
-        };
-    }
-
-    @Override
+     @Override
     public void setPresenter(DeployedComponentsListingView.Presenter presenter) {
         this.presenter = presenter;
 
+    }
+    
+    private PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> buildLoader() {
+        final PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader = new PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>>(
+                searchProxy);
+        loader.useLoadConfig(new FilterPagingLoadConfigBean());
+        return loader;
     }
 
     @UiFactory
@@ -187,19 +192,19 @@ public class DeployedComponentsListingViewImpl extends Composite implements
 
     }
 
-    @UiHandler({"searchBtn"})
-    void onSearchBtnClick(SelectEvent event) {
-        String currentValue = searchField.getCurrentValue();
-        if (currentValue == null || currentValue.isEmpty()) {
-            presenter.loadDeployedComponents();
-            return;
-        }
-        if (currentValue.length() >= 3) {
-            presenter.searchDC(currentValue);
-        } else {
-            searchField.markInvalid(I18N.DISPLAY.searchEmptyText());
-        }
-    }
+//    @UiHandler({"searchBtn"})
+//    void onSearchBtnClick(SelectEvent event) {
+//        String currentValue = searchField.getCurrentValue();
+//        if (currentValue == null || currentValue.isEmpty()) {
+//            presenter.loadDeployedComponents();
+//            return;
+//        }
+//        if (currentValue.length() >= 3) {
+//            presenter.searchDC(currentValue);
+//        } else {
+//            searchField.markInvalid(I18N.DISPLAY.searchEmptyText());
+//        }
+//    }
 
     @UiHandler({"newToolBtn"})
     void onNewToolRequestBtnClick(SelectEvent event) {

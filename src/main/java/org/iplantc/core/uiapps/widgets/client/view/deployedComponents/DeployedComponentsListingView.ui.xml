@@ -6,7 +6,8 @@
 	xmlns:row="urn:import:com.sencha.gxt.widget.core.client.container"
 	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
 	xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
-	xmlns:gwt="urn:import:com.google.gwt.widget.client">
+	xmlns:gwt="urn:import:com.google.gwt.widget.client"
+	xmlns:srh="urn:import:org.iplantc.core.uicommons.client.widgets">
 
 
 	<ui:with field="icons"
@@ -47,8 +48,7 @@
 			ui:field="container">
 			<row:child layoutData="{topData}">
 				<tb:ToolBar ui:field="toolBar" height="30" spacing="3">
-					<form:TextField debugId="idTxtSearch" ui:field="searchField" emptyText="{strings.searchEmptyText}" width="250"></form:TextField>
-					<button:TextButton debugId="idBtnSearch" icon="{icons.search}" ui:field="searchBtn"></button:TextButton>
+					<srh:SearchField ui:field="searchField" />
 					<button:TextButton debugId="idBtnNewToolReq" text="{strings.newToolReq}" icon="{icons.add}"
 						ui:field="newToolBtn"></button:TextButton>
 				</tb:ToolBar>

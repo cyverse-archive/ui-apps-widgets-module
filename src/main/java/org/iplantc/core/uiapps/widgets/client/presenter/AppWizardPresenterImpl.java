@@ -26,11 +26,11 @@ import org.iplantc.core.uicommons.client.presenter.Presenter;
 import org.iplantc.core.uicommons.client.util.RegExp;
 import org.iplantc.de.client.UUIDServiceAsync;
 
-import com.extjs.gxt.ui.client.util.Format;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
+import com.sencha.gxt.core.client.util.Format;
 
 /**
  * 
