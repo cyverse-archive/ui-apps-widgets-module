@@ -28,6 +28,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -141,7 +142,15 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
         ColumnModel<SelectionItem> cm = new ColumnModel<SelectionItem>(newArrayList);
 
         // Create and configure TreeGrid
-        treeGrid = new TreeGrid<SelectionItem>(store, cm, displayConfig);
+        treeGrid = new TreeGrid<SelectionItem>(store, cm, displayConfig) {
+            @Override
+            protected void onDoubleClick(Event e) {
+                // KLUDGE CORE-4754 intentionally do nothing to prevent groups from expanding instead of
+                // editing, since the GridInlineEditing below is configured for double-click editing.
+                // According to Sven in the support forums, this is currently the only way to disable
+                // expand/collapse on double-click.
+            }
+        };
 
         GridInlineEditing<SelectionItem> editing = new GridInlineEditing<SelectionItem>(treeGrid);
         editing.setClicksToEdit(ClicksToEdit.TWO);
