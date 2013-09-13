@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
@@ -300,7 +301,7 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
     @Override
     public List<EditorError> getErrors() {
         // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
