@@ -9,14 +9,10 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeProperties;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
-import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
-import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentValueField;
 import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.ConverterFieldAdapter;
-import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToBooleanConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToDoubleConverter;
 import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.SplittableToHasIdConverter;
@@ -43,7 +39,6 @@ import org.iplantc.core.uidiskresource.client.views.widgets.MultiFileSelectorFie
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -70,38 +65,6 @@ public class AppWizardFieldFactory {
 
     private static ListStore<ReferenceGenome> refGenStore = null;
     private static final AppsWidgetsPropertyPanelLabels labels = I18N.APPS_LABELS;
-
-    /**
-     * Returns an {@link Editor} which contains sub-editors which are bound to an {@link Argument}'s
-     * {@link Argument#getSelectionItems()} and {@link Argument#getValue()} properties.
-     * 
-     * @param argument used to determine the type of "Selector" editor to create and return;
-     * @param editingMode a flag which represents whether the return object needs to be created for an
-     *            App editor, or not.
-     * @return an {@linkplain Editor} whose sub-editors are bound to an {@linkplain Argument}'s
-     *         "selectionItem" and "value" properties.
-     */
-    public static ArgumentSelectionField createArgumentListField(Argument argument, AppTemplateWizardPresenter presenter) {
-        if (argument.getSelectionItems() == null) {
-            argument.setSelectionItems(Lists.<SelectionItem> newArrayList());
-        }
-        ArgumentSelectionField field = null;
-        switch (argument.getType()) {
-            case TextSelection:
-
-            case IntegerSelection:
-                // TBI JDS Currently returning the textual combobox until an appropriate one is developed
-            case DoubleSelection:
-                // TBI JDS Currently returning the textual combobox until an appropriate one is developed
-
-            case TreeSelection:
-                field = new SelectionItemTreePanel(presenter);
-                break;
-            default:
-                break;
-        }
-        return field;
-    }
 
     public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode, final AppMetadataServiceFacade appMetadataService) {
         return createArgumentValueField(argument, editingMode, appMetadataService, false);
@@ -349,7 +312,6 @@ public class AppWizardFieldFactory {
         if (!((field instanceof Field<?>) || (field instanceof ConverterFieldAdapter<?, ?>) || (field instanceof ValueBaseField<?>))) {
             return;
         }
-
 
         if (argument.getRequired()) {
             EmptyValidator<T> emptyValidator = new EmptyValidator<T>();

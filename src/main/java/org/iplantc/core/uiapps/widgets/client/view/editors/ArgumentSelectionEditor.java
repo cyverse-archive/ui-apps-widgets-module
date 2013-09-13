@@ -10,6 +10,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.ArgumentSelectionField
 import org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector.SelectionItemTreePanel;
 
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,6 +38,7 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
     private final AppTemplateWizardPresenter presenter;
 
     private Argument model;
+    private EditorDelegate<Argument> delegate;
 
     ArgumentSelectionEditor(AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
@@ -104,6 +106,11 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             } else {
                 w.setEnabled(value.isVisible());
             }
+            if (!presenter.isEditingMode()) {
+                if (subEditor instanceof AppWizardComboBox) {
+                    ((AppWizardComboBox)subEditor).setRequired(model.getRequired());
+                }
+            }
         } else {
             subEditor.setValue(model);
             HasEnabled w = ((HasEnabled)subEditor.asWidget());
@@ -111,6 +118,11 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
                 w.setEnabled(false);
             } else {
                 w.setEnabled(value.isVisible());
+            }
+            if (!presenter.isEditingMode()) {
+                if (subEditor instanceof AppWizardComboBox) {
+                    ((AppWizardComboBox)subEditor).setRequired(model.getRequired());
+                }
             }
         }
         // Update label
@@ -124,10 +136,17 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
             return;
         }
         subEditor.flush();
+
+        // JDS Transfer errors to delegate
+        for (EditorError err : subEditor.getErrors()) {
+            delegate.recordError(err.getMessage(), err.getValue(), err.getEditor());
+        }
     }
 
     @Override
-    public void setDelegate(EditorDelegate<Argument> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<Argument> delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}
@@ -149,6 +168,14 @@ class ArgumentSelectionEditor extends Composite implements ValueAwareEditor<Argu
     @Override
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return propertyLabel.addDomHandler(handler, ClickEvent.getType());
+    }
+
+    public boolean hasErrors() {
+        return subEditor.hasErrors();
+    }
+
+    public List<EditorError> getErrors() {
+        return subEditor.getErrors();
     }
 
 }
