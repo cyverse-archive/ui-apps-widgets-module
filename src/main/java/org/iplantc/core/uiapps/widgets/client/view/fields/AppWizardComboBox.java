@@ -184,7 +184,10 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     public List<EditorError> getErrors() {
         List<EditorError> errors = Lists.newArrayList();
         for (Validator<SelectionItem> val : selectionItemsEditor.getValidators()) {
-            errors.addAll(val.validate(selectionItemsEditor, selectionItemsEditor.getValue()));
+            final List<EditorError> validateErrs = val.validate(selectionItemsEditor, selectionItemsEditor.getValue());
+            if (validateErrs != null) {
+                errors.addAll(validateErrs);
+            }
         }
         return errors;
     }
