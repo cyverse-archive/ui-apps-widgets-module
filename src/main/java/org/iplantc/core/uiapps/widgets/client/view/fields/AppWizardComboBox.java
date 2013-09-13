@@ -31,6 +31,7 @@ import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.Validator;
 
 /**
  * This has to bind the ComboBox's Store to the Argument's selection Items.<br>
@@ -176,12 +177,15 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
     @Override
     public boolean hasErrors() {
-        return !selectionItemsEditor.getErrors().isEmpty();
+        return !selectionItemsEditor.isValid();
     }
 
     @Override
     public List<EditorError> getErrors() {
-        final List<EditorError> errors = selectionItemsEditor.getErrors();
+        List<EditorError> errors = Lists.newArrayList();
+        for (Validator<SelectionItem> val : selectionItemsEditor.getValidators()) {
+            errors.addAll(val.validate(selectionItemsEditor, selectionItemsEditor.getValue()));
+        }
         return errors;
     }
 
