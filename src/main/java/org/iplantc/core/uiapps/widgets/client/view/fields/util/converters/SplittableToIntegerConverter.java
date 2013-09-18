@@ -10,7 +10,7 @@ public class SplittableToIntegerConverter implements Converter<Splittable, Integ
     @Override
     public Splittable convertFieldValue(Integer object) {
         if (object == null)
-            return StringQuoter.createSplittable();
+            return null;
 
         return StringQuoter.create(object);
     }

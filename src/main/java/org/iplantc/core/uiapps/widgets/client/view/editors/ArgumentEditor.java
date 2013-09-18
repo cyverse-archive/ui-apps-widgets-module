@@ -1,6 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent;
@@ -190,6 +189,10 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
             if (((ArgumentValueEditor)subEditor).hasErrors() || ((argPropEditor != null) && argPropEditor.hasErrors())) {
                 return true;
             }
+        } else if (subEditor instanceof ArgumentSelectionEditor) {
+            if (((ArgumentSelectionEditor)subEditor).hasErrors() || ((argPropEditor != null) && argPropEditor.hasErrors())) {
+                return true;
+            }
         }
         return false;
     }
@@ -197,10 +200,9 @@ class ArgumentEditor extends Composite implements HasPropertyEditor, ValueAwareE
     public List<? extends EditorError> getErrors() {
         List<EditorError> errors = Lists.newArrayList();
         if (subEditor instanceof ArgumentValueEditor) {
-            if (errors == null) {
-                return Collections.emptyList();
-            }
             errors.addAll(((ArgumentValueEditor)subEditor).getErrors());
+        } else if (subEditor instanceof ArgumentSelectionEditor) {
+            errors.addAll(((ArgumentSelectionEditor)subEditor).getErrors());
         }
         return errors;
     }

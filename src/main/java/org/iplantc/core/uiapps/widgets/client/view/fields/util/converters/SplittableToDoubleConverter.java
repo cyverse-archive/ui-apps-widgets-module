@@ -10,7 +10,7 @@ public class SplittableToDoubleConverter implements Converter<Splittable, Double
     @Override
     public Splittable convertFieldValue(Double object) {
         if (object == null)
-            return StringQuoter.createSplittable();
+            return null;
 
         return StringQuoter.create(object);
     }

@@ -28,6 +28,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.validation.Environmen
 import org.iplantc.core.uiapps.widgets.client.view.fields.AppWizardComboBox;
 import org.iplantc.core.uiapps.widgets.client.view.fields.CheckBoxAdapter;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -158,7 +159,8 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
     private final UUIDServiceAsync uuidService;
     private final IplantContextualHelpAccessStyle style = IplantResources.RESOURCES.getContxtualHelpStyle();
-
+    private final CmdLineArgCharacterValidator validator = new CmdLineArgCharacterValidator(I18N.V_CONSTANTS.restrictedCmdLineChars());
+    
     public ArgumentPropertyEditor(final AppTemplateWizardPresenter presenter, final UUIDServiceAsync uuidService, final AppMetadataServiceFacade appMetadataService) {
         this.presenter = presenter;
         this.uuidService = uuidService;
@@ -168,6 +170,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
         fileInfoTypeComboBox = createFileInfoTypeComboBox(appMetadataService);
         dataSourceComboBox = createDataSourceComboBox(appMetadataService);
+        
 
         /*
          * Validation control and selection creation control will be created here, bound to argument.
@@ -180,6 +183,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         initWidget(BINDER.createAndBindUi(this));
         QuickTip quickTip = new QuickTip(this);
         quickTip.getToolTipConfig().setDismissDelay(0);
+        name.addValidator(validator);
     }
 
     @UiFactory
@@ -585,6 +589,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
                         value.setName(AppTemplateUtils.NEW_ENV_VAR_NAME);
                     }
                     name.setAllowBlank(false);
+                    name.removeValidator(validator);
                     name.addValidator(new EnvironmentVariableNameValidator());
                     break;
 

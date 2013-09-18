@@ -16,6 +16,7 @@ import org.iplantc.core.uiapps.widgets.client.view.fields.util.converters.Splitt
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -44,6 +45,7 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         @Override
         public void onSelection(SelectionEvent<SelectionItem> event) {
             SelectionItem selectedItem = event.getSelectedItem();
+            ValueChangeEvent.fire(AppWizardComboBox.this, Lists.<SelectionItem> newArrayList(selectedItem));
             ValueChangeEvent.fire(AppWizardComboBox.this, Lists.<SelectionItem> newArrayList(selectedItem));
         }
     }
@@ -91,6 +93,8 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
 
     @Override
     public void flush() {
+        selectionItemsEditor.flush();
+        selectionItemsEditor.validate(false);
         SelectionItem currSi = selectionItemsEditor.getCurrentValue();
         if (currSi == null) {
             return;
@@ -122,7 +126,6 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
         if (model.getSelectionItems() != null) {
             selectionItemsStoreBinder.setValue(model.getSelectionItems());
         }
-        selectionItemsEditor.clear();
         if (model.getValue() != null) {
             if (!model.getValue().isUndefined("id")) {
                 SelectionItem modelValue = AutoBeanCodex.decode(factory, SelectionItem.class, model.getValue()).as();
@@ -165,6 +168,27 @@ public class AppWizardComboBox extends Composite implements ArgumentSelectionFie
     @Override
     public Argument getValue() {
         return model;
+    }
+
+    public void setRequired(boolean required) {
+        selectionItemsEditor.setAllowBlank(!required);
+    }
+
+    @Override
+    public boolean hasErrors() {
+        return !selectionItemsEditor.getErrors().isEmpty();
+    }
+
+    @Override
+    public List<EditorError> getErrors() {
+        final List<EditorError> errors = selectionItemsEditor.getErrors();
+        return errors;
+    }
+
+    @Override
+    public void validate(boolean preventMark) {
+        selectionItemsEditor.flush();
+        selectionItemsEditor.validate(preventMark);
     }
 
 }

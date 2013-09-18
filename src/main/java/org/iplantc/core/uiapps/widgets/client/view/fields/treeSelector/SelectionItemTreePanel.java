@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.fields.treeSelector;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
@@ -17,6 +18,7 @@ import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemTreeStoreEd
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -289,5 +291,22 @@ public class SelectionItemTreePanel extends VerticalLayoutContainer implements V
 
     public TreeStore<SelectionItem> getTreeStore() {
         return tree.getStore();
+    }
+
+    @Override
+    public boolean hasErrors() {
+        return false;
+    }
+
+    @Override
+    public List<EditorError> getErrors() {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void validate(boolean preventMark) {
+        // TODO Auto-generated method stub
+
     }
 }
