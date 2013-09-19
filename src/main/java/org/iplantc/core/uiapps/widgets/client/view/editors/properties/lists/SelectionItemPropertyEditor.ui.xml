@@ -20,7 +20,7 @@
              field="selectionArgStore"/>
     <ui:with type="com.sencha.gxt.widget.core.client.grid.GridView" 
              field="view">
-        <ui:attributes stripeRows="true" forceFit="true" autoFill="true"/>
+        <ui:attributes stripeRows="true" forceFit="true" />
     </ui:with>          
              
     <con:NorthSouthContainer ui:field="con">
@@ -40,11 +40,13 @@
                 </toolbar:ToolBar>
        </con:north>
        <con:south>
+       	<con:SimpleContainer height="380" width="630">
                 <grid:Grid ui:field="grid" 
                            cm="{cm}" 
                            store="{selectionArgStore}" 
                            view="{view}"
                            toolTip="{labels.singleSelectEditToolTip}"/>
+          </con:SimpleContainer>
        </con:south>
     </con:NorthSouthContainer>         
 </ui:UiBinder> 

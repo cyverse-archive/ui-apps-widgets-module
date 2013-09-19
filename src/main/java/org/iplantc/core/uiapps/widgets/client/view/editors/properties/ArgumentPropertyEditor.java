@@ -359,7 +359,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         dlg.setOkButtonText(I18N.DISPLAY.done());
         dlg.setAutoHide(false);
         final SelectionItemPropertyEditor selectionItemListEditor = new SelectionItemPropertyEditor(model.getSelectionItems(), model.getType(), presenter, uuidService);
-        selectionItemListEditor.setSize("640", "480");
+        dlg.setSize("640", "480");
         dlg.add(selectionItemListEditor);
         dlg.addOkButtonSelectHandler(new SelectHandler() {
 

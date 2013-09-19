@@ -3,13 +3,13 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.properties.lists;
 import java.util.Collection;
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
-import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
 import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.de.client.UUIDServiceAsync;
@@ -21,32 +21,37 @@ import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.Style.Side;
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.grid.editing.AbstractGridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
-import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
+import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 /**
  * 
@@ -84,7 +89,7 @@ public class SelectionItemPropertyEditor extends Composite implements HasValueCh
 
     private ColumnConfig<SelectionItem, String> valueCol;
 
-     private final GridInlineEditing<SelectionItem> editing;
+     private final GridRowEditing<SelectionItem> editing;
 
     private boolean suppressEvent = false;
 
@@ -99,16 +104,34 @@ public class SelectionItemPropertyEditor extends Composite implements HasValueCh
         initWidget(BINDER.createAndBindUi(this));
         grid.getView().setEmptyText(labels.selectionCreateWidgetEmptyText());
 
-        editing = new GridInlineEditing<SelectionItem>(grid);
-        ((AbstractGridEditing<SelectionItem>)editing).setClicksToEdit(ClicksToEdit.TWO);
-        TextField field1 = new TextField();
-        field1.addValidator(new CmdLineArgCharacterValidator());
-        field1.setSelectOnFocus(true);
-        TextField field2 = new TextField();
-        field2.addValidator(new CmdLineArgCharacterValidator());
-        field2.setSelectOnFocus(true);
-        editing.addEditor(valueCol, field1);
-        editing.addEditor(nameCol, field2);
+        editing = new GridRowEditing<SelectionItem>(grid){
+            
+            @Override
+            protected void showTooltip(SafeHtml msg) {
+                if (tooltip == null) {
+                  ToolTipConfig config = new ToolTipConfig();
+                  config.setAutoHide(false);
+                  config.setAnchor(Side.RIGHT);
+                  config.setTitleHtml(getMessages().errorTipTitleText());
+                  tooltip = new ToolTip(toolTipAlignWidget, config);
+                  tooltip.setMaxWidth(600);
+                }
+                ToolTipConfig config = tooltip.getToolTipConfig();
+                config.setBodyHtml(msg);
+                tooltip.update(config);
+                tooltip.enable();
+                if (!tooltip.isAttached()) {
+                  tooltip.show();
+                  tooltip.getElement().updateZIndex(0);
+                }
+              }
+            
+        };
+        
+        editing.setClicksToEdit(ClicksToEdit.TWO);
+  
+        editing.addEditor(valueCol, buildEditorField(new CmdLineArgCharacterValidator(I18N.V_CONSTANTS.restrictedCmdLineArgCharsExclNewline())));
+        editing.addEditor(nameCol, buildEditorField(new CmdLineArgCharacterValidator(I18N.V_CONSTANTS.restrictedCmdLineChars())));
         
 
         // Add selection handler to grid to control enabled state of "delete" button
@@ -118,7 +141,22 @@ public class SelectionItemPropertyEditor extends Composite implements HasValueCh
         initColumns(type);
         selectionItemsEditor.setValue(selectionItems);
     }
-
+    
+    
+    private TextField buildEditorField(Validator<String> validator) {
+        final TextField field1 = new TextField();
+        field1.addValidator(validator);
+        field1.setSelectOnFocus(true);
+        field1.setAutoValidate(true);
+        field1.addInvalidHandler(new InvalidHandler() {
+            
+            @Override
+            public void onInvalid(InvalidEvent event) {
+               field1.clear();
+            }
+        });
+        return field1;
+    }
 
     @UiFactory
     ListStore<SelectionItem> createListStore() {
@@ -128,17 +166,16 @@ public class SelectionItemPropertyEditor extends Composite implements HasValueCh
                 return item.getId();
             }
         });
-        listStore.addStoreHandlers(new MyStoreHandler(this, this));
-        return listStore;
+         return listStore;
     }
 
     @UiFactory
     ColumnModel<SelectionItem> createColumnModel() {
         List<ColumnConfig<SelectionItem, ?>> list = Lists.newArrayList();
         SelectionItemProperties props = GWT.create(SelectionItemProperties.class);
-        displayCol = new ColumnConfig<SelectionItem, String>(props.display(), 90, labels.singleSelectDisplayColumnHeader());
-        nameCol = new ColumnConfig<SelectionItem, String>(props.name(), 50, labels.singleSelectNameColumnHeader());
-        valueCol = new ColumnConfig<SelectionItem, String>(props.value(), 50, labels.singleSelectValueColumnHeader());
+        displayCol = new ColumnConfig<SelectionItem, String>(props.display(), 120, labels.singleSelectDisplayColumnHeader());
+        nameCol = new ColumnConfig<SelectionItem, String>(props.name(), 150, labels.singleSelectNameColumnHeader());
+        valueCol = new ColumnConfig<SelectionItem, String>(props.value(), 150, labels.singleSelectValueColumnHeader());
 
         list.add(displayCol);
         list.add(nameCol);
@@ -242,51 +279,6 @@ public class SelectionItemPropertyEditor extends Composite implements HasValueCh
         }
     }
 
-    // @Override
-    // public void setValue(Argument value) {
-    // if((value == null)
-    // || ((value != null)
-    // && (!AppTemplateUtils.isSelectionArgumentType(value.getType()) ||
-    // value.getType().equals(ArgumentType.TreeSelection)))) {
-    // return;
-    // }
-    // this.model = value;
-    //
-    // // May be able to set the proper editor by adding it at this time. The column model will use the
-    // // value as a String, but I can adjust the editing to be string, integer, double.
-    // if (editing.getEditor(displayCol) == null) {
-    // switch (model.getType()) {
-    // case Selection:
-    // case TextSelection:
-    // TextField textField = new TextField();
-    // textField.setSelectOnFocus(true);
-    // editing.addEditor(displayCol, textField);
-    // break;
-    //
-    // case DoubleSelection:
-    // NumberField<Double> dblField = new NumberField<Double>(new
-    // NumberPropertyEditor.DoublePropertyEditor());
-    // dblField.setSelectOnFocus(true);
-    // editing.addEditor(displayCol, new StringToDoubleConverter(), dblField);
-    // break;
-    //
-    // case IntegerSelection:
-    // NumberField<Integer> intField = new NumberField<Integer>(new
-    // NumberPropertyEditor.IntegerPropertyEditor());
-    // intField.setSelectOnFocus(true);
-    // editing.addEditor(displayCol, new StringToIntegerConverter(), intField);
-    // break;
-    //
-    // default:
-    // // The current argument is not a valid type for this control.
-    // // So, disable and hide ourself so the user doesn't see it.
-    // con.setEnabled(false);
-    // con.setVisible(false);
-    // break;
-    // }
-    // }
-    // }
-
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<SelectionItem>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
@@ -303,27 +295,6 @@ public class SelectionItemPropertyEditor extends Composite implements HasValueCh
         this.suppressEvent = suppressEventFire;
     }
 
-    private final class MyStoreHandler extends SelectionItemValueChangeStoreHandler {
-        private MyStoreHandler(HasEventSuppression hasEventSuppression, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
-            super(hasEventSuppression, valueChangeTarget);
-        }
-    
-        @Override
-        protected List<SelectionItem> getCurrentValue() {
-            return selectionArgStore.getAll();
-        }
-    
-        @Override
-        public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
-            // SelectionItem si = event.getRecord().getModel();
-            // if (si.isDefault() && (model != null)) {
-            // Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(si));
-            // model.setDefaultValue(encode);
-            // model.setValue(encode);
-            // }
-            super.onRecordChange(event);
-        }
-    }
 
     private final class MyListStoreEditor extends ListStoreEditor<SelectionItem> {
         private final AppTemplateWizardPresenter presenter;

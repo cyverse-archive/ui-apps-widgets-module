@@ -73,7 +73,9 @@
 		            </toolbar:ToolBar>
                 </con:north>
                 <con:south>
+                <con:SimpleContainer height="380" width="630">
 				    <treeGrid:TreeGrid ui:field="treeGrid" />
+				    </con:SimpleContainer>
                 </con:south>
             </con:NorthSouthContainer>
         </con:south>
