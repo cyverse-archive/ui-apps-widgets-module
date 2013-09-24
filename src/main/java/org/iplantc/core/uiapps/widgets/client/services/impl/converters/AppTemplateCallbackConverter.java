@@ -1,4 +1,4 @@
-package org.iplantc.core.uiapps.widgets.client.services.impl;
+package org.iplantc.core.uiapps.widgets.client.services.impl.converters;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
+import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.services.AsyncCallbackConverter;
 
@@ -41,7 +42,7 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
          * JDS If the result contains no "deployedComponent" definition, and the result contains a
          * DeployedComponent id, then search for the DeployedComponent and attach it to the result.
          */
-        boolean hasDeployedComponentId = split.getPropertyKeys().contains("component_id");
+        /*boolean hasDeployedComponentId = split.getPropertyKeys().contains("component_id");
         boolean hasDeployedComponent = split.getPropertyKeys().contains("deployedComponent");
         if (!hasDeployedComponent && hasDeployedComponentId && !Strings.isNullOrEmpty(split.get("component_id").asString())) {
             final Splittable deployedComponentId = split.get("component_id");
@@ -67,7 +68,23 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
             });
         } else {
             super.onSuccess(split.getPayload());
-        }
+        }*/
+        dcServices.getAppTemplateDeployedComponent(CommonModelUtils.createHasIdFromSplittable(split), new AsyncCallback<DeployedComponent>() {
+
+            @Override
+            public void onSuccess(DeployedComponent dc) {
+                if(dc != null){
+                    Splittable dcSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(dc));
+                    dcSplittable.assign(split, "deployedComponent");                    
+                }
+                AppTemplateCallbackConverter.super.onSuccess(split.getPayload());
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                AppTemplateCallbackConverter.this.onFailure(caught);
+            }
+        });
     }
 
     @Override
@@ -75,6 +92,7 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
 
         Splittable split = StringQuoter.split(object);
         AutoBean<AppTemplate> atAb = AutoBeanCodex.decode(factory, AppTemplate.class, split);
+
 
         /*
          * JDS Grab TreeSelection argument type's original selectionItems, decode them as

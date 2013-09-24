@@ -1,4 +1,4 @@
-package org.iplantc.core.uiapps.widgets.client.services.impl;
+package org.iplantc.core.uiapps.widgets.client.services.impl.converters;
 
 import java.util.List;
 
@@ -7,16 +7,17 @@ import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentA
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentList;
 import org.iplantc.core.uicommons.client.services.AsyncCallbackConverter;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
 public class GetDeployedComponentsCallbackConverter extends AsyncCallbackConverter<String, List<DeployedComponent>> {
 
-    private final DeployedComponentAutoBeanFactory factory = GWT.create(DeployedComponentAutoBeanFactory.class);
-    public GetDeployedComponentsCallbackConverter(AsyncCallback<List<DeployedComponent>> callback) {
+    private final DeployedComponentAutoBeanFactory factory;
+
+    public GetDeployedComponentsCallbackConverter(AsyncCallback<List<DeployedComponent>> callback, DeployedComponentAutoBeanFactory factory) {
         super(callback);
+        this.factory = factory;
     }
 
     @Override
