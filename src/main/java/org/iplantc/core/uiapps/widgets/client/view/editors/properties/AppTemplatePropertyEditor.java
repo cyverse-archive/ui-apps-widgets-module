@@ -7,7 +7,6 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPres
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
 import org.iplantc.core.uicommons.client.validators.AppNameValidator;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 
 import com.google.gwt.core.client.GWT;
@@ -60,6 +59,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
     private final AppTemplateWizardPresenter presenter;
 
+    private AppTemplate model;
+
     public AppTemplatePropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
         initWidget(BINDER.createAndBindUi(this));
@@ -108,6 +109,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         if (value == null) {
             return;
         }
+        
+        this.model = value;
 
         if (value.getDeployedComponent() != null) {
             tool.setValue(value.getDeployedComponent());
@@ -124,7 +127,13 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     public void setDelegate(EditorDelegate<AppTemplate> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {/* Do Nothing */}
+    public void flush() {
+        if(model == null) {
+            return;
+        }
+        
+        model.setDeployedComponent(tool.getValue());
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}

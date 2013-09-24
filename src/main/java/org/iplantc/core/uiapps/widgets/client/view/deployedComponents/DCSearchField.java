@@ -80,6 +80,10 @@ public class DCSearchField implements IsWidget{
         combo.setValue(value);
     }
     
+    public DeployedComponent getValue() {
+        return combo.getValue();
+    }
+    
     public void clear() {
         combo.clear();
     }
