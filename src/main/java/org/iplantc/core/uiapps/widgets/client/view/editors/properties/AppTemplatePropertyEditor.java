@@ -6,6 +6,7 @@ import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DCSearchFi
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.validators.AppNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 
@@ -41,8 +42,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     @UiField
     FieldLabel toolLabel, appNameLabel, appDescriptionLabel;
 
-    @Ignore
     @UiField
+    @Ignore
     DCSearchField tool;
 
     @Ignore
@@ -100,8 +101,13 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     }
 
     @UiHandler("searchBtn")
-    public void onSearchBtnClick(SelectEvent event) {
+    void onSearchBtnClick(SelectEvent event) {
         presenter.showToolSearchDialog();
+    }
+
+    @UiHandler("tool")
+    void onToolValueChanged(ValueChangeEvent<DeployedComponent> event) {
+        presenter.onArgumentPropertyValueChange();
     }
 
     @Override

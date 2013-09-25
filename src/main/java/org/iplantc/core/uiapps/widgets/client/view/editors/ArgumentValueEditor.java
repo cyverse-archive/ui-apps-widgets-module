@@ -100,19 +100,29 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
             HasEnabled w = (HasEnabled)subEditor.asWidget();
             if (presenter.isOnlyLabelEditMode()) {
                 w.setEnabled(false);
-            } else {
-                w.setEnabled(value.isVisible());
             }
-            if (!presenter.isEditingMode()) {
-                setVisible(value.isVisible());
-            }
-        } else if (!model.getType().equals(ArgumentType.Info)) {
-            HasEnabled w = (HasEnabled)subEditor.asWidget();
-            if (presenter.isOnlyLabelEditMode()) {
+            if (presenter.isEditingMode() && AppTemplateUtils.isReferenceType(model.getType())) {
                 w.setEnabled(false);
             } else {
                 w.setEnabled(value.isVisible());
             }
+
+            if (!presenter.isEditingMode()) {
+                setVisible(value.isVisible());
+            }
+
+
+        } else if (!model.getType().equals(ArgumentType.Info)) {
+            HasEnabled w = (HasEnabled)subEditor.asWidget();
+            if (presenter.isOnlyLabelEditMode()) {
+                w.setEnabled(false);
+            }
+            if (presenter.isEditingMode() && AppTemplateUtils.isReferenceType(model.getType())) {
+                w.setEnabled(false);
+            } else {
+                w.setEnabled(value.isVisible());
+            }
+
             subEditor.setValue(model.getValue());
         }
 

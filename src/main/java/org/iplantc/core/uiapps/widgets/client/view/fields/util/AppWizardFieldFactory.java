@@ -65,6 +65,7 @@ public class AppWizardFieldFactory {
 
     private static ListStore<ReferenceGenome> refGenStore = null;
     private static final AppsWidgetsPropertyPanelLabels labels = I18N.APPS_LABELS;
+    private static ReferenceGenomeProperties props = GWT.create(ReferenceGenomeProperties.class);
 
     public static <T extends ArgumentValueField> T createArgumentValueField(Argument argument, boolean editingMode, final AppMetadataServiceFacade appMetadataService) {
         return createArgumentValueField(argument, editingMode, appMetadataService, false);
@@ -252,7 +253,6 @@ public class AppWizardFieldFactory {
             case ReferenceAnnotation:
             case ReferenceGenome:
             case ReferenceSequence:
-                ReferenceGenomeProperties props = appMetadataService.getReferenceGenomeProperties();
                 final ListStore<ReferenceGenome> store = getReferenceGenomeStore(appMetadataService);
                 ComboBox<ReferenceGenome> comboBox = new ComboBox<ReferenceGenome>(store, props.name());
                 comboBox.setTriggerAction(TriggerAction.ALL);
@@ -281,6 +281,12 @@ public class AppWizardFieldFactory {
         return ret;
     }
 
+    /**
+     * FIXME JDS This should be moved into the AppMetadataServiceFacade
+     * 
+     * @param appMetadataService
+     * @return
+     */
     private static ListStore<ReferenceGenome> getReferenceGenomeStore(final AppMetadataServiceFacade appMetadataService) {
         if (refGenStore == null) {
             final ReferenceGenomeProperties referenceGenomeProperties = appMetadataService.getReferenceGenomeProperties();
