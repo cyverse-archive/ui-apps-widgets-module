@@ -74,6 +74,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
@@ -495,12 +496,17 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         boolean isMultiSelectorType = value.getType().equals(ArgumentType.MultiFileSelector);
         boolean isTreeSelectionType = value.getType().equals(ArgumentType.TreeSelection);
         boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value.getType());
-
         boolean isDiskResourceOutputType = AppTemplateUtils.isDiskResourceOutputType(value.getType());
+
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
             updateFieldLabels(value.getType());
+
+            if (!isInfoType) {
+                label.addValidator(new MaxLengthValidator(255));
+            }
+
             if (!AppTemplateUtils.isSelectionArgumentType(value.getType())) {
                 // JDS The ArgumentType is NOT a Selection-based type. Remove all 'list' related controls
                 editSimpleListBtn.setVisible(false);
