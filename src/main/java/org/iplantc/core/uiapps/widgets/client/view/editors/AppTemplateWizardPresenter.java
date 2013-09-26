@@ -18,8 +18,6 @@ public interface AppTemplateWizardPresenter extends IsWidget {
      */
     boolean isEditingMode();
 
-    void showToolSearchDialog();
-
     Object getValueChangeEventSource();
 
     void onArgumentPropertyValueChange(Object source);

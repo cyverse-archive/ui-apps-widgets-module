@@ -2,7 +2,6 @@ package org.iplantc.core.uiapps.widgets.client.view.editors;
 
 import java.util.List;
 
-import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.AppTemplateUpdatedEvent;
@@ -20,7 +19,6 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplat
 import org.iplantc.core.uiapps.widgets.client.view.editors.properties.ArgumentPropertyEditor;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppGroupContentPanelAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
@@ -51,8 +49,6 @@ import com.sencha.gxt.widget.core.client.event.CollapseEvent;
 import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
 import com.sencha.gxt.widget.core.client.event.ExpandEvent;
 import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
-import com.sencha.gxt.widget.core.client.event.HideEvent;
-import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
 /**
  * A wizard for editing <code>AppTemplate</code>s.
@@ -222,26 +218,6 @@ public class AppTemplateWizard extends Composite implements ValueAwareEditor<App
 
     @Override
     public void flush() {/* Do Nothing */}
-
-    @Override
-    public void showToolSearchDialog() {
-        final DCListingDialog dialog = new DCListingDialog();
-        dialog.addHideHandler(new HideHandler() {
-
-            @Override
-            public void onHide(HideEvent event) {
-                DeployedComponent dc = dialog.getSelectedComponent();
-                // Set the deployed component in the AppTemplate
-                if ((dc != null) && (appTemplate != null)) {
-                    appTemplate.setDeployedComponent(dc);
-                    if (getValueChangeEventSource() != dialog) {
-                        onArgumentPropertyValueChange(dialog);
-                    }
-                }
-            }
-        });
-        dialog.show();
-    }
 
     public void insertFirstInAccordion(IsWidget widget) {
         argumentGroups.insertFirstInAccordion(widget);
