@@ -31,6 +31,7 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
@@ -505,6 +506,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
 
             if (!isInfoType) {
                 label.addValidator(new MaxLengthValidator(255));
+                label.addKeyDownHandler(new PreventEntryAfterLimitHandler(label));
             }
 
             if (!AppTemplateUtils.isSelectionArgumentType(value.getType())) {
