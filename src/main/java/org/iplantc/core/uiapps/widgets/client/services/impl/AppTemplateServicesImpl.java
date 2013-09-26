@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.services.impl;
 
 import java.util.List;
+import java.util.Queue;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
@@ -9,11 +10,14 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentType;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSource;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.DataSourceProperties;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoType;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.FileInfoTypeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeList;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeProperties;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
@@ -21,7 +25,9 @@ import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.core.uiapps.widgets.client.services.AppTemplateServices;
 import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
+import org.iplantc.core.uiapps.widgets.client.services.impl.converters.AppTemplateCallbackConverter;
 import org.iplantc.core.uicommons.client.DEServiceFacade;
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.DEProperties;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.de.shared.SharedServiceFacade;
@@ -37,7 +43,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadataServiceFacade {
-    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+    private static final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     private final DeployedComponentServices dcServices = GWT.create(DeployedComponentServices.class);
     private final FileInfoTypeProperties fileInfoTypeProperties = GWT.create(FileInfoTypeProperties.class);
     private final DataSourceProperties dataSourceProperties = GWT.create(DataSourceProperties.class);
@@ -45,6 +51,10 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     private final List<FileInfoType> fileInfoTypeList = Lists.newArrayList();
     private final List<DataSource> dataSourceList = Lists.newArrayList();
     private final List<ReferenceGenome> refGenList = Lists.newArrayList();
+
+    private static final Queue<AsyncCallback<List<FileInfoType>>> fileInfoTypeQueue = Lists.newLinkedList();
+    private static final Queue<AsyncCallback<List<DataSource>>> dataSourceQueue = Lists.newLinkedList();
+    private static final Queue<AsyncCallback<List<ReferenceGenome>>> refGenQueue = Lists.newLinkedList();
 
     @Override
     public void getAppTemplate(HasId appId, AsyncCallback<AppTemplate> callback) {
@@ -194,44 +204,112 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
 
     @Override
     public void getFileInfoTypes(AsyncCallback<List<FileInfoType>> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/info-types";//$NON-NLS-1$
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
-
         if (!fileInfoTypeList.isEmpty()) {
             callback.onSuccess(fileInfoTypeList);
             return;
+        } else {
+            enqueueFileInfoTypeCallback(callback);
         }
+    }
 
-        DEServiceFacade.getInstance().getServiceData(wrapper, new FileInfoTypeCallbackConverter(fileInfoTypeList, factory, callback));
+    private void enqueueFileInfoTypeCallback(AsyncCallback<List<FileInfoType>> callback) {
+        if (fileInfoTypeQueue.isEmpty()) {
+            String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/info-types";//$NON-NLS-1$
+            ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+
+            DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
+
+                @Override
+                public void onSuccess(String result) {
+                    FileInfoTypeList fitListWrapper = AutoBeanCodex.decode(factory, FileInfoTypeList.class, result).as();
+
+                    fileInfoTypeList.clear();
+                    fileInfoTypeList.addAll(fitListWrapper.getFileInfoTypes());
+                    
+                    while(!fileInfoTypeQueue.isEmpty()){
+                        fileInfoTypeQueue.remove().onSuccess(fileInfoTypeList);
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
+                }
+            });
+        }
+        fileInfoTypeQueue.add(callback);
 
     }
 
     @Override
     public void getDataSources(AsyncCallback<List<DataSource>> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/data-sources"; //$NON-NLS-1$
-
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
         if (!dataSourceList.isEmpty()) {
             callback.onSuccess(dataSourceList);
             return;
+        } else {
+            enqueueDataSourceCallback(callback);
         }
+    }
 
-        DEServiceFacade.getInstance().getServiceData(wrapper, new DataSourceCallbackConverter(dataSourceList, factory, callback));
+    private void enqueueDataSourceCallback(AsyncCallback<List<DataSource>> callback) {
+        if (dataSourceQueue.isEmpty()) {
+            String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/data-sources"; //$NON-NLS-1$
+            ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+            DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    DataSourceList dsList = AutoBeanCodex.decode(factory, DataSourceList.class, result).as();
+                    dataSourceList.clear();
+                    dataSourceList.addAll(dsList.getDataSources());
 
+                    while (!dataSourceQueue.isEmpty()) {
+                        dataSourceQueue.remove().onSuccess(dataSourceList);
+                    }
+                }
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
+                }
+            });
+
+        }
+        dataSourceQueue.add(callback);
     }
 
     @Override
     public void getReferenceGenomes(AsyncCallback<List<ReferenceGenome>> callback) {
-        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "reference-genomes"; //$NON-NLS-1$
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
-
         if (!refGenList.isEmpty()) {
             callback.onSuccess(refGenList);
             return;
+        } else {
+            enqueueRefGenomeCallback(callback);
         }
+    }
 
-        DEServiceFacade.getInstance().getServiceData(wrapper, new ReferenceGenomeCallbackConverter(refGenList, factory, callback));
+    private void enqueueRefGenomeCallback(AsyncCallback<List<ReferenceGenome>> callback) {
+        if (refGenQueue.isEmpty()) {
+            String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "reference-genomes"; //$NON-NLS-1$
+            ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+            DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    ReferenceGenomeList rgList = AutoBeanCodex.decode(factory, ReferenceGenomeList.class, result).as();
+                    refGenList.clear();
+                    refGenList.addAll(rgList.getReferenceGenomes());
 
+                    while (!refGenQueue.isEmpty()) {
+                        refGenQueue.remove().onSuccess(refGenList);
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
+                }
+            });
+
+        }
+        refGenQueue.add(callback);
     }
 
     private Splittable appTemplateToSplittable(AppTemplate at){

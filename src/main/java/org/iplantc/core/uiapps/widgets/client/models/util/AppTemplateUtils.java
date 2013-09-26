@@ -193,6 +193,10 @@ public class AppTemplateUtils {
                 || type.equals(ArgumentType.Number) || type.equals(ArgumentType.Integer) || type.equals(ArgumentType.Double);
     }
 
+    public static boolean isReferenceType(ArgumentType type) {
+        return type.equals(ArgumentType.ReferenceAnnotation) || type.equals(ArgumentType.ReferenceGenome) || type.equals(ArgumentType.ReferenceSequence);
+    }
+
     public static boolean typeSupportsValidators(ArgumentType type) {
         return type.equals(ArgumentType.Text) || type.equals(ArgumentType.Double) || type.equals(ArgumentType.Integer);
     }

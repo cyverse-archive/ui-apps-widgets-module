@@ -31,6 +31,7 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.de.client.UUIDServiceAsync;
 
 import com.google.common.base.Strings;
@@ -74,6 +75,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 /**
@@ -359,7 +361,7 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         dlg.setOkButtonText(I18N.DISPLAY.done());
         dlg.setAutoHide(false);
         final SelectionItemPropertyEditor selectionItemListEditor = new SelectionItemPropertyEditor(model.getSelectionItems(), model.getType(), presenter, uuidService);
-        selectionItemListEditor.setSize("640", "480");
+        dlg.setSize("640", "480");
         dlg.add(selectionItemListEditor);
         dlg.addOkButtonSelectHandler(new SelectHandler() {
 
@@ -495,12 +497,18 @@ public class ArgumentPropertyEditor extends Composite implements ValueAwareEdito
         boolean isMultiSelectorType = value.getType().equals(ArgumentType.MultiFileSelector);
         boolean isTreeSelectionType = value.getType().equals(ArgumentType.TreeSelection);
         boolean isDiskResourceArgumentType = AppTemplateUtils.isDiskResourceArgumentType(value.getType());
-
         boolean isDiskResourceOutputType = AppTemplateUtils.isDiskResourceOutputType(value.getType());
+
         if (model == null) {
             // JDS First time through, remove any components which aren't applicable to the current
             // ArgumentType
             updateFieldLabels(value.getType());
+
+            if (!isInfoType) {
+                label.addValidator(new MaxLengthValidator(255));
+                label.addKeyDownHandler(new PreventEntryAfterLimitHandler(label));
+            }
+
             if (!AppTemplateUtils.isSelectionArgumentType(value.getType())) {
                 // JDS The ArgumentType is NOT a Selection-based type. Remove all 'list' related controls
                 editSimpleListBtn.setVisible(false);

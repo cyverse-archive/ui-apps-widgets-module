@@ -12,6 +12,7 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProp
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemTreeStoreEditor;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -24,6 +25,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -33,8 +35,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
-import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.Style.Side;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -43,16 +45,20 @@ import com.sencha.gxt.dnd.core.client.TreeGridDragSource;
 import com.sencha.gxt.dnd.core.client.TreeGridDropTarget;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.event.ExpandItemEvent;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.ViewReadyEvent;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
-import com.sencha.gxt.widget.core.client.grid.RowNumberer;
 import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
-import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
+import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
@@ -118,7 +124,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
         store.setAutoCommit(true);
 
         // Build ColumnModel
-        RowNumberer<SelectionItem> numberer = new RowNumberer<SelectionItem>(new IdentityValueProvider<SelectionItem>());
+      //  RowNumberer<SelectionItem> numberer = new RowNumberer<SelectionItem>(new IdentityValueProvider<SelectionItem>());
         ColumnConfig<SelectionItem, String> displayConfig = new ColumnConfig<SelectionItem, String>(siProps.display(), 90, labels.singleSelectDisplayColumnHeader());
         ColumnConfig<SelectionItem, String> nameConfig = new ColumnConfig<SelectionItem, String>(siProps.name(), 60, labels.singleSelectNameColumnHeader());
         ColumnConfig<SelectionItem, String> valueConfig = new ColumnConfig<SelectionItem, String>(siProps.value(), 40, labels.singleSelectValueColumnHeader());
@@ -132,7 +138,7 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
         descriptionConfig.setSortable(false);
 
         ArrayList<ColumnConfig<SelectionItem, ?>> newArrayList = Lists.<ColumnConfig<SelectionItem, ?>> newArrayList();
-        newArrayList.add(numberer);
+     //   newArrayList.add(numberer);
         newArrayList.add(defaultColumn);
         newArrayList.add(displayConfig);
         newArrayList.add(nameConfig);
@@ -152,19 +158,55 @@ public class SelectionItemTreePropertyEditor extends Composite implements HasVal
             }
         };
 
-        GridInlineEditing<SelectionItem> editing = new GridInlineEditing<SelectionItem>(treeGrid);
+        GridRowEditing<SelectionItem> editing = new GridRowEditing<SelectionItem>(treeGrid){
+            
+            @Override
+            protected void showTooltip(SafeHtml msg) {
+                if (tooltip == null) {
+                  ToolTipConfig config = new ToolTipConfig();
+                  config.setAutoHide(false);
+                  config.setAnchor(Side.RIGHT);
+                  config.setTitleHtml(getMessages().errorTipTitleText());
+                  tooltip = new ToolTip(toolTipAlignWidget, config);
+                  tooltip.setMaxWidth(600);
+                }
+                ToolTipConfig config = tooltip.getToolTipConfig();
+                config.setBodyHtml(msg);
+                tooltip.update(config);
+                tooltip.enable();
+                if (!tooltip.isAttached()) {
+                  tooltip.show();
+                  tooltip.getElement().updateZIndex(0);
+                }
+              }
+            
+        };
+        editing.addEditor(defaultColumn, new CheckBox());
+        editing.addEditor(displayConfig, buildEditorField(null,false));
+        editing.addEditor(nameConfig, buildEditorField(new CmdLineArgCharacterValidator(I18N.V_CONSTANTS.restrictedCmdLineChars()),false));
+        editing.addEditor(valueConfig, buildEditorField(new CmdLineArgCharacterValidator(I18N.V_CONSTANTS.restrictedCmdLineArgCharsExclNewline()),false));
+        editing.addEditor(descriptionConfig, buildEditorField(null, false));
         editing.setClicksToEdit(ClicksToEdit.TWO);
-        TextField field = new TextField();
-        field.setSelectOnFocus(true);
-        editing.addEditor(displayConfig, field);
-        editing.addEditor(nameConfig, field);
-        editing.addEditor(valueConfig, field);
-        editing.addEditor(descriptionConfig, field);
-
-        numberer.initPlugin(treeGrid);
 
         treeGrid.getView().setAutoExpandColumn(descriptionConfig);
         treeGrid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+    }
+    
+    private TextField buildEditorField(Validator<String> validator, boolean readonly) {
+        final TextField field1 = new TextField();
+        field1.setSelectOnFocus(true);
+        if(validator != null) {
+            field1.addValidator(validator);
+            field1.setAutoValidate(true);
+        }
+        field1.addInvalidHandler(new InvalidHandler() {
+            
+            @Override
+            public void onInvalid(InvalidEvent event) {
+               field1.clear();
+            }
+        });
+        return field1;
     }
 
     @UiFactory

@@ -19,6 +19,7 @@ public class SplittableToReferenceGenomeConverter implements Converter<Splittabl
         /*
          * JDS We can use HasSplittable here since we have no worries about ReferenceGenomes being edited
          * at runtime.
+         * FIXME JDS This logic needs to be cleaned up. Throws NPEs in app preview mode.
          */
         return ((HasSplittable)AutoBeanUtils.getAutoBean(object)).getSplittable();
     }

@@ -6,8 +6,8 @@ import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DCSearchFi
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardPropertyContentPanelAppearance;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.validators.AppNameValidator;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 
 import com.google.gwt.core.client.GWT;
@@ -42,8 +42,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     @UiField
     FieldLabel toolLabel, appNameLabel, appDescriptionLabel;
 
-    @Ignore
     @UiField
+    @Ignore
     DCSearchField tool;
 
     @Ignore
@@ -59,6 +59,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     TextArea description;
 
     private final AppTemplateWizardPresenter presenter;
+
+    private AppTemplate model;
 
     public AppTemplatePropertyEditor(final AppTemplateWizardPresenter presenter) {
         this.presenter = presenter;
@@ -99,8 +101,13 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     }
 
     @UiHandler("searchBtn")
-    public void onSearchBtnClick(SelectEvent event) {
+    void onSearchBtnClick(SelectEvent event) {
         presenter.showToolSearchDialog();
+    }
+
+    @UiHandler("tool")
+    void onToolValueChanged(ValueChangeEvent<DeployedComponent> event) {
+        presenter.onArgumentPropertyValueChange();
     }
 
     @Override
@@ -108,6 +115,8 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
         if (value == null) {
             return;
         }
+        
+        this.model = value;
 
         if (value.getDeployedComponent() != null) {
             tool.setValue(value.getDeployedComponent());
@@ -124,7 +133,13 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
     public void setDelegate(EditorDelegate<AppTemplate> delegate) {/* Do Nothing */}
 
     @Override
-    public void flush() {/* Do Nothing */}
+    public void flush() {
+        if(model == null) {
+            return;
+        }
+        
+        model.setDeployedComponent(tool.getValue());
+    }
 
     @Override
     public void onPropertyChange(String... paths) {/* Do Nothing */}

@@ -11,8 +11,13 @@ import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -35,12 +40,11 @@ import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
-public class DCSearchField implements IsWidget{
+public class DCSearchField implements IsWidget, HasSelectionHandlers<DeployedComponent>, HasValueChangeHandlers<DeployedComponent> {
 
     private final DCSearchRPCProxy searchProxy;
 
-    private ComboBox<DeployedComponent> combo;
-
+    ComboBox<DeployedComponent> combo;
     
     public DCSearchField() {
         searchProxy = new DCSearchRPCProxy();
@@ -71,13 +75,18 @@ public class DCSearchField implements IsWidget{
 
             @Override
             public void onSelection(SelectionEvent<DeployedComponent> event) {
-                
+                GWT.log("Selected " + event.getSelectedItem().getName());
             }
         });
+
     }
     
     public void setValue(DeployedComponent value) {
         combo.setValue(value);
+    }
+    
+    public DeployedComponent getValue() {
+        return combo.getValue();
     }
     
     public void clear() {
@@ -181,6 +190,22 @@ public class DCSearchField implements IsWidget{
     @Override
     public Widget asWidget() {
        return combo;
+    }
+
+    @Override
+    public void fireEvent(GwtEvent<?> event) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public HandlerRegistration addSelectionHandler(SelectionHandler<DeployedComponent> handler) {
+        return combo.addSelectionHandler(handler);
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DeployedComponent> handler) {
+        return combo.addValueChangeHandler(handler);
     }
 
 }

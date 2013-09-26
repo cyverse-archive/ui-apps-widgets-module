@@ -1,4 +1,4 @@
-package org.iplantc.core.uiapps.widgets.client.services.impl;
+package org.iplantc.core.uiapps.widgets.client.services.impl.converters;
 
 import java.util.List;
 
