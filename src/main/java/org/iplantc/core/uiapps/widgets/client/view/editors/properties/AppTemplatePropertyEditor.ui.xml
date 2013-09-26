@@ -70,7 +70,8 @@
                                      labelAlign="TOP">
                         <form:widget>
                             <form:TextArea ui:field="description"
-                                           emptyText="{labels.appDescriptionEmptyText}"/>
+                                           emptyText="{labels.appDescriptionEmptyText}"
+                                           allowBlank="false"/>
                         </form:widget>
                     </form:FieldLabel> 
                 </con:child>                    

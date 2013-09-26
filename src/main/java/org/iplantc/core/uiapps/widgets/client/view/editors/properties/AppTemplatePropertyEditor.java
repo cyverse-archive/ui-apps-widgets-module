@@ -86,7 +86,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
         String toolHelp = appearance.getContextHelpMessages().appToolUsed();
         SafeHtml toolLabelHtml = appearance.createContextualHelpLabel(labels.toolUsedLabel(), toolHelp);
-        toolLabel.setHTML(requiredHtml + toolLabelHtml.asString());
+        toolLabel.setHTML(toolLabelHtml.asString());
         new QuickTip(toolLabel).getToolTipConfig().setDismissDelay(0);
 
         appNameLabel.setHTML(requiredHtml + labels.appNameLabel());
