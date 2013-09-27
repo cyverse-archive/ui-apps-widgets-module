@@ -1,6 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.properties;
 
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
+import org.iplantc.core.uiapps.widgets.client.dialog.DCListingDialog;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DCSearchField;
 import org.iplantc.core.uiapps.widgets.client.view.editors.AppTemplateWizardPresenter;
@@ -23,6 +24,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -83,7 +86,7 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
         String toolHelp = appearance.getContextHelpMessages().appToolUsed();
         SafeHtml toolLabelHtml = appearance.createContextualHelpLabel(labels.toolUsedLabel(), toolHelp);
-        toolLabel.setHTML(requiredHtml + toolLabelHtml.asString());
+        toolLabel.setHTML(toolLabelHtml.asString());
         new QuickTip(toolLabel).getToolTipConfig().setDismissDelay(0);
 
         appNameLabel.setHTML(requiredHtml + labels.appNameLabel());
@@ -102,7 +105,20 @@ public class AppTemplatePropertyEditor extends Composite implements ValueAwareEd
 
     @UiHandler("searchBtn")
     void onSearchBtnClick(SelectEvent event) {
-        presenter.showToolSearchDialog();
+        final DCListingDialog dialog = new DCListingDialog();
+        dialog.addHideHandler(new HideHandler() {
+
+            @Override
+            public void onHide(HideEvent event) {
+                DeployedComponent dc = dialog.getSelectedComponent();
+                // Set the deployed component in the AppTemplate
+                if (dc != null) {
+                    tool.setValue(dc);
+                    presenter.onArgumentPropertyValueChange();
+                }
+            }
+        });
+        dialog.show();
     }
 
     @UiHandler("tool")
