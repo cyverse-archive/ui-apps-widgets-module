@@ -161,14 +161,11 @@ class ArgumentValueEditor extends Composite implements ValueAwareEditor<Argument
         }
 
         // Manually put the value into the argument
-        if (split != null) {
-            // Need to set the actual backing copy
-            model.setValue(split);
+        model.setValue(split);
 
+        model.setDefaultValue(split);
+        if (presenter.isEditingMode()) {
             model.setDefaultValue(split);
-            if (presenter.isEditingMode()) {
-                model.setDefaultValue(split);
-            }
         }
     }
 
