@@ -21,8 +21,12 @@ public class SplittableToReferenceGenomeConverter implements Converter<Splittabl
 
     @Override
     public ReferenceGenome convertModelValue(Splittable object) {
-        if (object == null)
+        if (object == null) {
             return null;
+        }
+        if (!object.isKeyed()) {
+            return null;
+        }
 
         AutoBean<ReferenceGenome> ab = AutoBeanCodex.decode(factory, ReferenceGenome.class, object);
         return ab.as();

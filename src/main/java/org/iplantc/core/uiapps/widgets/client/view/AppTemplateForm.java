@@ -88,7 +88,7 @@ public interface AppTemplateForm extends IsWidget, Editor<AppTemplate>, Argument
      */
     public interface ArgumentGroupEditor extends ValueAwareEditor<ArgumentGroup>, IsWidget, HasDisabledOnNotVisible, HasEditorErrors<ArgumentGroup>, HasCollapseHandlers, HasExpandHandlers,
             ArgumentGroupSelectedEventHandler, ArgumentSelectedEventHandler, AppTemplateSelectedEventHandler, HasArgumentGroupSelectedHandlers, HasArgumentAddedEventHandlers,
-            ArgumentRequiredChangedEventHandler {
+            ArgumentRequiredChangedEventHandler, HasLabelOnlyEditMode {
 
         ListEditor<Argument, ArgumentEditorFactory> argumentsEditor();
 

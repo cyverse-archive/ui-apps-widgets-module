@@ -26,7 +26,9 @@ public class VisibilityEditor implements LeafValueEditor<Boolean> {
         this.value = value.booleanValue();
         if (argEditor.isDisabledOnNotVisible()) {
             argEditor.setVisible(true);
-            argEditor.setEnabled(value);
+            if (!argEditor.isLabelOnlyEditMode()) {
+                argEditor.setEnabled(value);
+            }
         } else {
             argEditor.setVisible(value);
         }

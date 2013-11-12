@@ -158,11 +158,13 @@ public abstract class AbstractArgumentEditor extends Composite implements AppTem
 
     protected FieldLabel argumentLabel = new FieldLabel();
 
+    protected final LabelLeafEditor<String> descriptionEditor;
+
     protected Argument model;
 
-    private EditorDelegate<Argument> delegate;
+    protected final RequiredLeafEditor requiredEditor;
 
-    protected final LabelLeafEditor<String> descriptionEditor;
+    private EditorDelegate<Argument> delegate;
 
     private boolean disableOnNotVisible = false;
 
@@ -171,8 +173,6 @@ public abstract class AbstractArgumentEditor extends Composite implements AppTem
     private final LabelLeafEditor<String> labelLeafEditor;
 
     private boolean labelOnlyEditMode = false;
-
-    protected final RequiredLeafEditor requiredEditor;
 
     private final SimpleEditor<ArgumentType> typeEditor;
 
@@ -297,6 +297,9 @@ public abstract class AbstractArgumentEditor extends Composite implements AppTem
     @Override
     public void setLabelOnlyEditMode(boolean labelOnlyEditMode) {
         this.labelOnlyEditMode = labelOnlyEditMode;
+        if (valueEditor() != null) {
+            valueEditor().setEnabled(!labelOnlyEditMode);
+        }
     }
 
     @Override

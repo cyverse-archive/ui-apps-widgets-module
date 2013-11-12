@@ -96,12 +96,6 @@ public class AppWizardComboBox extends AbstractArgumentEditor implements HasValu
         return selectionItemsStoreBinder;
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        selectionItemsEditor.setEnabled(enabled);
-    }
-
     public void setRequired(boolean required) {
         selectionItemsEditor.setAllowBlank(!required);
     }

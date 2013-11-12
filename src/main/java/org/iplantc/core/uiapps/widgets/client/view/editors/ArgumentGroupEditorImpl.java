@@ -35,7 +35,9 @@ import org.iplantc.core.uiapps.widgets.client.models.Argument;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.AppTemplateForm;
+import org.iplantc.core.uiapps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 import org.iplantc.core.uiapps.widgets.client.view.AppTemplateForm.HasDisabledOnNotVisible;
+import org.iplantc.core.uiapps.widgets.client.view.HasLabelOnlyEditMode;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppWizardQuickTip;
 
@@ -86,16 +88,20 @@ public class ArgumentGroupEditorImpl extends ContentPanel implements AppTemplate
         private final Provider<AppTemplateForm.ArgumentEditorFactory> argumentEditorProvider;
         private final VerticalLayoutContainer con;
         private final HasDisabledOnNotVisible hasDisOnNotVis;
+        private final HasLabelOnlyEditMode hasLabelOnlyEditMode;
     
-        public PropertyListEditorSource(final VerticalLayoutContainer con, Provider<AppTemplateForm.ArgumentEditorFactory> argumentEditorProvider, HasDisabledOnNotVisible hasDisOnNotVis) {
+        public PropertyListEditorSource(final VerticalLayoutContainer con, Provider<AppTemplateForm.ArgumentEditorFactory> argumentEditorProvider, HasDisabledOnNotVisible hasDisOnNotVis,
+                HasLabelOnlyEditMode hasLabelOnlyEditMode) {
             this.con = con;
             this.argumentEditorProvider = argumentEditorProvider;
             this.hasDisOnNotVis = hasDisOnNotVis;
+            this.hasLabelOnlyEditMode = hasLabelOnlyEditMode;
         }
     
         @Override
         public AppTemplateForm.ArgumentEditorFactory create(int index) {
             final AppTemplateForm.ArgumentEditorFactory subEditor = argumentEditorProvider.get();
+
     
             con.insert(subEditor, index, new VerticalLayoutData(1, -1, new Margins(DEF_ARGUMENT_MARGIN)));
             con.forceLayout();
@@ -105,10 +111,13 @@ public class ArgumentGroupEditorImpl extends ContentPanel implements AppTemplate
 
                 @Override
                 public void execute() {
-                    ArgumentGroupEditorImpl.this.fireEvent(new ArgumentAddedEvent(subEditor.getSubEditor()));
-                    subEditor.getSubEditor().addArgumentRequiredChangedEventHandler(ArgumentGroupEditorImpl.this);
+                    AppTemplateForm.ArgumentEditorFactory subEditorCopy = subEditor;
+                    ArgumentEditor subEditor2 = subEditorCopy.getSubEditor();
+                    ArgumentGroupEditorImpl.this.fireEvent(new ArgumentAddedEvent(subEditor2));
+                    subEditor2.addArgumentRequiredChangedEventHandler(ArgumentGroupEditorImpl.this);
+                    subEditor2.setLabelOnlyEditMode(hasLabelOnlyEditMode.isLabelOnlyEditMode());
                     if (hasDisOnNotVis.isDisabledOnNotVisible()) {
-                        subEditor.getSubEditor().disableOnNotVisible();
+                        subEditor2.disableOnNotVisible();
                     }
                 }
             });
@@ -139,8 +148,10 @@ public class ArgumentGroupEditorImpl extends ContentPanel implements AppTemplate
 
     private final ArgGrpLabelLeafEditor labelLeafEditor;
 
-    private ArgumentGroup model;
+    private boolean labelOnlyEditMode;
     
+    private ArgumentGroup model;
+
     private boolean visibleWhenEmptyOrNoChildVisible = false;
 
     @Inject
@@ -151,7 +162,7 @@ public class ArgumentGroupEditorImpl extends ContentPanel implements AppTemplate
         argumentsContainer.setAdjustForScroll(true);
         argumentsContainer.setScrollMode(AUTOY);
         labelLeafEditor = new ArgGrpLabelLeafEditor(getHeader(), this);
-        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, argumentEditorProvider, this));
+        editor = ListEditor.of(new PropertyListEditorSource(argumentsContainer, argumentEditorProvider, this, this));
 
         add(argumentsContainer);
         new AppWizardQuickTip(header);
@@ -191,6 +202,11 @@ public class ArgumentGroupEditorImpl extends ContentPanel implements AppTemplate
     }
 
     @Override
+    public boolean isLabelOnlyEditMode() {
+        return labelOnlyEditMode;
+    }
+
+    @Override
     public LeafValueEditor<String> labelEditor() {
         return labelLeafEditor;
     }
@@ -222,6 +238,11 @@ public class ArgumentGroupEditorImpl extends ContentPanel implements AppTemplate
     @Override
     public void setDelegate(EditorDelegate<ArgumentGroup> delegate) {
         this.delegate = delegate;
+    }
+
+    @Override
+    public void setLabelOnlyEditMode(boolean labelOnlyEditMode) {
+        this.labelOnlyEditMode = labelOnlyEditMode;
     }
 
     @Override
