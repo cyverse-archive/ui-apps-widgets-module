@@ -18,9 +18,9 @@ import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 public class DCSearchRPCProxy extends
         RpcProxy<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> {
 
-    private String lastQueryText = ""; //$NON-NLS-1$
-
     DeployedComponentServices dcService = new DeployedComponentServicesImpl();
+
+    private String lastQueryText = ""; //$NON-NLS-1$
 
     public String getLastQuery() {
         return lastQueryText;
@@ -40,14 +40,14 @@ public class DCSearchRPCProxy extends
                     new AsyncCallback<List<DeployedComponent>>() {
 
                         @Override
-                        public void onSuccess(List<DeployedComponent> result) {
-                            callback.onSuccess(new PagingLoadResultBean<DeployedComponent>(result,
-                                    result.size(), 0));
+                        public void onFailure(Throwable caught) {
+                            ErrorHandler.post(caught);
                         }
 
                         @Override
-                        public void onFailure(Throwable caught) {
-                            ErrorHandler.post(caught);
+                        public void onSuccess(List<DeployedComponent> result) {
+                            callback.onSuccess(new PagingLoadResultBean<DeployedComponent>(result,
+                                    result.size(), 0));
                         }
                     });
         } else {

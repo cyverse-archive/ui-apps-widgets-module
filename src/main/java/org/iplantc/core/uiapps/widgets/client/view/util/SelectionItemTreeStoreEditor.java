@@ -1,13 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.util;
 
-import java.util.List;
-
-import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
-import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
-import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
-import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
-
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -16,9 +8,18 @@ import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
+
 import com.sencha.gxt.data.client.editor.ListStoreEditor;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+
+import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.core.uiapps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
+
+import java.util.List;
 
 /**
  * Binds a {@link TreeStore} of {@link SelectionItem}s to a {@link List} property in an edited model
@@ -32,10 +33,10 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
  * 
  */
 public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<List<SelectionItem>>, HasEventSuppression {
-    private final TreeStore<SelectionItem> store;
-    private List<SelectionItem> model;
-    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
     boolean suppressValueChangeEventFire = false;
+    private final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
+    private List<SelectionItem> model;
+    private final TreeStore<SelectionItem> store;
 
     public SelectionItemTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
         this.store = store;
@@ -90,6 +91,25 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
     }
 
     @Override
+    public boolean isSuppressEvent() {
+        return suppressValueChangeEventFire;
+    }
+
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void setDelegate(EditorDelegate<List<SelectionItem>> delegate) {
+        // ignore for now, this could be used to pass errors into the view
+    }
+
+    @Override
+    public void setSuppressEvent(boolean suppressValueChangeEventFire) {
+        this.suppressValueChangeEventFire = suppressValueChangeEventFire;
+    }
+
+    @Override
     public void setValue(List<SelectionItem> value) {
         if ((value == null) || (value.size() != 1)) {
 
@@ -127,7 +147,6 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
             GWT.log("SelectionItemTreeStoreEditor" + ".setValue(List<SelectionItem>) given list which is not equal to 1.");
             return;
         }
-        // store.clear();
         // JDS Populate TreeStore.
         setItems(newRoot);
 
@@ -139,6 +158,17 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
         setSuppressEvent(false);
     }
 
+    protected abstract CheckCascade getCheckStyle();
+
+    protected abstract boolean getSingleSelect();
+
+    protected abstract void setCheckStyle(CheckCascade checkCascade);
+
+    protected abstract void setItems(SelectionItemGroup root);
+
+    protected abstract void setSingleSelect(boolean singleSelect);
+
+    protected abstract boolean shouldFlush();
 
     private boolean hasChanged(SelectionItemGroup currSig, SelectionItemGroup newSig) {
 
@@ -202,36 +232,6 @@ public abstract class SelectionItemTreeStoreEditor implements ValueAwareEditor<L
 
         return false;
 
-    }
-
-    protected abstract boolean shouldFlush();
-
-    protected abstract CheckCascade getCheckStyle();
-
-    protected abstract boolean getSingleSelect();
-
-    protected abstract void setCheckStyle(CheckCascade checkCascade);
-
-    protected abstract void setSingleSelect(boolean singleSelect);
-
-    protected abstract void setItems(SelectionItemGroup root);
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
-
-    @Override
-    public void setDelegate(EditorDelegate<List<SelectionItem>> delegate) {
-        // ignore for now, this could be used to pass errors into the view
-    }
-
-    @Override
-    public boolean isSuppressEvent() {
-        return suppressValueChangeEventFire;
-    }
-
-    @Override
-    public void setSuppressEvent(boolean suppressValueChangeEventFire) {
-        this.suppressValueChangeEventFire = suppressValueChangeEventFire;
     }
 
 }

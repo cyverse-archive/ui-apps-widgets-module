@@ -1,11 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.deployedComponents;
 
-import java.util.List;
-
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uiapps.widgets.client.services.DCSearchRPCProxy;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.shared.GWT;
@@ -22,6 +16,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
@@ -40,11 +35,22 @@ import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uiapps.widgets.client.services.DCSearchRPCProxy;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+
+import java.util.List;
+
 public class DCSearchField implements IsWidget, HasSelectionHandlers<DeployedComponent>, HasValueChangeHandlers<DeployedComponent> {
 
-    private final DCSearchRPCProxy searchProxy;
+    interface DCTemplate extends XTemplates {
+        @XTemplate(source = "DCSearchResult.html")
+        SafeHtml render(DeployedComponent c);
+    }
 
     ComboBox<DeployedComponent> combo;
+    
+    private final DCSearchRPCProxy searchProxy;
     
     public DCSearchField() {
         searchProxy = new DCSearchRPCProxy();
@@ -64,34 +70,40 @@ public class DCSearchField implements IsWidget, HasSelectionHandlers<DeployedCom
         
     }
     
-    private void initCombo(PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader, ComboBoxCell<DeployedComponent> cell) {
-        combo = new ComboBox<DeployedComponent>(cell);
-        combo.setLoader(loader);
-        combo.setMinChars(3);
-        combo.setWidth(250);
-        combo.setHideTrigger(true);
-        combo.setEmptyText(I18N.DISPLAY.searchEmptyText());
-        combo.addSelectionHandler(new SelectionHandler<DeployedComponent>() {
+    @Override
+    public HandlerRegistration addSelectionHandler(SelectionHandler<DeployedComponent> handler) {
+        return combo.addSelectionHandler(handler);
+    }
+    
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DeployedComponent> handler) {
+        return combo.addValueChangeHandler(handler);
+    }
+    
+    @Override
+    public Widget asWidget() {
+       return combo;
+    }
 
-            @Override
-            public void onSelection(SelectionEvent<DeployedComponent> event) {
-                GWT.log("Selected " + event.getSelectedItem().getName());
-            }
-        });
-
-    }
-    
-    public void setValue(DeployedComponent value) {
-        combo.setValue(value);
-    }
-    
-    public DeployedComponent getValue() {
-        return combo.getValue();
-    }
-    
     public void clear() {
         combo.clear();
     }
+    
+    @Override
+    public void fireEvent(GwtEvent<?> event) {
+        throw new UnsupportedOperationException("DCSearchField.fireEvent not supported.");
+    }
+    
+
+    public DeployedComponent getValue() {
+        return combo.getValue();
+    }
+
+
+    public void setValue(DeployedComponent value) {
+        combo.setValue(value);
+    }
+
 
     private ComboBoxCell<DeployedComponent> buildComboCell(ListStore<DeployedComponent> store,
             ListView<DeployedComponent, DeployedComponent> view) {
@@ -115,37 +127,6 @@ public class DCSearchField implements IsWidget, HasSelectionHandlers<DeployedCom
         };
 
         return cell;
-    }
-    
-    private ListView<DeployedComponent, DeployedComponent> buildView(ListStore<DeployedComponent> store,
-            final DCTemplate template) {
-        ListView<DeployedComponent, DeployedComponent> view = new ListView<DeployedComponent, DeployedComponent>(store,
-                new IdentityValueProvider<DeployedComponent>());
-
-        view.setCell(new AbstractCell<DeployedComponent>() {
-
-            @Override
-            public void render(com.google.gwt.cell.client.Cell.Context context, DeployedComponent value,
-                    SafeHtmlBuilder sb) {
-                sb.append(template.render(value));
-            }
-
-        });
-        return view;
-    }
-    
-
-    private ListStore<DeployedComponent> buildStore() {
-        ListStore<DeployedComponent> store = new ListStore<DeployedComponent>(
-                new ModelKeyProvider<DeployedComponent>() {
-
-                    @Override
-                    public String getKey(DeployedComponent item) {
-                        return item.getId();
-                    }
-
-                });
-        return store;
     }
 
 
@@ -180,32 +161,51 @@ public class DCSearchField implements IsWidget, HasSelectionHandlers<DeployedCom
         return loader;
     }
 
+    private ListStore<DeployedComponent> buildStore() {
+        ListStore<DeployedComponent> store = new ListStore<DeployedComponent>(
+                new ModelKeyProvider<DeployedComponent>() {
 
-    interface DCTemplate extends XTemplates {
-        @XTemplate(source = "DCSearchResult.html")
-        SafeHtml render(DeployedComponent c);
+                    @Override
+                    public String getKey(DeployedComponent item) {
+                        return item.getId();
+                    }
+
+                });
+        return store;
     }
 
+    private ListView<DeployedComponent, DeployedComponent> buildView(ListStore<DeployedComponent> store,
+            final DCTemplate template) {
+        ListView<DeployedComponent, DeployedComponent> view = new ListView<DeployedComponent, DeployedComponent>(store,
+                new IdentityValueProvider<DeployedComponent>());
 
-    @Override
-    public Widget asWidget() {
-       return combo;
+        view.setCell(new AbstractCell<DeployedComponent>() {
+
+            @Override
+            public void render(com.google.gwt.cell.client.Cell.Context context, DeployedComponent value,
+                    SafeHtmlBuilder sb) {
+                sb.append(template.render(value));
+            }
+
+        });
+        return view;
     }
 
-    @Override
-    public void fireEvent(GwtEvent<?> event) {
-        // TODO Auto-generated method stub
+    private void initCombo(PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader, ComboBoxCell<DeployedComponent> cell) {
+        combo = new ComboBox<DeployedComponent>(cell);
+        combo.setLoader(loader);
+        combo.setMinChars(3);
+        combo.setWidth(250);
+        combo.setHideTrigger(true);
+        combo.setEmptyText(I18N.DISPLAY.searchEmptyText());
+        combo.addSelectionHandler(new SelectionHandler<DeployedComponent>() {
 
-    }
+            @Override
+            public void onSelection(SelectionEvent<DeployedComponent> event) {
+                GWT.log("Selected " + event.getSelectedItem().getName());
+            }
+        });
 
-    @Override
-    public HandlerRegistration addSelectionHandler(SelectionHandler<DeployedComponent> handler) {
-        return combo.addSelectionHandler(handler);
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DeployedComponent> handler) {
-        return combo.addValueChangeHandler(handler);
     }
 
 }

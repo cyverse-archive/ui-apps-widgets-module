@@ -1,6 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.services.impl;
 
-import java.util.List;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.core.uiapps.widgets.client.services.impl.converters.GetAppTemplateDeployedComponentConverter;
@@ -13,30 +15,24 @@ import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentA
 import org.iplantc.de.shared.SharedAuthenticationValidatingServiceFacade;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.List;
 
 public class DeployedComponentServicesImpl implements DeployedComponentServices {
 
     private final DeployedComponentAutoBeanFactory factory = GWT.create(DeployedComponentAutoBeanFactory.class);
 
     @Override
+    public void getAppTemplateDeployedComponent(HasId appTemplateId, AsyncCallback<DeployedComponent> callback) {
+        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "get-components-in-analysis/" + appTemplateId.getId();
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET, address);
+
+        DEServiceFacade.getInstance().getServiceData(wrapper, new GetAppTemplateDeployedComponentConverter(callback, factory));
+    }
+
+    @Override
     public void getDeployedComponents(AsyncCallback<List<DeployedComponent>> callback) {
         GetDeployedComponentsCallbackConverter callbackCnvt = new GetDeployedComponentsCallbackConverter(callback, factory);
         ServiceCallWrapper wrapper = new ServiceCallWrapper("org.iplantc.services.zoidberg.components"); //$NON-NLS-1$
-
-        // JDS This code was used to successfully retrieve cached contents from a previous call from HTML5 local storage.
-        /*Storage localStorage = null;
-        localStorage = Storage.getLocalStorageIfSupported();
-        if (localStorage != null) {
-            String item = localStorage.getItem("deployedComponents");
-            if (item != null) {
-                // Return deployed components from store
-                callbackCnvt.onSuccess(item);
-                return;
-            }
-        }*/
 
         callService(callbackCnvt, wrapper);
     }
@@ -52,14 +48,6 @@ public class DeployedComponentServicesImpl implements DeployedComponentServices 
 
     private void callService(AsyncCallback<String> callback, ServiceCallWrapper wrapper) {
         SharedAuthenticationValidatingServiceFacade.getInstance().getServiceData(wrapper, callback);
-    }
-
-    @Override
-    public void getAppTemplateDeployedComponent(HasId appTemplateId, AsyncCallback<DeployedComponent> callback) {
-        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "get-components-in-analysis/" + appTemplateId.getId();
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET, address);
-
-        DEServiceFacade.getInstance().getServiceData(wrapper, new GetAppTemplateDeployedComponentConverter(callback, factory));
     }
 
 

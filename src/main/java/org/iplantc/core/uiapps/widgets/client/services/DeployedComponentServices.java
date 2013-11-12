@@ -9,9 +9,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface DeployedComponentServices {
 
+    void getAppTemplateDeployedComponent(HasId appTemplateId, AsyncCallback<DeployedComponent> callback);
+
     void getDeployedComponents(AsyncCallback<List<DeployedComponent>> callback);
 
     void searchDeployedComponents(String searchTerm, AsyncCallback<List<DeployedComponent>> callback);
-
-    void getAppTemplateDeployedComponent(HasId appTemplateId, AsyncCallback<DeployedComponent> callback);
 }
