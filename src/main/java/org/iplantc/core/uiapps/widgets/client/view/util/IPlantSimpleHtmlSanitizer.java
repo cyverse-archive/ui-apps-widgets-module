@@ -1,13 +1,13 @@
 package org.iplantc.core.uiapps.widgets.client.view.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.gwt.safehtml.shared.HtmlSanitizer;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * XXX: This class is a Clone-and-Own of {@link SimpleHtmlSanitizer} A simple and relatively inexpensive
@@ -72,7 +72,6 @@ public final class IPlantSimpleHtmlSanitizer implements HtmlSanitizer {
      * which escapes HTML but does not double escape existing syntactially valid
      * HTML entities.
      */
-    // TODO(xtof): should this be in a utils class?
     private static String simpleSanitize(String text) {
         StringBuilder sanitized = new StringBuilder();
 

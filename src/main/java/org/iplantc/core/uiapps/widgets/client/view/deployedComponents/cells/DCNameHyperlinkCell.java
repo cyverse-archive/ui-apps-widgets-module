@@ -4,9 +4,6 @@ import static com.google.gwt.dom.client.BrowserEvents.CLICK;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
 
-import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.ValueUpdater;
@@ -21,6 +18,9 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
+
+import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 
 /**
  * This is a custom cell which is clickable hyper-link of an DC name.
@@ -49,27 +49,15 @@ public class DCNameHyperlinkCell extends AbstractCell<DeployedComponent> {
         SafeHtml cell(String textClassName, SafeHtml name, String textToolTip, String elementName);
     }
 
+    private static final String ELEMENT_NAME = "DCName";
     private final Resources resources = GWT.create(Resources.class);
     private final Templates templates = GWT.create(Templates.class);
-    private DeployedComponentsListingView view;
-    private static final String ELEMENT_NAME = "DCName";
+    private final DeployedComponentsListingView view;
 
     public DCNameHyperlinkCell(DeployedComponentsListingView view) {
         super(CLICK, MOUSEOVER, MOUSEOUT);
         this.view = view;
         resources.css().ensureInjected();
-    }
-
-    @Override
-    public void render(Cell.Context context, DeployedComponent value, SafeHtmlBuilder sb) {
-        if (value == null) {
-            return;
-        }
-        sb.appendHtmlConstant("&nbsp;");
-        SafeHtml safeHtmlName = SafeHtmlUtils.fromString(value.getName());
-        sb.append(templates.cell(resources.css().DCName(), safeHtmlName, "Click to view info",
-                ELEMENT_NAME));
-
     }
 
     @Override
@@ -84,13 +72,13 @@ public class DCNameHyperlinkCell extends AbstractCell<DeployedComponent> {
 
             switch (Event.as(event).getTypeInt()) {
                 case Event.ONCLICK:
-                    doOnClick(eventTarget, value);
+                    doOnClick(value);
                     break;
                 case Event.ONMOUSEOVER:
-                    doOnMouseOver(eventTarget, value);
+                    doOnMouseOver(eventTarget);
                     break;
                 case Event.ONMOUSEOUT:
-                    doOnMouseOut(eventTarget, value);
+                    doOnMouseOut(eventTarget);
                     break;
                 default:
                     break;
@@ -98,15 +86,27 @@ public class DCNameHyperlinkCell extends AbstractCell<DeployedComponent> {
         }
     }
 
-    private void doOnMouseOut(Element eventTarget, DeployedComponent value) {
+    @Override
+    public void render(Cell.Context context, DeployedComponent value, SafeHtmlBuilder sb) {
+        if (value == null) {
+            return;
+        }
+        sb.appendHtmlConstant("&nbsp;");
+        SafeHtml safeHtmlName = SafeHtmlUtils.fromString(value.getName());
+        sb.append(templates.cell(resources.css().DCName(), safeHtmlName, "Click to view info",
+                ELEMENT_NAME));
+
+    }
+
+    private void doOnClick(final DeployedComponent value) {
+        view.showInfo(value);
+    }
+
+    private void doOnMouseOut(Element eventTarget) {
         eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
     }
 
-    private void doOnMouseOver(Element eventTarget, DeployedComponent value) {
+    private void doOnMouseOver(Element eventTarget) {
         eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
-    }
-
-    private void doOnClick(final Element eventTarget, final DeployedComponent value) {
-        view.showInfo(value);
     }
 }

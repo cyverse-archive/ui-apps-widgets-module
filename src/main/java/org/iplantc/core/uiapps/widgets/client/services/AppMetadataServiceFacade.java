@@ -13,16 +13,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AppMetadataServiceFacade {
 
-    void getFileInfoTypes(AsyncCallback<List<FileInfoType>> callback);
+    DataSourceProperties getDataSourceProperties();
 
     void getDataSources(AsyncCallback<List<DataSource>> callback);
 
-    void getReferenceGenomes(AsyncCallback<List<ReferenceGenome>> callback);
-
     FileInfoTypeProperties getFileInfoTypeProperties();
-    
-    DataSourceProperties getDataSourceProperties();
 
+    void getFileInfoTypes(AsyncCallback<List<FileInfoType>> callback);
+    
     ReferenceGenomeProperties getReferenceGenomeProperties();
+
+    void getReferenceGenomes(AsyncCallback<List<ReferenceGenome>> callback);
 
 }

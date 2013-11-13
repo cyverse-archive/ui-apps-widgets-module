@@ -7,8 +7,8 @@ import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHel
 import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.core.resources.client.uiapps.widgets.ArgumentListEditorCss;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
-import org.iplantc.core.uiapps.widgets.client.view.editors.properties.AppTemplatePropertyEditor;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.resources.client.CssResource;
@@ -24,8 +24,22 @@ import com.sencha.gxt.widget.core.client.button.IconButton;
  * 
  */
 public interface AppTemplateWizardAppearance {
-
     interface AppTemplateWizardTemplates extends SafeHtmlTemplates {
+        @SafeHtmlTemplates.Template("<p style='text-overflow: ellipsis;overflow: hidden;white-space: nowrap;'>{0}</p>")
+        SafeHtml contentPanelHeader(SafeHtml label);
+
+        @SafeHtmlTemplates.Template("<p style='text-overflow: ellipsis;overflow: hidden;white-space: nowrap;'><span style='color: red;'>*&nbsp</span>{0}</p>")
+        SafeHtml contentPanelHeaderRequired(SafeHtml label);
+
+        @SafeHtmlTemplates.Template("<span qtip='{1}'>{0}</span>")
+        SafeHtml fieldLabel(SafeHtml name, String textToolTip);
+
+        @SafeHtmlTemplates.Template("{0}&nbsp;<img src='{1}' qtip='{2}'></img>")
+        SafeHtml fieldLabelImg(SafeHtml label, SafeUri img, String toolTip);
+
+        @SafeHtmlTemplates.Template("{0}<img style='float: right;' src='{1}' qtip='{2}'></img>")
+        SafeHtml fieldLabelImgFloatRight(SafeHtml label, SafeUri img, String toolTip);
+
         @SafeHtmlTemplates.Template("<span style='color: red;'>*&nbsp</span>")
         SafeHtml fieldLabelRequired();
 
@@ -34,21 +48,11 @@ public interface AppTemplateWizardAppearance {
 
         @SafeHtmlTemplates.Template("<span style='color: red;float: right;'>{0}</span>")
         SafeHtml redTextFloatRight(String text);
+    }
 
-        @SafeHtmlTemplates.Template("<span qtip='{1}'>{0}</span>")
-        SafeHtml fieldLabel(SafeHtml name, String textToolTip);
-
-        @SafeHtmlTemplates.Template("<p style='text-overflow: ellipsis;overflow: hidden;white-space: nowrap;'>{0}</p>")
-        SafeHtml contentPanelHeader(SafeHtml label);
-
-        @SafeHtmlTemplates.Template("<p style='text-overflow: ellipsis;overflow: hidden;white-space: nowrap;'><span style='color: red;'>*&nbsp</span>{0}</p>")
-        SafeHtml contentPanelHeaderRequired(SafeHtml label);
-
-        @SafeHtmlTemplates.Template("{0}<img style='float: right;' src='{1}' qtip='{2}'></img>")
-        SafeHtml fieldLabelImgFloatRight(SafeHtml label, SafeUri img, String toolTip);
-
-        @SafeHtmlTemplates.Template("{0}&nbsp;<img src='{1}' qtip='{2}'></img>")
-        SafeHtml fieldLabelImg(SafeHtml label, SafeUri img, String toolTip);
+    interface Resources extends IplantResources {
+        @Source("AppTemplateWizard.css")
+        Style css();
     }
 
     interface Style extends CssResource {
@@ -59,11 +63,11 @@ public interface AppTemplateWizardAppearance {
 
         String argumentSelect();
 
-        String deleteHover();
-
         String delete();
 
         String deleteBtn();
+
+        String deleteHover();
 
         String emptyGroupBgText();
 
@@ -73,10 +77,27 @@ public interface AppTemplateWizardAppearance {
 
     }
 
-    interface Resources extends IplantResources {
-        @Source("AppTemplateWizard.css")
-        Style css();
-    }
+    public static final AppTemplateWizardAppearance INSTANCE = GWT.create(AppTemplateWizardAppearance.class);
+
+    SafeHtml createArgumentLabel(Argument model);
+
+    /**
+     * @param label
+     * @return a formatted label for the ArgumentGroup and AppTemplate ContentPanel headers.
+     */
+    SafeHtml createContentPanelHeaderLabel(SafeHtml label, boolean required);
+
+    SafeHtml createContextualHelpLabel(String label, String toolTip);
+
+    SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip);
+
+    /**
+     * @return the character limit which is applied to the <code>AppTemplate</code> <i>name</i> field in
+     *         the {@link AppTemplatePropertyEditor}.
+     */
+    int getAppNameCharLimit();
+
+    IconButton getArgListDeleteButton();
 
     int getAutoExpandOnHoverDelay();
 
@@ -86,9 +107,14 @@ public interface AppTemplateWizardAppearance {
 
     int getAutoScrollRepeatDelay();
 
+    AppsWidgetsContextualHelpMessages getContextHelpMessages();
+
     int getDefaultArgListHeight();
 
-    IconButton getArgListDeleteButton();
+    /**
+     * @return default height for the tree selection widget.
+     */
+    int getDefaultTreeSelectionHeight();
 
     /**
      * @return returns a freshly constructed Error ImageElement.
@@ -104,34 +130,9 @@ public interface AppTemplateWizardAppearance {
      */
     ImageElement getErrorIconImgWithErrQTip(List<EditorError> errors);
 
-    AppTemplateWizardTemplates getTemplates();
+    AppsWidgetsPropertyPanelLabels getPropertyPanelLabels();
 
     Style getStyle();
 
-    /**
-     * @return default height for the tree selection widget.
-     */
-    int getDefaultTreeSelectionHeight();
-
-    SafeHtml createArgumentLabel(Argument model);
-
-    SafeHtml createContextualHelpLabel(String label, String toolTip);
-
-    SafeHtml createContextualHelpLabelNoFloat(String label, String toolTip);
-
-    AppsWidgetsPropertyPanelLabels getPropertyPanelLabels();
-
-    AppsWidgetsContextualHelpMessages getContextHelpMessages();
-
-    /**
-     * @param label
-     * @return a formatted label for the ArgumentGroup and AppTemplate ContentPanel headers.
-     */
-    SafeHtml createContentPanelHeaderLabel(SafeHtml label, boolean required);
-
-    /**
-     * @return the character limit which is applied to the <code>AppTemplate</code> <i>name</i> field in
-     *         the {@link AppTemplatePropertyEditor}.
-     */
-    int getAppNameCharLimit();
+    AppTemplateWizardTemplates getTemplates();
 }

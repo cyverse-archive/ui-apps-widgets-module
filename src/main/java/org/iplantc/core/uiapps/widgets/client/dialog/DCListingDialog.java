@@ -3,20 +3,18 @@
  */
 package org.iplantc.core.uiapps.widgets.client.dialog;
 
-import java.util.List;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import org.iplantc.core.uiapps.widgets.client.presenter.DeployedComponentPresenterImpl;
-import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingViewImpl;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 
-import com.google.gwt.core.client.GWT;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import java.util.List;
 
 /**
  * 
@@ -24,30 +22,6 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * 
  */
 public class DCListingDialog extends IPlantDialog {
-
-    private DeployedComponent selectedComponent = null;
-    
-    public DCListingDialog() {
-        setHideOnButtonClick(true);
-        setPixelSize(600, 500);
-        setResizable(false);
-        setModal(true);
-        setHeadingText("Installed Tools");
-        getOkButton().setEnabled(false);
-
-        ListStore<DeployedComponent> listStore = new ListStore<DeployedComponent>(new DCKeyProvider());
-        DeployedComponentsListingView view = new DeployedComponentsListingViewImpl(listStore,
-                new DCSelectionChangedHandler());
-        DeployedComponentServices dcService = GWT.create(DeployedComponentServices.class);
-        DeployedComponentsListingView.Presenter p = new DeployedComponentPresenterImpl(view, dcService);
-        p.go(this);
-
-    }
-
-    public DeployedComponent getSelectedComponent() {
-        return selectedComponent;
-    }
-
 
     class DCKeyProvider implements ModelKeyProvider<DeployedComponent> {
 
@@ -57,7 +31,7 @@ public class DCListingDialog extends IPlantDialog {
         }
 
     }
-
+    
     class DCSelectionChangedHandler implements SelectionChangedHandler<DeployedComponent> {
 
         @Override
@@ -73,6 +47,29 @@ public class DCListingDialog extends IPlantDialog {
 
         }
 
+    }
+
+    private DeployedComponent selectedComponent = null;
+
+
+    public DCListingDialog() {
+        setHideOnButtonClick(true);
+        setPixelSize(600, 500);
+        setResizable(false);
+        setModal(true);
+        setHeadingText("Installed Tools");
+        getOkButton().setEnabled(false);
+
+        ListStore<DeployedComponent> listStore = new ListStore<DeployedComponent>(new DCKeyProvider());
+        DeployedComponentsListingView view = new DeployedComponentsListingViewImpl(listStore,
+                new DCSelectionChangedHandler());
+        DeployedComponentsListingView.Presenter p = new DeployedComponentPresenterImpl(view);
+        p.go(this);
+
+    }
+
+    public DeployedComponent getSelectedComponent() {
+        return selectedComponent;
     }
 
 }

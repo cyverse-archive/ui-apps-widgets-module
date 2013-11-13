@@ -43,18 +43,29 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadataServiceFacade {
+    private static final Queue<AsyncCallback<List<DataSource>>> dataSourceQueue = Lists.newLinkedList();
     private static final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);
-    private final DeployedComponentServices dcServices = GWT.create(DeployedComponentServices.class);
-    private final FileInfoTypeProperties fileInfoTypeProperties = GWT.create(FileInfoTypeProperties.class);
-    private final DataSourceProperties dataSourceProperties = GWT.create(DataSourceProperties.class);
-    private final ReferenceGenomeProperties referenceGenomeProperties = GWT.create(ReferenceGenomeProperties.class);
-    private final List<FileInfoType> fileInfoTypeList = Lists.newArrayList();
+    private static final Queue<AsyncCallback<List<FileInfoType>>> fileInfoTypeQueue = Lists.newLinkedList();
+    private static final Queue<AsyncCallback<List<ReferenceGenome>>> refGenQueue = Lists.newLinkedList();
     private final List<DataSource> dataSourceList = Lists.newArrayList();
+    private final DataSourceProperties dataSourceProperties = GWT.create(DataSourceProperties.class);
+    private final DeployedComponentServices dcServices = GWT.create(DeployedComponentServices.class);
+    private final List<FileInfoType> fileInfoTypeList = Lists.newArrayList();
+
+    private final FileInfoTypeProperties fileInfoTypeProperties = GWT.create(FileInfoTypeProperties.class);
+    private final ReferenceGenomeProperties referenceGenomeProperties = GWT.create(ReferenceGenomeProperties.class);
     private final List<ReferenceGenome> refGenList = Lists.newArrayList();
 
-    private static final Queue<AsyncCallback<List<FileInfoType>>> fileInfoTypeQueue = Lists.newLinkedList();
-    private static final Queue<AsyncCallback<List<DataSource>>> dataSourceQueue = Lists.newLinkedList();
-    private static final Queue<AsyncCallback<List<ReferenceGenome>>> refGenQueue = Lists.newLinkedList();
+    @Override
+    public void cmdLinePreview(AppTemplate at, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "arg-preview"; //$NON-NLS-1$
+        AppTemplate cleaned = doCmdLinePreviewCleanup(at);
+        Splittable split = appTemplateToSplittable(cleaned);
+        String payload = split.getPayload();
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.POST, 
+                address, payload);
+        DEServiceFacade.getInstance().getServiceData(wrapper, callback);
+    }
 
     @Override
     public void getAppTemplate(HasId appId, AsyncCallback<AppTemplate> callback) {
@@ -65,30 +76,16 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     }
 
     @Override
+    public AppTemplateAutoBeanFactory getAppTemplateFactory() {
+        return factory;
+    }
+    
+    @Override
     public void getAppTemplateForEdit(HasId appId, AsyncCallback<AppTemplate> callback) {
         String address = DEProperties.getInstance().getMuleServiceBaseUrl()
                 + "edit-app/" + appId.getId(); //$NON-NLS-1$
         ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
         DEServiceFacade.getInstance().getServiceData(wrapper, new AppTemplateCallbackConverter(factory, dcServices, callback));
-    }
-
-    @Override
-    public void saveAndPublishAppTemplate(AppTemplate at, AsyncCallback<String> callback) {
-        String address = DEProperties.getInstance().getMuleServiceBaseUrl() 
-                + "update-app"; //$NON-NLS-1$
-        Splittable split = appTemplateToSplittable(at);
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.PUT, 
-                address, split.getPayload());
-        callSecuredService(callback, wrapper);
-    }
-    
-    @Override
-    public void updateAppLabels(AppTemplate at, AsyncCallback<String> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "update-app-labels"; //$NON-NLS-1$
-        Splittable split = appTemplateToSplittable(at);
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.POST, address, split.getPayload());
-        callSecuredService(callback, wrapper);
-
     }
 
     @Override
@@ -102,13 +99,141 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
     }
 
     @Override
+    public DataSourceProperties getDataSourceProperties() {
+        return dataSourceProperties;
+    }
+
+    @Override
+    public void getDataSources(AsyncCallback<List<DataSource>> callback) {
+        if (!dataSourceList.isEmpty()) {
+            callback.onSuccess(dataSourceList);
+            return;
+        } else {
+            enqueueDataSourceCallback(callback);
+        }
+    }
+
+    @Override
+    public FileInfoTypeProperties getFileInfoTypeProperties() {
+        return fileInfoTypeProperties;
+    }
+
+    @Override
+    public void getFileInfoTypes(AsyncCallback<List<FileInfoType>> callback) {
+        if (!fileInfoTypeList.isEmpty()) {
+            callback.onSuccess(fileInfoTypeList);
+            return;
+        } else {
+            enqueueFileInfoTypeCallback(callback);
+        }
+    }
+
+    @Override
+    public ReferenceGenomeProperties getReferenceGenomeProperties() {
+        return referenceGenomeProperties;
+    }
+
+    @Override
+    public void getReferenceGenomes(AsyncCallback<List<ReferenceGenome>> callback) {
+        if (!refGenList.isEmpty()) {
+            callback.onSuccess(refGenList);
+            return;
+        } else {
+            enqueueRefGenomeCallback(callback);
+        }
+    }
+
+    @Override
+    public void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "workspaces/" + je.getWorkspaceId() + "/newexperiment"; //$NON-NLS-1$ //$NON-NLS-2$
+        Splittable assembledPayload = doAssembleLaunchAnalysisPayload(at, je);
+        GWT.log("LaunchAnalysis Json:\n" + JsonUtil.prettyPrint(assembledPayload));
+
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.PUT, address, assembledPayload.getPayload());
+        DEServiceFacade.getInstance().getServiceData(wrapper, callback);
+    }
+
+    @Override
     public void rerunAnalysis(HasId analysisId, AsyncCallback<AppTemplate> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() 
+        String address = DEProperties.getInstance().getMuleServiceBaseUrl()
                 + "app-rerun-info/" + analysisId.getId(); //$NON-NLS-1$
 
         ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET, address);
 
         DEServiceFacade.getInstance().getServiceData(wrapper, new AppTemplateCallbackConverter(factory, dcServices, callback));
+    }
+
+    @Override
+    public void saveAndPublishAppTemplate(AppTemplate at, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getMuleServiceBaseUrl() 
+                + "update-app"; //$NON-NLS-1$
+        Splittable split = appTemplateToSplittable(at);
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.PUT, 
+                address, split.getPayload());
+        callSecuredService(callback, wrapper);
+    }
+
+    @Override
+    public void updateAppLabels(AppTemplate at, AsyncCallback<String> callback) {
+        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "update-app-labels"; //$NON-NLS-1$
+        Splittable split = appTemplateToSplittable(at);
+        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.POST, address, split.getPayload());
+        callSecuredService(callback, wrapper);
+
+    }
+
+    private Splittable appTemplateToSplittable(AppTemplate at){
+        Splittable ret = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(at));
+        if(at.getDeployedComponent() != null){
+            StringQuoter.create(at.getDeployedComponent().getId()).assign(ret, "component_id");//$NON-NLS-1$
+        }
+        // JDS Convert Argument.getValue() which contain any selected/checked *Selection types to only
+        // contain their value.
+        for (ArgumentGroup ag : at.getArgumentGroups()) {
+            for (Argument arg : ag.getArguments()) {
+                if (arg.getType().equals(ArgumentType.TreeSelection)) {
+                    if ((arg.getSelectionItems() != null) && (arg.getSelectionItems().size() == 1)) {
+                        SelectionItemGroup sig = AppTemplateUtils.selectionItemToSelectionItemGroup(arg.getSelectionItems().get(0));
+                        Splittable split = AppTemplateUtils.getSelectedTreeItemsAsSplittable(sig);
+                        arg.setValue(split);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    private void callSecuredService(AsyncCallback<String> callback, ServiceCallWrapper wrapper) {
+        SharedServiceFacade.getInstance().getServiceData(wrapper, callback);
+    }
+
+    private Splittable doAssembleLaunchAnalysisPayload(AppTemplate at, JobExecution je) {
+        Splittable assembledPayload = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(je));
+        Splittable configSplit = StringQuoter.createSplittable();
+        for (ArgumentGroup ag : at.getArgumentGroups()) {
+            for (Argument arg : ag.getArguments()) {
+                Splittable value = arg.getValue();
+                if ((value == null) && !arg.getType().equals(ArgumentType.TreeSelection)) {
+                    continue;
+                }
+                if (AppTemplateUtils.isSimpleSelectionArgumentType(arg.getType())) {
+                    value.assign(configSplit, arg.getId());
+                } else if (AppTemplateUtils.isDiskResourceArgumentType(arg.getType()) && !arg.getType().equals(ArgumentType.MultiFileSelector)) {
+                    value.get("id").assign(configSplit, arg.getId());
+                } else if (arg.getType().equals(ArgumentType.MultiFileSelector) && value.isIndexed()) {
+                    value.assign(configSplit, arg.getId());
+                } else if (arg.getType().equals(ArgumentType.TreeSelection) && (arg.getSelectionItems() != null) && (arg.getSelectionItems().size() == 1)) {
+                    SelectionItemGroup sig = AppTemplateUtils.selectionItemToSelectionItemGroup(arg.getSelectionItems().get(0));
+                    Splittable sigSplit = AppTemplateUtils.getSelectedTreeItemsAsSplittable(sig);
+                    sigSplit.assign(configSplit, arg.getId());
+                } else {
+                    value.assign(configSplit, arg.getId());
+                }
+
+            }
+        }
+        configSplit.assign(assembledPayload, "config");
+        return assembledPayload;
     }
 
     private AppTemplate doCmdLinePreviewCleanup(AppTemplate templateToClean) {
@@ -152,64 +277,29 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
         return copy;
     }
 
-    @Override
-    public void cmdLinePreview(AppTemplate at, AsyncCallback<String> callback) {
-        String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "arg-preview"; //$NON-NLS-1$
-        AppTemplate cleaned = doCmdLinePreviewCleanup(at);
-        Splittable split = appTemplateToSplittable(cleaned);
-        String payload = split.getPayload();
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.POST, 
-                address, payload);
-        DEServiceFacade.getInstance().getServiceData(wrapper, callback);
-    }
-
-    private Splittable doAssembleLaunchAnalysisPayload(AppTemplate at, JobExecution je) {
-        Splittable assembledPayload = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(je));
-        Splittable configSplit = StringQuoter.createSplittable();
-        for (ArgumentGroup ag : at.getArgumentGroups()) {
-            for (Argument arg : ag.getArguments()) {
-                Splittable value = arg.getValue();
-                if ((value == null) && !arg.getType().equals(ArgumentType.TreeSelection)) {
-                    continue;
+    private void enqueueDataSourceCallback(AsyncCallback<List<DataSource>> callback) {
+        if (dataSourceQueue.isEmpty()) {
+            String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/data-sources"; //$NON-NLS-1$
+            ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+            DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
                 }
-                if (AppTemplateUtils.isSimpleSelectionArgumentType(arg.getType())) {
-                    value.assign(configSplit, arg.getId());
-                } else if (AppTemplateUtils.isDiskResourceArgumentType(arg.getType()) && !arg.getType().equals(ArgumentType.MultiFileSelector)) {
-                    value.get("id").assign(configSplit, arg.getId());
-                } else if (arg.getType().equals(ArgumentType.MultiFileSelector) && value.isIndexed()) {
-                    value.assign(configSplit, arg.getId());
-                } else if (arg.getType().equals(ArgumentType.TreeSelection) && (arg.getSelectionItems() != null) && (arg.getSelectionItems().size() == 1)) {
-                    SelectionItemGroup sig = AppTemplateUtils.selectionItemToSelectionItemGroup(arg.getSelectionItems().get(0));
-                    Splittable sigSplit = AppTemplateUtils.getSelectedTreeItemsAsSplittable(sig);
-                    sigSplit.assign(configSplit, arg.getId());
-                } else {
-                    value.assign(configSplit, arg.getId());
+                @Override
+                public void onSuccess(String result) {
+                    DataSourceList dsList = AutoBeanCodex.decode(factory, DataSourceList.class, result).as();
+                    dataSourceList.clear();
+                    dataSourceList.addAll(dsList.getDataSources());
+
+                    while (!dataSourceQueue.isEmpty()) {
+                        dataSourceQueue.remove().onSuccess(dataSourceList);
+                    }
                 }
+            });
 
-            }
         }
-        configSplit.assign(assembledPayload, "config");
-        return assembledPayload;
-    }
-
-    @Override
-    public void launchAnalysis(AppTemplate at, JobExecution je, AsyncCallback<String> callback) {
-        String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "workspaces/" + je.getWorkspaceId() + "/newexperiment"; //$NON-NLS-1$ //$NON-NLS-2$
-        Splittable assembledPayload = doAssembleLaunchAnalysisPayload(at, je);
-        GWT.log("LaunchAnalysis Json:\n" + JsonUtil.prettyPrint(assembledPayload));
-
-        ServiceCallWrapper wrapper = new ServiceCallWrapper(Type.PUT, address, assembledPayload.getPayload());
-        DEServiceFacade.getInstance().getServiceData(wrapper, callback);
-    }
-
-    @Override
-    public void getFileInfoTypes(AsyncCallback<List<FileInfoType>> callback) {
-        if (!fileInfoTypeList.isEmpty()) {
-            callback.onSuccess(fileInfoTypeList);
-            return;
-        } else {
-            enqueueFileInfoTypeCallback(callback);
-        }
+        dataSourceQueue.add(callback);
     }
 
     private void enqueueFileInfoTypeCallback(AsyncCallback<List<FileInfoType>> callback) {
@@ -218,6 +308,11 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
             ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
 
             DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
+                }
 
                 @Override
                 public void onSuccess(String result) {
@@ -230,60 +325,10 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
                         fileInfoTypeQueue.remove().onSuccess(fileInfoTypeList);
                     }
                 }
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    ErrorHandler.post(caught);
-                }
             });
         }
         fileInfoTypeQueue.add(callback);
 
-    }
-
-    @Override
-    public void getDataSources(AsyncCallback<List<DataSource>> callback) {
-        if (!dataSourceList.isEmpty()) {
-            callback.onSuccess(dataSourceList);
-            return;
-        } else {
-            enqueueDataSourceCallback(callback);
-        }
-    }
-
-    private void enqueueDataSourceCallback(AsyncCallback<List<DataSource>> callback) {
-        if (dataSourceQueue.isEmpty()) {
-            String address = DEProperties.getInstance().getUnproctedMuleServiceBaseUrl() + "get-workflow-elements/data-sources"; //$NON-NLS-1$
-            ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
-            DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    DataSourceList dsList = AutoBeanCodex.decode(factory, DataSourceList.class, result).as();
-                    dataSourceList.clear();
-                    dataSourceList.addAll(dsList.getDataSources());
-
-                    while (!dataSourceQueue.isEmpty()) {
-                        dataSourceQueue.remove().onSuccess(dataSourceList);
-                    }
-                }
-                @Override
-                public void onFailure(Throwable caught) {
-                    ErrorHandler.post(caught);
-                }
-            });
-
-        }
-        dataSourceQueue.add(callback);
-    }
-
-    @Override
-    public void getReferenceGenomes(AsyncCallback<List<ReferenceGenome>> callback) {
-        if (!refGenList.isEmpty()) {
-            callback.onSuccess(refGenList);
-            return;
-        } else {
-            enqueueRefGenomeCallback(callback);
-        }
     }
 
     private void enqueueRefGenomeCallback(AsyncCallback<List<ReferenceGenome>> callback) {
@@ -291,6 +336,11 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
             String address = DEProperties.getInstance().getMuleServiceBaseUrl() + "reference-genomes"; //$NON-NLS-1$
             ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
             DEServiceFacade.getInstance().getServiceData(wrapper, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(caught);
+                }
+
                 @Override
                 public void onSuccess(String result) {
                     ReferenceGenomeList rgList = AutoBeanCodex.decode(factory, ReferenceGenomeList.class, result).as();
@@ -301,60 +351,10 @@ public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadata
                         refGenQueue.remove().onSuccess(refGenList);
                     }
                 }
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    ErrorHandler.post(caught);
-                }
             });
 
         }
         refGenQueue.add(callback);
-    }
-
-    private Splittable appTemplateToSplittable(AppTemplate at){
-        Splittable ret = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(at));
-        if(at.getDeployedComponent() != null){
-            StringQuoter.create(at.getDeployedComponent().getId()).assign(ret, "component_id");//$NON-NLS-1$
-        }
-        // JDS Convert Argument.getValue() which contain any selected/checked *Selection types to only
-        // contain their value.
-        for (ArgumentGroup ag : at.getArgumentGroups()) {
-            for (Argument arg : ag.getArguments()) {
-                if (arg.getType().equals(ArgumentType.TreeSelection)) {
-                    if ((arg.getSelectionItems() != null) && (arg.getSelectionItems().size() == 1)) {
-                        SelectionItemGroup sig = AppTemplateUtils.selectionItemToSelectionItemGroup(arg.getSelectionItems().get(0));
-                        Splittable split = AppTemplateUtils.getSelectedTreeItemsAsSplittable(sig);
-                        arg.setValue(split);
-                    }
-                }
-            }
-        }
-        return ret;
-    }
-
-    private void callSecuredService(AsyncCallback<String> callback, ServiceCallWrapper wrapper) {
-        SharedServiceFacade.getInstance().getServiceData(wrapper, callback);
-    }
-
-    @Override
-    public FileInfoTypeProperties getFileInfoTypeProperties() {
-        return fileInfoTypeProperties;
-    }
-
-    @Override
-    public DataSourceProperties getDataSourceProperties() {
-        return dataSourceProperties;
-    }
-
-    @Override
-    public ReferenceGenomeProperties getReferenceGenomeProperties() {
-        return referenceGenomeProperties;
-    }
-
-    @Override
-    public AppTemplateAutoBeanFactory getAppTemplateFactory() {
-        return factory;
     }
 
 }

@@ -3,18 +3,6 @@
  */
 package org.iplantc.core.uiapps.widgets.client.view.deployedComponents;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
-import org.iplantc.core.uiapps.widgets.client.services.DCSearchRPCProxy;
-import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
-import org.iplantc.core.uicommons.client.widgets.SearchField;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -24,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.ListStore;
@@ -43,6 +32,18 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
+import org.iplantc.core.uiapps.widgets.client.services.DCSearchRPCProxy;
+import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
+import org.iplantc.core.uicommons.client.widgets.SearchField;
+
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * A grid that displays list of available deployed components (bin/tools) in Condor
  *
@@ -52,44 +53,37 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 public class DeployedComponentsListingViewImpl extends Composite implements
         DeployedComponentsListingView {
 
-    private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
-
-    @UiTemplate("DeployedComponentsListingView.ui.xml")
-    interface MyUiBinder extends UiBinder<Widget, DeployedComponentsListingViewImpl> {
-    }
-
     interface DCDetailsRenderer extends XTemplates {
         @XTemplate(source = "DCDetails.html")
         SafeHtml render();
     }
 
-    @UiField(provided = true)
-    ListStore<DeployedComponent> store;
+    @UiTemplate("DeployedComponentsListingView.ui.xml")
+    interface MyUiBinder extends UiBinder<Widget, DeployedComponentsListingViewImpl> {
+    }
 
-    private final Widget widget;
-
-    private DeployedComponentsListingView.Presenter presenter;
+    private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
     @UiField
-    SearchField<DeployedComponent> searchField;
+    VerticalLayoutContainer container;
 
     @UiField
     Grid<DeployedComponent> grid;
 
-    @UiField
-    VerticalLayoutContainer container;
-    
-    DCSearchRPCProxy searchProxy;
-    
     PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader;
 
-    
-    
-    @UiFactory
-    SearchField<DeployedComponent> createAppSearchField() {
-        return new SearchField<DeployedComponent>(loader);
-    }
+    @UiField
+    SearchField<DeployedComponent> searchField;
 
+    DCSearchRPCProxy searchProxy;
+    
+    @UiField(provided = true)
+    ListStore<DeployedComponent> store;
+    
+    private final Widget widget;
+
+    
+    
     public DeployedComponentsListingViewImpl(ListStore<DeployedComponent> listStore,
             SelectionChangedHandler<DeployedComponent> handler) {
         this.store = listStore;
@@ -107,17 +101,50 @@ public class DeployedComponentsListingViewImpl extends Composite implements
         return widget;
     }
 
-     @Override
-    public void setPresenter(DeployedComponentsListingView.Presenter presenter) {
-        this.presenter = presenter;
+    @Override
+    public DeployedComponent getSelectedDC() {
+        return grid.getSelectionModel().getSelectedItem();
+    }
 
+     @Override
+    public void loadDC(List<DeployedComponent> list) {
+        store.clear();
+        store.addAll(list);
     }
     
-    private PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> buildLoader() {
-        final PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader = new PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>>(
-                searchProxy);
-        loader.useLoadConfig(new FilterPagingLoadConfigBean());
-        return loader;
+    @Override
+    public void mask() {
+        container.mask(I18N.DISPLAY.loadingMask());
+
+    }
+
+    @Override
+    public void setPresenter(DeployedComponentsListingView.Presenter presenter) {
+
+    }
+
+    @Override
+    public void showInfo(DeployedComponent dc) {
+        DCDetailsRenderer templates = GWT.create(DCDetailsRenderer.class);
+        HtmlLayoutContainer c = new HtmlLayoutContainer(templates.render());
+        c.add(new Label(I18N.DISPLAY.attribution() + ": "), new HtmlData(".cell1"));
+        c.add(new Label(dc.getAttribution()), new HtmlData(".cell3"));
+        c.add(new Label(I18N.DISPLAY.description() + ": "), new HtmlData(".cell5"));
+        c.add(new Label(dc.getDescription()), new HtmlData(".cell7"));
+        Dialog d = buildDetailsDialog(dc.getName());
+        d.add(c);
+        d.show();
+    }
+
+    @Override
+    public void unmask() {
+        container.unmask();
+
+    }
+
+    @UiFactory
+    SearchField<DeployedComponent> createAppSearchField() {
+        return new SearchField<DeployedComponent>(loader);
     }
 
     @UiFactory
@@ -152,44 +179,10 @@ public class DeployedComponentsListingViewImpl extends Composite implements
         return new ColumnModel<DeployedComponent>(configs);
     }
 
-    @Override
-    public void loadDC(List<DeployedComponent> list) {
-        store.clear();
-        store.addAll(list);
-    }
-
-    @Override
-    public void showInfo(DeployedComponent dc) {
-        DCDetailsRenderer templates = GWT.create(DCDetailsRenderer.class);
-        HtmlLayoutContainer c = new HtmlLayoutContainer(templates.render());
-        c.add(new Label(I18N.DISPLAY.attribution() + ": "), new HtmlData(".cell1"));
-        c.add(new Label(dc.getAttribution()), new HtmlData(".cell3"));
-        c.add(new Label(I18N.DISPLAY.description() + ": "), new HtmlData(".cell5"));
-        c.add(new Label(dc.getDescription()), new HtmlData(".cell7"));
-        Dialog d = buildDetailsDialog(dc.getName());
-        d.add(c);
-        d.show();
-    }
-
-    private Dialog buildDetailsDialog(String heading) {
-        Dialog d = new Dialog();
-        d.getButtonBar().clear();
-        d.setModal(true);
-        d.setSize("300px", "200px");
-        d.setHeadingText(heading);
-        return d;
-    }
-
-    @Override
-    public void mask() {
-        container.mask(I18N.DISPLAY.loadingMask());
-
-    }
-
-    @Override
-    public void unmask() {
-        container.unmask();
-
+    @UiHandler({"newToolBtn"})
+    void onNewToolRequestBtnClick(@SuppressWarnings("unused") SelectEvent event) {
+        NewToolRequestDialog dialog = new NewToolRequestDialog();
+        dialog.show();
     }
 
 //    @UiHandler({"searchBtn"})
@@ -206,15 +199,20 @@ public class DeployedComponentsListingViewImpl extends Composite implements
 //        }
 //    }
 
-    @UiHandler({"newToolBtn"})
-    void onNewToolRequestBtnClick(SelectEvent event) {
-        NewToolRequestDialog dialog = new NewToolRequestDialog();
-        dialog.show();
+    private Dialog buildDetailsDialog(String heading) {
+        Dialog d = new Dialog();
+        d.getButtonBar().clear();
+        d.setModal(true);
+        d.setSize("300px", "200px");
+        d.setHeadingText(heading);
+        return d;
     }
 
-    @Override
-    public DeployedComponent getSelectedDC() {
-        return grid.getSelectionModel().getSelectedItem();
+    private PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> buildLoader() {
+        final PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> loader = new PagingLoader<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>>(
+                searchProxy);
+        loader.useLoadConfig(new FilterPagingLoadConfigBean());
+        return loader;
     }
 
 }

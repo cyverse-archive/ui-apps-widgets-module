@@ -1,7 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.services.impl.converters;
 
-import java.util.List;
-
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplate;
 import org.iplantc.core.uiapps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
@@ -14,7 +12,6 @@ import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 import org.iplantc.core.uicommons.client.services.AsyncCallbackConverter;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -25,8 +22,8 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String, AppTemplate> {
 
-    private final AppTemplateAutoBeanFactory factory;
     private final DeployedComponentServices dcServices;
+    private final AppTemplateAutoBeanFactory factory;
 
     public AppTemplateCallbackConverter(AppTemplateAutoBeanFactory factory, DeployedComponentServices dcServices, AsyncCallback<AppTemplate> callback) {
         super(callback);
@@ -72,17 +69,17 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
         dcServices.getAppTemplateDeployedComponent(CommonModelUtils.createHasIdFromSplittable(split), new AsyncCallback<DeployedComponent>() {
 
             @Override
+            public void onFailure(Throwable caught) {
+                AppTemplateCallbackConverter.this.onFailure(caught);
+            }
+
+            @Override
             public void onSuccess(DeployedComponent dc) {
                 if(dc != null){
                     Splittable dcSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(dc));
                     dcSplittable.assign(split, "deployedComponent");                    
                 }
                 AppTemplateCallbackConverter.super.onSuccess(split.getPayload());
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                AppTemplateCallbackConverter.this.onFailure(caught);
             }
         });
     }

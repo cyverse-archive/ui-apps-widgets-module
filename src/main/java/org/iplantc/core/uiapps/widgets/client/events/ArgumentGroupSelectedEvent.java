@@ -1,10 +1,11 @@
 package org.iplantc.core.uiapps.widgets.client.events;
 
-import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.event.shared.HandlerRegistration;
+
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
+import org.iplantc.core.uiapps.widgets.client.models.ArgumentGroup;
 
 public class ArgumentGroupSelectedEvent extends GwtEvent<ArgumentGroupSelectedEventHandler> {
 
@@ -12,11 +13,29 @@ public class ArgumentGroupSelectedEvent extends GwtEvent<ArgumentGroupSelectedEv
         void onArgumentGroupSelected(ArgumentGroupSelectedEvent event);
     }
 
-    public static final GwtEvent.Type<ArgumentGroupSelectedEventHandler> TYPE = new GwtEvent.Type<ArgumentGroupSelectedEventHandler>();
-    private final IsWidget propertyEditor;
+    public static interface HasArgumentGroupSelectedHandlers {
+        HandlerRegistration addArgumentGroupSelectedHandler(ArgumentGroupSelectedEventHandler handler);
+    }
 
-    public ArgumentGroupSelectedEvent(IsWidget propertyEditor) {
-        this.propertyEditor = propertyEditor;
+    public static final GwtEvent.Type<ArgumentGroupSelectedEventHandler> TYPE = new GwtEvent.Type<ArgumentGroupSelectedEventHandler>();
+    private String absoluteEditorPath;
+    private final ArgumentGroup argGroup;
+
+    public ArgumentGroupSelectedEvent(ArgumentGroup argGroup) {
+        this.argGroup = argGroup;
+    }
+
+    public ArgumentGroupSelectedEvent(ArgumentGroup argGroup, String absoluteEditorPath) {
+        this(argGroup);
+        this.absoluteEditorPath = absoluteEditorPath;
+    }
+
+    public String getAbsoluteEditorPath() {
+        return absoluteEditorPath;
+    }
+
+    public ArgumentGroup getArgumentGroup() {
+        return argGroup;
     }
 
     @Override
@@ -27,10 +46,6 @@ public class ArgumentGroupSelectedEvent extends GwtEvent<ArgumentGroupSelectedEv
     @Override
     protected void dispatch(ArgumentGroupSelectedEventHandler handler) {
         handler.onArgumentGroupSelected(this);
-    }
-
-    public IsWidget getArgumentGroupPropertyEditor() {
-        return propertyEditor;
     }
 
 }

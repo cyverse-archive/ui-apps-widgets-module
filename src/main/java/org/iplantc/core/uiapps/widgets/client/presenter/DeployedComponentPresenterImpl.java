@@ -3,11 +3,10 @@
  */
 package org.iplantc.core.uiapps.widgets.client.presenter;
 
-import org.iplantc.core.uiapps.widgets.client.services.DeployedComponentServices;
+import com.google.gwt.user.client.ui.HasOneWidget;
+
 import org.iplantc.core.uiapps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-
-import com.google.gwt.user.client.ui.HasOneWidget;
 
 /**
  * @author sriram
@@ -16,7 +15,8 @@ import com.google.gwt.user.client.ui.HasOneWidget;
 public class DeployedComponentPresenterImpl implements DeployedComponentsListingView.Presenter {
 
     private final DeployedComponentsListingView view;
-    public DeployedComponentPresenterImpl(DeployedComponentsListingView view, final DeployedComponentServices dcService) {
+
+    public DeployedComponentPresenterImpl(DeployedComponentsListingView view) {
         this.view = view;
         this.view.setPresenter(this);
     }

@@ -1,11 +1,11 @@
 package org.iplantc.core.uiapps.widgets.client.events;
 
-import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
-import org.iplantc.core.uiapps.widgets.client.models.Argument;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.event.shared.HandlerRegistration;
+
+import org.iplantc.core.uiapps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
+import org.iplantc.core.uiapps.widgets.client.models.Argument;
 
 /**
  * An event to be fired when the user selects an {@link Argument} bound UI element.
@@ -19,13 +19,22 @@ public class ArgumentSelectedEvent extends GwtEvent<ArgumentSelectedEventHandler
         void onArgumentSelected(ArgumentSelectedEvent event);
     }
 
-    private final IsWidget propertyEditor;
-
-    public ArgumentSelectedEvent(IsWidget propertyEditor) {
-        this.propertyEditor = propertyEditor;
+    public static interface HasArgumentSelectedEventHandlers {
+        HandlerRegistration addArgumentSelectedEventHandler(ArgumentSelectedEventHandler handler);
     }
 
+
     public static GwtEvent.Type<ArgumentSelectedEventHandler> TYPE = new GwtEvent.Type<ArgumentSelectedEventHandler>();
+
+    private final Argument argument;
+
+    public ArgumentSelectedEvent(Argument argument) {
+        this.argument = argument;
+    }
+
+    public Argument getArgument() {
+        return argument;
+    }
 
     @Override
     public GwtEvent.Type<ArgumentSelectedEventHandler> getAssociatedType() {
@@ -35,10 +44,6 @@ public class ArgumentSelectedEvent extends GwtEvent<ArgumentSelectedEventHandler
     @Override
     protected void dispatch(ArgumentSelectedEventHandler handler) {
         handler.onArgumentSelected(this);
-    }
-
-    public IsWidget getArgumentPropertyEditor() {
-        return propertyEditor;
     }
 
 }

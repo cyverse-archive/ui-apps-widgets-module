@@ -41,23 +41,7 @@ public abstract class SelectionItemValueChangeStoreHandler implements StoreHandl
     }
 
     @Override
-    public void onSort(StoreSortEvent<SelectionItem> event) {/*
-                                                              * Do Nothing, sorting the grid does not
-                                                              * sort the store.
-                                                              */}
-
-    @Override
-    public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
-        doFire();
-    }
-
-    @Override
-    public void onDataChange(StoreDataChangeEvent<SelectionItem> event) {
-        doFire();
-    }
-
-    @Override
-    public void onUpdate(StoreUpdateEvent<SelectionItem> event) {
+    public void onAdd(StoreAddEvent<SelectionItem> event) {
         doFire();
     }
 
@@ -67,7 +51,17 @@ public abstract class SelectionItemValueChangeStoreHandler implements StoreHandl
     }
 
     @Override
+    public void onDataChange(StoreDataChangeEvent<SelectionItem> event) {
+        doFire();
+    }
+
+    @Override
     public void onFilter(StoreFilterEvent<SelectionItem> event) {/* Do Nothing */}
+
+    @Override
+    public void onRecordChange(StoreRecordChangeEvent<SelectionItem> event) {
+        doFire();
+    }
 
     @Override
     public void onRemove(StoreRemoveEvent<SelectionItem> event) {
@@ -75,9 +69,17 @@ public abstract class SelectionItemValueChangeStoreHandler implements StoreHandl
     }
 
     @Override
-    public void onAdd(StoreAddEvent<SelectionItem> event) {
+    public void onSort(StoreSortEvent<SelectionItem> event) {/*
+                                                              * Do Nothing, sorting the grid does not
+                                                              * sort the store.
+                                                              */}
+
+    @Override
+    public void onUpdate(StoreUpdateEvent<SelectionItem> event) {
         doFire();
     }
+
+    protected abstract List<SelectionItem> getCurrentValue();
 
     private void doFire() {
         if (hasEventSuppression.isSuppressEvent()) {
@@ -85,6 +87,4 @@ public abstract class SelectionItemValueChangeStoreHandler implements StoreHandl
         }
         ValueChangeEvent.fire(valueChangeTarget, getCurrentValue());
     }
-
-    protected abstract List<SelectionItem> getCurrentValue();
 }
