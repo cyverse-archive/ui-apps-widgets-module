@@ -29,6 +29,7 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWiza
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
@@ -122,6 +123,7 @@ public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
     @Override
     public JobExecution flushJobExecution() {
         JobExecution flush = editorDriver.flush();
+        flush.setWorkspaceId(UserInfo.getInstance().getWorkspaceId());
         updateHeader(flush.getName());
         return flush;
     }
