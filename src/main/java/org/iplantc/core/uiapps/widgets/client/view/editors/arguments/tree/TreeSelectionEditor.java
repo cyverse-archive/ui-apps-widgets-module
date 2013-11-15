@@ -98,24 +98,14 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
     }
 
     private final class MyTreeStoreEditor extends SelectionItemTreeStoreEditor {
-//        private final AppTemplateWizardPresenter presenter;
 
         private MyTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
-//        private MyTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget, AppTemplateWizardPresenter presenter) {
             super(store, valueChangeTarget);
-//            this.presenter = presenter;
         }
 
         @Override
         protected CheckCascade getCheckStyle() {
-            CheckCascade ret = null;
-//            if (!presenter.isEditingMode()) {
-//                return null;
-//            } else {
-//                ret = tree.getCheckStyle();
-//            }
-            ret = tree.getCheckStyle();
-            return ret;
+            return tree.getCheckStyle();
         }
 
         @Override
@@ -148,7 +138,6 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
 
         @Override
         protected boolean shouldFlush() {
-            // return presenter.getValueChangeEventSource() == TreeSelectionEditor.this;
             return true;
         }
     }
@@ -356,7 +345,6 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
         AutoBeanUtils.getAutoBean(value).setTag(SelectionItem.TO_BE_REMOVED, null);
         this.model = value;
         boolean restoreSelectionsFromDefaultValue = (value.getDefaultValue() != null) && (value.getDefaultValue().isIndexed()) && (value.getDefaultValue().size() > 0);
-//        boolean restoreSelectionsFromDefaultValue = !presenter.isEditingMode() && (value.getDefaultValue() != null) && (value.getDefaultValue().isIndexed()) && (value.getDefaultValue().size() > 0);
         tree.setRestoreCheckedSelectionFromTree(!restoreSelectionsFromDefaultValue);
         selectionItemsEditor.setValue(value.getSelectionItems());
         if (restoreSelectionsFromDefaultValue) {
