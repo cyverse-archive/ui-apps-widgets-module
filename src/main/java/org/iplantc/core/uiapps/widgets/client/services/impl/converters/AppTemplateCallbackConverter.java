@@ -45,7 +45,8 @@ public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String,
 
             @Override
             public void onFailure(Throwable caught) {
-                AppTemplateCallbackConverter.this.onFailure(caught);
+                // Didn't find Tool, just return unaltered AppTemplate
+                AppTemplateCallbackConverter.super.onSuccess(split.getPayload());
             }
 
             @Override
