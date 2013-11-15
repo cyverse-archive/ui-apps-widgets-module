@@ -1,8 +1,8 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.arguments;
 
-import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.LeafValueEditor;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -110,7 +110,7 @@ public class SampleArgumentEditor implements AppTemplateForm.ArgumentEditor {
     }
 
     @Override
-    public Editor<List<SelectionItem>> selectionItemsEditor() {
+    public ValueAwareEditor<List<SelectionItem>> selectionItemsEditor() {
         return null;
     }
 

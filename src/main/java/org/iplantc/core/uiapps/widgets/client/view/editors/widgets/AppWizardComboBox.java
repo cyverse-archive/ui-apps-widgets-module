@@ -1,7 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.widgets;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -92,7 +92,7 @@ public class AppWizardComboBox extends AbstractArgumentEditor implements HasValu
     }
 
     @Override
-    public Editor<List<SelectionItem>> selectionItemsEditor() {
+    public ValueAwareEditor<List<SelectionItem>> selectionItemsEditor() {
         return selectionItemsStoreBinder;
     }
 
