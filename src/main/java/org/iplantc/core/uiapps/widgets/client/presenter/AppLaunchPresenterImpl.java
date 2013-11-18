@@ -80,7 +80,7 @@ public class AppLaunchPresenterImpl implements AppLaunchView.Presenter, RequestA
         String regex = Format.substitute("[{0}]", RegExp.escapeCharacterClassSet(valConstants.restrictedCmdLineChars()));
         String newName = appTemplate.getName().replaceAll(regex, "_");
         je.setName(newName + "_" + appsWidgetsDisplayMessages.defaultAnalysisName()); //$NON-NLS-1$
-        je.setOutputDirectory(userSettings.getDefaultOutputFolder());
+        je.setOutputDirectory(userSettings.getDefaultOutputFolder().getPath());
 
         view.edit(appTemplate, je);
         container.setWidget(view);
