@@ -1,20 +1,5 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
-import java.util.List;
-
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
-import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
-import org.iplantc.core.uiapps.widgets.client.view.LaunchAnalysisView;
-import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
-import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uicommons.client.models.UserSettings;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
-import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
-import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -29,6 +14,7 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
+
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
@@ -37,6 +23,21 @@ import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+
+import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.core.uiapps.widgets.client.view.LaunchAnalysisView;
+import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
+import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.models.UserSettings;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
+import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
+import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
+
+import java.util.List;
 
 /**
  * @author jstroot
@@ -91,8 +92,6 @@ public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
         name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
         name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         name.setAllowBlank(false);
-        description.addKeyDownHandler(new PreventEntryAfterLimitHandler(description));
-        description.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         outputDirectory = new ConverterEditorAdapter<String, Folder, FolderSelectorField>(awFolderSel,
                 new Converter<String, Folder>() {
                     @Override
