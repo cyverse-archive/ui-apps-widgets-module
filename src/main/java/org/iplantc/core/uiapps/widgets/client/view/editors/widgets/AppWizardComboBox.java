@@ -24,6 +24,7 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.AbstractArgumentEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.ClearComboBoxSelectionKeyDownHandler;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToSelectionArgConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
@@ -58,6 +59,8 @@ public class AppWizardComboBox extends AbstractArgumentEditor implements HasValu
         selectionItemsEditor = new ComboBox<SelectionItem>(listStore, props.displayLabel());
         selectionItemsEditor.setEmptyText(appsWidgetsMessages.emptyListSelectionText());
         selectionItemsEditor.setTriggerAction(TriggerAction.ALL);
+        ClearComboBoxSelectionKeyDownHandler handler = new ClearComboBoxSelectionKeyDownHandler(selectionItemsEditor);
+        selectionItemsEditor.addKeyDownHandler(handler);
         valueEditor = new ArgumentEditorConverter<SelectionItem>(selectionItemsEditor, new SplittableToSelectionArgConverter());
 
         argumentLabel.setWidget(valueEditor);
