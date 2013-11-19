@@ -10,6 +10,7 @@ import static com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction.AL
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenome;
 import org.iplantc.core.uiapps.widgets.client.models.metadata.ReferenceGenomeProperties;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
@@ -24,6 +25,8 @@ public class ReferenceGenomeEditor extends AbstractArgumentEditor implements Has
         super(appearance);
         comboBox = new ComboBox<ReferenceGenome>(refGenomeStore, props.name());
         comboBox.setTriggerAction(ALL);
+        comboBox.setEmptyText(I18N.APPS_MESSAGES.emptyListSelectionText());
+        comboBox.setMinChars(1);
         ClearComboBoxSelectionKeyDownHandler handler = new ClearComboBoxSelectionKeyDownHandler(comboBox);
         comboBox.addKeyDownHandler(handler);
 

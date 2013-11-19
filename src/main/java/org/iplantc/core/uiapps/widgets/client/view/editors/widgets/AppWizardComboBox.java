@@ -58,6 +58,7 @@ public class AppWizardComboBox extends AbstractArgumentEditor implements HasValu
         // JDS Initialize combobox and its editor converter
         selectionItemsEditor = new ComboBox<SelectionItem>(listStore, props.displayLabel());
         selectionItemsEditor.setEmptyText(appsWidgetsMessages.emptyListSelectionText());
+        selectionItemsEditor.setMinChars(1);
         selectionItemsEditor.setTriggerAction(TriggerAction.ALL);
         ClearComboBoxSelectionKeyDownHandler handler = new ClearComboBoxSelectionKeyDownHandler(selectionItemsEditor);
         selectionItemsEditor.addKeyDownHandler(handler);
