@@ -62,7 +62,7 @@ public interface AppTemplateForm extends IsWidget, Editor<AppTemplate>, Argument
 
         LeafValueEditor<Boolean> requiredEditor();
 
-        Editor<List<SelectionItem>> selectionItemsEditor();
+        ValueAwareEditor<List<SelectionItem>> selectionItemsEditor();
 
         LeafValueEditor<ArgumentType> typeEditor();
 

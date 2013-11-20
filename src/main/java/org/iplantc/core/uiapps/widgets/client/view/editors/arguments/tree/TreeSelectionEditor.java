@@ -2,10 +2,12 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.arguments.tree;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.LeafValueEditor;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.editor.client.adapters.SimpleEditor;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -15,12 +17,16 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 
+import static com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign.TOP;
+
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
@@ -53,7 +59,7 @@ import java.util.List;
  * @author psarando
  * 
  */
-public class TreeSelectionEditor extends VerticalLayoutContainer implements AppTemplateForm.ArgumentEditor, HasValueChangeHandlers<List<SelectionItem>> {
+public class TreeSelectionEditor extends Composite implements AppTemplateForm.ArgumentEditor, HasValueChangeHandlers<List<SelectionItem>> {
 
     /**
      * Restores the CheckState of the tree, and expand any Group that is checked or has checked children.
@@ -92,24 +98,14 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
     }
 
     private final class MyTreeStoreEditor extends SelectionItemTreeStoreEditor {
-//        private final AppTemplateWizardPresenter presenter;
 
         private MyTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget) {
-//        private MyTreeStoreEditor(TreeStore<SelectionItem> store, HasValueChangeHandlers<List<SelectionItem>> valueChangeTarget, AppTemplateWizardPresenter presenter) {
             super(store, valueChangeTarget);
-//            this.presenter = presenter;
         }
 
         @Override
         protected CheckCascade getCheckStyle() {
-            CheckCascade ret = null;
-//            if (!presenter.isEditingMode()) {
-//                return null;
-//            } else {
-//                ret = tree.getCheckStyle();
-//            }
-            ret = tree.getCheckStyle();
-            return ret;
+            return tree.getCheckStyle();
         }
 
         @Override
@@ -142,7 +138,6 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
 
         @Override
         protected boolean shouldFlush() {
-            // return presenter.getValueChangeEventSource() == TreeSelectionEditor.this;
             return true;
         }
     }
@@ -156,9 +151,10 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
         }
     }
 
-    SelectionItemTreeStoreEditor selectionItemsEditor;
 
-    private FieldLabel argumentLabel;
+    private final SelectionItemTreeStoreEditor selectionItemsEditor;
+
+    private final FieldLabel argumentLabel;
 
     private EditorDelegate<Argument> delegate;
 
@@ -168,9 +164,6 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
 
     private final SimpleEditor<String> idEditor;
 
-//    private final AppTemplateWizardPresenter presenter;
-
-//    public TreeSelectionEditor(final AppTemplateWizardPresenter presenter) {
 
     private final LabelLeafEditor<String> labelLeafEditor;
 
@@ -185,7 +178,6 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
     private final SimpleEditor<ArgumentType> typeEditor;
 
     public TreeSelectionEditor(AppTemplateWizardAppearance appearance, SelectionItemProperties props) {
-//        this.presenter = presenter;
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(props.id());
 
         tree = new SelectionItemTree(store, props.display());
@@ -207,14 +199,27 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
         // Restore the tree's Checked state from each item's isDefault field after it's filtered.
         store.addStoreFilterHandler(new MyStoreFilterHandler());
 
-        add(buildFilter(store), new VerticalLayoutData(1, -1));
-        add(tree);
+        VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        vlc.add(buildFilter(store), new VerticalLayoutData(1, -1));
+        vlc.add(tree);
+
+        argumentLabel = new FieldLabel(vlc);
+        argumentLabel.setLabelAlign(TOP);
+        argumentLabel.addDomHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                TreeSelectionEditor.this.fireEvent(new ArgumentSelectedEvent(model));
+            }
+        }, ClickEvent.getType());
 
         labelLeafEditor = new LabelLeafEditor<String>(argumentLabel, this);
         idEditor = SimpleEditor.<String> of();
         typeEditor = SimpleEditor.<ArgumentType> of();
         requiredEditor = new LabelLeafEditor<Boolean>(argumentLabel, this);
         descriptionEditor = new LabelLeafEditor<String>(argumentLabel, this);
+
+        initWidget(argumentLabel);
     }
 
     @Override
@@ -224,7 +229,7 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
 
     @Override
     public HandlerRegistration addArgumentSelectedEventHandler(ArgumentSelectedEvent.ArgumentSelectedEventHandler handler) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return addHandler(handler, ArgumentSelectedEvent.TYPE);
     }
 
     @Override
@@ -291,7 +296,7 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
     }
 
     @Override
-    public Editor<List<SelectionItem>> selectionItemsEditor() {
+    public ValueAwareEditor<List<SelectionItem>> selectionItemsEditor() {
         return selectionItemsEditor;
     }
 
@@ -304,7 +309,7 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         tree.setEnabled(enabled);
-        // tree.getSelectionModel().setLocked(!enabled);
+        tree.getSelectionModel().setLocked(!enabled);
     }
 
     @Override
@@ -322,7 +327,6 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
         List<SelectionItem> items = siList.getSelectionItems();
         tree.setSelection(items);
         selectionItemsEditor.setSuppressEvent(false);
-
     }
 
     @Override
@@ -341,7 +345,6 @@ public class TreeSelectionEditor extends VerticalLayoutContainer implements AppT
         AutoBeanUtils.getAutoBean(value).setTag(SelectionItem.TO_BE_REMOVED, null);
         this.model = value;
         boolean restoreSelectionsFromDefaultValue = (value.getDefaultValue() != null) && (value.getDefaultValue().isIndexed()) && (value.getDefaultValue().size() > 0);
-//        boolean restoreSelectionsFromDefaultValue = !presenter.isEditingMode() && (value.getDefaultValue() != null) && (value.getDefaultValue().isIndexed()) && (value.getDefaultValue().size() > 0);
         tree.setRestoreCheckedSelectionFromTree(!restoreSelectionsFromDefaultValue);
         selectionItemsEditor.setValue(value.getSelectionItems());
         if (restoreSelectionsFromDefaultValue) {

@@ -1,5 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorError;
@@ -12,6 +13,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.web.bindery.autobean.shared.AutoBean;
 
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.widget.core.client.ContentPanel;
@@ -27,9 +29,10 @@ import org.iplantc.core.uiapps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.core.uiapps.widgets.client.view.LaunchAnalysisView;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uiapps.widgets.client.view.editors.validation.AnalysisOutputValidator;
-import org.iplantc.core.uicommons.client.models.CommonModelUtils;
-import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.UserSettings;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
@@ -42,10 +45,12 @@ import java.util.List;
  */
 public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
 
-    interface EditorDriver extends SimpleBeanEditorDriver<JobExecution, LaunchAnalysisViewImpl> {}
+    interface EditorDriver extends SimpleBeanEditorDriver<JobExecution, LaunchAnalysisViewImpl> {
+    }
 
     @UiTemplate("LaunchAnalysisView.ui.xml")
-    interface LaunchAnalysisWidgetUiBinder extends UiBinder<Widget, LaunchAnalysisViewImpl> {}
+    interface LaunchAnalysisWidgetUiBinder extends UiBinder<Widget, LaunchAnalysisViewImpl> {
+    }
 
     @UiField(provided = true)
     AppsWidgetsDisplayMessages appWidgetStrings;
@@ -65,7 +70,7 @@ public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
     TextField name;
 
     @Path("outputDirectory")
-    ConverterEditorAdapter<String, HasId, FolderSelectorField> outputDirectory;
+    ConverterEditorAdapter<String, Folder, FolderSelectorField> outputDirectory;
 
     @UiField
     CheckBox retainInputs;
@@ -78,30 +83,39 @@ public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
     private UserSettings userSettings;
 
     @Inject
-    public LaunchAnalysisViewImpl(LaunchAnalysisWidgetUiBinder binder, AppsWidgetsDisplayMessages appWidgetStrings, final UserSettings userSettings) {
-    	this.appWidgetStrings = appWidgetStrings;
+    public LaunchAnalysisViewImpl(LaunchAnalysisWidgetUiBinder binder,
+            AppsWidgetsDisplayMessages appWidgetStrings, final UserSettings userSettings) {
+        this.appWidgetStrings = appWidgetStrings;
         this.userSettings = userSettings;
         binder.createAndBindUi(this);
         name.addValidator(new DiskResourceNameValidator());
         name.addKeyDownHandler(new PreventEntryAfterLimitHandler(name));
         name.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
         name.setAllowBlank(false);
-        description.addKeyDownHandler(new PreventEntryAfterLimitHandler(description));
-        description.addValidator(new MaxLengthValidator(PreventEntryAfterLimitHandler.DEFAULT_LIMIT));
-        outputDirectory = new ConverterEditorAdapter<String, HasId, FolderSelectorField>(awFolderSel, new Converter<String, HasId>() {
-            @Override
-            public String convertFieldValue(HasId object) {
-                if (object == null) {
-                    return null;
-                }
-                return object.getId();
-            }
+        outputDirectory = new ConverterEditorAdapter<String, Folder, FolderSelectorField>(awFolderSel,
+                new Converter<String, Folder>() {
+                    @Override
+                    public String convertFieldValue(Folder object) {
+                        if (object == null) {
+                            return null;
+                        }
+                        return object.getPath();
+                    }
 
-            @Override
-            public HasId convertModelValue(String object) {
-                return CommonModelUtils.createHasIdFromString(object);
-            }
-        });
+                    @Override
+                    public Folder convertModelValue(String object) {
+                        if (!Strings.isNullOrEmpty(object)) {
+                            DiskResourceAutoBeanFactory factory = GWT
+                                    .create(DiskResourceAutoBeanFactory.class);
+                            AutoBean<Folder> FolderBean = factory.folder();
+                            Folder folder = FolderBean.as();
+                            folder.setPath(object);
+                            return folder;
+                        } else {
+                            return null;
+                        }
+                    }
+                });
         awFolderSel.setValidatePermissions(true);
         awFolderSel.addValidator(new AnalysisOutputValidator());
         this.editorDriver.initialize(this);
@@ -122,6 +136,7 @@ public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
     @Override
     public JobExecution flushJobExecution() {
         JobExecution flush = editorDriver.flush();
+        flush.setWorkspaceId(UserInfo.getInstance().getWorkspaceId());
         updateHeader(flush.getName());
         return flush;
     }
@@ -135,12 +150,14 @@ public class LaunchAnalysisViewImpl implements LaunchAnalysisView {
 
     @Override
     public boolean hasErrors() {
-        return ((editorDriver.getErrors() != null) && editorDriver.hasErrors()) || !awFolderSel.getErrors().isEmpty();
+        return ((editorDriver.getErrors() != null) && editorDriver.hasErrors())
+                || !awFolderSel.getErrors().isEmpty();
     }
 
     @UiHandler("awFolderSel")
-    void onFolderChanged(ValueChangeEvent<HasId> event) {
-        if ((event.getValue() != null) && !event.getValue().getId().equals(userSettings.getDefaultOutputFolder())) {
+    void onFolderChanged(ValueChangeEvent<Folder> event) {
+        if ((event.getValue() != null)
+                && !event.getValue().getPath().equals(userSettings.getDefaultOutputFolder().getPath())) {
             awFolderSel.setInfoErrorText(appWidgetStrings.nonDefaultFolderWarning());
         } else {
             awFolderSel.setInfoErrorText(null);

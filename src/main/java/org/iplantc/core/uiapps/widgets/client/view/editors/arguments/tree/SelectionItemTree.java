@@ -94,8 +94,6 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
                 if (!(checked && isGroup && getStore().isFiltered())) {
                     ruleArg.setDefault(checked);
                 }
-
-                // ValueChangeEvent.fire(SelectionItemTree.this, getStore().getAll());
             }
         });
     }
@@ -178,6 +176,7 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
      * @param root A SelectionItemGroup containing the items to populate in this tree.
      */
     void setItems(SelectionItemGroup root) {
+        store.clear();
         this.root = root;
 
         if (root == null) {
@@ -200,7 +199,6 @@ class SelectionItemTree extends Tree<SelectionItem, String> implements HasValueC
 
         if (root.getArguments() != null) {
             for (SelectionItem ruleArg : root.getArguments()) {
-                // store.add(ruleArg);
                 updateOrAdd(ruleArg);
 
                 if (restoreCheckedSelectionFromTree && ruleArg.isDefault()) {

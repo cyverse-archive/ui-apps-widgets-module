@@ -1,7 +1,7 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.widgets;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -24,6 +24,7 @@ import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.core.uiapps.widgets.client.models.selection.SelectionItemProperties;
 import org.iplantc.core.uiapps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.AbstractArgumentEditor;
+import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.ClearComboBoxSelectionKeyDownHandler;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToSelectionArgConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
@@ -57,7 +58,10 @@ public class AppWizardComboBox extends AbstractArgumentEditor implements HasValu
         // JDS Initialize combobox and its editor converter
         selectionItemsEditor = new ComboBox<SelectionItem>(listStore, props.displayLabel());
         selectionItemsEditor.setEmptyText(appsWidgetsMessages.emptyListSelectionText());
+        selectionItemsEditor.setMinChars(1);
         selectionItemsEditor.setTriggerAction(TriggerAction.ALL);
+        ClearComboBoxSelectionKeyDownHandler handler = new ClearComboBoxSelectionKeyDownHandler(selectionItemsEditor);
+        selectionItemsEditor.addKeyDownHandler(handler);
         valueEditor = new ArgumentEditorConverter<SelectionItem>(selectionItemsEditor, new SplittableToSelectionArgConverter());
 
         argumentLabel.setWidget(valueEditor);
@@ -92,7 +96,7 @@ public class AppWizardComboBox extends AbstractArgumentEditor implements HasValu
     }
 
     @Override
-    public Editor<List<SelectionItem>> selectionItemsEditor() {
+    public ValueAwareEditor<List<SelectionItem>> selectionItemsEditor() {
         return selectionItemsStoreBinder;
     }
 
