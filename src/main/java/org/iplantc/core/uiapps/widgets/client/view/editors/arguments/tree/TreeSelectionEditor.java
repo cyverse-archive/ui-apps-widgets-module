@@ -152,8 +152,6 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
     }
 
 
-    private final SelectionItemTreeStoreEditor selectionItemsEditor;
-
     private final FieldLabel argumentLabel;
 
     private EditorDelegate<Argument> delegate;
@@ -164,8 +162,8 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
 
     private final SimpleEditor<String> idEditor;
 
-
     private final LabelLeafEditor<String> labelLeafEditor;
+
 
     private boolean labelOnlyEditMode = false;
 
@@ -173,9 +171,13 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
 
     private final LabelLeafEditor<Boolean> requiredEditor;
 
+    private final SelectionItemTreeStoreEditor selectionItemsEditor;
+
     private final SelectionItemTree tree;
 
     private final SimpleEditor<ArgumentType> typeEditor;
+
+    private final VisibilityEditor visibilityEditor;
 
     public TreeSelectionEditor(AppTemplateWizardAppearance appearance, SelectionItemProperties props) {
         TreeStore<SelectionItem> store = new TreeStore<SelectionItem>(props.id());
@@ -220,6 +222,7 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
         descriptionEditor = new LabelLeafEditor<String>(argumentLabel, this);
 
         initWidget(argumentLabel);
+        visibilityEditor = new VisibilityEditor(this);
     }
 
     @Override
@@ -380,7 +383,7 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
 
     @Override
     public LeafValueEditor<Boolean> visibleEditor() {
-        return new VisibilityEditor(this);
+        return visibilityEditor;
     }
 
     private StoreFilterField<SelectionItem> buildFilter(TreeStore<SelectionItem> store) {
