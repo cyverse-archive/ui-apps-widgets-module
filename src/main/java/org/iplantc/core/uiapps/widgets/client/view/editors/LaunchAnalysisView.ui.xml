@@ -5,9 +5,9 @@
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:drFields="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
     <ui:with field="strings"
-             type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" />         
+             type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" />
     <ui:with field="appWidgetStrings"
-             type="org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages"/>             
+             type="org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages"/>
     <ui:with field="margins"
              type="com.sencha.gxt.core.client.util.Margins">
       <ui:attributes top="10"

@@ -8,10 +8,10 @@ import com.google.inject.Inject;
 
 import com.sencha.gxt.core.client.util.Format;
 
-import org.iplantc.core.resources.client.constants.IplantValidationConstants;
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsErrorMessages;
+import org.iplantc.de.resources.client.constants.IplantValidationConstants;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsErrorMessages;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent;
 import org.iplantc.core.uiapps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.core.uiapps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;

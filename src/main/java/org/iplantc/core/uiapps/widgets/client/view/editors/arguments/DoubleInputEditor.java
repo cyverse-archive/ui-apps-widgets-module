@@ -3,7 +3,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.arguments;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SpinnerField;
 
-import org.iplantc.core.resources.client.uiapps.widgets.argumentTypes.DoubleInputLabels;
+import org.iplantc.de.resources.client.uiapps.widgets.argumentTypes.DoubleInputLabels;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToDoubleConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;

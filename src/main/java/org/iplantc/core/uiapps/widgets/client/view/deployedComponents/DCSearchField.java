@@ -35,7 +35,7 @@ import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.services.DCSearchRPCProxy;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
 

@@ -2,10 +2,10 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.style;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.IplantResources;
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
-import org.iplantc.core.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
-import org.iplantc.core.resources.client.uiapps.widgets.ArgumentListEditorCss;
+import org.iplantc.de.resources.client.IplantResources;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
+import org.iplantc.de.resources.client.uiapps.widgets.ArgumentListEditorCss;
 import org.iplantc.core.uiapps.widgets.client.models.Argument;
 
 import com.google.gwt.core.shared.GWT;

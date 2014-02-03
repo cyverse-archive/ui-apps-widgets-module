@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.services;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uiapps.widgets.client.services.impl.DeployedComponentServicesImpl;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;

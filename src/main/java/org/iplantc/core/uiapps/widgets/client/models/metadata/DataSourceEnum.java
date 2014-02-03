@@ -1,6 +1,6 @@
 package org.iplantc.core.uiapps.widgets.client.models.metadata;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 
 public enum DataSourceEnum {
     file(I18N.APPS_LABELS.fileOutputSrcFileLabel()),

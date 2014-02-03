@@ -5,7 +5,7 @@
              xmlns:appTemplate="urn:import:org.iplantc.core.uiapps.widgets.client.view"
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button">
 
-    <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" 
+    <ui:with type="org.iplantc.de.resources.client.messages.IplantDisplayStrings"
              field="display" />
 
     <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" 

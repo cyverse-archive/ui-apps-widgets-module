@@ -2,7 +2,7 @@ package org.iplantc.core.uiapps.widgets.client.view.editors.validation;
 
 import java.util.List;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.gwt.editor.client.Editor;
