@@ -33,7 +33,7 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uiapps.client.views.dialogs.NewToolRequestDialog;
+import org.iplantc.de.apps.client.views.dialogs.NewToolRequestDialog;
 import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
 import org.iplantc.de.apps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
 import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
