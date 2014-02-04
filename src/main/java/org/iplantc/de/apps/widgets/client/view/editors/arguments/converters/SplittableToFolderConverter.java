@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;

@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.models.metadata;
 
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
-import org.iplantc.core.uicommons.client.models.HasDescription;
+import org.iplantc.de.commons.client.models.HasDescription;
 
 import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;

@@ -29,12 +29,12 @@ import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.de.apps.widgets.client.view.LaunchAnalysisView;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.apps.widgets.client.view.editors.validation.AnalysisOutputValidator;
-import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uicommons.client.models.UserSettings;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
-import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
+import org.iplantc.de.commons.client.models.UserInfo;
+import org.iplantc.de.commons.client.models.UserSettings;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.de.diskResource.client.views.widgets.FolderSelectorField;
 
 import java.util.List;

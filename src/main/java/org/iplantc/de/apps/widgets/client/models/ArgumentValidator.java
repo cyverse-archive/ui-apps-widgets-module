@@ -1,6 +1,6 @@
 package org.iplantc.de.apps.widgets.client.models;
 
-import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.de.commons.client.models.HasId;
 
 import com.google.web.bindery.autobean.shared.Splittable;
 

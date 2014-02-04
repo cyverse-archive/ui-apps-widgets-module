@@ -37,7 +37,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
 
 import java.util.List;
 

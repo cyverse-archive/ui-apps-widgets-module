@@ -30,12 +30,12 @@ import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
-import org.iplantc.core.uicommons.client.validators.DoubleAboveValidator;
-import org.iplantc.core.uicommons.client.validators.DoubleBelowValidator;
-import org.iplantc.core.uicommons.client.validators.IntAboveValidator;
-import org.iplantc.core.uicommons.client.validators.IntBelowValidator;
-import org.iplantc.core.uicommons.client.validators.NumberRangeValidator;
+import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.validators.DoubleAboveValidator;
+import org.iplantc.de.commons.client.validators.DoubleBelowValidator;
+import org.iplantc.de.commons.client.validators.IntAboveValidator;
+import org.iplantc.de.commons.client.validators.IntBelowValidator;
+import org.iplantc.de.commons.client.validators.NumberRangeValidator;
 
 import java.util.List;
 

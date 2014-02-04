@@ -11,8 +11,8 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import org.iplantc.de.apps.widgets.client.presenter.DeployedComponentPresenterImpl;
 import org.iplantc.de.apps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
 import org.iplantc.de.apps.widgets.client.view.deployedComponents.DeployedComponentsListingViewImpl;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 
 import java.util.List;
 

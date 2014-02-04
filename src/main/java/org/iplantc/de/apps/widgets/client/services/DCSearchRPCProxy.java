@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.apps.widgets.client.services.impl.DeployedComponentServicesImpl;
-import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
 
 import com.google.common.base.Strings;
 import com.google.gwt.user.client.rpc.AsyncCallback;

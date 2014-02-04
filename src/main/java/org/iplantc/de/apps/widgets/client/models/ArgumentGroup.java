@@ -4,8 +4,8 @@ import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.HasLabel;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.models.HasLabel;
 
 import java.util.List;
 

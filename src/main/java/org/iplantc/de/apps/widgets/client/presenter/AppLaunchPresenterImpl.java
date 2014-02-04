@@ -20,13 +20,13 @@ import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.de.apps.widgets.client.services.AppTemplateServices;
 import org.iplantc.de.apps.widgets.client.view.AppLaunchView;
-import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uicommons.client.models.UserSettings;
-import org.iplantc.core.uicommons.client.util.RegExp;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
+import org.iplantc.de.commons.client.models.UserInfo;
+import org.iplantc.de.commons.client.models.UserSettings;
+import org.iplantc.de.commons.client.util.RegExp;
 
 /**
  * 

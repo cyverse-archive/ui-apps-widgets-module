@@ -7,11 +7,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.iplantc.de.apps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.de.apps.widgets.client.services.impl.converters.GetAppTemplateDeployedComponentConverter;
 import org.iplantc.de.apps.widgets.client.services.impl.converters.GetDeployedComponentsCallbackConverter;
-import org.iplantc.core.uicommons.client.DEServiceFacade;
-import org.iplantc.core.uicommons.client.models.DEProperties;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
+import org.iplantc.de.commons.client.DEServiceFacade;
+import org.iplantc.de.commons.client.models.DEProperties;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
 import org.iplantc.de.shared.SharedAuthenticationValidatingServiceFacade;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
 

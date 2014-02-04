@@ -1,9 +1,9 @@
 package org.iplantc.de.apps.widgets.client.services.impl.converters;
 
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentList;
-import org.iplantc.core.uicommons.client.services.AsyncCallbackConverter;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentList;
+import org.iplantc.de.commons.client.services.AsyncCallbackConverter;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;

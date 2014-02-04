@@ -7,7 +7,7 @@
 	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
 	xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
 	xmlns:gwt="urn:import:com.google.gwt.widget.client"
-	xmlns:srh="urn:import:org.iplantc.core.uicommons.client.widgets">
+	xmlns:srh="urn:import:org.iplantc.de.commons.client.widgets">
 
 
 	<ui:with field="icons"

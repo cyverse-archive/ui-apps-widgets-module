@@ -28,7 +28,7 @@ public interface AppLaunchView extends IsWidget, Editor<AppTemplate>, HasRequest
      * @author jstroot
      * 
      */
-    public interface BasePresenter extends org.iplantc.core.uicommons.client.presenter.Presenter{
+    public interface BasePresenter extends org.iplantc.de.commons.client.presenter.Presenter{
     
         AppTemplate getAppTemplate();
 

@@ -5,9 +5,9 @@ import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.Converter;
 
-import org.iplantc.core.uicommons.client.models.CommonModelUtils;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.de.commons.client.models.CommonModelUtils;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
 
 import java.util.Collections;
 import java.util.List;

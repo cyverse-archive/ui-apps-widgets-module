@@ -27,9 +27,9 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
 import org.iplantc.de.apps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.IArgumentEditorConverter;
-import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
-import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
+import org.iplantc.de.commons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector;
 
 import java.util.List;

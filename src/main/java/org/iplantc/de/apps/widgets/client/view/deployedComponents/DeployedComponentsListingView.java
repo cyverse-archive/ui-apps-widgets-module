@@ -5,7 +5,7 @@ package org.iplantc.de.apps.widgets.client.view.deployedComponents;
 
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.IsWidget;
  *
  */
 public interface DeployedComponentsListingView extends IsWidget {
-    public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter {
+    public interface Presenter extends org.iplantc.de.commons.client.presenter.Presenter {
 
         DeployedComponent getSelectedDC();
     }

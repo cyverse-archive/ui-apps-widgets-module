@@ -36,9 +36,9 @@ import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.apps.client.views.dialogs.NewToolRequestDialog;
 import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
 import org.iplantc.de.apps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponentProperties;
-import org.iplantc.core.uicommons.client.widgets.SearchField;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentProperties;
+import org.iplantc.de.commons.client.widgets.SearchField;
 
 import java.util.Comparator;
 import java.util.LinkedList;

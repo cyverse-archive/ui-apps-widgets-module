@@ -20,7 +20,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 
 import org.iplantc.de.apps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
 
 /**
  * This is a custom cell which is clickable hyper-link of an DC name.

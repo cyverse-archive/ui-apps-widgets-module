@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.events;
 
 import org.iplantc.de.apps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
-import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.de.commons.client.models.HasId;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;

@@ -16,10 +16,10 @@ import org.iplantc.de.apps.widgets.client.models.ArgumentType;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.de.apps.widgets.client.services.DeployedComponentServices;
-import org.iplantc.core.uicommons.client.models.CommonModelUtils;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.core.uicommons.client.services.AsyncCallbackConverter;
+import org.iplantc.de.commons.client.models.CommonModelUtils;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.commons.client.services.AsyncCallbackConverter;
 
 public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String, AppTemplate> {
 

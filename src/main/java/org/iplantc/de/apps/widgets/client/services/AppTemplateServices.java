@@ -3,7 +3,7 @@ package org.iplantc.de.apps.widgets.client.services;
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
 import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
-import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.de.commons.client.models.HasId;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

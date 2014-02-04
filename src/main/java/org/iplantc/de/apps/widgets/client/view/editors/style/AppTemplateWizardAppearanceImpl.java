@@ -20,7 +20,7 @@ import org.iplantc.de.apps.widgets.client.models.Argument;
 import org.iplantc.de.apps.widgets.client.models.ArgumentType;
 import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.de.apps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
-import org.iplantc.core.uicommons.client.models.HasLabel;
+import org.iplantc.de.commons.client.models.HasLabel;
 
 import java.util.List;
 
