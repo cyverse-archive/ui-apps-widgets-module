@@ -3,7 +3,7 @@ package org.iplantc.de.apps.widgets.client.services.impl;
 import java.util.List;
 import java.util.Queue;
 
-import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.de.jsonutil.client.JsonUtil;
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
 import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.Argument;
