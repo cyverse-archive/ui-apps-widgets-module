@@ -4,8 +4,8 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToFolderConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector.HasDisableBrowseButtons;
-import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
+import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector.HasDisableBrowseButtons;
+import org.iplantc.de.diskResource.client.views.widgets.FolderSelectorField;
 
 public class FolderInputEditor extends AbstractArgumentEditor implements HasDisableBrowseButtons {
     private final ArgumentEditorConverter<Folder> editorAdapter;

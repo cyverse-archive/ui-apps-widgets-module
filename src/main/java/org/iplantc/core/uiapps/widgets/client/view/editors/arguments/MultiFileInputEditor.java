@@ -4,8 +4,8 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToHasIdListConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector.HasDisableBrowseButtons;
-import org.iplantc.core.uidiskresource.client.views.widgets.MultiFileSelectorField;
+import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector.HasDisableBrowseButtons;
+import org.iplantc.de.diskResource.client.views.widgets.MultiFileSelectorField;
 
 import java.util.List;
 

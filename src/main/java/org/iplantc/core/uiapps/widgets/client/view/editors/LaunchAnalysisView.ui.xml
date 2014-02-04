@@ -3,7 +3,7 @@
              xmlns:con="urn:import:com.sencha.gxt.widget.core.client.container"
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
-             xmlns:drFields="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
+             xmlns:drFields="urn:import:org.iplantc.de.diskResource.client.views.widgets">
     <ui:with field="strings"
              type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" />
     <ui:with field="appWidgetStrings"

@@ -35,7 +35,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBe
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
-import org.iplantc.core.uidiskresource.client.views.widgets.FolderSelectorField;
+import org.iplantc.de.diskResource.client.views.widgets.FolderSelectorField;
 
 import java.util.List;
 

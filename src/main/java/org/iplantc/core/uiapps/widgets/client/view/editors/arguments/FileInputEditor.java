@@ -4,8 +4,8 @@ import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToFileConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector.HasDisableBrowseButtons;
-import org.iplantc.core.uidiskresource.client.views.widgets.FileSelectorField;
+import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector.HasDisableBrowseButtons;
+import org.iplantc.de.diskResource.client.views.widgets.FileSelectorField;
 
 public class FileInputEditor extends AbstractArgumentEditor implements HasDisableBrowseButtons {
     private final ArgumentEditorConverter<File> editorAdapter;

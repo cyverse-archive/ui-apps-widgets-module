@@ -30,7 +30,7 @@ import org.iplantc.core.uiapps.widgets.client.view.AppTemplateForm.IArgumentEdit
 import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
+import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector;
 
 import java.util.List;
 
