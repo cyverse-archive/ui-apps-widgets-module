@@ -1,11 +1,10 @@
 package org.iplantc.de.apps.widgets.client.view.util;
 
-import java.util.List;
-
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+
 import com.sencha.gxt.data.shared.event.StoreAddEvent;
 import com.sencha.gxt.data.shared.event.StoreClearEvent;
 import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
@@ -15,6 +14,8 @@ import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
 import com.sencha.gxt.data.shared.event.StoreRemoveEvent;
 import com.sencha.gxt.data.shared.event.StoreSortEvent;
 import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
+
+import java.util.List;
 
 /**
  * This handler automatically fires <code>ValueChange</code> events on behalf of a given

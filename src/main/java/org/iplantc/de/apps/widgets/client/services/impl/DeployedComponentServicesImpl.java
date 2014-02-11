@@ -1,19 +1,19 @@
 package org.iplantc.de.apps.widgets.client.services.impl;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import org.iplantc.de.apps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.de.apps.widgets.client.services.impl.converters.GetAppTemplateDeployedComponentConverter;
 import org.iplantc.de.apps.widgets.client.services.impl.converters.GetDeployedComponentsCallbackConverter;
+import org.iplantc.de.client.models.DEProperties;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
+import org.iplantc.de.client.models.deployedComps.DeployedComponentAutoBeanFactory;
 import org.iplantc.de.commons.client.DEServiceFacade;
-import org.iplantc.de.commons.client.models.DEProperties;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentAutoBeanFactory;
 import org.iplantc.de.shared.SharedAuthenticationValidatingServiceFacade;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
 

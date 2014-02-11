@@ -1,5 +1,18 @@
 package org.iplantc.de.apps.widgets.client.view.editors;
 
+import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.de.apps.widgets.client.view.LaunchAnalysisView;
+import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.de.apps.widgets.client.view.editors.validation.AnalysisOutputValidator;
+import org.iplantc.de.client.models.UserInfo;
+import org.iplantc.de.client.models.UserSettings;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
+import org.iplantc.de.diskResource.client.views.widgets.FolderSelectorField;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -23,19 +36,6 @@ import com.sencha.gxt.widget.core.client.form.ConverterEditorAdapter;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-
-import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
-import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
-import org.iplantc.de.apps.widgets.client.view.LaunchAnalysisView;
-import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.de.apps.widgets.client.view.editors.validation.AnalysisOutputValidator;
-import org.iplantc.de.commons.client.models.UserInfo;
-import org.iplantc.de.commons.client.models.UserSettings;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
-import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
-import org.iplantc.de.diskResource.client.views.widgets.FolderSelectorField;
 
 import java.util.List;
 

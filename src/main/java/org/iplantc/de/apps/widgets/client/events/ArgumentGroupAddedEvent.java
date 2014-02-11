@@ -1,12 +1,12 @@
 package org.iplantc.de.apps.widgets.client.events;
 
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-
 import org.iplantc.de.apps.widgets.client.events.ArgumentGroupAddedEvent.ArgumentGroupAddedEventHandler;
 import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentGroupEditor;
+
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 public class ArgumentGroupAddedEvent extends GwtEvent<ArgumentGroupAddedEventHandler> {
 

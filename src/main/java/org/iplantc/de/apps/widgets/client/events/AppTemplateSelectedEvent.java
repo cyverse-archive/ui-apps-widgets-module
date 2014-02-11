@@ -1,10 +1,10 @@
 package org.iplantc.de.apps.widgets.client.events;
 
+import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-
-import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
 
 public class AppTemplateSelectedEvent extends GwtEvent<AppTemplateSelectedEventHandler> {
 

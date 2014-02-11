@@ -1,5 +1,21 @@
 package org.iplantc.de.apps.widgets.client.view.editors;
 
+import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent;
+import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent;
+import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent.ArgumentAddedEventHandler;
+import org.iplantc.de.apps.widgets.client.events.ArgumentGroupSelectedEvent;
+import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent;
+import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent;
+import org.iplantc.de.apps.widgets.client.models.Argument;
+import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
+import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
+import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
+import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
+import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.HasDisabledOnNotVisible;
+import org.iplantc.de.apps.widgets.client.view.HasLabelOnlyEditMode;
+import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.de.apps.widgets.client.view.editors.style.AppWizardQuickTip;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
@@ -24,22 +40,6 @@ import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-
-import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent;
-import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent;
-import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent.ArgumentAddedEventHandler;
-import org.iplantc.de.apps.widgets.client.events.ArgumentGroupSelectedEvent;
-import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent;
-import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent;
-import org.iplantc.de.apps.widgets.client.models.Argument;
-import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
-import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
-import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
-import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
-import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.HasDisabledOnNotVisible;
-import org.iplantc.de.apps.widgets.client.view.HasLabelOnlyEditMode;
-import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.de.apps.widgets.client.view.editors.style.AppWizardQuickTip;
 
 import java.util.List;
 

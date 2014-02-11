@@ -1,11 +1,11 @@
 package org.iplantc.de.apps.widgets.client.services;
 
-import java.util.List;
-
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.List;
 
 public interface DeployedComponentServices {
 

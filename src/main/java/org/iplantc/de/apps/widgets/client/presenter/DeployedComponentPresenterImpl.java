@@ -3,10 +3,10 @@
  */
 package org.iplantc.de.apps.widgets.client.presenter;
 
-import com.google.gwt.user.client.ui.HasOneWidget;
-
 import org.iplantc.de.apps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
+
+import com.google.gwt.user.client.ui.HasOneWidget;
 
 /**
  * @author sriram

@@ -1,5 +1,9 @@
 package org.iplantc.de.apps.widgets.client.view;
 
+import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
+import org.iplantc.de.apps.widgets.client.models.AppTemplate;
+import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -12,10 +16,6 @@ import com.google.inject.Inject;
 
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-
-import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
-import org.iplantc.de.apps.widgets.client.models.AppTemplate;
-import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
 
 public class AppLaunchPreviewViewImpl extends Window implements AppLaunchPreviewView {
     

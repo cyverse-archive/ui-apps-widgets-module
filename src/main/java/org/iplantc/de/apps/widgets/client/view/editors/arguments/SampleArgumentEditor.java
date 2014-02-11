@@ -1,11 +1,5 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
-import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.editor.client.LeafValueEditor;
-import com.google.gwt.editor.client.ValueAwareEditor;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.ArgumentRequiredChangedEventHandler;
 import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.de.apps.widgets.client.models.Argument;
@@ -14,6 +8,12 @@ import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
+
+import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.editor.client.LeafValueEditor;
+import com.google.gwt.editor.client.ValueAwareEditor;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 

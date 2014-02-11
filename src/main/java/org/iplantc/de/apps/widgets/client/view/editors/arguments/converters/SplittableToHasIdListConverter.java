@@ -1,13 +1,13 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
+import org.iplantc.de.client.models.CommonModelUtils;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
+
 import com.google.common.collect.Lists;
 import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.Converter;
-
-import org.iplantc.de.commons.client.models.CommonModelUtils;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
 
 import java.util.Collections;
 import java.util.List;

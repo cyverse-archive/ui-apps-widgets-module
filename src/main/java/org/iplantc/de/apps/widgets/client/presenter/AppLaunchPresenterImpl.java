@@ -1,17 +1,5 @@
 package org.iplantc.de.apps.widgets.client.presenter;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HasOneWidget;
-import com.google.inject.Inject;
-
-import com.sencha.gxt.core.client.util.Format;
-
-import org.iplantc.de.resources.client.constants.IplantValidationConstants;
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
-import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsErrorMessages;
 import org.iplantc.de.apps.widgets.client.events.AnalysisLaunchEvent;
 import org.iplantc.de.apps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
@@ -20,13 +8,25 @@ import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
 import org.iplantc.de.apps.widgets.client.services.AppTemplateServices;
 import org.iplantc.de.apps.widgets.client.view.AppLaunchView;
+import org.iplantc.de.client.models.UserInfo;
+import org.iplantc.de.client.models.UserSettings;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.de.commons.client.models.UserInfo;
-import org.iplantc.de.commons.client.models.UserSettings;
 import org.iplantc.de.commons.client.util.RegExp;
+import org.iplantc.de.resources.client.constants.IplantValidationConstants;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsErrorMessages;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasOneWidget;
+import com.google.inject.Inject;
+
+import com.sencha.gxt.core.client.util.Format;
 
 /**
  * 

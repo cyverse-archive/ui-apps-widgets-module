@@ -1,11 +1,11 @@
 package org.iplantc.de.apps.widgets.client.events;
 
+import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
+import org.iplantc.de.apps.widgets.client.models.Argument;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-
-import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
-import org.iplantc.de.apps.widgets.client.models.Argument;
 
 /**
  * An event to be fired when the user selects an {@link Argument} bound UI element.

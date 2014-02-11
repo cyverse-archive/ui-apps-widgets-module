@@ -1,17 +1,5 @@
 package org.iplantc.de.apps.widgets.client.view.editors;
 
-import com.google.gwt.editor.client.EditorDelegate;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.widget.core.client.container.ResizeContainer;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
-
-import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.de.apps.widgets.client.models.Argument;
 import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenome;
 import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenomeProperties;
@@ -42,6 +30,18 @@ import org.iplantc.de.apps.widgets.client.view.editors.arguments.TextSelectionEd
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.tree.TreeSelectionEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
+
+import com.google.gwt.editor.client.EditorDelegate;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.widget.core.client.container.ResizeContainer;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import java.util.List;
 

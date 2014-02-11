@@ -1,12 +1,12 @@
 package org.iplantc.de.apps.widgets.client.models.selection;
 
+import org.iplantc.de.client.models.HasDescription;
+import org.iplantc.de.client.models.HasDisplayText;
+import org.iplantc.de.client.models.HasId;
+
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
-
-import org.iplantc.de.commons.client.models.HasDescription;
-import org.iplantc.de.commons.client.models.HasDisplayText;
-import org.iplantc.de.commons.client.models.HasId;
 
 public interface SelectionItem extends HasId, HasName, HasDescription, TakesValue<String>, HasDisplayText {
 

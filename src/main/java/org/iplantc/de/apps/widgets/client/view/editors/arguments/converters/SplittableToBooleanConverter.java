@@ -3,6 +3,7 @@ package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 import com.google.common.base.Strings;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+
 import com.sencha.gxt.data.shared.Converter;
 
 public class SplittableToBooleanConverter implements Converter<Splittable, Boolean> {

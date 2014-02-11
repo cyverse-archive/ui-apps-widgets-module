@@ -1,11 +1,11 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
-import com.sencha.gxt.widget.core.client.form.TextField;
-
-import org.iplantc.de.resources.client.uiapps.widgets.argumentTypes.TextInputLabels;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.SplittableToStringConverter;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.de.resources.client.uiapps.widgets.argumentTypes.TextInputLabels;
+
+import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class TextInputEditor extends AbstractArgumentEditor {
     private final ArgumentEditorConverter<String> editorAdapter;

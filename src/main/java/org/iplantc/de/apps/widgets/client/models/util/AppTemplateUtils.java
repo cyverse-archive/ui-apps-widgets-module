@@ -1,10 +1,5 @@
 package org.iplantc.de.apps.widgets.client.models.util;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
 import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.Argument;
@@ -12,6 +7,8 @@ import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
 import org.iplantc.de.apps.widgets.client.models.ArgumentType;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemGroup;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsDisplayMessages;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -20,6 +17,9 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+
+import java.util.Collections;
+import java.util.List;
 
 public class AppTemplateUtils {
     private static final AppTemplateAutoBeanFactory factory = GWT.create(AppTemplateAutoBeanFactory.class);

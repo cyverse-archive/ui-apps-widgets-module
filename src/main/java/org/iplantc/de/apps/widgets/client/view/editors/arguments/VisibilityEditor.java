@@ -1,8 +1,8 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
-import com.google.gwt.editor.client.LeafValueEditor;
-
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
+
+import com.google.gwt.editor.client.LeafValueEditor;
 
 public class VisibilityEditor implements LeafValueEditor<Boolean> {
 

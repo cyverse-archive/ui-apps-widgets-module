@@ -1,12 +1,10 @@
 package org.iplantc.de.apps.widgets.client.view.editors.style;
 
-import java.util.List;
-
+import org.iplantc.de.apps.widgets.client.models.Argument;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 import org.iplantc.de.resources.client.uiapps.widgets.ArgumentListEditorCss;
-import org.iplantc.de.apps.widgets.client.models.Argument;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.ImageElement;
@@ -15,7 +13,10 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
+
 import com.sencha.gxt.widget.core.client.button.IconButton;
+
+import java.util.List;
 
 /**
  * TODO JDS Move {@link ArgumentListEditorCss} up here.

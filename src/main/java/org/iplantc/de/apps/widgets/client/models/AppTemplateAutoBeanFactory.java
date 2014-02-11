@@ -11,7 +11,7 @@ import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenomeList;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemList;
-import org.iplantc.de.commons.client.errorHandling.models.SimpleServiceError;
+import org.iplantc.de.client.models.errorHandling.SimpleServiceError;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;

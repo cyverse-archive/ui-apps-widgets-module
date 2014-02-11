@@ -1,9 +1,10 @@
 package org.iplantc.de.apps.widgets.client.models.selection;
 
-import java.util.List;
-
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
+
 import com.sencha.gxt.widget.core.client.tree.Tree;
+
+import java.util.List;
 
 public interface SelectionItemGroup extends SelectionItem {
 

@@ -1,14 +1,14 @@
 package org.iplantc.de.apps.widgets.client.view;
 
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.HasOneWidget;
-import com.google.gwt.user.client.ui.IsWidget;
-
 import org.iplantc.de.apps.widgets.client.events.AnalysisLaunchEvent.AnalysisLaunchEventHandler;
 import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.HasRequestAnalysisLaunchHandlers;
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
 import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
+
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.HasOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
 
 /**
  * The interface definition for the App Wizard view.

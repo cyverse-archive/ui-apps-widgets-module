@@ -3,6 +3,14 @@
  */
 package org.iplantc.de.apps.widgets.client.view.deployedComponents;
 
+import org.iplantc.de.apps.client.views.dialogs.NewToolRequestDialog;
+import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
+import org.iplantc.de.apps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
+import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentProperties;
+import org.iplantc.de.commons.client.widgets.SearchField;
+import org.iplantc.de.resources.client.messages.I18N;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -31,14 +39,6 @@ import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.apps.client.views.dialogs.NewToolRequestDialog;
-import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
-import org.iplantc.de.apps.widgets.client.view.deployedComponents.cells.DCNameHyperlinkCell;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponentProperties;
-import org.iplantc.de.commons.client.widgets.SearchField;
 
 import java.util.Comparator;
 import java.util.LinkedList;

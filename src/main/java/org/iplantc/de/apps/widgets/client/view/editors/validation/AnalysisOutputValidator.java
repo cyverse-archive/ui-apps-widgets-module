@@ -1,14 +1,15 @@
 package org.iplantc.de.apps.widgets.client.view.editors.validation;
 
-import java.util.List;
-
 import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.AbstractValidator;
+
+import java.util.List;
 
 /**
  * A Validator to ensure no spaces are found in the path to an analysis output folder.

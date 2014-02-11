@@ -1,5 +1,22 @@
 package org.iplantc.de.apps.widgets.client.view;
 
+import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
+import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent.HasAppTemplateSelectedEventHandlers;
+import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent.HasArgumentAddedEventHandlers;
+import org.iplantc.de.apps.widgets.client.events.ArgumentGroupAddedEvent.HasArgumentGroupAddedEventHandlers;
+import org.iplantc.de.apps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
+import org.iplantc.de.apps.widgets.client.events.ArgumentGroupSelectedEvent.HasArgumentGroupSelectedHandlers;
+import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.ArgumentRequiredChangedEventHandler;
+import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.HasArgumentRequiredChangedHandlers;
+import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
+import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.HasArgumentSelectedEventHandlers;
+import org.iplantc.de.apps.widgets.client.models.AppTemplate;
+import org.iplantc.de.apps.widgets.client.models.Argument;
+import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
+import org.iplantc.de.apps.widgets.client.models.ArgumentType;
+import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
+import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
+
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorDelegate;
@@ -19,23 +36,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CollapseEvent.HasCollapseHandlers;
 import com.sencha.gxt.widget.core.client.event.ExpandEvent.HasExpandHandlers;
 import com.sencha.gxt.widget.core.client.form.IsField;
-
-import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent.AppTemplateSelectedEventHandler;
-import org.iplantc.de.apps.widgets.client.events.AppTemplateSelectedEvent.HasAppTemplateSelectedEventHandlers;
-import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent.HasArgumentAddedEventHandlers;
-import org.iplantc.de.apps.widgets.client.events.ArgumentGroupAddedEvent.HasArgumentGroupAddedEventHandlers;
-import org.iplantc.de.apps.widgets.client.events.ArgumentGroupSelectedEvent.ArgumentGroupSelectedEventHandler;
-import org.iplantc.de.apps.widgets.client.events.ArgumentGroupSelectedEvent.HasArgumentGroupSelectedHandlers;
-import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.ArgumentRequiredChangedEventHandler;
-import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.HasArgumentRequiredChangedHandlers;
-import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
-import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.HasArgumentSelectedEventHandlers;
-import org.iplantc.de.apps.widgets.client.models.AppTemplate;
-import org.iplantc.de.apps.widgets.client.models.Argument;
-import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
-import org.iplantc.de.apps.widgets.client.models.ArgumentType;
-import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
-import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 
 import java.util.List;
 

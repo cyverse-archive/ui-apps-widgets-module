@@ -1,13 +1,5 @@
 package org.iplantc.de.apps.widgets.client.services.impl.converters;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.StringQuoter;
-
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
 import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.Argument;
@@ -16,10 +8,18 @@ import org.iplantc.de.apps.widgets.client.models.ArgumentType;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemGroup;
 import org.iplantc.de.apps.widgets.client.services.DeployedComponentServices;
-import org.iplantc.de.commons.client.models.CommonModelUtils;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.client.models.CommonModelUtils;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 import org.iplantc.de.commons.client.services.AsyncCallbackConverter;
+
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class AppTemplateCallbackConverter extends AsyncCallbackConverter<String, AppTemplate> {
 

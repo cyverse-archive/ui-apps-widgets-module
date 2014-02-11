@@ -1,5 +1,8 @@
 package org.iplantc.de.apps.widgets.client.view.deployedComponents.cells;
 
+import org.iplantc.de.apps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
+
 import static com.google.gwt.dom.client.BrowserEvents.CLICK;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
@@ -18,9 +21,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
-
-import org.iplantc.de.apps.widgets.client.view.deployedComponents.DeployedComponentsListingView;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
 
 /**
  * This is a custom cell which is clickable hyper-link of an DC name.

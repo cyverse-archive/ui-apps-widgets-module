@@ -1,17 +1,17 @@
 package org.iplantc.de.apps.widgets.client.models;
 
-import java.util.List;
-
 import org.iplantc.de.apps.widgets.client.models.metadata.DataObject;
 import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
-import org.iplantc.de.commons.client.models.HasDescription;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.HasLabel;
+import org.iplantc.de.client.models.HasDescription;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.HasLabel;
 
 import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 import com.google.web.bindery.autobean.shared.Splittable;
+
+import java.util.List;
 
 /**
  * This interface contains all the data required to assemble a single form field in an App Wizard UI.

@@ -1,5 +1,13 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
+import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
+import org.iplantc.de.apps.widgets.client.models.ArgumentValidatorType;
+import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.IArgumentEditorConverter;
+import org.iplantc.de.commons.client.validators.CmdLineArgCharacterValidator;
+import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
+import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
@@ -23,14 +31,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-
-import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
-import org.iplantc.de.apps.widgets.client.models.ArgumentValidatorType;
-import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.IArgumentEditorConverter;
-import org.iplantc.de.commons.client.validators.CmdLineArgCharacterValidator;
-import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
-import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
-import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector;
 
 import java.util.List;
 

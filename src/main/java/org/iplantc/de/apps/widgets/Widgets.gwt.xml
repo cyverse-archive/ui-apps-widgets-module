@@ -7,9 +7,8 @@
   "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-   <inherits name="com.google.gwt.resources.Resources" />
    <!-- Common Service Interfaces -->
-   <inherits name='org.iplantc.de.DiscoveryEnvironmentCommon' />
+   <inherits name='org.iplantc.de.commons.ui-commons' />
    <inherits name="org.iplantc.de.diskResource.diskresource" />
    <inherits name="org.iplantc.de.apps.Apps"/>
    

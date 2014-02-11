@@ -1,5 +1,12 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
+import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenome;
+import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenomeProperties;
+import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
+import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.SplittableToReferenceGenomeConverter;
+import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.de.resources.client.messages.I18N;
+
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -9,13 +16,6 @@ import static com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction.AL
 
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenome;
-import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenomeProperties;
-import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
-import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.SplittableToReferenceGenomeConverter;
-import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 
 public class ReferenceAnnotationEditor extends AbstractArgumentEditor implements HasValueChangeHandlers<Splittable> {
     private final ComboBox<ReferenceGenome> comboBox;

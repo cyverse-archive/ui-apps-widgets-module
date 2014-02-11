@@ -1,5 +1,8 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
+import org.iplantc.de.client.models.CommonModelUtils;
+import org.iplantc.de.client.models.HasId;
+
 import com.google.common.base.Strings;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -7,9 +10,6 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 import com.sencha.gxt.data.shared.Converter;
-
-import org.iplantc.de.commons.client.models.CommonModelUtils;
-import org.iplantc.de.commons.client.models.HasId;
 
 public class SplittableToHasIdConverter implements Converter<Splittable, HasId> {
 

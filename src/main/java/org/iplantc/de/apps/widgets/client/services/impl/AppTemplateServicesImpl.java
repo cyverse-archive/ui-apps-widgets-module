@@ -1,9 +1,5 @@
 package org.iplantc.de.apps.widgets.client.services.impl;
 
-import java.util.List;
-import java.util.Queue;
-
-import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.apps.widgets.client.models.AppTemplate;
 import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
 import org.iplantc.de.apps.widgets.client.models.Argument;
@@ -26,10 +22,11 @@ import org.iplantc.de.apps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.de.apps.widgets.client.services.AppTemplateServices;
 import org.iplantc.de.apps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.de.apps.widgets.client.services.impl.converters.AppTemplateCallbackConverter;
+import org.iplantc.de.client.models.DEProperties;
+import org.iplantc.de.client.models.HasId;
 import org.iplantc.de.commons.client.DEServiceFacade;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.models.DEProperties;
-import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.shared.SharedServiceFacade;
 import org.iplantc.de.shared.services.BaseServiceCallWrapper.Type;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
@@ -41,6 +38,9 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+
+import java.util.List;
+import java.util.Queue;
 
 public class AppTemplateServicesImpl implements AppTemplateServices, AppMetadataServiceFacade {
     private static final Queue<AsyncCallback<List<DataSource>>> dataSourceQueue = Lists.newLinkedList();

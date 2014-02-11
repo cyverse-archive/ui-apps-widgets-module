@@ -1,10 +1,10 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
-import com.sencha.gxt.widget.core.client.form.TextField;
-
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.SplittableToStringConverter;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+
+import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class FileOutputEditor extends AbstractArgumentEditor {
     private final ArgumentEditorConverter<String> editorAdapter;

@@ -1,11 +1,11 @@
 package org.iplantc.de.apps.widgets.client.events;
 
+import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent.ArgumentAddedEventHandler;
+import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-
-import org.iplantc.de.apps.widgets.client.events.ArgumentAddedEvent.ArgumentAddedEventHandler;
-import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 
 /**
  * Event fired when an ArgumentEditor is added to the AppTemplateForm editor hierarchy.

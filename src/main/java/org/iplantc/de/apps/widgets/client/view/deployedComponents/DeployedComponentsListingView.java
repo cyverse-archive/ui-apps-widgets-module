@@ -3,11 +3,11 @@
  */
 package org.iplantc.de.apps.widgets.client.view.deployedComponents;
 
-import java.util.List;
-
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 
 import com.google.gwt.user.client.ui.IsWidget;
+
+import java.util.List;
 
 /**
  * @author sriram

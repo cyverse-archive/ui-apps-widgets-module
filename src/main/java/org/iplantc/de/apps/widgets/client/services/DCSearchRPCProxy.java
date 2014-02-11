@@ -1,19 +1,20 @@
 package org.iplantc.de.apps.widgets.client.services;
 
-import java.util.List;
-
-import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.apps.widgets.client.services.impl.DeployedComponentServicesImpl;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.loader.FilterConfig;
 import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfig;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
+
+import java.util.List;
 
 public class DCSearchRPCProxy extends
         RpcProxy<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> {

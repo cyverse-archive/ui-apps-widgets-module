@@ -1,5 +1,9 @@
 package org.iplantc.de.apps.widgets.client.view.deployedComponents;
 
+import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
+import org.iplantc.de.client.models.deployedComps.DeployedComponent;
+import org.iplantc.de.resources.client.messages.I18N;
+
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.shared.GWT;
@@ -34,10 +38,6 @@ import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
-import org.iplantc.de.commons.client.models.deployedcomps.DeployedComponent;
 
 import java.util.List;
 

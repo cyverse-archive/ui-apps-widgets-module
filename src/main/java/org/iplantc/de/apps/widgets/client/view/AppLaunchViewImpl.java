@@ -1,5 +1,11 @@
 package org.iplantc.de.apps.widgets.client.view;
 
+import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent;
+import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
+import org.iplantc.de.apps.widgets.client.models.AppTemplate;
+import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.EditorError;
@@ -15,12 +21,6 @@ import com.google.inject.Inject;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-
-import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent;
-import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
-import org.iplantc.de.apps.widgets.client.models.AppTemplate;
-import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
-import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
 
 import java.util.List;
 

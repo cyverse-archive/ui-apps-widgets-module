@@ -1,19 +1,19 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
-import com.google.common.base.Strings;
-import com.google.gwt.editor.client.LeafValueEditor;
-import com.google.gwt.safehtml.client.HasSafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-
-import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.apps.widgets.client.models.ArgumentType;
 import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance.AppTemplateWizardTemplates;
 import org.iplantc.de.apps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
+import org.iplantc.de.resources.client.IplantResources;
+
+import com.google.common.base.Strings;
+import com.google.gwt.editor.client.LeafValueEditor;
+import com.google.gwt.safehtml.client.HasSafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 public class LabelLeafEditor<T> implements LeafValueEditor<T> {
     protected final ArgumentEditor argEditor;
