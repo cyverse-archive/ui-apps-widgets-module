@@ -11,7 +11,7 @@ import org.iplantc.de.apps.widgets.client.services.DeployedComponentServices;
 import org.iplantc.de.client.models.CommonModelUtils;
 import org.iplantc.de.client.models.HasId;
 import org.iplantc.de.client.models.deployedComps.DeployedComponent;
-import org.iplantc.de.commons.client.services.AsyncCallbackConverter;
+import org.iplantc.de.client.services.AsyncCallbackConverter;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;

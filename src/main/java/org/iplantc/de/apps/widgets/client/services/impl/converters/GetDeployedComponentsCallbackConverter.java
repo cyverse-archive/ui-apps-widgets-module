@@ -3,7 +3,7 @@ package org.iplantc.de.apps.widgets.client.services.impl.converters;
 import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 import org.iplantc.de.client.models.deployedComps.DeployedComponentAutoBeanFactory;
 import org.iplantc.de.client.models.deployedComps.DeployedComponentList;
-import org.iplantc.de.commons.client.services.AsyncCallbackConverter;
+import org.iplantc.de.client.services.AsyncCallbackConverter;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;

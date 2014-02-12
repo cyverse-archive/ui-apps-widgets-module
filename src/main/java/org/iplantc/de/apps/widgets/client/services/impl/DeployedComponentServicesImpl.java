@@ -7,7 +7,7 @@ import org.iplantc.de.client.models.DEProperties;
 import org.iplantc.de.client.models.HasId;
 import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 import org.iplantc.de.client.models.deployedComps.DeployedComponentAutoBeanFactory;
-import org.iplantc.de.commons.client.DEServiceFacade;
+import org.iplantc.de.client.services.DEServiceFacade;
 import org.iplantc.de.shared.SharedAuthenticationValidatingServiceFacade;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
 
