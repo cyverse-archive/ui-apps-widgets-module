@@ -1,10 +1,10 @@
 package org.iplantc.de.apps.widgets.client.view.util;
 
-import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
-import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
-import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemGroup;
-import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.de.apps.widgets.client.view.util.SelectionItemValueChangeStoreHandler.HasEventSuppression;
+import org.iplantc.de.client.models.apps.AppTemplateAutoBeanFactory;
+import org.iplantc.de.client.models.apps.SelectionItem;
+import org.iplantc.de.client.models.apps.SelectionItemGroup;
+import org.iplantc.de.client.util.AppTemplateUtils;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;

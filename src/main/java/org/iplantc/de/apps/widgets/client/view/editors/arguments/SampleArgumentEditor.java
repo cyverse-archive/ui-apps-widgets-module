@@ -2,12 +2,12 @@ package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
 import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.ArgumentRequiredChangedEventHandler;
 import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent;
-import org.iplantc.de.apps.widgets.client.models.Argument;
-import org.iplantc.de.apps.widgets.client.models.ArgumentType;
-import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
-import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
+import org.iplantc.de.client.models.apps.Argument;
+import org.iplantc.de.client.models.apps.ArgumentType;
+import org.iplantc.de.client.models.apps.ArgumentValidator;
+import org.iplantc.de.client.models.apps.SelectionItem;
 
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.LeafValueEditor;

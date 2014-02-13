@@ -1,10 +1,5 @@
 package org.iplantc.de.apps.widgets.client.view.editors;
 
-import org.iplantc.de.apps.widgets.client.models.Argument;
-import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenome;
-import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenomeProperties;
-import org.iplantc.de.apps.widgets.client.models.selection.SelectionItemProperties;
-import org.iplantc.de.apps.widgets.client.services.AppMetadataServiceFacade;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.DoubleInputEditor;
@@ -29,9 +24,13 @@ import org.iplantc.de.apps.widgets.client.view.editors.arguments.TextInputEditor
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.TextSelectionEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.tree.TreeSelectionEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.de.client.models.apps.Argument;
+import org.iplantc.de.client.models.apps.ReferenceGenome;
+import org.iplantc.de.client.services.AppMetadataServiceFacade;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -66,9 +65,12 @@ public class ArgumentEditorFactoryImpl implements AppTemplateForm.ArgumentEditor
     @Inject
     private SelectionItemProperties selectionItemProps;
 
+    private final ReferenceGenomeProperties referenceGenomeProperties;
+
     @Inject
     public ArgumentEditorFactoryImpl() {
     	con = new SimpleContainer();
+        referenceGenomeProperties = GWT.create(ReferenceGenomeProperties.class);
     }
 
     @Override
@@ -192,7 +194,6 @@ public class ArgumentEditorFactoryImpl implements AppTemplateForm.ArgumentEditor
 
     private ListStore<ReferenceGenome> getReferenceGenomeStore() {
         if (refGenomeListStore == null) {
-            final ReferenceGenomeProperties referenceGenomeProperties = appMetadataService.getReferenceGenomeProperties();
             refGenomeListStore = new ListStore<ReferenceGenome>(referenceGenomeProperties.id());
 
             appMetadataService.getReferenceGenomes(new AsyncCallback<List<ReferenceGenome>>() {

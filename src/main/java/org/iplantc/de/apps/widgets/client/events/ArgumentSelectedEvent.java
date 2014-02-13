@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.events;
 
 import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
-import org.iplantc.de.apps.widgets.client.models.Argument;
+import org.iplantc.de.client.models.apps.Argument;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;

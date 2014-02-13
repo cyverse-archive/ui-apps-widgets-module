@@ -15,17 +15,6 @@
    <inherits name="com.google.gwt.inject.Inject"/>
 		
    <!-- Deferred-Binding Rules -->
-   <replace-with class="org.iplantc.de.apps.widgets.client.services.impl.DeployedComponentServicesImpl">
-      <when-type-is class="org.iplantc.de.apps.widgets.client.services.DeployedComponentServices" />
-   </replace-with>
-   
-   <replace-with class="org.iplantc.de.apps.widgets.client.services.impl.AppTemplateServicesImpl">
-      <when-type-is class="org.iplantc.de.apps.widgets.client.services.AppTemplateServices" />
-   </replace-with>
-   <replace-with class="org.iplantc.de.apps.widgets.client.services.impl.AppTemplateServicesImpl">
-      <when-type-is class="org.iplantc.de.apps.widgets.client.services.AppMetadataServiceFacade" />
-   </replace-with>
-   
    <replace-with class="org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearanceImpl">
       <when-type-is class="org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance"/>
    </replace-with>

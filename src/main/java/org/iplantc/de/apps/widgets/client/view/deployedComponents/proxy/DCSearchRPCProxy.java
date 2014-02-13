@@ -1,11 +1,12 @@
-package org.iplantc.de.apps.widgets.client.services;
+package org.iplantc.de.apps.widgets.client.view.deployedComponents.proxy;
 
-import org.iplantc.de.apps.widgets.client.services.impl.DeployedComponentServicesImpl;
 import org.iplantc.de.client.models.deployedComps.DeployedComponent;
+import org.iplantc.de.client.services.DeployedComponentServices;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import com.sencha.gxt.data.client.loader.RpcProxy;
@@ -19,7 +20,7 @@ import java.util.List;
 public class DCSearchRPCProxy extends
         RpcProxy<FilterPagingLoadConfig, PagingLoadResult<DeployedComponent>> {
 
-    DeployedComponentServices dcService = new DeployedComponentServicesImpl();
+    DeployedComponentServices dcService = GWT.create(DeployedComponentServices.class);
 
     private String lastQueryText = ""; //$NON-NLS-1$
 

@@ -1,11 +1,11 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
-import org.iplantc.de.apps.widgets.client.models.ArgumentType;
-import org.iplantc.de.apps.widgets.client.models.util.AppTemplateUtils;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance.AppTemplateWizardTemplates;
 import org.iplantc.de.apps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
+import org.iplantc.de.client.models.apps.ArgumentType;
+import org.iplantc.de.client.util.AppTemplateUtils;
 import org.iplantc.de.resources.client.IplantResources;
 
 import com.google.common.base.Strings;

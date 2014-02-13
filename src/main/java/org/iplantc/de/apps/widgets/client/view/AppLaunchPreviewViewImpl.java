@@ -1,8 +1,8 @@
 package org.iplantc.de.apps.widgets.client.view;
 
 import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
-import org.iplantc.de.apps.widgets.client.models.AppTemplate;
-import org.iplantc.de.apps.widgets.client.models.metadata.JobExecution;
+import org.iplantc.de.client.models.apps.AppTemplate;
+import org.iplantc.de.client.models.apps.JobExecution;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;

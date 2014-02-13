@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
-import org.iplantc.de.apps.widgets.client.models.AppTemplateAutoBeanFactory;
-import org.iplantc.de.apps.widgets.client.models.metadata.ReferenceGenome;
+import org.iplantc.de.client.models.apps.AppTemplateAutoBeanFactory;
+import org.iplantc.de.client.models.apps.ReferenceGenome;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;

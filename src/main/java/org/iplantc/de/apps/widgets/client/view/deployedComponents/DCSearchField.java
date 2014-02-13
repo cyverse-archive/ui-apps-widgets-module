@@ -1,6 +1,6 @@
 package org.iplantc.de.apps.widgets.client.view.deployedComponents;
 
-import org.iplantc.de.apps.widgets.client.services.DCSearchRPCProxy;
+import org.iplantc.de.apps.widgets.client.view.deployedComponents.proxy.DCSearchRPCProxy;
 import org.iplantc.de.client.models.deployedComps.DeployedComponent;
 import org.iplantc.de.resources.client.messages.I18N;
 

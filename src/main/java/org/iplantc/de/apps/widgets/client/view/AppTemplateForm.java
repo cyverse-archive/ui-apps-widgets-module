@@ -10,12 +10,12 @@ import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.Ar
 import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.HasArgumentRequiredChangedHandlers;
 import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.ArgumentSelectedEventHandler;
 import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent.HasArgumentSelectedEventHandlers;
-import org.iplantc.de.apps.widgets.client.models.AppTemplate;
-import org.iplantc.de.apps.widgets.client.models.Argument;
-import org.iplantc.de.apps.widgets.client.models.ArgumentGroup;
-import org.iplantc.de.apps.widgets.client.models.ArgumentType;
-import org.iplantc.de.apps.widgets.client.models.ArgumentValidator;
-import org.iplantc.de.apps.widgets.client.models.selection.SelectionItem;
+import org.iplantc.de.client.models.apps.AppTemplate;
+import org.iplantc.de.client.models.apps.Argument;
+import org.iplantc.de.client.models.apps.ArgumentGroup;
+import org.iplantc.de.client.models.apps.ArgumentType;
+import org.iplantc.de.client.models.apps.ArgumentValidator;
+import org.iplantc.de.client.models.apps.SelectionItem;
 
 import com.google.gwt.editor.client.CompositeEditor;
 import com.google.gwt.editor.client.Editor;

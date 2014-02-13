@@ -1,4 +1,6 @@
-package org.iplantc.de.apps.widgets.client.models.selection;
+package org.iplantc.de.apps.widgets.client.view.editors;
+
+import org.iplantc.de.client.models.apps.SelectionItem;
 
 import com.google.gwt.editor.client.Editor.Path;
 
