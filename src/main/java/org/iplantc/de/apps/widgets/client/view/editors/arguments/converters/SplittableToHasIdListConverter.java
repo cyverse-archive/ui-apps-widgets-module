@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
-import org.iplantc.de.client.models.CommonModelUtils;
 import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.util.CommonModelUtils;
 import org.iplantc.de.client.util.DiskResourceUtil;
 
 import com.google.common.collect.Lists;
