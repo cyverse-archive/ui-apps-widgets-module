@@ -1,6 +1,6 @@
 package org.iplantc.de.apps.widgets.client.view.editors.style;
 
-import org.iplantc.de.client.models.apps.Argument;
+import org.iplantc.de.client.models.apps.integration.Argument;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;

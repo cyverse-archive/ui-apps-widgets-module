@@ -4,10 +4,10 @@ import org.iplantc.de.apps.widgets.client.events.ArgumentRequiredChangedEvent.Ar
 import org.iplantc.de.apps.widgets.client.events.ArgumentSelectedEvent;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm;
 import org.iplantc.de.apps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
-import org.iplantc.de.client.models.apps.Argument;
-import org.iplantc.de.client.models.apps.ArgumentType;
-import org.iplantc.de.client.models.apps.ArgumentValidator;
-import org.iplantc.de.client.models.apps.SelectionItem;
+import org.iplantc.de.client.models.apps.integration.Argument;
+import org.iplantc.de.client.models.apps.integration.ArgumentType;
+import org.iplantc.de.client.models.apps.integration.ArgumentValidator;
+import org.iplantc.de.client.models.apps.integration.SelectionItem;
 
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.LeafValueEditor;

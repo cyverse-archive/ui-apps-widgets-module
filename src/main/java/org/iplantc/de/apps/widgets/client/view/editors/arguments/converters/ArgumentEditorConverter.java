@@ -1,8 +1,8 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.IArgumentEditorConverter;
-import org.iplantc.de.client.models.apps.ArgumentValidator;
-import org.iplantc.de.client.models.apps.ArgumentValidatorType;
+import org.iplantc.de.client.models.apps.integration.ArgumentValidator;
+import org.iplantc.de.client.models.apps.integration.ArgumentValidatorType;
 import org.iplantc.de.commons.client.validators.CmdLineArgCharacterValidator;
 import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
 import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;

@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.tree;
 
-import org.iplantc.de.client.models.apps.SelectionItem;
-import org.iplantc.de.client.models.apps.SelectionItemGroup;
+import org.iplantc.de.client.models.apps.integration.SelectionItem;
+import org.iplantc.de.client.models.apps.integration.SelectionItemGroup;
 import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.core.client.GWT;

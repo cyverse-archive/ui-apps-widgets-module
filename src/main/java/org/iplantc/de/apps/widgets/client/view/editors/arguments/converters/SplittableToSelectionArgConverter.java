@@ -1,7 +1,7 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 
-import org.iplantc.de.client.models.apps.AppTemplateAutoBeanFactory;
-import org.iplantc.de.client.models.apps.SelectionItem;
+import org.iplantc.de.client.models.apps.integration.AppTemplateAutoBeanFactory;
+import org.iplantc.de.client.models.apps.integration.SelectionItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;

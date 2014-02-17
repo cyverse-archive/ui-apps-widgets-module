@@ -1,6 +1,6 @@
 package org.iplantc.de.apps.widgets.client.view;
 
-import org.iplantc.de.client.models.apps.JobExecution;
+import org.iplantc.de.client.models.apps.integration.JobExecution;
 
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;

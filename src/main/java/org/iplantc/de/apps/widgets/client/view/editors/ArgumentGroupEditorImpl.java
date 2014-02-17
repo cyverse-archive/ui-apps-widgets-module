@@ -12,8 +12,8 @@ import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.HasDisabledOnNotV
 import org.iplantc.de.apps.widgets.client.view.HasLabelOnlyEditMode;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppWizardQuickTip;
-import org.iplantc.de.client.models.apps.Argument;
-import org.iplantc.de.client.models.apps.ArgumentGroup;
+import org.iplantc.de.client.models.apps.integration.Argument;
+import org.iplantc.de.client.models.apps.integration.ArgumentGroup;
 import org.iplantc.de.client.util.AppTemplateUtils;
 
 import com.google.gwt.core.client.Scheduler;

@@ -1,6 +1,6 @@
 package org.iplantc.de.apps.widgets.client.view.util;
 
-import org.iplantc.de.client.models.apps.SelectionItem;
+import org.iplantc.de.client.models.apps.integration.SelectionItem;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;

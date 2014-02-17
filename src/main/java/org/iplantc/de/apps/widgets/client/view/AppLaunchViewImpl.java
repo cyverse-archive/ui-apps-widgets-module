@@ -2,8 +2,8 @@ package org.iplantc.de.apps.widgets.client.view;
 
 import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent;
 import org.iplantc.de.apps.widgets.client.events.RequestAnalysisLaunchEvent.RequestAnalysisLaunchEventHandler;
-import org.iplantc.de.client.models.apps.AppTemplate;
-import org.iplantc.de.client.models.apps.JobExecution;
+import org.iplantc.de.client.models.apps.integration.AppTemplate;
+import org.iplantc.de.client.models.apps.integration.JobExecution;
 import org.iplantc.de.client.util.AppTemplateUtils;
 
 import com.google.common.collect.Lists;
