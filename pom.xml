@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-	<groupId>org.iplantc.core</groupId>
+	<groupId>org.iplantc.de</groupId>
 	<artifactId>ui-apps-widgets</artifactId>
 	<packaging>jar</packaging>
 	<version>dev-SNAPSHOT</version>
@@ -29,6 +29,13 @@
 			<artifactId>ui-applications</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <!-- GWT deps (from central repo) -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
 	<build>
 		<finalName>ui-apps-widgets</finalName>
@@ -75,7 +82,7 @@
 						<configuration>
 							<module>${gwt.module}</module>
                             <!-- These config options are only relevant if the i18n goal is executed. -->
-                            <i18nMessagesBundle>org.iplantc.core.widgets.client.WidgetDisplayStrings</i18nMessagesBundle>
+                            <i18nMessagesBundle>org.iplantc.de.widgets.client.WidgetDisplayStrings</i18nMessagesBundle>
 						</configuration>
 					</execution>
 				</executions>
