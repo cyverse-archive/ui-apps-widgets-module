@@ -45,13 +45,13 @@
 				<directory>src/main/java</directory>
 				<includes>
 					<include>**/client/**</include>
+                    <include>**/*.gwt.xml</include>
 				</includes>
 			</resource>
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**</include>
-                    <include>**/*.gwt.xml</include>
                 </includes>
             </resource>
 		</resources>
