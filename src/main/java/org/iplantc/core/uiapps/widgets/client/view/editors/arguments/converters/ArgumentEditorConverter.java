@@ -280,4 +280,11 @@ public class ArgumentEditorConverter<T> extends Composite implements IArgumentEd
         }
     }
 
+    public List<Validator<T>> getValidators() {
+        if (field instanceof Field<?>) {
+            return ((Field<T>)field).getValidators();
+        }
+
+        return Lists.newArrayList();
+    }
 }
