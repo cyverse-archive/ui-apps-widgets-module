@@ -1,11 +1,12 @@
 package org.iplantc.core.uiapps.widgets.client.view.editors.arguments;
 
-import com.sencha.gxt.widget.core.client.form.TextArea;
-
 import org.iplantc.core.resources.client.uiapps.widgets.argumentTypes.TextInputLabels;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.ArgumentEditorConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.arguments.converters.SplittableToStringConverter;
 import org.iplantc.core.uiapps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
+import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
+
+import com.sencha.gxt.widget.core.client.form.TextArea;
 
 public class MultiLineTextEditor extends AbstractArgumentEditor {
     private final ArgumentEditorConverter<String> editorAdapter;
@@ -15,6 +16,7 @@ public class MultiLineTextEditor extends AbstractArgumentEditor {
         super(appearance);
         textArea = new TextArea();
         textArea.setEmptyText(labels.textInputWidgetEmptyText());
+        textArea.addValidator(new CmdLineArgCharacterValidator(true));
         editorAdapter = new ArgumentEditorConverter<String>(textArea, new SplittableToStringConverter());
 
         argumentLabel.setWidget(editorAdapter);
@@ -25,4 +27,10 @@ public class MultiLineTextEditor extends AbstractArgumentEditor {
         return editorAdapter;
     }
 
+    @Override
+    public void disableValidations() {
+        super.disableValidations();
+
+        textArea.getValidators().clear();
+    }
 }
