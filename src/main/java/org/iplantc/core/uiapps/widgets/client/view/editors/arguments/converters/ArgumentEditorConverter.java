@@ -27,8 +27,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidator;
 import org.iplantc.core.uiapps.widgets.client.models.ArgumentValidatorType;
 import org.iplantc.core.uiapps.widgets.client.view.AppTemplateForm.IArgumentEditorConverter;
-import org.iplantc.core.uicommons.client.validators.CmdLineArgCharacterValidator;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
+import org.iplantc.core.uicommons.client.validators.IPlantDefaultValidator;
 import org.iplantc.core.uicommons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceSelector;
 
@@ -78,7 +77,7 @@ public class ArgumentEditorConverter<T> extends Composite implements IArgumentEd
                 Field<T> tmpField = (Field<T>)field;
                 List<Validator<T>> validatorsToRemove = Lists.newArrayList(tmpField.getValidators());
                 for (Validator<T> v : validatorsToRemove) {
-                    if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                    if (v instanceof IPlantDefaultValidator) {
                         continue;
                     }
                     tmpField.removeValidator(v);
@@ -97,7 +96,7 @@ public class ArgumentEditorConverter<T> extends Composite implements IArgumentEd
             // JDS Clear all existing validators
             List<Validator<T>> validatorsToRemove = Lists.newArrayList(fieldObj.getValidators());
             for (Validator<T> v : validatorsToRemove) {
-                if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                if (v instanceof IPlantDefaultValidator) {
                     continue;
                 }
                 fieldObj.removeValidator(v);
