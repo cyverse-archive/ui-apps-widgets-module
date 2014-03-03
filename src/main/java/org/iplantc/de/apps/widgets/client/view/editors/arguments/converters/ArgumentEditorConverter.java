@@ -3,8 +3,7 @@ package org.iplantc.de.apps.widgets.client.view.editors.arguments.converters;
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.IArgumentEditorConverter;
 import org.iplantc.de.client.models.apps.integration.ArgumentValidator;
 import org.iplantc.de.client.models.apps.integration.ArgumentValidatorType;
-import org.iplantc.de.commons.client.validators.CmdLineArgCharacterValidator;
-import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.validators.IPlantDefaultValidator;
 import org.iplantc.de.commons.client.widgets.PreventEntryAfterLimitHandler;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceSelector;
 
@@ -78,7 +77,7 @@ public class ArgumentEditorConverter<T> extends Composite implements IArgumentEd
                 Field<T> tmpField = (Field<T>)field;
                 List<Validator<T>> validatorsToRemove = Lists.newArrayList(tmpField.getValidators());
                 for (Validator<T> v : validatorsToRemove) {
-                    if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                    if (v instanceof IPlantDefaultValidator) {
                         continue;
                     }
                     tmpField.removeValidator(v);
@@ -97,7 +96,7 @@ public class ArgumentEditorConverter<T> extends Composite implements IArgumentEd
             // JDS Clear all existing validators
             List<Validator<T>> validatorsToRemove = Lists.newArrayList(fieldObj.getValidators());
             for (Validator<T> v : validatorsToRemove) {
-                if ((v instanceof CmdLineArgCharacterValidator) || (v instanceof DiskResourceNameValidator)) {
+                if (v instanceof IPlantDefaultValidator) {
                     continue;
                 }
                 fieldObj.removeValidator(v);
