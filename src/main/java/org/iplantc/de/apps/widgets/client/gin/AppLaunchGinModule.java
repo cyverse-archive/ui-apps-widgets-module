@@ -11,7 +11,10 @@ import org.iplantc.de.apps.widgets.client.view.editors.ArgumentGroupEditorImpl;
 import org.iplantc.de.apps.widgets.client.view.editors.LaunchAnalysisViewImpl;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.events.EventBus;
+import org.iplantc.de.client.gin.ServicesInjector;
 import org.iplantc.de.client.models.UserSettings;
+import org.iplantc.de.client.services.AppMetadataServiceFacade;
+import org.iplantc.de.client.services.AppTemplateServices;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Provides;
@@ -35,6 +38,16 @@ public class AppLaunchGinModule extends AbstractGinModule {
     @Singleton
     public UserSettings createUserSettings() {
         return UserSettings.getInstance();
+    }
+
+    @Provides
+    public AppMetadataServiceFacade createAppMetadataService() {
+        return ServicesInjector.INSTANCE.getAppMetadataService();
+    }
+
+    @Provides
+    public AppTemplateServices createAppTemplateServices() {
+        return ServicesInjector.INSTANCE.getAppTemplateServices();
     }
 
     @Override

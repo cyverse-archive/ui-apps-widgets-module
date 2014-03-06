@@ -40,8 +40,7 @@ public class AppLaunchPresenterImpl implements AppLaunchView.Presenter, RequestA
     @Inject
     private AppsWidgetsErrorMessages appsWidgetsErrMessages;
     private AppTemplate appTemplate;
-    @Inject
-    private AppTemplateServices atServices;
+    private final AppTemplateServices atServices;
     private HandlerManager handlerManager;
     private final UserInfo userInfo;
     private final UserSettings userSettings;
@@ -51,11 +50,12 @@ public class AppLaunchPresenterImpl implements AppLaunchView.Presenter, RequestA
     private final AppLaunchView view;
 
     @Inject
-    public AppLaunchPresenterImpl(final AppLaunchView view, final UserSettings userSettings, final UserInfo userInfo) {
+    public AppLaunchPresenterImpl(final AppLaunchView view, final UserSettings userSettings, final UserInfo userInfo, final AppTemplateServices atServices) {
         this.view = view;
         this.userSettings = userSettings;
         this.userInfo = userInfo;
         this.view.addRequestAnalysisLaunchEventHandler(this);
+        this.atServices = atServices;
     }
     
     @Override
