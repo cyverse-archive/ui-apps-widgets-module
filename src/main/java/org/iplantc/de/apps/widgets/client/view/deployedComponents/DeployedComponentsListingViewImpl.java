@@ -89,6 +89,7 @@ public class DeployedComponentsListingViewImpl extends Composite implements
         searchProxy = new DCSearchRPCProxy();
         loader = buildLoader();
         widget = uiBinder.createAndBindUi(this);
+        searchField.setEmptyText(I18N.DISPLAY.searchEmptyText());
         grid.setLoader(loader);
         grid.getSelectionModel().addSelectionChangedHandler(handler);
         loader.addLoadHandler(new LoadResultListStoreBinding<FilterPagingLoadConfig, DeployedComponent, PagingLoadResult<DeployedComponent>>(store));
