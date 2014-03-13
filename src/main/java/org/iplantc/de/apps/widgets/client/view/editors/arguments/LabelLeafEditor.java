@@ -1,12 +1,12 @@
 package org.iplantc.de.apps.widgets.client.view.editors.arguments;
 
+import static org.iplantc.de.client.models.apps.integration.ArgumentType.Flag;
+import static org.iplantc.de.client.models.apps.integration.ArgumentType.Info;
+import static org.iplantc.de.client.util.AppTemplateUtils.EMPTY_GROUP_ARG_ID;
+
 import org.iplantc.de.apps.widgets.client.view.AppTemplateForm.ArgumentEditor;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
-import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance.AppTemplateWizardTemplates;
-import org.iplantc.de.apps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
 import org.iplantc.de.client.models.apps.integration.ArgumentType;
-import org.iplantc.de.client.util.AppTemplateUtils;
-import org.iplantc.de.resources.client.IplantResources;
 
 import com.google.common.base.Strings;
 import com.google.gwt.editor.client.LeafValueEditor;
@@ -21,9 +21,12 @@ public class LabelLeafEditor<T> implements LeafValueEditor<T> {
     private final HasSafeHtml hasHtml;
     private T lleModel;
 
-    public LabelLeafEditor(HasSafeHtml hasHtml, ArgumentEditor argEditor) {
+    private final AppTemplateWizardAppearance appearance;
+
+    public LabelLeafEditor(HasSafeHtml hasHtml, ArgumentEditor argEditor, final AppTemplateWizardAppearance appearance) {
         this.hasHtml = hasHtml;
         this.argEditor = argEditor;
+        this.appearance = appearance;
     }
 
     @Override
@@ -40,26 +43,28 @@ public class LabelLeafEditor<T> implements LeafValueEditor<T> {
 
     private SafeHtml createArgumentLabel(ArgumentEditor argEditor) {
         SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        AppTemplateWizardTemplates templates = AppTemplateWizardAppearance.INSTANCE.getTemplates();
         Boolean isRequired = argEditor.requiredEditor().getValue();
         if ((isRequired != null) && isRequired) {
             // If the field is required, it needs to be marked as such.
-            labelText.append(templates.fieldLabelRequired());
+            labelText.append(appearance.getRequiredFieldLabel());
         }
         // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
         String label = Strings.nullToEmpty(argEditor.labelEditor().getValue());
         SafeHtml safeHtmlLabel = SafeHtmlUtils.fromString(label.replaceFirst(":$", ""));
         ArgumentType argumentType = argEditor.typeEditor().getValue();
-        if ((argumentType != null) && argumentType.equals(ArgumentType.Info)) {
-            labelText.append(IPlantSimpleHtmlSanitizer.sanitizeHtml(label));
+        if (Info.equals(argumentType)) {
+            labelText.append(appearance.sanitizeHtml(label));
         } else {
+            if (Flag.equals(argumentType)) {
+                labelText.append(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").toSafeHtml());
+            }
             String id = argEditor.idEditor().getValue();
             String description = argEditor.descriptionEditor().getValue();
 
-            if (Strings.isNullOrEmpty(description) || ((id != null) && id.equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
+            if (Strings.isNullOrEmpty(description) || EMPTY_GROUP_ARG_ID.equals(id)) {
                 labelText.append(safeHtmlLabel);
             } else {
-                labelText.append(templates.fieldLabelImgFloatRight(safeHtmlLabel, IplantResources.RESOURCES.info().getSafeUri(), description));
+                labelText.append(appearance.getContextualHelpLabel(safeHtmlLabel, description));
             }
         }
         return labelText.toSafeHtml();

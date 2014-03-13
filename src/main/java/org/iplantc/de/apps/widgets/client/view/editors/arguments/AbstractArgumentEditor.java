@@ -48,8 +48,8 @@ public abstract class AbstractArgumentEditor extends Composite implements AppTem
 
     class RequiredLeafEditor extends LabelLeafEditor<Boolean> {
 
-        public RequiredLeafEditor(HasSafeHtml hasHtml, ArgumentEditor argEditor) {
-            super(hasHtml, argEditor);
+        public RequiredLeafEditor(HasSafeHtml hasHtml, ArgumentEditor argEditor, AppTemplateWizardAppearance appearance) {
+            super(hasHtml, argEditor, appearance);
         }
 
         @Override
@@ -189,11 +189,11 @@ public abstract class AbstractArgumentEditor extends Composite implements AppTem
         init();
         validatorListEditor = new ValidatorListEditor(this);
 
-        labelLeafEditor = new LabelLeafEditor<String>(argumentLabel, this);
+        labelLeafEditor = new LabelLeafEditor<String>(argumentLabel, this, appearance);
         idEditor = SimpleEditor.<String> of();
         typeEditor = SimpleEditor.<ArgumentType> of();
-        requiredEditor = new RequiredLeafEditor(argumentLabel, this);
-        descriptionEditor = new LabelLeafEditor<String>(argumentLabel, this);
+        requiredEditor = new RequiredLeafEditor(argumentLabel, this, appearance);
+        descriptionEditor = new LabelLeafEditor<String>(argumentLabel, this, appearance);
         visibilityEditor = new VisibilityEditor(this);
     }
 
@@ -308,8 +308,7 @@ public abstract class AbstractArgumentEditor extends Composite implements AppTem
             return;
         }
         this.model = value;
-        argumentLabel.setHTML(appearance.createArgumentLabel(value));
-
+        typeEditor.setValue(value.getType());
     }
 
     @Override

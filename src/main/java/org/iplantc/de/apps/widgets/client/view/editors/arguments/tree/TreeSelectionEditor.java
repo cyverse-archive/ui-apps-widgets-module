@@ -215,11 +215,11 @@ public class TreeSelectionEditor extends Composite implements AppTemplateForm.Ar
             }
         }, ClickEvent.getType());
 
-        labelLeafEditor = new LabelLeafEditor<String>(argumentLabel, this);
+        labelLeafEditor = new LabelLeafEditor<String>(argumentLabel, this, appearance);
         idEditor = SimpleEditor.<String> of();
         typeEditor = SimpleEditor.<ArgumentType> of();
-        requiredEditor = new LabelLeafEditor<Boolean>(argumentLabel, this);
-        descriptionEditor = new LabelLeafEditor<String>(argumentLabel, this);
+        requiredEditor = new LabelLeafEditor<Boolean>(argumentLabel, this, appearance);
+        descriptionEditor = new LabelLeafEditor<String>(argumentLabel, this, appearance);
 
         initWidget(argumentLabel);
         visibilityEditor = new VisibilityEditor(this);

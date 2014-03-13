@@ -17,10 +17,11 @@ public class InfoEditor extends AbstractArgumentEditor {
     @Override
     public void setValue(Argument value) {
         super.setValue(value);
-        argumentLabel.setHTML(appearance.createArgumentLabel(value));
+        argumentLabel.removeStyleName(appearance.getStyle().emptyGroupBgText());
         argumentLabel.setLabelSeparator("");
         final String id = Strings.nullToEmpty(value.getId());
         if (id.equals(AppTemplateUtils.EMPTY_GROUP_ARG_ID)) {
+            argumentLabel.setStyleName(appearance.getStyle().emptyGroupBgText());
             argumentLabel.getElement().getStyle().setMarginTop(100, Style.Unit.PX);
             argumentLabel.getElement().getStyle().setMarginBottom(100, Style.Unit.PX);
         }

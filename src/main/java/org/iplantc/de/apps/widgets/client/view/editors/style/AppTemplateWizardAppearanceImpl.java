@@ -2,21 +2,16 @@ package org.iplantc.de.apps.widgets.client.view.editors.style;
 
 import org.iplantc.de.apps.widgets.client.view.util.IPlantSimpleHtmlSanitizer;
 import org.iplantc.de.client.models.HasLabel;
-import org.iplantc.de.client.models.apps.integration.Argument;
-import org.iplantc.de.client.models.apps.integration.ArgumentType;
-import org.iplantc.de.client.util.AppTemplateUtils;
 import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
 
-import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 import com.sencha.gxt.widget.core.client.button.IconButton;
@@ -40,25 +35,6 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
         templates = GWT.create(AppTemplateWizardTemplates.class);
         labels = I18N.APPS_LABELS;
         help = I18N.APPS_HELP;
-    }
-
-    @Override
-    public SafeHtml createArgumentLabel(Argument model) {
-        SafeHtmlBuilder labelText = new SafeHtmlBuilder();
-        if (model.getRequired()) {
-            // If the field is required, it needs to be marked as such.
-            labelText.append(templates.fieldLabelRequired());
-        }
-        // JDS Remove the trailing colon. The FieldLabels will apply it automatically.
-        SafeHtml label = SafeHtmlUtils.fromString(model.getLabel().replaceFirst(":$", ""));
-        if (model.getType().equals(ArgumentType.Info)) {
-            labelText.append(IPlantSimpleHtmlSanitizer.sanitizeHtml(model.getLabel()));
-        } else if (Strings.isNullOrEmpty(model.getDescription()) || ((model.getId() != null) && model.getId().equalsIgnoreCase(AppTemplateUtils.EMPTY_GROUP_ARG_ID))) {
-            labelText.append(label);
-        } else {
-            labelText.append(templates.fieldLabelImgFloatRight(label, res.info().getSafeUri(), model.getDescription()));
-        }
-        return labelText.toSafeHtml();
     }
 
     @Override
@@ -165,6 +141,21 @@ public class AppTemplateWizardAppearanceImpl implements AppTemplateWizardAppeara
     @Override
     public AppTemplateWizardTemplates getTemplates() {
         return templates;
+    }
+
+    @Override
+    public SafeHtml getRequiredFieldLabel() {
+        return templates.fieldLabelRequired();
+    }
+
+    @Override
+    public SafeHtml getContextualHelpLabel(SafeHtml label, String contextualHelp) {
+        return templates.fieldLabelImgFloatRight(label, res.info().getSafeUri(), contextualHelp);
+    }
+
+    @Override
+    public SafeHtml sanitizeHtml(String html) {
+        return IPlantSimpleHtmlSanitizer.sanitizeHtml(html);
     }
 
 }

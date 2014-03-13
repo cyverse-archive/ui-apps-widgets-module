@@ -10,7 +10,6 @@ import org.iplantc.de.client.models.apps.integration.Argument;
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 public class FlagEditor extends AbstractArgumentEditor {
     private CheckBoxAdapter checkBox;
@@ -27,7 +26,6 @@ public class FlagEditor extends AbstractArgumentEditor {
         super.setValue(value);
         argumentLabel.setHTML("");
         argumentLabel.setLabelSeparator("");
-        checkBox.setHTML(new SafeHtmlBuilder().appendHtmlConstant("&nbsp;").append(appearance.createArgumentLabel(value)).toSafeHtml());
     }
 
     @Override
@@ -38,8 +36,8 @@ public class FlagEditor extends AbstractArgumentEditor {
     @Override
     protected void init() {
         checkBox = new CheckBoxAdapter();
-        cbDescriptionEditor = new LabelLeafEditor<String>(checkBox, this);
-        cbLabelLeafEditor = new LabelLeafEditor<String>(checkBox, this);
+        cbDescriptionEditor = new LabelLeafEditor<String>(checkBox, this, appearance);
+        cbLabelLeafEditor = new LabelLeafEditor<String>(checkBox, this, appearance);
         editorAdapter = new ArgumentEditorConverter<Boolean>(checkBox, new SplittableToBooleanConverter());
         checkBox.addDomHandler(new ClickHandler() {
 

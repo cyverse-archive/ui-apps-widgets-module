@@ -1,6 +1,5 @@
 package org.iplantc.de.apps.widgets.client.view.editors.style;
 
-import org.iplantc.de.client.models.apps.integration.Argument;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsContextualHelpMessages;
 import org.iplantc.de.resources.client.uiapps.widgets.AppsWidgetsPropertyPanelLabels;
@@ -32,9 +31,6 @@ public interface AppTemplateWizardAppearance {
         @SafeHtmlTemplates.Template("<p style='text-overflow: ellipsis;overflow: hidden;white-space: nowrap;'><span style='color: red;'>*&nbsp</span>{0}</p>")
         SafeHtml contentPanelHeaderRequired(SafeHtml label);
 
-        @SafeHtmlTemplates.Template("<span qtip='{1}'>{0}</span>")
-        SafeHtml fieldLabel(SafeHtml name, String textToolTip);
-
         @SafeHtmlTemplates.Template("{0}&nbsp;<img src='{1}' qtip='{2}'></img>")
         SafeHtml fieldLabelImg(SafeHtml label, SafeUri img, String toolTip);
 
@@ -44,11 +40,6 @@ public interface AppTemplateWizardAppearance {
         @SafeHtmlTemplates.Template("<span style='color: red;'>*&nbsp</span>")
         SafeHtml fieldLabelRequired();
 
-        @SafeHtmlTemplates.Template("<span style='color: red;'>{0}</span>")
-        SafeHtml redText(String text);
-
-        @SafeHtmlTemplates.Template("<span style='color: red;float: right;'>{0}</span>")
-        SafeHtml redTextFloatRight(String text);
     }
 
     interface Resources extends IplantResources {
@@ -79,8 +70,6 @@ public interface AppTemplateWizardAppearance {
     }
 
     public static final AppTemplateWizardAppearance INSTANCE = GWT.create(AppTemplateWizardAppearance.class);
-
-    SafeHtml createArgumentLabel(Argument model);
 
     /**
      * @param label
@@ -136,4 +125,19 @@ public interface AppTemplateWizardAppearance {
     Style getStyle();
 
     AppTemplateWizardTemplates getTemplates();
+
+    /**
+     * @return the safehtml which represents the "required field" text of an argument label.
+     */
+    SafeHtml getRequiredFieldLabel();
+
+    /**
+     * 
+     * @param label
+     * @param contextualHelp
+     * @return an html representation of a contextual help label.
+     */
+    SafeHtml getContextualHelpLabel(SafeHtml label, String contextualHelp);
+
+    SafeHtml sanitizeHtml(String html);
 }
