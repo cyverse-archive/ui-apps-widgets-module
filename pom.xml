@@ -29,6 +29,18 @@
 			<artifactId>ui-applications</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>de-commons</artifactId>
+			<version>${project.version}</version>
+                        <scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>com.google.gwt.gwtmockito</groupId>
+            <artifactId>gwtmockito</artifactId>
+            <version>1.1.2</version>
+            <scope>test</scope>
+        </dependency>
         <!-- GWT deps (from central repo) -->
         <dependency>
             <groupId>com.google.gwt</groupId>
