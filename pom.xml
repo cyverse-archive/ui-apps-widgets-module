@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>de-common-module</artifactId>
+			<artifactId>de-common</artifactId>
 			<version>${project.version}</version>
                         <scope>test</scope>
 		</dependency>
