@@ -12,6 +12,7 @@ import org.iplantc.de.apps.widgets.client.view.editors.LaunchAnalysisViewImpl;
 import org.iplantc.de.apps.widgets.client.view.editors.style.AppTemplateWizardAppearance;
 import org.iplantc.de.client.events.EventBus;
 import org.iplantc.de.client.gin.ServicesInjector;
+import org.iplantc.de.client.models.UserInfo;
 import org.iplantc.de.client.models.UserSettings;
 import org.iplantc.de.client.services.AppMetadataServiceFacade;
 import org.iplantc.de.client.services.AppTemplateServices;
@@ -32,6 +33,12 @@ public class AppLaunchGinModule extends AbstractGinModule {
     @Singleton
     public EventBus createEventBus() {
         return EventBus.getInstance();
+    }
+
+    @Provides
+    @Singleton
+    public UserInfo createUserInfo() {
+        return UserInfo.getInstance();
     }
 
     @Provides
